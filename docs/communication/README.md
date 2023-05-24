@@ -1,19 +1,8 @@
-The home for you communications log. 
-
-2023/05/22 20:53
-
-Email
-Hello Dr. Ramon Lawrence,
-
-My name is Matthew Obirek and my group and I are currently starting our Capstone Project - Automating Database Question Generation and Marking. We are team A.
-I am writing you to schedule a meeting time that works best for you so we can start learning more about the details of this project. 
-
-Kind Regards,
-Matthew Obirek (he/him)
+### Communications Log. 
 
 | Date          | Contact Name  | Type  | Reason               | Link |
 | ------------- |:-------------:| -----:| --------------------:| ----:|
-| 2023/05/22    | Matthew O.    | Email | Initial Contact | [Here] (Emails/'Inital Contact'/'Capstone Project Meeting Request - Team A - 2.pdf')
-| 2023/05/23    | Matthew O.    | Email | Initial Contact | [I'm an inline-style link](https://www.google.com)
-| 2023/05/23    | Matthew O.    | Email | Meeting Time Request |
-| 2023/05/23    | Matthew O.    | Email | Meeting Conformation |
+| 2023/05/22    | Matthew O.    | Email | Initial Contact | [Here](../communication/emails/inital_contact/Capstone_Project_Meeting_Request-Team_A-1.pdf) |
+| 2023/05/23    | Matthew O.    | Email | Initial Contact | [Here](../communication/emails/inital_contact/Capstone_Project_Meeting_Request-Team_A-2.pdf) |
+| 2023/05/23    | Matthew O.    | Email | Meeting Time Request | [Here](../communication/emails/inital_contact/Capstone_Project_Meeting_Request-Team_A-3.pdf) |
+| 2023/05/23    | Matthew O.    | Email | Meeting Conformation | [Here](../communication/emails/inital_contact/Capstone_Project_Meeting_Request-Team_A-4.pdf) |
