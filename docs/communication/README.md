@@ -12,8 +12,8 @@ Kind Regards,
 Matthew Obirek (he/him)
 
 | Date          | Contact Name  | Type  | Reason               | Link |
-| ------------- |:-------------:| -----:| -------------------:| [Here](docs/communication/Emails/Inital Contact/Capstone Project Meeting Request - Team A - 2.pdf)
-| 2023/05/22    | Matthew O.    | Email | Initial Contact |
-| 2023/05/23    | Matthew O.    | Email | Initial Contact |
+| ------------- |:-------------:| -----:| --------------------:| ----:|
+| 2023/05/22    | Matthew O.    | Email | Initial Contact | [Here] (Emails/'Inital Contact'/'Capstone Project Meeting Request - Team A - 2.pdf')
+| 2023/05/23    | Matthew O.    | Email | Initial Contact | [I'm an inline-style link](https://www.google.com)
 | 2023/05/23    | Matthew O.    | Email | Meeting Time Request |
 | 2023/05/23    | Matthew O.    | Email | Meeting Conformation |
