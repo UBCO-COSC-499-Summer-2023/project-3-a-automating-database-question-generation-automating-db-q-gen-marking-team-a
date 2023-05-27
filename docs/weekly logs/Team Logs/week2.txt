@@ -1,0 +1,15 @@
+#Week 2
+
+##Monday, May 22
+Created team Discord server. All members joined the team and the project GitHub.  
+Established first contact with the client (Ramon Lawrence), asking about times to set up the first meeting.
+
+##Tuesday, May 23
+Confirmed time and date for first meeting with client (Wednesday, May 24th).
+
+##Wednesday, May 24
+Had the first meeting with the client. Discussed the project: to migrate labs 1 through 3 of COSC 304 to PrairieLearn, as well as automation of question generation and marking. In addition, implement the RelaX relation algebra editor into PrairieLearn's interface as well as allow students to run test querries for SQL prior to submission. Finally, to allow PrairieLearn to run on campus resources.  
+Held the first team meeting to discuss basic workflow and the required tasks dues until the next meeting (Friday, May 26th).
+
+##Friday, May 26
+Held the second team meeting to further discuss workflow and task distribution, focusing on setting up the team's development platforms as well as the creation and completion of the charter, scope, and requirement documents.
