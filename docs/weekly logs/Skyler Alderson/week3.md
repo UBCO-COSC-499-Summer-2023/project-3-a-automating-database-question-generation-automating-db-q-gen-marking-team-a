@@ -17,4 +17,9 @@ Then, we had our first report with Scott. Feedback: clarify scalibility with our
 After the report, our team continued our meeting by some discussion before moving onto T-shirt sizing for our WBS/FBS. We all landed within 200 to 245 hours of work, so hopefully within budget! That is assuming we estimated everything correctly.  
 Later, I converted my diagram sketches into UML using LucidChart - wouldn't recommend using their services because their free model is not good. However, the results are good enough for now. I didn't bother creating a UML version of the State diagram since it isn't a useful diagram.  
 Finally, I wrote this weeks logs (up until now).  
-Busy day!
+Busy day!  
+
+##  Thursday, June 1
+I added the UML versions of the design diagrams I had created to the Design Doc draft. I also added the text to properly dress our three use cases as well as captions to every figure I added. I also removed plaace-holder sections for diagrams that we won't be using (collaborative, activity, state, component, and architecture) but left then in the table of contents in case we change our minds.  
+I also spents about twenty more minutes fiddling with Docker after two of our group managed to get it to work on their machines. It still doesn't work on mine. Those working on Docker are going to try a build the Docker stuff from scratch, and I'll try another round of setting it up when that is completed.
+I also copied the Use Case diagram and dressing to the Scope & Charter document (based on the rubric for the S&C doc). Just an exact copy-paste (except for the figure caption number, which was updated).
