@@ -1,0 +1,11 @@
+{
+    "controller": "pl-uml-element.py",
+    "dependencies": {
+        "elementScripts": [
+            "renderer.js", "graphre.js", "mermaid.js"
+        ],
+        "elementStyles": [
+            "uml-element.css", "mermaid.css"
+        ]
+    }
+}

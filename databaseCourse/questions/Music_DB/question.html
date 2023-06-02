@@ -1,0 +1,25 @@
+<pl-uml-element random="False" max-grade = "10">
+    <uml-question>An [artist](artist) is a musician who records [songs](song).
+        An [artist](artist) has a [record label](recordLabel). An [artist](artist) is identified by an [id](artistId) that is specific to their [record label](recordLabel). That is, each [record label](recordLabel) assigns its own [ids](artistId). Also, record an [artist’s](artist) [name](name) and [age](age).
+        A [record label](recordLabel) has a unique [name](labelName) and an [address](address).
+        A [song](song) is recorded by one or more [artists](artist) and is uniquely identified by an [id](songId) field and has a [title](title).
+        A [song](song) [is on](isOn) one or more [albums](album) with a [track number](trackNum) and [duration](duration).  (Note: Assume an artist can put the same song on multiple albums, but any song change is given a new id.)
+        An [album](album) is a collection of [songs](song) with a [name](albumName). Track the number of [sales](sales) of an [album](album). An [album](album) may be [associated with](releases) multiple [artists](artist) and is identified by an [UPC code](upcCode).
+        An [artist](artist) [on an](releases) [album](album) is given a [number](artistNum) (first artist, second artist, etc.).
+        An [album](album) is classified in a single [genre](genre) (rap, classical, etc.). A [genre](genre) is identified by [name](genreName) and also has a [description](description).</uml-question>
+    <uml-answer>[RecordLabel| labelName{PK}; address]
+[Artist| artistId{PPK}; name; age]
+[Song| songId{PK}; title]
+[Album| upcCode{PK}; albumName; sales]
+[Genre| genreName{PK}; description]
+[Releases| artistNum]
+[IsOn| trackNum; duration]
+[RecordLabel]1..1 - 0..*[Artist]
+[Artist]1..* - 0..*[Song]
+[Artist]1..1 - 0..*[Releases]
+[Album]1..1 - 1..*[Releases]
+[Song]1..1 - 1..*[IsOn]
+[Album]1..1 - 1..*[IsOn]
+[Album]0..* - 1..1[Genre]</uml-answer>
+    <uml-marking entity-name="0.2" entity-attributes="0.1" entity-key="0.2" extra-entity-penalty="0.25" weak_entity="0.5" relationship="0.5" cardinality="0.25" extra-relationship-penalty="0.25"></uml-marking>
+</pl-uml-element>

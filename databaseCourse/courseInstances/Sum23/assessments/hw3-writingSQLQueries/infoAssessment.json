@@ -1,0 +1,19 @@
+{
+    "uuid": "c001e054-4250-4a1b-a6f7-1a9b51cc0f24",
+    "type": "Homework",
+    "title": "Homework For Writing SQL Queries",
+    "set": "Homework",
+    "number": "3",
+    "allowAccess": [
+        {
+            "credit": 100
+        }
+    ],
+    "zones": [
+        {
+            "questions": [
+                {"id": "Autoshop",                "points": 10}
+            ]
+        }
+    ]
+}

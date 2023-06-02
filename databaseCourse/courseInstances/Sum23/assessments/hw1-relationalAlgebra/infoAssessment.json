@@ -1,0 +1,19 @@
+{
+    "uuid": "4c9291cc-db7b-4d87-9329-c07416b65b49",
+    "type": "Homework",
+    "title": "Homework For Relational Algebra",
+    "set": "Homework",
+    "number": "1",
+    "allowAccess": [
+        {
+            "credit": 100
+        }
+    ],
+    "zones": [
+        {
+            "questions": [
+                {"id": "Autoshop",                "points": 10}
+            ]
+        }
+    ]
+}

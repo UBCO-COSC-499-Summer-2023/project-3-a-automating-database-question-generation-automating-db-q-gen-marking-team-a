@@ -1,0 +1,25 @@
+<pl-uml-element random="False" max-grade = "10">
+    <uml-question>Draw the ER diagram for a database to store information about all banks with branches.
+        Each [bank](Bank) has a unique [federal code](code), [name](name), and [corporate address](address).
+        Banks can have numerous [branches](Branch), each with a unique [branch code](specialCode) and an [address](address).
+        A [customer](Customer) is identified by [social security number](ssn) and also has a [name](name), [phone number](phone), and [address](address).
+        A customer may have multiple [loans](Loan) or [savings accounts](Account) which may be at different branches.
+        A customer is not affiliated with a branch directly, only indirectly if they have a [loan](Loan) or [account](Account) at that branch.
+        Each [loan](Loan) has a [loan number](number) (unique only for a branch) and a loan [amount](amount).
+        Each [savings account](Account) has an [account number](number) (unique only for a branch) and a [balance](balance).
+        A loan or account can only belong to a single customer and a single branch.</uml-question>
+    <uml-answer>[Bank|code{PK}; name; address]
+[Branch|specialCode {PK}; address]
+[Account|number {PPK}; balance]
+[Loan|number {PPK}; amount]
+[Customer|ssn {PK}; name; phone; address]
+[Bank] 1..1 - 0..* [Branch]
+[Branch] 1..1 - 0..* [Account]
+[Branch] 1..1 - 0..* [Loan]
+[Customer] 1..1 - 0..* [Account]
+[Customer] 1..1 - 0..* [Loan]</uml-answer>
+    <uml-marking entity-name="0.2" entity-attributes="0.1" entity-key="0.2" extra-entity-penalty="0.25" weak_entity="0.5" relationship="0.5" cardinality="0.25" extra-relationship-penalty="0.25"></uml-marking>
+</pl-uml-element>
+
+
+
