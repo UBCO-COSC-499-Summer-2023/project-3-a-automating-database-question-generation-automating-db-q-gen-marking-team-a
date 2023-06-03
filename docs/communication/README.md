@@ -13,4 +13,5 @@
 | 2023/05/25    | Team A    | Team Meeting | Resource Review | None|
 | 2023/05/31    | Team A    | Team Meeting | Docker troubleshooting | None |
 | 2023/05/31    | Team A & Scott   | Team Meeting | Charter and Scope Review | None |
-| 2023/05/31    | Matthew O. & Dr. Lawrence   | Email | Meeting Confirmation and Question | [Here](../communication/emails/Friday-12_00-Noon-Meeting-Confirmation.pdf) |
+| 2023/05/31    | Matthew O. & Dr. Lawrence   | Email | Meeting Confirmation, Question, and  Requirements confirmation | [Here](../communication/emails/Friday-12_00-Noon-Meeting-Confirmation.pdf) |
+| 2023/06/01    | Matthew O. & Dr. Lawrence   | Email | Additional Resources | [Here](../communication/emails/Resources-for-499-Project.pdf) |
