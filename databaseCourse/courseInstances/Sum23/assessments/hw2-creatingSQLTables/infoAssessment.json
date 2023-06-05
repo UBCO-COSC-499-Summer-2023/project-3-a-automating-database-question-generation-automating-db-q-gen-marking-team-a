@@ -1,0 +1,19 @@
+{
+    "uuid": "def0bcd1-7855-45c7-9ec6-69ef9ab62765",
+    "type": "Homework",
+    "title": "Homework For Creating SQL Tables",
+    "set": "Homework",
+    "number": "2",
+    "allowAccess": [
+        {
+            "credit": 100
+        }
+    ],
+    "zones": [
+        {
+            "questions": [
+                {"id": "Autoshop",                "points": 10}
+            ]
+        }
+    ]
+}

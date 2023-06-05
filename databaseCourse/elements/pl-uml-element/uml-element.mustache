@@ -1,0 +1,163 @@
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
+ <div id="manageNav">
+    <div id="leftElements">
+      <div id="actionButtons">
+        <button type="button" id="helpBtn" class="myBtn" title="Help"><span class="largeScreenTxt"></span><i
+            class="fas fa-info-circle fa-1.2x"></i></button>
+        <button type="button" id="continueBtn" class="myBtn" title="Edit answer"><span class="largeScreenTxt"></span><i
+            class="fas fa-edit"></i></button>
+        <button type="button" id="displayBtn" class="myBtn" title="UML To Text"><span class="largeScreenTxt"></span><i class="fa-solid fa-code"></i> </button>
+      </div>
+      <div id="infoTextHolder">
+        <span id="markDisplay" title="Show mark details"></span>
+        <div id="studentInfo">
+          <span id="studentAnswerID"></span>
+          <span id="studentDateTime"></span>
+          <span id="studentIPAddress"></span>
+        </div>
+        <span id="attemptsLeft" title="Attempts Left"></span>
+        <span id="regressionPenalty" title="Regression Penalty"></span>
+      </div>
+    </div>
+
+    <span class="manage-large-screen">
+      <button type="button" id="manageRelBtn" class="managerBtn">Manage Relationships</button>
+      <button type="button" id="manageEntBtn" class="managerBtn">Manage Entities</button>
+    </span>
+  </div>
+
+  <div id="mainContainer" class="full-height">
+    <div id="pageQuestion">
+      <ul id="question"></ul>
+    </div>
+
+    <div id="pageDiagram">
+      <div id="diagramWrapper">
+        <p id="diagramMessage"></p>
+        <div id="diagram">
+        </div>
+      </div>
+    </div>
+
+    <div class="manage-small-screen">
+      <button type="button" id="manageSmRelBtn" class="managerBtn">Manage Relationships</button>
+      <button type="button" id="manageSmEntBtn" class="managerBtn">Manage Entities</button>
+    </div>
+
+    <div id="managerScrollable">
+      <div id="closeBtnContainer"><a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a></div>
+      <!-- Manage Relationships-->
+      <div id="relContent" class="manageRelationshipsContent"></div>
+      <!-- Manage Entities-->
+      <div id="entContent" class="manageEntitiesContent"></div>
+    </div>
+  </div>
+
+  <!-- The Add Modal -->
+  <div id="addModal" class="modal">
+    <!-- Add Modal content -->
+    <div class="add-modal-content">
+      <div class="closeContainer"><span class="close">&times;</span></div>
+      <div id="addModalContent"></div>
+      <button type="button" id="addRelBtn" class="myBtn">Add</button>
+    </div>
+  </div>
+
+  <!-- The Edit Modal -->
+  <div id="editModal" class="modal">
+    <!-- Add Modal content -->
+    <div class="edit-modal-content">
+      <div class="closeContainer"><span class="close">&times;</span></div>
+      <div id="editModalContent"></div>
+      <button type="button" id="editRelBtn" class="myBtn">Save</button>
+    </div>
+  </div>
+
+  <!-- The Attribute Modal -->
+  <div id="attributeModal" class="modal">
+
+    <!-- Add Modal content -->
+    <div class="attribute-modal-content">
+      <div id="attributeInfo" style="display: none;"></div>
+      <span class="close">&times;</span>
+      <p><input type="radio" id="noKey" name="key" value="noKey">
+        <label for="noKey">Not a Key</label>
+      </p>
+      <p><input type="radio" id="PK" name="key" value="PK">
+        <label for="PK">Primary key</label>
+      </p>
+      <p><input type="radio" id="PPK" name="key" value="PPK">
+        <label for="PPK">Partial Primary Key</label>
+      </p>
+      <p style="display: none;"><input type="radio" id="AK" name="key" value="PPK">
+        <label for="AK">Alternate Key</label>
+      </p>
+      <button type="button" id="addAttBtn" class="myBtn">Save</button>
+    </div>
+
+  </div>
+
+  <!-- The Mark Details Modal -->
+  <div id="markDetailsModal" class="modal">
+
+    <!-- Feedback Modal content -->
+    <div class="markDetails-modal-content">
+      <span class="close">&times;</span>
+      <div id="markDetailsModalContent">
+        <div class="modalTitle">
+          <h2 class="largeScreenTxt">Answer feedback:</h2>
+        </div>
+        <p id="markFeedback"></p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- The Help Modal -->
+  <div id="helpModal" class="modal">
+    <!-- Feedback Modal content -->
+    <div class="help-modal-content">
+      <span class="close">&times;</span>
+      <div id="helpModalContent">
+        <div class="modalTitle">
+          <h2 class="largeScreenTxt">How to create your ER diagram:</h2>
+        </div>
+        <p>1. Click on highlighted text in the question to add entities or attributes.</p>
+        <p>2. View "Manage Entities" and "Manage Relationships" menus to manipulate entities and attributes and
+          add/edit/remove relationships.</p>
+        <p>3. Click "Save & Grade" to see your score and feedback</p>
+        <p>4. If you want to continue editing your answer, click the edit icon to the left of your score.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- The UML String Output Modal -->
+  <div id="umlModal" class="modal">
+    <!-- Feedback Modal content -->
+    <div class="help-modal-content">
+      <span class="close">&times;</span>
+      <div id="helpModalContent">
+        <div class="modalTitle">
+          <h5 class="largeScreenTxt" style="font-weight: bold">UML Diagram To String Representation:</h5>
+        </div>
+        <hr class="solid">
+        <p id=umlText></p>
+        <button type="button" id="copyBtn" class="myBtn" title="Copy To Clipboard"><span class="largeScreenTxt"></span><i class="fa-solid fa-copy"></i> Copy Text </button>
+      </div>
+    </div>
+  </div>
+
+    <div id="hiddenAnswerBox">
+        <textarea  id="textb" name="c" type="text" value="{{submitted_answers.c}}"></textarea>
+    </div>
+
+    </div>
+    <script>
+        let questionData = `{{question_data}}`;
+        let oldAnswer = `{{oldAnswer}}`;
+        //JQuery makes modals draggable
+        $( function() {
+          $( '.modal' ).draggable({});
+        } );
+    </script>

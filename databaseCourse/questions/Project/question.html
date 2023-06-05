@@ -1,0 +1,38 @@
+<pl-uml-element random="False" max-grade = "10">
+    <uml-question>A [Customer](customer) is identified by an auto-increment [id](customerId). Other attributes include [first name](firstName), [last name](lastName), [email](email), [phone number](phoneNum), [street address](address), [city](city), [state](state), [postal code](postalCode), and [country](country).
+        A [Customer](customer) also has a [user id](userId) (unique) and [password](password).
+        A [customer](customer) may have one or more [payment methods](paymentMethod). A [Payment Method](paymentMethod) has an auto-increment [id](paymentMethodId) for a key, a [payment method type](paymentType) (PayPal, Visa, etc.), [payment number](paymentNumber), and [payment expiry date](paymentExpiryDate).
+        An [Order](orderSummary) is placed by one [customer](customer). A [customer](customer) may have multiple [orders](orders). An [Order](orderSummary) has an auto-increment [id](orderId), order [date](orderDate), and [total order amount](totalAmount) (e.g. $55.75). Also store the [shipment address](shipToAddress), [city](shipToCity), [state](shipToState), [country](shipToCountry), and [postal code](shipToPostalCode). Use [OrderSummary](orderSummary) as entity/table name as order is a keyword in SQL.
+        The store sells [products](product). A [Product] has an auto-increment [id](productId), [name](productName), [price](productPrice), [image URL](productImageURL) (string), [image](productImage) (BLOB), and [description](productDesc).
+        A [product](product) has a [category](category). A [category](category) has one or more [products](product). A [Category](category) has an auto-increment [id](categoryId) and [name](categoryName).
+        [Products](product) are [part of](orderProduct) an [order](orderSummary). An [order](orderSummary) may have one or more [products](product). For each [product](product) [in an](orderProduct) [order](orderSummary) track the [quantity](orderProductQuantity) and [price](orderProductPrice).
+        An [order](orderSummary) is shipped with a [shipment](shipment). A [Shipment](shipment) has an auto-increment [id](shipmentId), a [shipment date](shipmentDate), and a [description](shipmentDesc). A [shipment](shipment) contains only one [order](order).
+        A [Warehouse](warehouse) contains [products](product). A [product](product) may be [stored at](productInventory) multiple [warehouses](warehouse)  with different [inventory values](inventoryQuantity). A [shipment](shipment) will be sent from only one [warehouse](warehouse). A [Warehouse](warehouse) has an auto-increment [id](warehouseId) and a [name](warehouseName).
+        For each [customer](customer), track their [shopping cart](inCart) which will contain one or more [products](product)  each with a [quantity](inCartQuantity) and [price](inCartPrice).
+        A [product](product) may have [reviews](review) by [customers](customer). A [Review](review) by a [customer](customer) on a [product](product) has an auto-increment [id](reviewId), [rating](reviewRating) (1 to 5), [comment](reviewComment), and review [date](reviewDate). A [customer](customer) does not have to buy a [product](product) in order to provide a [review](review). A [customer](customer) may [review](review) a [product](product) more than once.</uml-question>
+    <uml-answer>[PaymentMethod| paymentMethodId{PK}; paymentType; paymentNumber; paymentExpiryDate]
+[Customer| customerId{PK}; firstName; lastName; email; phoneNum; address; city; state; postalCode; country; userId; password]
+[OrderSummary| orderId{PK}; orderDate; totalAmount; shipToAddress; shipToCity; shipToState; shipToPostalCode; shipToCountry]
+[Review| reviewId{PK}; reviewRating; reviewComment; reviewDate]
+[InCart| inCartQuantity; inCartPrice]
+[OrderProduct| orderProductQuantity; orderProductPrice]
+[Category| categoryId{PK}; categoryName]
+[Product| productId{PK}; productName; productPrice; productImageURL; productImage; productDesc]
+[Shipment| shipmentId{PK}; shipmentDate; shipmentDesc]
+[ProductInventory| inventoryQuantity]
+[Warehouse| warehouseId{PK}; warehouseName]
+[Customer] 1..1 - 0..* [PaymentMethod]
+[Customer] 1..1 - 0..* [OrderSummary]
+[Customer] 1..1 - 0..* [InCart]
+[Customer] 1..1 - 0..* [Review]
+[OrderSummary] 1..1 - 0..* [OrderProduct]
+[OrderSummary] 1..1 - 1..1 [Shipment]
+[Review] 0..* - 1..1 [Product]
+[InCart] 0..* - 1..1 [Product]
+[OrderProduct] 0..* - 1..1 [Product]
+[Category] 1..1 - 1..* [Product]
+[ProductInventory] 0..* - 1..1 [Product]
+[ProductInventory] 0..* - 1..1 [Warehouse]
+[Shipment] 0..* - 1..1 [Warehouse]</uml-answer>
+    <uml-marking entity-name="0.2" entity-attributes="0.1" entity-key="0.2" extra-entity-penalty="0.25" weak_entity="0.5" relationship="0.5" cardinality="0.25" extra-relationship-penalty="0.25"></uml-marking>
+</pl-uml-element>

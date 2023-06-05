@@ -1,0 +1,26 @@
+<pl-uml-element random="False" max-grade = "10">
+    <uml-question>Design an ER diagram in UML format for a game database given these details:
+      A [publisher](publisher) is identified by [name](name) and [releases](releases) [games](game).
+      A [game](game) may be released by multiple [publishers](publisher), and each [publisher](publisher) gets credit for a [percent](percent) of the game. (e.g. Publisher A 60%, Publisher B 40%).
+      A [game](game) is identified by [id](id) and also has a [name](name). A [game](game) has one [category](category), and a [category](category) may describe multiple [games](game).
+      A [category](category) is identified by an [id](id) and has a [name](name). A [category](category) may also have multiple [subcategories](category).
+      A [player](player) is identified by a [userid](userId) and also has a [name](name) and [age](age). A [player](player) may own multiple [games](game), and a [game](game) may be owned by multiple [players](player).
+      A [session](session) is a particular player playing a game, and the [start time](startTime) is used to identify between sessions of the same game and player combination.
+      During a [session](session), [stats](stats) are recorded. For a particular [session](session), the [name of the stat](statName) identifies it, and a [value](value) is stored for this statistic.</uml-question>
+    <uml-answer>[Publisher| name{PK}]
+[Game| id{PK}; name]
+[Category| id{PK}; name]
+[Session| startTime{PPK}]
+[Player| userId{PK}; name; age]
+[Stats| statName{PPK}; value]
+[Releases| percent]
+[Publisher]1..1 - 0..*[Releases]
+[Game]1..1 - 0..*[Releases]
+[Player]0..* - 0..*[Game]
+[Session]0..* - 0..*[Game]
+[Category]1..1 - 0..*[Game]
+[Category]1..1 - 0..*[Category]
+[Session]0..* - 1..1[Player]
+[Session]1..1 - 0..*[Stats]</uml-answer>
+    <uml-marking entity-name="0.2" entity-attributes="0.1" entity-key="0.2" extra-entity-penalty="0.25" weak_entity="0.5" relationship="0.5" cardinality="0.25" extra-relationship-penalty="0.25"></uml-marking>
+</pl-uml-element>

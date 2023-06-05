@@ -1,0 +1,26 @@
+<pl-uml-element random="False" max-grade = "10">
+    <uml-question>The league will have multiple [teams](team), each with a unique [team name](teamName).
+        For each [game](game) played, there is a [home team](homeTeam), an [away team](awayTeam), [home points](homePoints), [away points](awayPoints), and a [date](gameDate).
+        All [teams](team) play multiple home and away games per season. The teams all have [players](player) that are identified by [team name](name) and [jersey number](number).
+        Also store a player [name](playerName). The [team name](teamName) and [number](number) will be unique for each [player](player), while their [name](playerName) may not be unique.
+        Each player [RunningBack](runningBack) or [Quarterback](quarterback). Each running back has a [type](type) {fullback or halfback}. Each quarterback has a [status](status) {starter, backup}.
+        [Statistics](qbGameStats) are compiled for each [game](game) for each [player](player). The [RunningBack statistics](rbGameStats) will include [carries](carries), [yards](yards), and [fumbles](fumbles).
+        The [quarterback statistics](qbGameStats) include [passes](passes), [yards](yards), and [interceptions](interceptions). In addition, each team is represented by a single [coach](coach).
+        A [coach](coach) can coach only one [team](team). Keep track of each coach [name](coachName) and [salary](salary).</uml-question>
+    <uml-answer>[Coach| coachName{PK}; salary]
+[Team| teamName{PK}]
+[Player| playerName; number{PPK}]
+[Game| gameDate{PPK}; homePoints; awayPoints]
+[RunningBack| type]
+[Quarterback| status]
+[QbGameStats| yards;passes;interceptions]
+[RbGameStats| carries; yards; fumbles]
+[Coach] 1..1 - 1..1 [Team]
+[Player] 1..* - 1..1 [Team]
+[Team] 1..1 - 0..* [Game]
+[Quarterback] 1..1 - 0..* [QbGameStats]
+[Game] 1..1 - 0..* [QbGameStats]
+[Game] 1..1 - 0..* [RbGameStats]
+[RunningBack] 1..1 - 0..* [RbGameStats]</uml-answer>
+    <uml-marking entity-name="0.2" entity-attributes="0.1" entity-key="0.2" extra-entity-penalty="0.25" weak_entity="0.5" relationship="0.5" cardinality="0.25" extra-relationship-penalty="0.25"></uml-marking>
+</pl-uml-element>
