@@ -12,7 +12,7 @@
     "zones": [
         {
             "questions": [
-                {"id": "UML_Questions/Autoshop",                "points": 10}
+                {"id": "DDL_Questions/createTables",                "points": 10}
             ]
         }
     ]

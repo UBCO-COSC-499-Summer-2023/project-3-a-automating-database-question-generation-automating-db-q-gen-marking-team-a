@@ -1,0 +1,11 @@
+{
+    "controller": "pl-ddl-element.py",
+    "dependencies": {
+        "elementScripts": [
+            
+        ],
+        "elementStyles": [
+            "pl-ddl-element.css"
+        ]
+    }
+}
