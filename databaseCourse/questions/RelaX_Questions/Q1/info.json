@@ -4,9 +4,8 @@
     "topic": "Databases",
     "tags": [
         "rlawrence",
-         "Demo",
-         "RelaX"
+        "Demo",
+        "RelaX"
     ],
-    "clientFiles": ["client.js", "question.html", "answer.html", "submission.html"],
     "type": "v3"
 }
