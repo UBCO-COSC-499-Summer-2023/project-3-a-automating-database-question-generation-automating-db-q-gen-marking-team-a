@@ -1,0 +1,10 @@
+{
+    "controller": "pl-relax-element.py",
+    "dependencies": {
+        "elementScripts": [
+            "renderer.js", "relalg_bundle.js"
+        ],
+        "elementStyles": [
+        ]
+    }
+}
