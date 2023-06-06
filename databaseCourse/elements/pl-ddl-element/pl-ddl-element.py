@@ -13,9 +13,10 @@ def render(element_html, data):
         }
         with open('ddl-element.mustache', 'r', encoding='utf-8') as f:
             html = chevron.render(f, html_params).strip()
-    """    
-    print(element)
+    """
     
-    html = chevron.render('Hello, {{ mustache }}!', {'mustache': 'World'})
+    z = pl.inner_html(element[0])
+    
+    html = chevron.render('{{ mustache }}!', {'mustache': z})
     
     return html
