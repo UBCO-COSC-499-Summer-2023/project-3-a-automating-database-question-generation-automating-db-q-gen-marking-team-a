@@ -16,7 +16,11 @@ def render(element_html, data):
     """
     
     z = pl.inner_html(element[0])
+    html_params = {
+        'questionText' : z
+    }
     
-    html = chevron.render('{{ mustache }}!', {'mustache': z})
+    with open('pl-ddl-element.mustache', 'r') as f:
+        html = chevron.render(f, html_params)
     
     return html
