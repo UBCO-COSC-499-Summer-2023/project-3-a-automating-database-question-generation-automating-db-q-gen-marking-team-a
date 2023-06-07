@@ -12,7 +12,8 @@
     "zones": [
         {
             "questions": [
-                {"id": "DDL_Questions/createTables",                "points": 10}
+                {"id": "DDL_Questions/createTables/1",                "points": 10},
+                {"id": "DDL_Questions/createTables/2",                "points": 10}
             ]
         }
     ]
