@@ -2,10 +2,10 @@
     "controller": "pl-ddl-element.py",
     "dependencies": {
         "elementScripts": [
-            "renderer.js"
+            "renderer.js", "codemirror.js"
         ],
         "elementStyles": [
-            "pl-ddl-element.css"
+            "pl-ddl-element.css", "demo.css", "codemirror.css"
         ]
     }
 }
