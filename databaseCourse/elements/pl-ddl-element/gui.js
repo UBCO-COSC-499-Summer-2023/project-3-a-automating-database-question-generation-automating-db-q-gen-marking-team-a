@@ -1,6 +1,7 @@
 $(document).ready(function () {
 
 
+
 var execBtn = document.getElementById("execute");
 var outputElm = document.getElementById('output');
 var errorElm = document.getElementById('error');
@@ -12,7 +13,8 @@ console.log("test pre");
 
 
 // Start the worker in which sql.js will run
-var worker = new Worker("dist/worker.sql-wasm.js");
+//var worker = new Worker("**/worker.sql-wasm.js");
+var worker = new Worker("http://localhost:3000/pl/course_instance/1/instructor/elements/pl-ddl-element/dist/worker.sql-wasm.js");
 console.log("test post");
 worker.onerror = error;
 
