@@ -1,11 +1,15 @@
-const relalg_bundle = require("./relalg_bundle");
+$(document).ready(function () {
+    //QUESTION SETUP
+    // var relaxInput = document.getElementById("relax_input")
+    // console.log(relaxInput)
+    //const relalg_bundle = require("relalg_bundle.js");
 
-const executeRelalg = relalg_bundle.executeRelalg;
-const Relation = relalg_bundle.Relation;
+    const executeRelalg = relalg_bundle.executeRelalg;
+    const Relation = relalg_bundle.Relation;
 
 //console.log();
 
-const S = executeRelalg(`{
+    const S = executeRelalg(`{
 		S.b, S.d
 		a,   100
 		b,   300
@@ -14,6 +18,9 @@ const S = executeRelalg(`{
 		e,   150
 	}`, {});
 
-const Q = executeRelalg(`pi b,d (S)`, {"S": S});
+    const Q = executeRelalg(`π b,d (S)`, {"S": S});
+    console.log("nerd");
+    console.log(Q.getResult());
 
-console.log(Q.getResult());
+    
+});
