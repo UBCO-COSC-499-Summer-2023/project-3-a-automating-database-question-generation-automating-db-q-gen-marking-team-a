@@ -13,8 +13,8 @@ h1 {
 }
 
 .button {
-	color: #333333;
-	background: linear-gradient(#eee, #ddd);
+	color: white;
+	background-color: #007bff;
 	border: 1px solid #222;
 	border-radius: 3px;
 	padding: 7px;
@@ -36,6 +36,7 @@ h1 {
 	margin-top: 5px;;
 	width: 10%;
 	min-width:100px;
+	text-align: center;
 }
 
 .CodeMirror {

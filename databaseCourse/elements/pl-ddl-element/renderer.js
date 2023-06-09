@@ -6,38 +6,38 @@ $(document).ready(function () {
         }
     }
 
-    var execBtn = $("#execute");
-    console.log(execBtn);
-    execBtn.on("click", execute);
-
     var db;
-
-    var outputElm = $("#output");
-
+    // Initialize the db with sql.js
     initSqlJs(config).then(function (SQL) {
         console.log("sql.js initialized 🎉");
 
         db = new SQL.Database();
 
-        let input = $("#commands").val();
-
-        let results = db.exec(input);
-        console.log(results)
-
-        outputElm.append(createTable(results));
-
     });
 
-    function execute(){
+    var execBtn = $("#execute");
+    execBtn.on("click", executeEditorContents);
+
+    var commandsElm = $("#commands");
+
+    var outputElm = $("#output");
+
+    //var input = $("#commands");
+
+    function execute(sqlCode){
 
         outputElm.contents().remove();
 
-        let input = $("#commands").val();
-
-        let results = db.exec(input);
+        let results = db.exec(sqlCode);
         console.log(results)
 
         outputElm.append(createTable(results));
+
+    }
+
+    function executeEditorContents() {
+
+        execute(editor.getValue());
 
     }
 
@@ -77,5 +77,18 @@ $(document).ready(function () {
         return rowElements;
     }
 
+    // Add syntax highlighting to the textarea
+    var editor = CodeMirror.fromTextArea(commandsElm[0], {
+        mode: 'text/x-mysql',
+        viewportMargin: Infinity,
+        indentWithTabs: true,
+        smartIndent: true,
+        lineNumbers: true,
+        matchBrackets: true,
+        autofocus: true,
+        extraKeys: {
+            "Ctrl-Enter": executeEditorContents,
+        }
+    });
 
 });
