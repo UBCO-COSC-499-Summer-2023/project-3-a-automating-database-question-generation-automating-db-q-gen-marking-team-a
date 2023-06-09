@@ -13,8 +13,12 @@ console.log("test pre");
 
 
 // Start the worker in which sql.js will run
-//var worker = new Worker("**/worker.sql-wasm.js");
-var worker = new Worker("http://localhost:3000/pl/course_instance/1/instructor/elements/pl-ddl-element/dist/worker.sql-wasm.js");
+
+// http://localhost:3000/pl/course_instance/1/instructor/elements/pl-ddl-element/dist/worker.sql-wasm.js
+// http://localhost:3000/pl/course_instance/1/instructor/elements/pl-ddl-element/dist/worker.sql-wasm.js
+
+
+var worker = new Worker("../../elements/pl-ddl-element/dist/worker.sql-wasm.js");
 console.log("test post");
 worker.onerror = error;
 
