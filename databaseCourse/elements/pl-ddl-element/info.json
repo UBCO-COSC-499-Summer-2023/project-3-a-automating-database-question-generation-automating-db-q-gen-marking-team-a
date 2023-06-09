@@ -2,7 +2,7 @@
     "controller": "pl-ddl-element.py",
     "dependencies": {
         "elementScripts": [
-            "renderer.js", "codemirror.js", "gui.js", "dist/worker.sql-wasm.js"
+            "renderer.js", "codemirror.js", "sql.js"
         ],
         "elementStyles": [
             "pl-ddl-element.css", "demo.css", "codemirror.css"

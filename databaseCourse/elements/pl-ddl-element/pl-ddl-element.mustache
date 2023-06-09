@@ -9,10 +9,14 @@
   
     <textarea class="CodeMirror" id="commands">DROP TABLE IF EXISTS employees;
 CREATE TABLE employees(     
-    id          integer,  name    text,
-    designation text,     manager integer,
-    hired_on    date,     salary  integer,
-    commission  float,    dept    integer
+    id          integer,  
+    name    text,
+    designation text,     
+    manager integer,
+    hired_on    date,     
+    salary  integer,
+    commission  float,
+    dept    integer
     );
   
 INSERT INTO employees VALUES (1,'JOHNSON','ADMIN',6,'1990-12-17',18000,NULL,4);
@@ -30,13 +34,10 @@ INSERT INTO employees VALUES (12,'WASHINGTON','ADMIN',6,'1998-04-16',18000,NULL,
 INSERT INTO employees VALUES (13,'MONROE','ENGINEER',10,'2000-12-03',30000,NULL,2);
 INSERT INTO employees VALUES (14,'ROOSEVELT','CPA',9,'1995-10-12',35000,NULL,1);
   
-SELECT designation,COUNT(*) AS nbr, (AVG(salary)) AS avg_salary FROM employees GROUP BY designation ORDER BY avg_salary DESC;
-SELECT name,hired_on FROM employees ORDER BY hired_on;</textarea>
+SELECT * FROM employees;</textarea>
   
-      <button id="execute" class="button">Execute</button>
-      <button id='savedb' class="button">Save the db</button>
-      <label class="button">Load an SQLite database file: <input type='file' id='dbfile'></label>
-
+      <div id="execute" class="button">Execute</div>
+      
       <div id="error" class="error"></div>
   
       <pre id="output">Results will be displayed here</pre>
