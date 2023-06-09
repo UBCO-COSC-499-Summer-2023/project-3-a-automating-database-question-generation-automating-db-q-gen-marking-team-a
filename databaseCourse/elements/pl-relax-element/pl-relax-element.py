@@ -11,10 +11,13 @@ import prairielearn as pl
 
 def render(element_html, data):
     element = lxml.html.fragment_fromstring(element_html)
-    
-    z = pl.inner_html(element)
+
+    questionText = pl.inner_html(element[0])
+    relaxFile = pl.inner_html(element[1])
+
     html_params = {
-        'questionText' : z
+        'questionText' : questionText,
+        'relaxFile' : relaxFile
     }
     with open('pl-relax-element.mustache', 'r') as f:
         html = chevron.render(f, html_params)

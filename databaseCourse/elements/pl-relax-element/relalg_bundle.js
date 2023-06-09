@@ -21,8 +21,6 @@
 
 (function(){
 
-  var relaxInput = document.getElementById("relax_input")
-  console.log(relaxInput)
   var define,module,exports;
   return (function(){
     function r(e,n,t){

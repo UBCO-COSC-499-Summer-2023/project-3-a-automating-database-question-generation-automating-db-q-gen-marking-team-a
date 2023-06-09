@@ -1,107 +1,96 @@
+<!--Begining-->
 <div id="question">
     {{questionText}}
 </div>
+
 <div id="relax_input">
     {{! this is where the relax editor will be placed}}
-    <body data-new-gr-c-s-check-loaded="14.1112.0" data-gr-ext-installed="" style="scroll-behavior: auto;">
-	
-	<div id="root">
-        <div class="view-max">
-            <div class="calculator">
-                <div class="Toastify">
-                </div>
-                <div class="row">
-                <!--div class="groups-container">
-                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" style="width: 100%; text-align: left; text-overflow: ellipsis; overflow: hidden;">
-                            <span>Select DB (UIBK - R, S, T)</span>
-                            <span class="caret" style="display: block; position: absolute; top: 50%; right: 10px;"></span>
-                        </button>
-                        <div>
-                            <div class="table">
-                                <div class="tableColumn"><ul>
-                                    <li>
-                                        <span class="clickable">R</span>
-                                        <ul>
-                                            <li><span class="clickable">a <small class="muted text-muted">number</small></span></li>
-                                            <li><span class="clickable">b <small class="muted text-muted">string</small></span></li>
-                                            <li><span class="clickable">c <small class="muted text-muted">string</small></span></li>
-                                        </ul>
-                                    </li>
-                                    <li>
-                                        <span class="clickable">S</span>
-                                        <ul>
-                                            <li><span class="clickable">b <small class="muted text-muted">string</small></span> </li>
-                                            <li><span class="clickable">d <small class="muted text-muted">number</small></span> </li>
-                                        </ul>
-                                    </li>
-                                    <li>
-                                        <span class="clickable">T</span>
-                                        <ul>
-                                            <li><span class="clickable">b <small class="muted text-muted">string</small></span> </li>
-                                            <li><span class="clickable">d <small class="muted text-muted">number</small></span> </li>
-                                        </ul>
-                                    </li>
-                                </div></ul>
-                            </div>
-                        </div>
-                    </div>
-                </div-->
-                <div class="row">
-                    <div class="d-none d-xs-block d-sm-block d-md-block col-lg-1 col-xl-2">
-                    </div>
-                    <div class="calculator-container"> <div class="tab-content tab-content-border"><div class="tab-pane active"><div><div class="editor-base"><div class="toolbar codemirror-toolbar"><div id="popWrapper_i4m1hevx8hm" class="popover__outside toolbar__popover "><span>π</span></div>
-                    <div id="popWrapper_zk54ccpfgr9" class="popover__outside toolbar__popover "><span>σ</span></div>
-                    <div id="popWrapper_opmskf8udx" class="popover__outside toolbar__popover "><span>ρ</span></div>
-                    <div id="popWrapper_vqmsrbz4lhh" class="popover__outside toolbar__popover "><span>←</span></div>
-                    <div id="popWrapper_r4e8qivo9x" class="popover__outside toolbar__popover "><span>→</span></div>
-                    <div id="popWrapper_rm8nadc63ta" class="popover__outside toolbar__popover "><span>τ</span></div>
-                    <div id="popWrapper_yelfh6roevh" class="popover__outside toolbar__popover "><span>γ</span></div>
-                    <div id="popWrapper_lv4upm1exe" class="popover__outside toolbar__popover "><span>∧</span></div>
-                    <div id="popWrapper_wihrg7pw86c" class="popover__outside toolbar__popover "><span>∨</span></div>
-                    <div id="popWrapper_mx0q4np8lms" class="popover__outside toolbar__popover "><span>¬</span></div>
-                    <div id="popWrapper_iwcqg10p7gn" class="popover__outside toolbar__popover "><span>=</span></div>
-                    <div id="popWrapper_qfox1fuq55" class="popover__outside toolbar__popover "><span>≠</span></div>
-                    <div id="popWrapper_3ixqdjahm8v" class="popover__outside toolbar__popover "><span>≥</span></div>
-                    <div id="popWrapper_tc2rsc59fbq" class="popover__outside toolbar__popover "><span>≤</span></div>
-                    <div id="popWrapper_q8ve1atlpu" class="popover__outside toolbar__popover "><span>∩</span></div>
-                    <div id="popWrapper_o60hh3goasp" class="popover__outside toolbar__popover "><span>∪</span></div>
-                    <div id="popWrapper_ytckmx1p4tk" class="popover__outside toolbar__popover "><span>÷</span></div>
-                    <div id="popWrapper_2131akj8rbn" class="popover__outside toolbar__popover "><span>-</span></div>
-                    <div id="popWrapper_bcy1hzhtzbq" class="popover__outside toolbar__popover "><span>⨯</span></div>
-                    <div id="popWrapper_jgzn81np8i" class="popover__outside toolbar__popover "><span>⨝</span></div>
-                    <div id="popWrapper_99cz04sajcd" class="popover__outside toolbar__popover "><span>⟕</span></div>
-                    <div id="popWrapper_wrwiiwklzc" class="popover__outside toolbar__popover "><span>⟖</span></div>
-                    <div id="popWrapper_xzmnvtls6zk" class="popover__outside toolbar__popover "><span>⟗</span></div>
-                    <div id="popWrapper_7lmq0e5lt2k" class="popover__outside toolbar__popover "><span>⋉</span></div>
-                    <div id="popWrapper_h8t7el4tebi" class="popover__outside toolbar__popover "><span>⋊</span></div>
-                    <div id="popWrapper_ntphproh2gh" class="popover__outside toolbar__popover "><span>▷</span></div>
-                    <div id="popWrapper_aq5dkivxzhk" class="popover__outside toolbar__popover "><span>=</span></div>
-                    <div id="popWrapper_r2u4dj6ind" class="popover__outside toolbar__popover "><span>--</span></div>
-                    <div id="popWrapper_2znla6h967q" class="popover__outside toolbar__popover "><span>/*</span></div>
-                    <div id="popWrapper_2aod06t35hu" class="popover__outside toolbar__popover "><span>{}</span></div>
-                    <div id="popWrapper_g8gvtscmrhe" class="popover__outside toolbar__popover "><span><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="table" class="svg-inline--fa fa-table " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M464 32H48C21.49 32 0 53.49 0 80v352c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V80c0-26.51-21.49-48-48-48zM224 416H64v-96h160v96zm0-160H64v-96h160v96zm224 160H288v-96h160v96zm0-160H288v-96h160v96z"></path></svg></span></div>
-<div id="popWrapper_ieljbcakzad" class="popover__outside toolbar__popover "><span><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="calendar-alt" class="svg-inline--fa fa-calendar-alt " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M0 464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V192H0v272zm320-196c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zm0 128c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zM192 268c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zm0 128c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zM64 268c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H76c-6.6 0-12-5.4-12-12v-40zm0 128c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H76c-6.6 0-12-5.4-12-12v-40zM400 64h-48V16c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v48H160V16c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v48H48C21.5 64 0 85.5 0 112v48h448v-48c0-26.5-21.5-48-48-48z"></path></svg></span></div>
-<div id="popWrapper_7wdp1lrcagy" class="popover__outside toolbar__popover showOnSM"><span><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="paste" class="svg-inline--fa fa-paste editorButtonOnSM" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M128 184c0-30.879 25.122-56 56-56h136V56c0-13.255-10.745-24-24-24h-80.61C204.306 12.89 183.637 0 160 0s-44.306 12.89-55.39 32H24C10.745 32 0 42.745 0 56v336c0 13.255 10.745 24 24 24h104V184zm32-144c13.255 0 24 10.745 24 24s-10.745 24-24 24-24-10.745-24-24 10.745-24 24-24zm184 248h104v200c0 13.255-10.745 24-24 24H184c-13.255 0-24-10.745-24-24V184c0-13.255 10.745-24 24-24h136v104c0 13.2 10.8 24 24 24zm104-38.059V256h-96v-96h6.059a24 24 0 0 1 16.97 7.029l65.941 65.941a24.002 24.002 0 0 1 7.03 16.971z"></path></svg></span></div>
-<div id="popWrapper_xxptvm6tb1f" class="popover__outside toolbar__popover__dropdown dropdownToolbarButton"><div class="dropdown"><button type="button" aria-haspopup="true" aria-expanded="false" class="btn btn-"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="magic" class="svg-inline--fa fa-magic editorButtonOnSM" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M224 96l16-32 32-16-32-16-16-32-16 32-32 16 32 16 16 32zM80 160l26.66-53.33L160 80l-53.34-26.67L80 0 53.34 53.33 0 80l53.34 26.67L80 160zm352 128l-26.66 53.33L352 368l53.34 26.67L432 448l26.66-53.33L512 368l-53.34-26.67L432 288zm70.62-193.77L417.77 9.38C411.53 3.12 403.34 0 395.15 0c-8.19 0-16.38 3.12-22.63 9.38L9.38 372.52c-12.5 12.5-12.5 32.76 0 45.25l84.85 84.85c6.25 6.25 14.44 9.37 22.62 9.37 8.19 0 16.38-3.12 22.63-9.37l363.14-363.15c12.5-12.48 12.5-32.75 0-45.24zM359.45 203.46l-50.91-50.91 86.6-86.6 50.91 50.91-86.6 86.6z"></path></svg></button><div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu"><h6 tabindex="-1" class="dropdown-header"><span>automatically replace operators</span></h6><div tabindex="-1" class="dropdown-divider"></div><button type="button" tabindex="0" role="menuitem" class="dropdown-item active"><span>no replacement</span></button><button type="button" tabindex="0" role="menuitem" class="dropdown-item"><span>pi =&gt; π</span></button><button type="button" tabindex="0" role="menuitem" class="dropdown-item"><span>π =&gt; pi</span></button></div></div></div></div><textarea style="display: none;"></textarea><div class="CodeMirror cm-s-eclipse CodeMirror-wrap CodeMirror-empty" translate="no"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 5px; left: 51px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; min-height: 1em; outline: none;"></textarea></div><div class="CodeMirror-vscrollbar" tabindex="-1" cm-not-content="true"><div style="min-width: 1px; height: 0px;"></div></div><div class="CodeMirror-hscrollbar" tabindex="-1" cm-not-content="true"><div style="height: 100%; min-height: 1px; width: 0px;"></div></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 46px; margin-bottom: -15px; border-right-width: 35px; min-height: 32px; padding-right: 0px; padding-bottom: 0px;">
-<div style="position: relative; top: 0px;">
-    <div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;">
-        <pre class="CodeMirror-placeholder CodeMirror-line-like" style="height: 0px; overflow: visible; direction: ltr;">your query goes here ...
-
-keyboard shortcuts:
-	execute statement:    [CTRL]+[RETURN]
-	execute selection:    [CTRL]+[SHIFT]+[RETURN]
-	autocomplete:         [CTRL]+[SPACE]
-</pre><div class="CodeMirror-measure"><span><span>&ZeroWidthSpace;</span>x</span></div>
-<div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-cursors"><div class="CodeMirror-cursor" style="left: 4px; top: 0px; height: 24px;">&nbsp;</div></div><div class="CodeMirror-code" role="presentation"><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" aria-hidden="true" style="left: -46px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 16px; width: 21px;">1</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="">&ZeroWidthSpace;</span></span></pre></div></div></div></div></div></div><div style="position: absolute; height: 35px; width: 1px; border-bottom: 0px solid transparent; top: 32px;"></div><div class="CodeMirror-gutters" style="height: 67px;"><div class="CodeMirror-gutter CodeMirror-lint-markers"></div><div class="CodeMirror-gutter CodeMirror-table-edit-markers"></div><div class="CodeMirror-gutter CodeMirror-linenumbers" style="width: 29px;"></div></div></div></div><div class="exec-errors"></div><div class="input-buttons"><button type="button" class="btn btn-primary exec-button selection"><span class="glyphicon glyphicon-play"></span> <span class="query"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="play" class="svg-inline--fa fa-play " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M424.4 214.7L72.4 6.6C43.8-10.3 0 6.1 0 47.9V464c0 37.5 40.7 60.1 72.4 41.3l352-208c31.4-18.5 31.5-64.1 0-82.6z"></path></svg> 
-<span>execute query</span></span><span class="selection"><span>execute selection</span></span></button> </div><div class="exec-result"></div></div></div></div><div class="tab-pane"><div><div class="editor-base"><div class="toolbar codemirror-toolbar"><div id="popWrapper_a97xl6yc3p" class="popover__outside toolbar__popover "><span>select</span></div>
-<div id="popWrapper_lrvkchbi288" class="popover__outside toolbar__popover "><span>from</span></div>
-<div id="popWrapper_boosu0mdldi" class="popover__outside toolbar__popover "><span>where</span></div>
-<div id="popWrapper_jf50ekdnt5n" class="popover__outside toolbar__popover "><span>group</span></div>
-<div id="popWrapper_afpnpdne4o" class="popover__outside toolbar__popover "><span>having</span></div>
-<div id="popWrapper_ob0oq42yze" class="popover__outside toolbar__popover "><span>order</span></div>
-<div id="popWrapper_lv68bxhu8on" class="popover__outside toolbar__popover "><span>limit</span></div>
-<div id="popWrapper_ellq5hkm06g" class="popover__outside toolbar__popover "><span><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt showOnSM" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z"></path></svg></span></div><div id="popWrapper_h9p4npmonat" class="popover__outside toolbar__popover "><span><i class="fa fa-calendar"></i></span></div></div><textarea style="display: none;"></textarea><div class="CodeMirror cm-s-eclipse CodeMirror-wrap CodeMirror-empty" translate="no"><div style="overflow: hidden; position: relative; width: 3px; height: 0px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; min-height: 1em; outline: none;"></textarea></div><div class="CodeMirror-vscrollbar" tabindex="-1" cm-not-content="true"><div style="min-width: 1px;"></div></div><div class="CodeMirror-hscrollbar" tabindex="-1" cm-not-content="true"><div style="height: 100%; min-height: 1px;"></div></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px;"><div style="position: relative;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><pre class="CodeMirror-placeholder CodeMirror-line-like" style="height: 0px; overflow: visible; direction: ltr;">your query goes here ...
+    <div class="editor-base">
+        <div class="toolbar codemirror-toolbar">
+        <div id="popWrapper_i4m1hevx8hm" class="popover__outside toolbar__popover "><span>π</span></div>
+        <div id="popWrapper_zk54ccpfgr9" class="popover__outside toolbar__popover "><span>σ</span></div>
+        <div id="popWrapper_opmskf8udx" class="popover__outside toolbar__popover "><span>ρ</span></div>
+        <div id="popWrapper_vqmsrbz4lhh" class="popover__outside toolbar__popover "><span>←</span></div>
+        <div id="popWrapper_r4e8qivo9x" class="popover__outside toolbar__popover "><span>→</span></div>
+        <div id="popWrapper_rm8nadc63ta" class="popover__outside toolbar__popover "><span>τ</span></div>
+        <div id="popWrapper_yelfh6roevh" class="popover__outside toolbar__popover "><span>γ</span></div>
+        <div id="popWrapper_lv4upm1exe" class="popover__outside toolbar__popover "><span>∧</span></div>
+        <div id="popWrapper_wihrg7pw86c" class="popover__outside toolbar__popover "><span>∨</span></div>
+        <div id="popWrapper_mx0q4np8lms" class="popover__outside toolbar__popover "><span>¬</span></div>
+        <div id="popWrapper_iwcqg10p7gn" class="popover__outside toolbar__popover "><span>=</span></div>
+        <div id="popWrapper_qfox1fuq55" class="popover__outside toolbar__popover "><span>≠</span></div>
+        <div id="popWrapper_3ixqdjahm8v" class="popover__outside toolbar__popover "><span>≥</span></div>
+        <div id="popWrapper_tc2rsc59fbq" class="popover__outside toolbar__popover "><span>≤</span></div>
+        <div id="popWrapper_q8ve1atlpu" class="popover__outside toolbar__popover "><span>∩</span></div>
+        <div id="popWrapper_o60hh3goasp" class="popover__outside toolbar__popover "><span>∪</span></div>
+        <div id="popWrapper_ytckmx1p4tk" class="popover__outside toolbar__popover "><span>÷</span></div>
+        <div id="popWrapper_2131akj8rbn" class="popover__outside toolbar__popover "><span>-</span></div>
+        <div id="popWrapper_bcy1hzhtzbq" class="popover__outside toolbar__popover "><span>⨯</span></div>
+        <div id="popWrapper_jgzn81np8i" class="popover__outside toolbar__popover "><span>⨝</span></div>
+        <div id="popWrapper_99cz04sajcd" class="popover__outside toolbar__popover "><span>⟕</span></div>
+        <div id="popWrapper_wrwiiwklzc" class="popover__outside toolbar__popover "><span>⟖</span></div>
+        <div id="popWrapper_xzmnvtls6zk" class="popover__outside toolbar__popover "><span>⟗</span></div>
+        <div id="popWrapper_7lmq0e5lt2k" class="popover__outside toolbar__popover "><span>⋉</span></div>
+        <div id="popWrapper_h8t7el4tebi" class="popover__outside toolbar__popover "><span>⋊</span></div>
+        <div id="popWrapper_ntphproh2gh" class="popover__outside toolbar__popover "><span>▷</span></div>
+        <div id="popWrapper_aq5dkivxzhk" class="popover__outside toolbar__popover "><span>=</span></div>
+        <div id="popWrapper_r2u4dj6ind" class="popover__outside toolbar__popover "><span>--</span></div>
+        <div id="popWrapper_2znla6h967q" class="popover__outside toolbar__popover "><span>/*</span></div>
+        <div id="popWrapper_2aod06t35hu" class="popover__outside toolbar__popover "><span>{}</span></div>
+        <div id="popWrapper_g8gvtscmrhe" class="popover__outside toolbar__popover ">
+            <span>
+                <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="table" class="svg-inline--fa fa-table " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor" d="M464 32H48C21.49 32 0 53.49 0 80v352c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V80c0-26.51-21.49-48-48-48zM224 416H64v-96h160v96zm0-160H64v-96h160v96zm224 160H288v-96h160v96zm0-160H288v-96h160v96z"></path>
+                </svg>
+            </span>
+        </div>
+        <div id="popWrapper_ieljbcakzad" class="popover__outside toolbar__popover ">
+            <span>
+                <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="calendar-alt" class="svg-inline--fa fa-calendar-alt " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                    <path fill="currentColor" d="M0 464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V192H0v272zm320-196c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zm0 128c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zM192 268c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zm0 128c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zM64 268c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H76c-6.6 0-12-5.4-12-12v-40zm0 128c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H76c-6.6 0-12-5.4-12-12v-40zM400 64h-48V16c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v48H160V16c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v48H48C21.5 64 0 85.5 0 112v48h448v-48c0-26.5-21.5-48-48-48z">
+                    </path>
+                </svg>
+            </span>
+        </div>
+        <div id="popWrapper_7wdp1lrcagy" class="popover__outside toolbar__popover showOnSM">
+            <span>
+                <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="paste" class="svg-inline--fa fa-paste editorButtonOnSM" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                    <path fill="currentColor" d="M128 184c0-30.879 25.122-56 56-56h136V56c0-13.255-10.745-24-24-24h-80.61C204.306 12.89 183.637 0 160 0s-44.306 12.89-55.39 32H24C10.745 32 0 42.745 0 56v336c0 13.255 10.745 24 24 24h104V184zm32-144c13.255 0 24 10.745 24 24s-10.745 24-24 24-24-10.745-24-24 10.745-24 24-24zm184 248h104v200c0 13.255-10.745 24-24 24H184c-13.255 0-24-10.745-24-24V184c0-13.255 10.745-24 24-24h136v104c0 13.2 10.8 24 24 24zm104-38.059V256h-96v-96h6.059a24 24 0 0 1 16.97 7.029l65.941 65.941a24.002 24.002 0 0 1 7.03 16.971z"></path>
+                </svg>
+            </span>
+        </div>
+        <div id="popWrapper_xxptvm6tb1f" class="popover__outside toolbar__popover__dropdown dropdownToolbarButton">
+            <div class="dropdown">
+                <button type="button" aria-haspopup="true" aria-expanded="false" class="btn btn-">
+                    <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="magic" class="svg-inline--fa fa-magic editorButtonOnSM" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor" d="M224 96l16-32 32-16-32-16-16-32-16 32-32 16 32 16 16 32zM80 160l26.66-53.33L160 80l-53.34-26.67L80 0 53.34 53.33 0 80l53.34 26.67L80 160zm352 128l-26.66 53.33L352 368l53.34 26.67L432 448l26.66-53.33L512 368l-53.34-26.67L432 288zm70.62-193.77L417.77 9.38C411.53 3.12 403.34 0 395.15 0c-8.19 0-16.38 3.12-22.63 9.38L9.38 372.52c-12.5 12.5-12.5 32.76 0 45.25l84.85 84.85c6.25 6.25 14.44 9.37 22.62 9.37 8.19 0 16.38-3.12 22.63-9.37l363.14-363.15c12.5-12.48 12.5-32.75 0-45.24zM359.45 203.46l-50.91-50.91 86.6-86.6 50.91 50.91-86.6 86.6z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu">
+            <h6 tabindex="-1" class="dropdown-header">
+                <span>automatically replace operators</span>
+            </h6>
+            <div tabindex="-1" class="dropdown-divider"></div>
+            <button type="button" tabindex="0" role="menuitem" class="dropdown-item active">
+                <span>no replacement</span>
+            </button>
+            <button type="button" tabindex="0" role="menuitem" class="dropdown-item">
+                <span>pi =&gt; π</span>
+            </button>
+            <button type="button" tabindex="0" role="menuitem" class="dropdown-item">
+                <span>π =&gt; pi</span>
+            </button>
+        </div>
+    </div>
+    <textarea style="display: none;"></textarea>
+    <div class="CodeMirror cm-s-eclipse CodeMirror-wrap CodeMirror-empty" translate="no">
+        <textarea id="RelaX-editor" style="width:100%" rows="10"></textarea>
+        
+    </div>
+</div>  
 <!--script type="text/javascript" src="relalg_bundle.js"></script-->
 
-</body>
-</div>
+
+<!-- End of File -->

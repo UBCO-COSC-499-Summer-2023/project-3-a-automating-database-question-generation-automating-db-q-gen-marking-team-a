@@ -1,13 +1,21 @@
 $(document).ready(function () {
     //QUESTION SETUP
-    // var relaxInput = document.getElementById("relax_input")
+    var relaxInput = document.getElementById("relax_input")
     // console.log(relaxInput)
-    //const relalg_bundle = require("relalg_bundle.js");
+    document.getElementById("popWrapper_i4m1hevx8hm").onclick = function() {
+        document.getElementById("RelaX-editor").innerHTML = document.getElementById("RelaX-editor").innerHTML + "π"
+    };
+    function panelPress(str) {
+    }
+    
+
+
+
 
     const executeRelalg = relalg_bundle.executeRelalg;
     const Relation = relalg_bundle.Relation;
 
-//console.log();
+    //console.log();
 
     const S = executeRelalg(`{
 		S.b, S.d
@@ -19,8 +27,6 @@ $(document).ready(function () {
 	}`, {});
 
     const Q = executeRelalg(`π b,d (S)`, {"S": S});
-    console.log("nerd");
-    console.log(Q.getResult());
 
     
 });
