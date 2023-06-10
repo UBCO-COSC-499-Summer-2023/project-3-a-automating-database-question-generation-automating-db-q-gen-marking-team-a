@@ -1,3 +1,5 @@
+// sql.js API docs found here: https://sql.js.org/documentation/Statement.html#%255B%2522getAsObject%2522%255D
+
 $(document).ready(function () {
 
     let config = {
@@ -22,9 +24,25 @@ $(document).ready(function () {
 
     var outputElm = $("#output");
 
-    //var input = $("#commands");
+    // Add syntax highlighting to the textarea
+    // Also transforms the textarea into a CodeMirror editor
+    var editor = CodeMirror.fromTextArea(commandsElm[0], {
+        mode: 'text/x-mysql',
+        viewportMargin: Infinity,
+        indentWithTabs: true,
+        smartIndent: true,
+        lineNumbers: true,
+        matchBrackets: true,
+        autofocus: true,
+        extraKeys: {
+            "Ctrl-Enter": executeEditorContents,
+        }
+    });
 
-    function execute(sqlCode){
+    // Execute the sql code
+    // Create table
+    // TODO: Refactor all code that creates tables using sql.js API
+    function execute(sqlCode) {
 
         outputElm.contents().remove();
 
@@ -35,13 +53,15 @@ $(document).ready(function () {
 
     }
 
+    // Functions that runs when the button is clicked
+    // Executes the sql code
     function executeEditorContents() {
 
         execute(editor.getValue());
 
     }
 
-
+    //Function that creates the table
     function createTable(results) {
         for (var i = 0; i < results.length; i++) {
             console.log(results[i]);
@@ -55,6 +75,9 @@ $(document).ready(function () {
         }
     }
 
+    // Function that creates the table header
+    // Not sure if this is the best way to do this
+    // Needs to be tested
     function createTableHeader(columns) {
         var headerRow = $("<tr></tr>");
         Object.keys(columns).forEach(function (columnName) {
@@ -62,8 +85,12 @@ $(document).ready(function () {
             headerRow.append(th);
         });
         return headerRow;
+
     }
 
+    // Function that creates the table rows for a table
+    // Not sure if this is the best way to do this
+    // Needs to be tested
     function createTableRows(rows) {
         var rowElements = [];
         rows.forEach(function (row) {
@@ -76,19 +103,5 @@ $(document).ready(function () {
         });
         return rowElements;
     }
-
-    // Add syntax highlighting to the textarea
-    var editor = CodeMirror.fromTextArea(commandsElm[0], {
-        mode: 'text/x-mysql',
-        viewportMargin: Infinity,
-        indentWithTabs: true,
-        smartIndent: true,
-        lineNumbers: true,
-        matchBrackets: true,
-        autofocus: true,
-        extraKeys: {
-            "Ctrl-Enter": executeEditorContents,
-        }
-    });
 
 });
