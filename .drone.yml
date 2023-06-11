@@ -1,0 +1,15 @@
+kind: pipeline
+type: docker
+name: pr
+
+steps:
+- name: Running Python Tests
+  image: prairielearn/prairielearn
+  commands:
+    - pip install gibberish
+    - cd elements/pl-uml-element
+    - python3 -m pytest
+
+trigger:
+  event:
+  - pull_request
