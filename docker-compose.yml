@@ -16,3 +16,23 @@ services:
     environment:
       - HOST_JOBS_DIR=${HOME}/pl_ag_jobs
       - NODEMON=true
+  drone:
+    image: drone/drone:2
+    container_name: drone
+    restart: always
+    ports: 
+      - 8090:80
+      - 443:443
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    - ./drone:/data
+    environment:
+    - DRONE_GITHUB_SERVER=https://github.com/
+    - DRONE_GITHUB_CLIENT_ID=${DRONE_GITHUB_CLIENT_ID}
+    - DRONE_GITHUB_CLIENT_SECRET=${DRONE_GITHUB_CLIENT_SECRET}
+    - DRONE_RPC_SECRET=${DRONE_RPC_SECRET}
+    - DRONE_RUNNER_CAPACITY=2
+    - DRONE_SERVER_HOST=e1c6-64-251-70-60.ngrok-free.app
+    - DRONE_SERVER_PROTO=https
+    - DRONE_TLS_AUTOCERT=true
+    - DRONE_USER_CREATE=username:nishantsr,admin:true   
