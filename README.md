@@ -23,3 +23,29 @@ Project Manager:    Nishant Srinivasan
 Client Liason:      Matthew Obirek  
 Technical Lead:     Skyler Alderson  
 Integration Lead:   Andrei Zipis  
+
+#### Setup DroneCI
+1. create an Oauth in github
+
+2. Create public URL using gnork `ngrok http 8090`, and add the randomly generated url to the Oauth as such
+```
+Homepage URL
+https://e869-64-180-128-103.ngrok-free.app
+
+Authorization callback URL
+https://e869-64-180-128-103.ngrok-free.app/login
+
+```
+3. in an new terminal, create a rand hex code `openssl rand -hex 16`
+
+4. create and format a .env file like such
+```
+  DRONE_GITHUB_CLIENT_ID=[github client id]
+  DRONE_GITHUB_CLIENT_SECRET=[github client secret]
+  DRONE_SERVER_HOST=[ngork public url]
+  DRONE_RPC_SECRET=[openssl hex code]
+  CLIENT_DRONE_RPC_HOST=e869-64-180-128-103.ngrok-free.app
+  username=[Github-Username]
+```
+
+5. run `docker-compose build` `docker-compose start`
