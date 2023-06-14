@@ -34,12 +34,7 @@ $(document).ready(function () {
     document.getElementById("popWrapper_r2u4dj6ind").onclick = function() { updateCodeMirror("--"); }
     document.getElementById("popWrapper_2znla6h967q").onclick = function() { updateCodeMirror("/*"); }
     document.getElementById("popWrapper_2aod06t35hu").onclick = function() { updateCodeMirror("{}"); }
-
-    document.getElementById("popWrapper_g8gvtscmrhe").onclick = function() { updateCodeMirror("1?"); }
-    document.getElementById("popWrapper_ieljbcakzad").onclick = function() { updateCodeMirror("2?"); }
-    document.getElementById("popWrapper_7wdp1lrcagy").onclick = function() { updateCodeMirror("3?"); }
-    document.getElementById("popWrapper_xxptvm6tb1f").onclick = function() { updateCodeMirror("4?"); }
-
+    document.getElementById("popWrapper_ieljbcakzad").onclick = function() { updateCodeMirror("Date()"); }
     function panelPress(str) {
     }
     
