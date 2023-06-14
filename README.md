@@ -47,3 +47,10 @@ then `docker-compose start`
 2. The AutoER `docker-compose.yml` file was set to load a local image of prairielearn, which does not exist on a virgin machine. as staeted in step 3. changing the Image line from `prairielearn/prairielearn:latest`, instead of `prairielearn/prairielearn:local` should solve this issue. Otherwise building the image from the PrairieLearn repo, then launching the docker-compose inside the AutoER directory should work.
 
 3. As per the PrairieLearn Documentation. All question directories should have a `server.py` file. none of the AutoER questions have that. This creates confusion.
+
+# Linters
+This project makes use of two linters, ESLint for JavaScript and [todo] for Python.  
+
+## ESLint
+ESLint requires Node.js to be installed locally. To download Node.js, visit `https://nodejs.org/en`. ESLint can then be run either through the console (visit `https://eslint.org/docs/latest/` for more information) or the recommended route of installing it through Visual Studio Code. The linter automatically runs when used through Visual Studio Code.  
+To adjust ESLinter's configuration, use the `.eslintrc.json` file and adjust the `"rules"` block. Visit `https://eslint.org/docs/latest/rules/` for a complete list of rules.
