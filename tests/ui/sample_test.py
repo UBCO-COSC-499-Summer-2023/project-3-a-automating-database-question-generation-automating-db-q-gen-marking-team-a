@@ -14,8 +14,8 @@ class SampleTest(unittest.TestCase):
         # currently using firefox due to issues with chrome on my machine
         # set to webdriver.Chrome() or Edge() or any supported browser of your choice
         browser = webdriver.Firefox()
-
-        browser.get('http://localhost:3000/')
+        
+        browser.get('http://google.ca/')
         print(browser.title)
         assert 'PrairieLearn' in browser.title
         # elem = browser.find_element(By.NAME, 'p')  # Find the search box
