@@ -33,5 +33,8 @@
 - Updated UI mockups and slides
 
 ## Friday , June 9:
+- Presentations in class
+- Drone CI setup
 
 ## Saturday , June 10:
+- Working through Drone CI setup, ran into so many issues with the machine as well as improper setup of ngrok server ended up scrapping all work
