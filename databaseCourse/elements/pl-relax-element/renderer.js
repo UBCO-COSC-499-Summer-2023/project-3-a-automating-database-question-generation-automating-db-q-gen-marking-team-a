@@ -38,7 +38,7 @@ $(document).ready(function () {
     function panelPress(str) {
     }
     
-
+    var hello_world = "hello world"
 
     var editorInit = $("#RelaX-editor");
 
