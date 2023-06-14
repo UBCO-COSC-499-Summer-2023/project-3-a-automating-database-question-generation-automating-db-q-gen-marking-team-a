@@ -20,11 +20,11 @@ $(document).ready(function () {
     var execBtn = $("#execute");
     execBtn.on("click", executeEditorContents);
 
-    var commandsElm = $("#commands");
+    const commandsElm = $("#commands");
 
-    var outputElm = $("#output");
+    const outputElm = $("#output");
 
-    var errorElm = $("#error");
+    const errorElm = $("#error");
 
     // Add syntax highlighting to the textarea
     // Also transforms the textarea into a CodeMirror editor
@@ -46,7 +46,7 @@ $(document).ready(function () {
     // TODO: Refactor all code that creates tables using sql.js API
     function execute(sqlCode) {
 
-        console.log(sqlCode);
+        console.log("sqlCode: ", sqlCode);
 
         outputElm.contents().remove();
         errorElm.contents().remove();
