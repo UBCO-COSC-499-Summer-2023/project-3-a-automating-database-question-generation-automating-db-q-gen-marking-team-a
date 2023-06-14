@@ -49,8 +49,12 @@ then `docker-compose start`
 3. As per the PrairieLearn Documentation. All question directories should have a `server.py` file. none of the AutoER questions have that. This creates confusion.
 
 # Linters
-This project makes use of two linters, ESLint for JavaScript and [todo] for Python.  
+This project makes use of two linters, ESLint for JavaScript and pylint for Python.  
 
 ## ESLint
 ESLint requires Node.js to be installed locally. To download Node.js, visit `https://nodejs.org/en`. ESLint can then be run either through the console (visit `https://eslint.org/docs/latest/` for more information) or the recommended route of installing it through Visual Studio Code. The linter automatically runs when used through Visual Studio Code.  
-To adjust ESLinter's configuration, use the `.eslintrc.json` file and adjust the `"rules"` block. Visit `https://eslint.org/docs/latest/rules/` for a complete list of rules.
+To adjust ESLinter's configuration, use the `.eslintrc.json` file and adjust the `"rules"` block. Visit `https://eslint.org/docs/latest/rules/` for a complete list of rules.  
+
+## pylint
+pylint must be installed locally. It can be installed using `pip install pylint`. pylint can be run through either the console (visits `https://docs.pylint.org/index.html` for more information) or the recommended route of installing it through Visual Studio Code. The linter automatically runs when used through Visual Studio Code.  
+To adjust pylint's configuration, use the `.pylintrc` file. Visit `https://docs.pylint.org/index.html` for more information about pylint configuration.
