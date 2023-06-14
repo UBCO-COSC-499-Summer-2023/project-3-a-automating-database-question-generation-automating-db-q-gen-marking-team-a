@@ -49,6 +49,7 @@ then `docker-compose start`
 3. As per the PrairieLearn Documentation. All question directories should have a `server.py` file. none of the AutoER questions have that. This creates confusion.
 
 # Linters
+
 This project makes use of two linters, ESLint for JavaScript and pylint for Python.  
 
 ## ESLint
