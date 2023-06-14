@@ -52,7 +52,7 @@ ignore=CVS
 # ignore-list. The regex matches against paths and can be in Posix or Windows
 # format. Because '\\' represents the directory delimiter on Windows systems,
 # it can't be used as an escape character.
-ignore-paths=**/pl-uml-element/*.py
+ignore-paths=databaseCourse/elements/pl-uml-element/*.py
 
 # Files or directories matching the regular expression patterns are skipped.
 # The regex matches against base names, not paths. The default value ignores
@@ -190,7 +190,14 @@ good-names=i,
            k,
            ex,
            Run,
-           _
+           _,
+           correct_answers,
+           format_errors,
+           partial_scores,
+           variant_seed,
+           raw_submitted_answers,
+           manual_grading,
+           num_valid_submissions
 
 # Good variable names regexes, separated by a comma. If names match any regex,
 # they will always be accepted

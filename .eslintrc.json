@@ -8,7 +8,7 @@
     },
     "rules": {
         "camelcase":"warn",
-        "indent":["warn",2],
+        "indent":["warn",4],
         "no-mixed-spaces-and-tabs":"warn"
     }
 }
