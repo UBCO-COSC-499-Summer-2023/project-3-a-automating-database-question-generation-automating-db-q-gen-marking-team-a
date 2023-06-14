@@ -1,9 +1,8 @@
 //const { update } = require("./relalg_bundle");
 
 $(document).ready(function () {
-    //QUESTION SETUP
-    var relaxInput = document.getElementById("relax_input")
-    // console.log(relaxInput)
+    //* QUESTION SETUP
+    // adds onclick functionality for the top bar of the relax editor
     document.getElementById("popWrapper_i4m1hevx8hm").onclick = function() { updateCodeMirror("π"); }
     document.getElementById("popWrapper_zk54ccpfgr9").onclick = function() { updateCodeMirror("σ"); }
     document.getElementById("popWrapper_opmskf8udx").onclick = function() { updateCodeMirror("ρ"); }
@@ -35,13 +34,9 @@ $(document).ready(function () {
     document.getElementById("popWrapper_2znla6h967q").onclick = function() { updateCodeMirror("/*"); }
     document.getElementById("popWrapper_2aod06t35hu").onclick = function() { updateCodeMirror("{}"); }
     document.getElementById("popWrapper_ieljbcakzad").onclick = function() { updateCodeMirror("Date()"); }
-    function panelPress(str) {
-    }
-    
-    var hello_world = "hello world"
 
+    // Creates codemirror code block
     var editorInit = $("#RelaX-editor");
-
     var editor = CodeMirror.fromTextArea(editorInit[0], {
         mode: 'text/x-mysql',
         viewportMargin: Infinity,
@@ -51,30 +46,26 @@ $(document).ready(function () {
         matchBrackets: true,
         autofocus: true,
         extraKeys: {
-            //"Ctrl-Enter": executeEditorContents,
+            //"Ctrl-Enter": executeEditorContents, //TODO: add functionality
         }
     });
 
+    // adds functionality for onclick
     function updateCodeMirror(data){
-        var doc = editor.getDoc();
-        var cursor = doc.getCursor(); // gets the line number in the cursor position
-        doc.replaceRange(data, cursor); // adds a new line
+        var doc = editor.getDoc(); //gets the information of the editor
+        doc.replaceRange(data, doc.getCursor()); // adds data at position of cursor
     }
 
-    // Execute the sql code
-    // Create table
-    // TODO: Refactor all code that creates tables using sql.js API
-    function execute(sqlCode) {
-
-        outputElm.contents().remove();
-
-        let results = db.exec(sqlCode);
-        console.log(results)
-
-        outputElm.append(createTable(results));
+    // Execute the RelaX Query
+    // TODO: Execute RelaXQuery from editor
+    function execute(RelaXQuery) {
 
     }
 
+
+
+
+    //* Below is an example of how to use the relax execute tool.
     const executeRelalg = relalg_bundle.executeRelalg;
     const Relation = relalg_bundle.Relation;
 
