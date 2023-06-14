@@ -7,6 +7,7 @@ $(document).ready(function () {
 
   let firstLoad = true;
 
+ let x = 1;
 
   let schema = new Map();
   let attributes = new Map();
