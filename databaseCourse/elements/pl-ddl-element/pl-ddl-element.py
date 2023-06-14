@@ -36,6 +36,7 @@ def render(element_html, data):
     # This will not be displayed on the student page unless a showCorrectAnswer: True 
     # is specified in the info.json file.
     elif data['panel'] == 'answer':
-        html = "Answer string"
+        correctAnswer = pl.inner_html(element[1])
+        html = correctAnswer
     
     return html

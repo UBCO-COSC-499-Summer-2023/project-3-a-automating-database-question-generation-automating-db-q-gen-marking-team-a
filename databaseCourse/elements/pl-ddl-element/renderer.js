@@ -24,6 +24,8 @@ $(document).ready(function () {
 
     var outputElm = $("#output");
 
+    var errorElm = $("#error");
+
     // Add syntax highlighting to the textarea
     // Also transforms the textarea into a CodeMirror editor
     var editor = CodeMirror.fromTextArea(commandsElm[0], {
@@ -44,12 +46,22 @@ $(document).ready(function () {
     // TODO: Refactor all code that creates tables using sql.js API
     function execute(sqlCode) {
 
+        console.log(sqlCode);
+
         outputElm.contents().remove();
+        errorElm.contents().remove();
 
-        let results = db.exec(sqlCode);
-        console.log(results)
+        var results;
 
-        outputElm.append(createTable(results));
+        try {
+           results = db.exec(sqlCode);
+           //console.log("Query results: ", results);
+           outputElm.append(createTable(results));
+
+        } catch (e) {
+            console.log(e);
+            errorElm.text(e);
+        }
 
     }
 
@@ -63,6 +75,7 @@ $(document).ready(function () {
 
     //Function that creates the table
     function createTable(results) {
+
         for (var i = 0; i < results.length; i++) {
             console.log(results[i]);
 
@@ -72,13 +85,20 @@ $(document).ready(function () {
             table.append(createTableRows(results[i].values));
 
             outputElm.append(table);
+
         }
     }
 
+
+    
     // Function that creates the table header
     // Not sure if this is the best way to do this
     // Needs to be tested
     function createTableHeader(columns) {
+
+        //console.log(columns);
+        //SELECT * FROM pragma_table_info('airplane');
+
         var headerRow = $("<tr></tr>");
         Object.keys(columns).forEach(function (columnName) {
             var th = $("<th></th>").text(columns[columnName]);
