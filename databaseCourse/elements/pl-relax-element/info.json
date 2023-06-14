@@ -5,7 +5,7 @@
             "calc.e3c97951ca6ed154aabf.css"
         ],
         "elementScripts": [
-            "renderer.js","relalg_bundle.js"
+            "renderer.js","relalg_bundle.js", "codemirror.js"
         ]
     }
 }
