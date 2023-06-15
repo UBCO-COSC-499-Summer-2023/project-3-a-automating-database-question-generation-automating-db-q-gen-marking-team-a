@@ -4,41 +4,25 @@ $(document).ready(function () {
     //* QUESTION SETUP
     const executeRelalg = relalg_bundle.executeRelalg;
     const Relation = relalg_bundle.Relation;
-    const getRelationsIn = relalg_bundle.getRelationsIn;
     // find all relations used in this branch (recursively)
-    /*function getRelationsIn(root, ignore) {
-        const relations = [];
-        (0, utils.forEachPreOrder)(root, node => {
-            if (node.type === 'relation' && (ignore === undefined || ignore.has(node.name) === false)) {
-                // replace
-                relations.push({
-                    name: node.name,
-                    line: node.codeInfo.location.start.line,
-                    column: node.codeInfo.location.start.column,
-                });
-            }
-        });
-        return relations;
-    }*/
-    
-    const RenderTable = relalg_bundle.render;
+
+    const dbValue = document.getElementById("database").getAttribute("value");
+    const dbArray = dbValue.split(";");
     // database setup
-    const S = executeRelalg(`{
-		S.b, S.d
-		a,   100
-		b,   300
-		c,   400
-		d,   200
-		e,   150
-	}`, {});
-    const P = executeRelalg(`{
-		P.A, P.C
-		x,   10
-		y,   30
-		z,   00
-		v,   20
-		w,   15
-	}`, {});
+    const S = executeRelalg(dbArray.at(0), {});
+    const P = executeRelalg(dbArray.at(1), {});
+    
+    
+    
+    
+
+
+
+
+    
+    console.log(dbArray.length)
+    console.log(S)
+    console.log(S._schema._names)
 
     // adds onclick functionality for the top bar of the relax editor
     document.getElementById("popWrapper_i4m1hevx8hm").onclick = function() { updateCodeMirror("π"); }
@@ -91,6 +75,8 @@ $(document).ready(function () {
     function updateCodeMirror(data){
         var doc = editor.getDoc(); //gets the information of the editor
         doc.replaceRange(data, doc.getCursor()); // adds data at position of cursor
+        editor.focus();
+        editor.setCursor(doc.getCursor());
     }
 
 
@@ -106,7 +92,7 @@ $(document).ready(function () {
 
         console.log(editor.getValue());
         const PR = executeRelalg(editor.getValue(), {"S": S, "P": P});
-        console.log(PR.getResult());
+        console.log(PR.getResult()._rows);
     }
     
 
