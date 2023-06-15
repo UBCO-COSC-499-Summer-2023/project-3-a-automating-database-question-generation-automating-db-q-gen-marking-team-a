@@ -1,18 +1,6 @@
-body{
-	background: linear-gradient(#aaa 0, #ddd 10px, #fff 55px);
-	border: 1px solid black;
-	padding: 10px 20px;
-	box-shadow: 5px 0px 30px #000;
-	border-radius: 8px;
-}
 
-h1 {
-	text-align: center;
-	color: #222;
-	margin: 0 0 30px;
-}
 
-.button {
+#execute.button {
 	color: white;
 	background-color: #007bff;
 	border: 1px solid #222;
@@ -24,12 +12,13 @@ h1 {
 	font-size: 1em;
 }
 
-.button:active {
-	background: linear-gradient(#ddd, #eee);
+#execute.button:active {
+	background-color: #0062cc;
+    border-color: #005cbf;
 }
 
 .button:hover, button:focus {
-	box-shadow: 0 0 2px #222;
+	cursor: pointer;
 }
 
 #execute {
@@ -71,7 +60,19 @@ th, td {
 	border:1px solid #777;
 }
 
-footer {
-	font-size:.8em;
-	color: #222;
+#db-schema {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	justify-content: space-evenly;
+	border: 2px solid black;
+}
+
+#db-schema > table {
+	margin: 0;
+	border: 1px solid black;
+	width: 200px; /* Set a fixed width for the tables */
+	box-sizing: border-box; /* Include border width in the total width */
+	margin: 1em 0 1em 0; /* Add some space between the tables */
+	text-align: center;
 }
