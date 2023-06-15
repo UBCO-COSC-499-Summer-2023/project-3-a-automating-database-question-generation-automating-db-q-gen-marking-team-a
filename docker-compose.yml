@@ -30,7 +30,7 @@ services:
     - DRONE_GITHUB_CLIENT_ID=${DRONE_GITHUB_CLIENT_ID}
     - DRONE_GITHUB_CLIENT_SECRET=${DRONE_GITHUB_CLIENT_SECRET}
     - DRONE_RUNNER_CAPACITY=2
-    - DRONE_SERVER_HOST=cc2d-64-251-70-60.ngrok-free.app
+    - DRONE_SERVER_HOST=droneci.ok.ubc.ca
     - DRONE_SERVER_PROTO=https
     - DRONE_TLS_AUTOCERT=true
     - DRONE_USER_CREATE=username:nishant-sr,admin:true
