@@ -4,6 +4,24 @@ $(document).ready(function () {
     //* QUESTION SETUP
     const executeRelalg = relalg_bundle.executeRelalg;
     const Relation = relalg_bundle.Relation;
+    const getRelationsIn = relalg_bundle.getRelationsIn;
+    // find all relations used in this branch (recursively)
+    /*function getRelationsIn(root, ignore) {
+        const relations = [];
+        (0, utils.forEachPreOrder)(root, node => {
+            if (node.type === 'relation' && (ignore === undefined || ignore.has(node.name) === false)) {
+                // replace
+                relations.push({
+                    name: node.name,
+                    line: node.codeInfo.location.start.line,
+                    column: node.codeInfo.location.start.column,
+                });
+            }
+        });
+        return relations;
+    }*/
+    
+    const RenderTable = relalg_bundle.render;
     // database setup
     const S = executeRelalg(`{
 		S.b, S.d
@@ -86,10 +104,9 @@ $(document).ready(function () {
     // TODO: Execute RelaXQuery from editor
     function executeEditorContents() {
 
-        console.log(editor.getValue())
+        console.log(editor.getValue());
         const PR = executeRelalg(editor.getValue(), {"S": S, "P": P});
-
-        outputElm.innerHTML = PR;
+        console.log(PR.getResult());
     }
     
 
