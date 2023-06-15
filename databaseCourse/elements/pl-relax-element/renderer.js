@@ -46,15 +46,21 @@ $(document).ready(function () {
         matchBrackets: true,
         autofocus: true,
         extraKeys: {
-            //"Ctrl-Enter": executeEditorContents, //TODO: add functionality
+        //    "Ctrl-Enter": executeEditorContents, //TODO: add functionality
         }
     });
-
     // adds functionality for onclick
     function updateCodeMirror(data){
         var doc = editor.getDoc(); //gets the information of the editor
         doc.replaceRange(data, doc.getCursor()); // adds data at position of cursor
     }
+
+
+    var commandsElm = $("#commands");
+    var outputElm = $("#output");
+    var errorElm = $("#error");
+    var execBtn = $("#execute");
+    execBtn.on("click", executeEditorContents);
 
     // Execute the RelaX Query
     // TODO: Execute RelaXQuery from editor
@@ -80,7 +86,18 @@ $(document).ready(function () {
 		e,   150
 	}`, {});
 
-    const Q = executeRelalg(`π b,d (S)`, {"S": S});
+
+    const P = executeRelalg(`{
+		P.A, P.C
+		x,   10
+		y,   30
+		z,   00
+		v,   20
+		w,   15
+	}`, {});
+
+    const Q = executeRelalg(`π (S) ∧ (P) `, {"S": S, "P": P});
 
     
+    console.log(Q);
 });
