@@ -2,6 +2,13 @@
 
 $(document).ready(function () {
 
+    /*
+    //
+    // Initializing sql.js and wasm
+    //
+    */
+
+    // wasm file required for sql.js
     let config = {
         locateFile: () => {
             "https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.wasm"
@@ -54,17 +61,26 @@ $(document).ready(function () {
 
             let sqlQuery = `SELECT name, type FROM pragma_table_info("${table}");`;
             let sqlResult = db.exec(sqlQuery);
-            
+
             // create table of sql result and append to dbSchemaElm
             dbSchemaElm.append(createSchemaTables(sqlResult, table));
-
-
         })
+
+        if (dbSchemaElm.contents().length === 0) {
+            dbSchemaElm.append("No tables found");
+        }
+
     }
 
     // Function that creates tables that showcase schema
-    function createSchemaTables(results, tableName){
+    function createSchemaTables(results, tableName) {
 
+        // if tables have no rows, means table does not exist
+        if (results.length === 0) {
+            return;
+        }
+
+        // create table and header
         let table = $("<table></table>");
         let header = $("<thead></thead>");
         let headerRow = $("<tr></tr>");
@@ -73,6 +89,7 @@ $(document).ready(function () {
         header.append(headerRow);
         table.append(header);
 
+        // create table rows
         for (var i = 0; i < results.length; i++) {
             table.append(createTableRows(results[i].values));
         }
@@ -92,16 +109,21 @@ $(document).ready(function () {
     // TODO: Refactor all code that creates tables using sql.js API
     function execute(sqlCode) {
 
+        // clear all previous results
         outputElm.contents().remove();
         errorElm.contents().remove();
 
+        // iterate through all statements in editor
+        // execute each statement sequentially
         try {
 
             for (const statement of db.iterateStatements(sqlCode)) {
                 const sqlStatement = statement.getSQL();
 
+                // get column names
                 let tableColumnNames = statement.getColumnNames();
 
+                // execute sql statement
                 let sqlStatementResult = db.exec(sqlStatement);
 
                 // give user feedback based on type of sql statement
@@ -115,7 +137,6 @@ $(document).ready(function () {
             console.log(e);
             errorElm.append(e);
         }
-
     }
 
     // Functions that runs when the button is clicked
@@ -141,30 +162,35 @@ $(document).ready(function () {
                     tables.push(table); // add table to array of DB tables
                     output.push(`Created table: ${table} successfully.`);
                     break;
+
                 case "DROP TABLE":
-                    table = getTableName(/DROP TABLE\s+IF EXISTS?\s?(\w+)/i, sqlStatement);
+                    table = getTableName(/DROP TABLE(?:\s+IF EXISTS)?\s+(\w+)/i, sqlStatement);
+                    output.push(`Dropped table: ${table} successfully.`);
                     const index = tables.indexOf(table);
                     if (index > -1) {
-                        tables.splice(index, 1);
+                        tables.splice(index, 1); // remove table from DB tables array
                     }
-                    console.log(tables);
-                    output.push(`Dropped table: ${table} successfully.`);
                     break;
+
                 case "INSERT INTO":
                     table = getTableName(/INSERT INTO\s+(\w+)/i, sqlStatement);
                     output.push(`Inserted into table: ${table} successfully.`);
                     break;
+
                 case "DELETE FROM":
                     table = getTableName(/DELETE FROM\s+(\w+)/i, sqlStatement);
                     output.push(`Deleted from table: ${table} successfully.`);
                     break;
+
                 case "UPDATE":
                     table = getTableName(/UPDATE\s+(\w+)/i, sqlStatement);
                     output.push(`Updated table: ${table} successfully.`);
                     break;
+
                 case "SELECT":
                     output.push(createOutputTable(tableColumnNames, sqlStatementResult));
                     break;
+
                 default:
                     break;
             }
@@ -203,8 +229,7 @@ $(document).ready(function () {
     }
 
     // Function that creates the table header
-    // Not sure if this is the best way to do this
-    // Needs to be tested
+
     function createTableHeader(columns) {
 
 
@@ -223,8 +248,7 @@ $(document).ready(function () {
     }
 
     // Function that creates the table rows for a table
-    // Not sure if this is the best way to do this
-    // Needs to be tested
+
     function createTableRows(rows) {
         var rowElements = [];
         rows.forEach(function (row) {
@@ -239,6 +263,12 @@ $(document).ready(function () {
     }
 
 });
+
+/*
+//
+// 
+//
+*/
 
 
 
