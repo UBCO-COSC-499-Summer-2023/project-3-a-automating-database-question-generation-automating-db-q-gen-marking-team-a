@@ -26,6 +26,10 @@ $(document).ready(function () {
 
     const errorElm = $("#error");
 
+    const dbSchemaElm = $("#db-schema");
+
+    const tables = [];
+
     // Add syntax highlighting to the textarea
     // Also transforms the textarea into a CodeMirror editor
     var editor = CodeMirror.fromTextArea(commandsElm[0], {
@@ -46,21 +50,27 @@ $(document).ready(function () {
     // TODO: Refactor all code that creates tables using sql.js API
     function execute(sqlCode) {
 
-        console.log("sqlCode: ", sqlCode);
-
         outputElm.contents().remove();
         errorElm.contents().remove();
 
-        var results;
-
         try {
-           results = db.exec(sqlCode);
-           //console.log("Query results: ", results);
-           outputElm.append(createTable(results));
+
+            for (const statement of db.iterateStatements(sqlCode)) {
+                const sqlStatement = statement.getSQL();
+
+                let tableColumnNames = statement.getColumnNames();
+                //console.log(tableColumnNames);
+
+                let sqlStatementResult = db.exec(sqlStatement);
+
+                // give user feedback based on type of sql statement
+                showSqlStatementFeedback(sqlStatement, tableColumnNames, sqlStatementResult);
+
+            }
 
         } catch (e) {
             console.log(e);
-            errorElm.text(e);
+            errorElm.append(e);
         }
 
     }
@@ -73,38 +83,106 @@ $(document).ready(function () {
 
     }
 
-    //Function that creates the table
-    function createTable(results) {
+    // Function that shows DB schema/tables
+    function showDBTables() {
 
-        for (var i = 0; i < results.length; i++) {
-            console.log(results[i]);
+        $.each(tables, function (index, table) {
 
-            var table = $("<table></table>");
+            let sqlQuery = 'SELECT * FROM pragma_table_info("{table}")';
 
-            table.append(createTableHeader(results[i].columns));
-            table.append(createTableRows(results[i].values));
+        })
 
-            outputElm.append(table);
 
+    }
+
+    // Function that gets the type of SQL statement executed
+    function showSqlStatementFeedback(sqlStatement, tableColumnNames, sqlStatementResult) {
+
+        var regex = /(CREATE TABLE|DROP TABLE|INSERT INTO|DELETE FROM|UPDATE|SELECT)/i;
+        var match = sqlStatement.match(regex);
+
+        if (match) {
+
+            let table = getTableName(sqlStatement);
+
+            switch (match[0].toUpperCase()) {
+
+                case "CREATE TABLE":
+                    // do something for "CREATE TABLE" match
+                    tables.push(table);
+                    outputElm.append(`Created table: ${table} successfully.\n`);
+                    break;
+                case "DROP TABLE":
+                    // do something for "DROP TABLE" match
+                    outputElm.append(`Dropped table: ${table} successfully.\n`);
+                    break;
+                case "INSERT INTO":
+                    // do something for "INSERT INTO" match
+                    outputElm.append(`Inserted into table: ${table} successfully.\n`);
+                    break;
+                case "DELETE FROM":
+                    // do something for "DELETE FROM" match
+                    outputElm.append(`Deleted from table: ${table} successfully.\n`);
+                    break;
+                case "UPDATE":
+                    // do something for "UPDATE" match
+                    outputElm.append(`Updated table: ${table} successfully.\n`);
+                    break;
+                case "SELECT":
+                    outputElm.append(createOutputTable(tableColumnNames, sqlStatementResult));
+                    break;
+                default:
+                    // handle unknown keyword here
+                    break;
+            }
         }
     }
 
+    // Function that gets the table name from a SELECT SQL statement
+    function getTableName(sqlStatement) {
 
-    
+        // TODO
+
+      }
+
+    //Function that creates the table
+    function createOutputTable(columns, results) {
+
+        //console.log(columns);
+        //console.log(results);
+
+        var table = $("<table></table>");
+
+        table.append(createTableHeader(columns));
+
+        for (var i = 0; i < results.length; i++) {
+
+            table.append(createTableRows(results[i].values));
+
+        }
+
+        outputElm.append(table);
+
+    }
+
     // Function that creates the table header
     // Not sure if this is the best way to do this
     // Needs to be tested
     function createTableHeader(columns) {
 
         //console.log(columns);
-        //SELECT * FROM pragma_table_info('airplane');
 
+        var header = $("<thead></thead>");
         var headerRow = $("<tr></tr>");
-        Object.keys(columns).forEach(function (columnName) {
-            var th = $("<th></th>").text(columns[columnName]);
+
+        for (var i = 0; i < columns.length; i++) {
+            var th = $("<th></th>").text(columns[i]);
             headerRow.append(th);
-        });
-        return headerRow;
+        }
+
+        header.append(headerRow);
+
+        return header;
 
     }
 
