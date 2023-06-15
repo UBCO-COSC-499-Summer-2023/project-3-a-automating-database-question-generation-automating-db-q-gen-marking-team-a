@@ -3,6 +3,10 @@
     {{questionText}}
 </div>
 
+<div id="database">
+    {{database}}
+</div>
+
 <div id="relax_input">
     {{! this is where the relax editor will be placed}}
     <div class="editor-base">
@@ -52,8 +56,11 @@
 
     {{! This is what CodeMirror takes to create the Code editor}}
     <textarea id="RelaX-editor"></textarea>
-        
+ 
     </div>
+    <div id="execute" class="button">Execute</div>
+    <div id="error" class="error"></div>
+    <pre id="output">Results will be displayed here</pre>
 </div> 
 
 <!-- End of File -->

@@ -2,6 +2,26 @@
 
 $(document).ready(function () {
     //* QUESTION SETUP
+    const executeRelalg = relalg_bundle.executeRelalg;
+    const Relation = relalg_bundle.Relation;
+    // database setup
+    const S = executeRelalg(`{
+		S.b, S.d
+		a,   100
+		b,   300
+		c,   400
+		d,   200
+		e,   150
+	}`, {});
+    const P = executeRelalg(`{
+		P.A, P.C
+		x,   10
+		y,   30
+		z,   00
+		v,   20
+		w,   15
+	}`, {});
+
     // adds onclick functionality for the top bar of the relax editor
     document.getElementById("popWrapper_i4m1hevx8hm").onclick = function() { updateCodeMirror("π"); }
     document.getElementById("popWrapper_zk54ccpfgr9").onclick = function() { updateCodeMirror("σ"); }
@@ -46,7 +66,7 @@ $(document).ready(function () {
         matchBrackets: true,
         autofocus: true,
         extraKeys: {
-        //    "Ctrl-Enter": executeEditorContents, //TODO: add functionality
+            "Ctrl-Enter": executeEditorContents, //TODO: add functionality
         }
     });
     // adds functionality for onclick
@@ -64,40 +84,18 @@ $(document).ready(function () {
 
     // Execute the RelaX Query
     // TODO: Execute RelaXQuery from editor
-    function execute(RelaXQuery) {
+    function executeEditorContents() {
 
+        console.log(editor.getValue())
+        const PR = executeRelalg(editor.getValue(), {"S": S, "P": P});
+
+        outputElm.innerHTML = PR;
     }
-
+    
 
 
 
     //* Below is an example of how to use the relax execute tool.
-    const executeRelalg = relalg_bundle.executeRelalg;
-    const Relation = relalg_bundle.Relation;
-
-    //console.log();
-
-    const S = executeRelalg(`{
-		S.b, S.d
-		a,   100
-		b,   300
-		c,   400
-		d,   200
-		e,   150
-	}`, {});
-
-
-    const P = executeRelalg(`{
-		P.A, P.C
-		x,   10
-		y,   30
-		z,   00
-		v,   20
-		w,   15
-	}`, {});
-
-    const Q = executeRelalg(`π (S) ∧ (P) `, {"S": S, "P": P});
-
-    
+    const Q = executeRelalg(`pi b,d (S)`, {"S": S, "P": P});
     console.log(Q);
 });
