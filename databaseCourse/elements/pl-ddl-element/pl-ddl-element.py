@@ -14,7 +14,7 @@ def render(element_html, data):
     :param data: The data
     :return: The HTML you want rendered
     '''
-    
+
     
     element = lxml.html.fragment_fromstring(element_html)
      
@@ -40,3 +40,7 @@ def render(element_html, data):
         html = correctAnswer
     
     return html
+
+def snake_case_to_camel_case(s):
+    return ''.join(x.capitalize() or '_' for x in s.split('_'))
+
