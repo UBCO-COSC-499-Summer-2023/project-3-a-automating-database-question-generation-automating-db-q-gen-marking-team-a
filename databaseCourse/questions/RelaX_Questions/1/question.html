@@ -3,10 +3,10 @@
   Given the following relational schema, write queries in relational algebra to answer the English question.
 
   <markdown>
-    Customer(*cid*: integer, *cname*: string, *address*: string, *city*: string, *state*: string)
-    Product(*pid*: integer, *pname*: string, *price*: currency, *inventory*: integer)
-    Shipment(*sid*: integer, *cid*: integer, *shipdate*: Date/Time)
-    ShippedProduct(*sid*: integer, *pid*: integer, *amount*: integer)
+    Customer(cid: integer, cname: string, address: string, city: string, state: string)
+    Product(pid: integer, pname: string, price: currency, inventory: integer)
+    Shipment(sid: integer, cid: integer, shipdate: Date/Time)
+    ShippedProduct(sid: integer, pid: integer, amount: integer)
   </markdown>
 </pl-question-panel>
 
