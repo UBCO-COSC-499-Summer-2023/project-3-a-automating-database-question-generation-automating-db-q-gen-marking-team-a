@@ -14,7 +14,29 @@
 
 <!-- Question text -->
 <pl-question-panel>
-    
+    Return pairs of products (only show a pair once) that appear together in the same shipment and have at least an <strong>amount</strong> of 2 in that shipment. Return the number of times the products appear together in a shipment ('numTogether'). Order by <strong>numTogether</strong> descending and first product name ascending.
+    <br>
+    Expected Output:
+    <br>
+    <markdown>
+        +-------------------------+-------------------------+-------------+
+        | pname                   | pname                   | numTogether |
+        +-------------------------+-------------------------+-------------+
+        | Swiss Chocolate         | Wooden Chair            |           2 |
+        | Chocolate Bar           | Deluxe Sweet Collection |           1 |
+        | Chocolate Bar           | Sports Car              |           1 |
+        | Chocolate Bar           | Swiss Chocolate         |           1 |
+        | Chocolate Bar           | Wooden Chair            |           1 |
+        | Chocolate Bar           | Teddy Bear              |           1 |
+        | Chocolate Bar           | Desk                    |           1 |
+        | Chocolate Bar           | Table                   |           1 |
+        | Deluxe Sweet Collection | Sports Car              |           1 |
+        | Desk                    | Teddy Bear              |           1 |
+        | Swiss Chocolate         | Teddy Bear              |           1 |
+        | Swiss Chocolate         | Textbook                |           1 |
+        | Textbook                | Wooden Chair            |           1 |
+        +-------------------------+-------------------------+-------------+
+    </markdown>
 </pl-question-panel>
 
 
