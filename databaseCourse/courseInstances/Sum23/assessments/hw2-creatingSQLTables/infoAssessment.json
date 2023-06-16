@@ -11,10 +11,38 @@
     ],
     "zones": [
         {
+            "title": "Create Tables",
             "questions": [
-                {"id": "DDL_Questions/createTables/1",                "points": 10},
-                {"id": "DDL_Questions/createTables/2",                "points": 10},
-                {"id": "DDL_Questions/createTables/TEST",                "points": 0}
+                {"id": "DDL_Questions/createTables/1",                "points": 1},
+                {"id": "DDL_Questions/createTables/2",                "points": 1.5},
+                {"id": "DDL_Questions/createTables/3",                "points": 3},
+                {"id": "DDL_Questions/createTables/4",                "points": 1.5},
+                {"id": "DDL_Questions/createTables/5",                "points": 3}
+            ]
+        },
+        {
+            "title": "Modify Tables",
+            "questions": [
+                {"id": "DDL_Questions/modifyTables/1",                "points": 1},
+                {"id": "DDL_Questions/modifyTables/2",                "points": 1},
+                {"id": "DDL_Questions/modifyTables/3",                "points": 1},
+                {"id": "DDL_Questions/modifyTables/4",                "points": 1},
+                {"id": "DDL_Questions/modifyTables/5",                "points": 1}
+            ]
+        },
+        {
+            "title": "Update",
+            "questions": [
+                {"id": "DDL_Questions/updateTables/1",                "points": 1},
+                {"id": "DDL_Questions/updateTables/2",                "points": 1}
+            ]
+        },
+        {
+            "title": "Delete",
+            "questions": [
+                {"id": "DDL_Questions/deleteTables/1",                "points": 1},
+                {"id": "DDL_Questions/deleteTables/2",                "points": 1},
+                {"id": "DDL_Questions/deleteTables/3",                "points": 1}
             ]
         }
     ]
