@@ -1,12 +1,12 @@
 {
-    "uuid": "104ccb47-de6f-477c-87dc-1f6969c10973",
-      "title": "Create Tables 1",
+    "uuid": "878619c3-e58d-4aed-9b07-fbf5daedcc9b",
+      "title": "Create Tables 3",
     "topic": "Databases",
     "singleVariant": true,
     "tags": [
         "rlawrence",
-         "Demo",
-         "DDL"
+        "Demo",
+        "DDL"
     ],
     "type": "v3"
 }
