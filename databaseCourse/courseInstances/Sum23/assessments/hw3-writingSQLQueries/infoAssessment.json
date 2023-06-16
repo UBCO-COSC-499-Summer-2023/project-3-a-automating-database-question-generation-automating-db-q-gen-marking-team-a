@@ -12,16 +12,16 @@
     "zones": [
         {
             "questions": [
-                {"id": "SQL_Questions/1",                "points": 10},
-                {"id": "SQL_Questions/2",                "points": 10},
-                {"id": "SQL_Questions/3",                "points": 10},
-                {"id": "SQL_Questions/4",                "points": 10},
-                {"id": "SQL_Questions/5",                "points": 10},
-                {"id": "SQL_Questions/6",                "points": 10},
-                {"id": "SQL_Questions/7",                "points": 10},
-                {"id": "SQL_Questions/8",                "points": 10},
-                {"id": "SQL_Questions/9",                "points": 10},
-                {"id": "SQL_Questions/10",                "points": 10}
+                {"id": "SQL_Questions/1",                "points": 2},
+                {"id": "SQL_Questions/2",                "points": 2},
+                {"id": "SQL_Questions/3",                "points": 2},
+                {"id": "SQL_Questions/4",                "points": 2},
+                {"id": "SQL_Questions/5",                "points": 2},
+                {"id": "SQL_Questions/6",                "points": 2},
+                {"id": "SQL_Questions/7",                "points": 2},
+                {"id": "SQL_Questions/8",                "points": 2},
+                {"id": "SQL_Questions/9",                "points": 2},
+                {"id": "SQL_Questions/10",                "points": 2}
             ]
         }
     ]
