@@ -1,13 +1,24 @@
 <!-- Question introduction -->
 <pl-question-panel>
-  
+  Given the following relational schema, write queries in relational algebra to answer the English question.
+
+  <markdown>
+    Customer(cid: integer, cname: string, address: string, city: string, state: string)
+    Product(pid: integer, pname: string, price: currency, inventory: integer)
+    Shipment(sid: integer, cid: integer, shipdate: Date/Time)
+    ShippedProduct(sid: integer, pid: integer, amount: integer)
+  </markdown>
 </pl-question-panel>
 
 <!-- Start Part 1 -->
 
 <!-- Question text -->
 <pl-question-panel>
-    
+  Return a list of all the product id, name, and price that have been in a shipment before May 17, 2014. The product price must be less than $50, and the shipped amount < 5.
+  <br>
+  Expected output:
+  <br>
+  <img src="{{options.client_files_question_url}}/ra_q3.png" alt="The columns are Product.pid, Product.pname, and Product.price" width="400">
 </pl-question-panel>
 
 
