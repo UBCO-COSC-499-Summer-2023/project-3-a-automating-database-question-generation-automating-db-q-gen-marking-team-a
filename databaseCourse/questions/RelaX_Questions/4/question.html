@@ -1,13 +1,24 @@
 <!-- Question introduction -->
 <pl-question-panel>
-  
+  Given the following relational schema, write queries in relational algebra to answer the English question.
+
+  <markdown>
+    Customer(cid: integer, cname: string, address: string, city: string, state: string)
+    Product(pid: integer, pname: string, price: currency, inventory: integer)
+    Shipment(sid: integer, cid: integer, shipdate: Date/Time)
+    ShippedProduct(sid: integer, pid: integer, amount: integer)
+  </markdown>
 </pl-question-panel>
 
 <!-- Start Part 1 -->
 
 <!-- Question text -->
 <pl-question-panel>
-    
+  Return the product name, current inventory, shipment amount, and price where the product had a shipment of an amount greater than 60% of its current inventory and the product price is less than \$5 or greater than or equal to \$50.
+  <br>
+  Expected output:
+  <br>
+  <img src="{{options.client_files_question_url}}/ra_q4.png" alt="The columns are Product.pname, Product.inventory, ShippedProduct.amount, and Product.price" width="600">
 </pl-question-panel>
 
 
