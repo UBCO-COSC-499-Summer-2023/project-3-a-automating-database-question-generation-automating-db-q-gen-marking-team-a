@@ -91,11 +91,12 @@ $(document).ready(function () {
         // for (var i = 0; i < results.length; i++) {
         //     table.append(createTableRows(results[i].values));
         // }
-
-        let schemaView = " <button type='button' onClick='openMenu(this)' class='dropbtn'>" + tableName + "</button> <div class='dropdown-content' id='s-t-1'>"
+        console.log(results,tableName)
+        let schemaView = " <button type='button' onClick='openMenu(this)' class='dropbtn' id='btn-" + tableName + "'>" + tableName 
+        + "</button> <div class='dropdown-content' id='schema-" + tableName + "'>"
 
         for (var i = 0; i < results[0].values.length; i++) {
-            let field = "<div classname='submenu' id='s-t-'" + i + ">" + results[0].values[i] + "</div>"
+            let field = "<div classname='submenu' id='schema-" + tableName + "'>" + results[0].values[i] + "</div>"
             console.log(i)
             schemaView+=(field)
         }
@@ -108,7 +109,8 @@ $(document).ready(function () {
     // function to show the modals of the schemas
     window.openMenu = function(val){
         closeMenus();
-        document.getElementById('s-t-1').classList.toggle('show');
+        console.log(val.id.slice(4))
+        document.getElementById('schema-' + val.id.slice(4)).classList.toggle('show');
     }
 
     // function to close the modals of the schemas, basically hides each field in the modal
