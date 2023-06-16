@@ -1,20 +1,142 @@
-<pl-ddl-element random="False" max-grade = "10">
+<!-- Question introduction -->
+<pl-question-panel>
+    Write the SQL DDL to create the following 5 tables describing airports, airplanes, passengers, and flights.
+</pl-question-panel>
 
-    <ddl-question>
-        Write the SQL DDL to create the following table:
-        An Airplane table where each airplane is identified by a field called id that is a string of up to 10 characters. Other attributes include model (string up to 20 characters), and a manufacture date. (1 mark)
-    </ddl-question>
+<!-- Start Part 1 -->
 
-    <ddl-answer>
-        CREATE TABLE airplane (    
-            id                  CHAR(10) ,           
-            model               CHAR(20),      
-            manufacture_date    DATE   
-        );
-    </ddl-answer>
-    
-    <ddl-marking ></ddl-marking>
-</pl-ddl-element>
+<div class="card my-2">
+    <div class="card-header">Part 1</div>
+
+    <div class="card-body">
+
+        <!-- Question text -->
+        <pl-question-panel>
+            An $\textbf{Airplane}$ table where each airplane is identified by a field called $\textbf{id}$ that is a string of up to 10 characters. Other attributes include $\textbf{model}$ (string up to 20 characters), and a $\textbf{manufacture date}$. (1 mark)
+        </pl-question-panel>
+
+
+        <!-- SQL editor -->
+        <pl-ddl-element>
+            <ddl-question>
+            </ddl-question>
+            
+            <ddl-marking ></ddl-marking>
+        </pl-ddl-element>
+
+    </div>
+</div>
+
+<!-- End Part 1 -->
+
+
+<!-- Start Part 2 -->
+
+<div class="card my-2">
+    <div class="card-header">Part 2</div>
+
+    <div class="card-body">
+
+        <!-- Question text -->
+        <pl-question-panel>
+            An $\textbf{Airplane}$ table where each airport has an $\textbf{id}$ of exactly 5 characters, a $\textbf{name}$ (up to 30 characters), and is located in a $\textbf{city}$ (up to 40 characters), a $\textbf{province}$ (up to 20 characters), and a $\textbf{country}$ (up to 20 characters). (1.5 marks)
+        </pl-question-panel>
+
+
+        <!-- SQL editor -->
+        <pl-ddl-element>
+            <ddl-question>
+            </ddl-question>
+            
+            <ddl-marking ></ddl-marking>
+        </pl-ddl-element>
+
+    </div>
+</div>
+
+<!-- End Part 2 -->
+
+
+<!-- Start Part 3 -->
+
+<div class="card my-2">
+    <div class="card-header">Part 3</div>
+
+    <div class="card-body">
+
+        <!-- Question text -->
+        <pl-question-panel>
+            A $\textbf{Flight}$ table where each flight is identified by both a $\textbf{number}$ (exactly 5 characters) and $\textbf{departure date/time}$ (DATETIME). Note that the flight number does not by itself identify a flight as airlines reuse flight numbers. A flight departs from one airport ($\textbf{departAirport}$) and arrives at another ($\textbf{arriveAirport}$). Besides the departure date/time, there is an expected $\textbf{arrival date/time}$, and $\textbf{actual departure time}$ and $\textbf{actual arrival time}$. Each flight record also stores the airplane $\textbf{id}$ of the plane. $\textit{Make all foreign keys set to null on delete and cascade on update}$. (3 marks)
+        </pl-question-panel>
+
+
+        <!-- SQL editor -->
+        <pl-ddl-element>
+            <ddl-question>
+            </ddl-question>
+            
+            <ddl-marking ></ddl-marking>
+        </pl-ddl-element>
+
+    </div>
+</div>
+
+<!-- End Part 3 -->
+
+
+<!-- Start Part 4 -->
+
+<div class="card my-2">
+    <div class="card-header">Part 4</div>
+
+    <div class="card-body">
+
+        <!-- Question text -->
+        <pl-question-panel>
+            A $\textbf{Passenger}$ table where each passenger is identified by an integer $\textbf{id}$. Also store a $\textbf{first name}$ and $\textbf{last name}$ (both up to 30 characters) and a $\textbf{birthdate}$. Other attributes include $\textbf{street}$ (50 chars), $\textbf{city}$ (40 chars), $\textbf{province}$ (20 chars), and $\textbf{country}$ (20 chars). (1.5 marks)
+        </pl-question-panel>
+
+
+        <!-- SQL editor -->
+        <pl-ddl-element>
+            <ddl-question>
+            </ddl-question>
+            
+            <ddl-marking ></ddl-marking>
+        </pl-ddl-element>
+
+    </div>
+</div>
+
+<!-- End Part 4 -->
+
+
+<!-- Start Part 5 -->
+
+<div class="card my-2">
+    <div class="card-header">Part 5</div>
+
+    <div class="card-body">
+
+        <!-- Question text -->
+        <pl-question-panel>
+            An $\textbf{OnFlight}$ table that stores information about passengers on flights. Each record stores the $\textbf{passenger id}$, $\textbf{flight number}$, $\textbf{flight departure date/time}$, and a $\textbf{seat number}$ (exactly 4 characters). $\textit{Make all foreign keys set to perform no action (generate error) on delete and cascade on update}$. (3 marks)
+        </pl-question-panel>
+
+
+        <!-- SQL editor -->
+        <pl-ddl-element>
+            <ddl-question>
+            </ddl-question>
+            
+            <ddl-marking ></ddl-marking>
+        </pl-ddl-element>
+
+    </div>
+</div>
+
+<!-- End Part 5 -->
+
 
   
 
