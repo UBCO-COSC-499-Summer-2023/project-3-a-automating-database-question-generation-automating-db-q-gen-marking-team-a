@@ -48,7 +48,7 @@
 	overflow: auto;
 }
 
-table {
+/* table {
 	width:auto;
 	margin:auto;
 	border:1px solid black;
@@ -58,21 +58,21 @@ table {
 
 th, td {
 	border:1px solid #777;
-}
+} */
 
 #db-schema {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: flex-start;
 	justify-content: space-evenly;
-	border: 2px solid black;
 }
 
-#db-schema > table {
+
+/* #db-schema > table {
 	margin: 0;
 	border: 1px solid black;
-	width: 200px; /* Set a fixed width for the tables */
-	box-sizing: border-box; /* Include border width in the total width */
-	margin: 1em 0 1em 0; /* Add some space between the tables */
+	width: 200px; 
+	box-sizing: border-box; 
+	margin: 1em 0 1em 0; 
 	text-align: center;
-}
+}  */

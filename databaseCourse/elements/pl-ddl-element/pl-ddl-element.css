@@ -33,3 +33,15 @@
 .show {
     display: block;
   }
+
+.dropbtn{
+    background-color: transparent;
+    border: none;
+}
+
+#db-schema{
+    display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	justify-content: space-evenly;
+}

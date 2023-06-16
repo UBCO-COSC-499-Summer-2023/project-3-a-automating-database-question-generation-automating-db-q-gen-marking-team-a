@@ -92,16 +92,19 @@ $(document).ready(function () {
         //     table.append(createTableRows(results[i].values));
         // }
         console.log(results,tableName)
-        let schemaView = " <button type='button' onClick='openMenu(this)' class='dropbtn' id='btn-" + tableName + "'>" + tableName 
+        let schemaView = "<div class='schemaTable'>" 
+        + "<button type='button' onClick='openMenu(this)' class='dropbtn' id='btn-" + tableName + "'>" + tableName 
         + "</button> <div class='dropdown-content' id='schema-" + tableName + "'>"
 
         for (var i = 0; i < results[0].values.length; i++) {
-            let field = "<div classname='submenu' id='schema-" + tableName + "'>" + results[0].values[i] + "</div>"
+            let field = "<div style='text-align:center;padding:0.2em;border:0.2px solid white;' classname='submenu' id='schema-" 
+            + tableName + "'>" + results[0].values[i][0] 
+            + " , " +  results[0].values[i][1] + "</div>"
             console.log(i)
             schemaView+=(field)
         }
 
-        schemaView += "</div>"
+        schemaView += "</div></div>"
         return schemaView
 
     }
