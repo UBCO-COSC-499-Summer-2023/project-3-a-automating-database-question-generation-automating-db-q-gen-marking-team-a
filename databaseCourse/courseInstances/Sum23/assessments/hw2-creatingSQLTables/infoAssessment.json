@@ -23,11 +23,11 @@
         {
             "title": "Modify Tables",
             "questions": [
-                {"id": "DDL_Questions/modifyTables/1",                "points": 1},
-                {"id": "DDL_Questions/modifyTables/2",                "points": 1},
-                {"id": "DDL_Questions/modifyTables/3",                "points": 1},
-                {"id": "DDL_Questions/modifyTables/4",                "points": 1},
-                {"id": "DDL_Questions/modifyTables/5",                "points": 1}
+                {"id": "DDL_Questions/insertTables/1",                "points": 1},
+                {"id": "DDL_Questions/insertTables/2",                "points": 1},
+                {"id": "DDL_Questions/insertTables/3",                "points": 1},
+                {"id": "DDL_Questions/insertTables/4",                "points": 1},
+                {"id": "DDL_Questions/insertTables/5",                "points": 1}
             ]
         },
         {
