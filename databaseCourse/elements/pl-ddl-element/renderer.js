@@ -35,6 +35,8 @@ $(document).ready(function () {
 
     const dbSchemaElm = $("#db-schema");
 
+    const studentSubmissionElm = $("#textb");
+
     const tables = [];
 
     // Add syntax highlighting to the textarea
@@ -51,6 +53,14 @@ $(document).ready(function () {
             "Ctrl-Enter": executeEditorContents,
         }
     });
+
+    editor.on("change", function () {
+
+        //$("#textb").val(editor.getValue());
+        
+        studentSubmissionElm.value = editor.getValue();
+        console.log(studentSubmissionElm.value)
+    })
 
     // Function that shows DB schema/tables
     function showDBTables() {
@@ -91,14 +101,14 @@ $(document).ready(function () {
         // for (var i = 0; i < results.length; i++) {
         //     table.append(createTableRows(results[i].values));
         // }
-        console.log(results,tableName)
-        let schemaView = " <button type='button' onClick='openMenu(this)' class='dropbtn' id='btn-" + tableName + "'>" + tableName 
-        + "</button> <div class='dropdown-content' id='schema-" + tableName + "'>"
+        console.log(results, tableName)
+        let schemaView = " <button type='button' onClick='openMenu(this)' class='dropbtn' id='btn-" + tableName + "'>" + tableName
+            + "</button> <div class='dropdown-content' id='schema-" + tableName + "'>"
 
         for (var i = 0; i < results[0].values.length; i++) {
             let field = "<div classname='submenu' id='schema-" + tableName + "'>" + results[0].values[i] + "</div>"
             console.log(i)
-            schemaView+=(field)
+            schemaView += (field)
         }
 
         schemaView += "</div>"
@@ -107,25 +117,25 @@ $(document).ready(function () {
     }
 
     // function to show the modals of the schemas
-    window.openMenu = function(val){
+    window.openMenu = function (val) {
         closeMenus();
         console.log(val.id.slice(4))
         document.getElementById('schema-' + val.id.slice(4)).classList.toggle('show');
     }
 
     // function to close the modals of the schemas, basically hides each field in the modal
-    function closeMenus(){
+    function closeMenus() {
         let dropdowns = document.getElementsByClassName('dropdown-content');
-        for(let i = 0; i < dropdowns.length; i++){
-            if(dropdowns[i].classList.contains('show')){
+        for (let i = 0; i < dropdowns.length; i++) {
+            if (dropdowns[i].classList.contains('show')) {
                 dropdowns[i].classList.remove('show')
             }
         }
     }
 
     // if you click outside of a schema name button, the modal goes away
-    window.onclick = function(e){
-        if(!e.target.matches('.dropbtn')){
+    window.onclick = function (e) {
+        if (!e.target.matches('.dropbtn')) {
             closeMenus()
         }
     }

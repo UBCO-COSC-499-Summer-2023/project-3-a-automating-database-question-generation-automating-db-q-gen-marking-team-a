@@ -3,6 +3,12 @@ import chevron
 import lxml.html
 import prairielearn as pl
 
+def prepare(element_html, data):
+        element = lxml.html.fragment_fromstring(element_html)
+        data['params']['submission'] = None
+
+
+
 
 def render(element_html, data):
     '''
@@ -25,12 +31,22 @@ def render(element_html, data):
             'questionText' : z
         }
     
-        with open('pl-ddl-element.mustache', 'r') as f:
+        with open('pl-ddl-element.mustache', 'r', encoding='utf-8') as f:
             html = chevron.render(f, html_params)
         
     # This renders the users submitted answer into the "Submitted answer" box in PL
     elif data['panel'] == 'submission':
-        html = "Submitted string"
+        
+        data['params']['submission'] = data['submitted_answers'].get('c', '')
+        
+        html_params = {
+            'submission': data['params']['submission'],
+        }
+        
+        print(html_params)
+        
+        with open('pl-ddl-submission.mustache', 'r', encoding='utf-8') as f:
+            html = chevron.render(f, html_params)
     
     # This renders the correct answer into the "Correct answer" box in PL
     # This will not be displayed on the student page unless a showCorrectAnswer: True 
@@ -40,7 +56,3 @@ def render(element_html, data):
         html = correctAnswer
     
     return html
-
-def snake_case_to_camel_case(s):
-    return ''.join(x.capitalize() or '_' for x in s.split('_'))
-
