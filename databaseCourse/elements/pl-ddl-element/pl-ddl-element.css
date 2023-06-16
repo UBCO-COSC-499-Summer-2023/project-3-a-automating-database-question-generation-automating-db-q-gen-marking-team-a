@@ -1,0 +1,35 @@
+.dropdown-content,
+.submenu-content,
+.sub-submenu-content,
+.sub-sub-submenu-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 120px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 3;
+}
+
+
+.dropdown-content a,
+.submenu-content a,
+.sub-submenu-content a {
+  color: black;
+  padding: 8px;
+  min-width: 120px;
+  text-decoration: none;
+  display: block;
+  z-index: 3;
+}
+
+
+.dropdown-content a:hover,
+.submenu-content a:hover,
+.sub-submenu-content a:hover,
+.sub-sub-submenu-content a:hover {
+  background-color: #ddd
+}
+
+.show {
+    display: block;
+  }

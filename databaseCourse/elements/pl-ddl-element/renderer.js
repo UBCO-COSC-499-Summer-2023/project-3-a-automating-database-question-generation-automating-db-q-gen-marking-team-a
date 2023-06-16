@@ -62,22 +62,55 @@ $(document).ready(function () {
         })
     }
 
-    // Function that creates tables that showcase schema
+    // Function that shows schema
     function createSchemaTables(results, tableName){
 
-        let table = $("<table></table>");
-        let header = $("<thead></thead>");
-        let headerRow = $("<tr></tr>");
-        let tableHeader = $(`<th colspan="2">${tableName}</th>`);
-        headerRow.append(tableHeader);
-        header.append(headerRow);
-        table.append(header);
+        // let table = $("<table></table>");
+        // let header = $("<thead></thead>");
+        // let headerRow = $("<tr></tr>");
+        // let tableHeader = $(`<th colspan="2">${tableName}</th>`);
+        // headerRow.append(tableHeader);
+        // header.append(headerRow);
+        // table.append(header);
 
-        for (var i = 0; i < results.length; i++) {
-            table.append(createTableRows(results[i].values));
+        // for (var i = 0; i < results.length; i++) {
+        //     table.append(createTableRows(results[i].values));
+        // }
+
+        let schemaView = " <button type='button' onClick='openMenu(this)' class='dropbtn'>" + tableName + "</button> <div class='dropdown-content' id='s-t-1'>"
+
+        for (var i = 0; i < results[0].values.length; i++) {
+            let field = "<div classname='submenu' id='s-t-'" + i + ">" + results[0].values[i] + "</div>"
+            console.log(i)
+            schemaView+=(field)
         }
-        return table;
 
+        schemaView += "</div>"
+        return schemaView
+
+    }
+
+    // function to show the modals of the schemas
+    window.openMenu = function(val){
+        closeMenus();
+        document.getElementById('s-t-1').classList.toggle('show');
+    }
+
+    // function to close the modals of the schemas, basically hides each field in the modal
+    function closeMenus(){
+        let dropdowns = document.getElementsByClassName('dropdown-content');
+        for(let i = 0; i < dropdowns.length; i++){
+            if(dropdowns[i].classList.contains('show')){
+                dropdowns[i].classList.remove('show')
+            }
+        }
+    }
+
+    // if you click outside of a schema name button, the modal goes away
+    window.onclick = function(e){
+        if(!e.target.matches('.dropbtn')){
+            closeMenus()
+        }
     }
 
 
