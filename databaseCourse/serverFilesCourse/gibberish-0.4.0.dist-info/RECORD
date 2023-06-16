@@ -1,0 +1,15 @@
+../../bin/gibberish.exe,sha256=Sgwn4BpV2XabMR_vgf3CEync4-Y5l5atgx6onk3wck8,107972
+gibberish-0.4.0.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
+gibberish-0.4.0.dist-info/LICENSE.txt,sha256=jxaDjNAnx-WtHgisi3u85-R0glJIkLrFrMBUwHLErhQ,1138
+gibberish-0.4.0.dist-info/METADATA,sha256=ZX8HzCn8ADaVw7sYVZkJLkErQ4o9fDX767auxQ2KZ1M,2139
+gibberish-0.4.0.dist-info/RECORD,,
+gibberish-0.4.0.dist-info/REQUESTED,sha256=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU,0
+gibberish-0.4.0.dist-info/WHEEL,sha256=h_aVn5OB2IERUjMbi2pucmR_zzWJtk303YXvhh60NJ8,110
+gibberish-0.4.0.dist-info/entry_points.txt,sha256=2wufrhn4rqqcOXFm2EoSpCiXJ9kFHo9GRLatVPquy8M,54
+gibberish-0.4.0.dist-info/top_level.txt,sha256=beast6E9XI9CODZHt687wp4X0naSfsjG_jMup06eIv0,10
+gibberish/__init__.py,sha256=Czme2zoBFq84xQH4Y8tEeyalqCBd-vHEf5gze6leQ3I,2707
+gibberish/__pycache__/__init__.cpython-39.pyc,,
+gibberish/__pycache__/dir.cpython-39.pyc,,
+gibberish/database/components.yaml,sha256=Jy69HTbo1geZWXmb1tG4gEDuGypbUdZ3bjqIN9YEVCs,10504
+gibberish/database/raw_components.yaml,sha256=yzEEEHtwjH5OPNTc3u1FNJ5xjyNud8RDlNayAmia9aY,9861
+gibberish/dir.py,sha256=WioR57Dq1DGLmLSAmBnLaOgN8iQqeAb-FKmEbLQNono,204

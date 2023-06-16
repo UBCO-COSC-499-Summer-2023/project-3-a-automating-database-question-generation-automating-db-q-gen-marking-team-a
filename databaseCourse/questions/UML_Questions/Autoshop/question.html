@@ -1,0 +1,27 @@
+<pl-uml-element random="False" max-grade = "10">
+    <uml-question>[Customers](Customer) bring their [cars](Car) to the shop for an estimate of repairs.
+        One [mechanic](Mechanic) looks at the car and estimates the total [cost](cost) and [time](time) required for the job.
+        An [estimate](Estimate) has a unique [id](id). If the [customer](Customer) accepts the [estimate](Estimate), a [job](Job) is created from the estimate.
+        A [job](Job) has a unique [number](num) is scheduled for a certain [date](repairDate).
+        Information on the [car](Car) is recorded such as the car [license plate number](licnum) (unique), [make](make), [model](model), [year](year), and the customer [name](custName) and [address](custAddress).
+        A car may come in for service multiple times (may have multiple jobs).
+        A [job](Job) is divided into a list of [repairs](Repair). Each [repair](Repair) has a [number](num), [part cost](partCost) and [description](description).
+        A repair may be [done by](WorksOn) one or more mechanics, who can work for different amounts of [time](time). A [mechanic](mechanic) has a unique [name](name) and an [hourly rate](hourlyRate).
+        The [labor cost](laborCost) of a mechanic [working on](WorksOn) a repair is calculated using his time and the mechanic hourly rate.</uml-question>
+    <uml-answer>[Estimate| id {PK}; cost; time]
+[Job| num {PK}; repairDate]
+[Repair| num {PK}; partCost; description]
+[Mechanic| name {PK}; hourlyRate]
+[Car| licnum {PK}; make; model; year; custName; custAddress]
+[WorksOn| time; laborCost]
+[Mechanic] 1..1 - 0..* [Estimate]
+[Estimate] 1..1 - 0..1 [Job]
+[Estimate] 1..* - 1..1 [Car]
+[Job] 1..* - 1..1 [Car]
+[Job] 1..1 - 1..* [Repair]
+[Mechanic] 1..1 - 0..* [WorksOn]
+[Repair] 1..1 - 1..* [WorksOn]</uml-answer>
+    <uml-marking entity-name="0.2" entity-attributes="0.1" entity-key="0.2" extra-entity-penalty="0.25" weak_entity="0.5" relationship="0.5" cardinality="0.25" extra-relationship-penalty="0.25"></uml-marking>
+</pl-uml-element>
+
+

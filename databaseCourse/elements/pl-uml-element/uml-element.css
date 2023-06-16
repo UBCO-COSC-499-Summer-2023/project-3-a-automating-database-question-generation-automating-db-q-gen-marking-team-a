@@ -1,0 +1,632 @@
+ * {
+      font-size: 1em;
+    }
+
+    html,
+    body {
+      margin: 0;
+      /*display: flex;*/
+      justify-content: center;
+      align-items: center;
+    }
+
+    #manageNav {
+      font-family: "Lato", serif;
+    }
+
+    #markFeedback {
+      white-space: pre-line;
+    }
+
+    #mainContainer {
+      margin-top: 47px;
+      font-family: "Lato", serif;
+    }
+
+    #mainContainer:left {
+      content: '';
+      display: block;
+      margin-left: -2.5em;
+    }
+
+    /* The bar with preview button */
+
+    #pageQuestion {
+      width: 100%;
+      margin: auto;
+      background-color: #ffffff;
+      z-index: 1;
+      line-height: 1.5;
+      /*border-bottom: 1px solid black;*/
+    }
+
+    /* Question container */
+
+    #question {
+      padding-top: 10px;
+      padding-right: 80px;
+      line-height: 1.7;
+      list-style: none;
+      font-size: 1em;
+    }
+
+    /* styling question text */
+
+    #pageDiagram {
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      /*background-color: #dbe6ec;*/
+    }
+
+    /* Diagram container */
+
+    #diagramWrapper {
+
+      min-width: 50%;
+      height: fit-content;
+      width: fit-content;
+      max-height: 100%;
+      max-width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+      background-color: #ffffff;
+      /*border:1px solid black;*/
+      overflow: auto;
+    }
+
+    /*is fixed size and displays message if diagram is empty, expands as we fill in the diagram */
+
+    #diagramMessage {
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    /* MARK MESSAGE*/
+
+    #markDisplay:hover {
+      text-decoration: underline;
+    }
+
+    /* STUDENT INFO */
+    /* #studentInfo {
+      margin-inline: 2em;
+      width: 100%;
+    } */
+
+    /* MANAGE ENTITIES */
+    #entContent {
+      height: 95%;
+      display: block;
+      flex-wrap: wrap;
+      flex-direction: row;
+      justify-content: space-evenly;
+      align-content: flex-start;
+      overflow-y: scroll;
+      /* margin-top: 4%; */
+    }
+
+    /* entity Manager content */
+    .entWrapper {
+      position: relative;
+      margin-left: 3%;
+      margin-right: 3%;
+    }
+
+    /* wrapper of each table for entities */
+
+    /* Entity Table styling */
+    .table {
+      margin: 0 0 40px 0;
+      width: 100%;
+      display: table;
+    }
+
+    @media screen and (max-width: 580px) {
+      .table {
+        display: table;
+      }
+    }
+    /*Code is breaking formatting*/
+    /*.row {
+      display: table-row;
+      background: #f6f6f6;
+    }*/
+
+    .entRow:nth-of-type(odd) {
+      background: #e9e9e9;
+      display: table-row;
+    }
+
+    .entRow:nth-of-type(even) {
+      display: table-row;
+    }
+
+    .entRow.header {
+      font-weight: 900;
+      color: #ffffff;
+      background: #83C5BE;
+      text-align: center;
+      display: table-cell;
+    }
+
+    /* .row.green {
+background: #27ae60;
+}
+.row.blue {
+background: #2980b9;
+} */
+    @media screen and (max-width: 580px) {
+      .row {
+        padding: 8px 0;
+        /* display: block; */
+      }
+    }
+
+    .cell {
+      padding: 6px 12px;
+      /* display: table-cell; */
+    }
+
+    @media screen and (max-width: 580px) {
+      .cell {
+        padding: 2px 12px;
+        /* display: block; */
+      }
+    }
+
+
+    /* MANAGE RELATIONSHIPS */
+    #relContent {
+      position: relative;
+      height: 80%;
+      width: 100%;
+      display: flex;
+      flex-wrap: nowrap;
+      flex-direction: column;
+      text-align: center;
+      overflow-y: scroll;
+      /* margin-top: 28.5px; */
+    }
+
+    #relContent:after {
+      content: '';
+      display: block;
+      margin-bottom: -2.5em;
+    }
+
+    /* relationship Manager content */
+    .relWrapper {
+      margin-top: 15px;
+      padding-left: 5px;
+      position: relative;
+      margin-left: auto;
+      margin-right: auto;
+      display: flex;
+      flex-wrap: nowrap;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    /*Hide Hidden Box to Contain User Answer*/
+    #hiddenAnswerBox {
+        display: none;
+    }
+
+    /* wrapper for each element in relationship list */
+
+    .relColumn {
+      width: 100%;
+      font-size: 0.9em;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* Structure elements within relWrapper */
+
+
+    /* MANAGERS */
+    #managerScrollable {
+      height: 94%;
+      width: 0;
+      position: absolute;
+      z-index: 2;
+      top: 47px;
+      right: 0;
+      background-color: #F5F5F5;
+      overflow: auto;
+      transition: 0.5s;
+      /* padding-top: 20px; */
+
+    }
+
+    /* Manager menu contents */
+
+    /* Navigation bar for manager */
+    #manageNav {
+      overflow: hidden;
+      display:flex;
+      flex-direction: row;
+      justify-content: space-between;
+      background-color: #eaeaea;
+      /*position: fixed;*/
+      top: 0;
+      width: 100%;
+      z-index: 2;
+
+    }
+    #leftElements{
+      display: flex;
+      flex-direction: row;
+      justify-content: start;
+    }
+    #actionButtons{
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+    }
+
+
+    #infoTextHolder {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      gap:1em;
+      color: #444;
+      margin-left: 1em;
+    }
+    #attemptsLeft,
+    #markDisplay
+    {
+      color:#4b9089;
+    }
+
+    .manage-large-screen{
+      display:flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+    }
+
+    .manage-small-screen {
+      display: none;
+    }
+
+    @media screen and (max-width: 900px) {
+      .manage-large-screen {
+        display: none;
+      }
+
+      .manage-small-screen {
+        overflow: hidden;
+        display: block;
+        width: 100%;
+        background-color: #eaeaea;
+
+      }
+
+      .managerBtn {
+        float: none;
+        width: 50%;
+      }
+
+      #managerScrollable {
+        min-height: 120px;
+        width: 100%;
+        top: 0px;
+        position: relative;
+        background-color: #fafafa;
+        overflow: auto;
+        /*transition: 0.5s;*/
+        padding-top: 20px;
+        display: block;
+
+      }
+
+      .relColumn {
+        font-size: 1em;
+      }
+
+      .largeScreenTxt {
+        display: none;
+      }
+
+    }
+
+    /* Button for the manager menu*/
+    .managerBtn {
+      float: right;
+      background-color: #eaeaea;
+      color: #444;
+      cursor: pointer;
+      border: none;
+      text-align: center;
+      outline: none;
+      font-size: 15px;
+      padding: 14px 16px;
+
+    }
+
+    .managerBtn:hover {
+      background-color: #D6D6D6;
+    }
+
+    /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+    .managerBtn.active {
+      background-color: #90CBC5;
+      color: #ffffff;
+    }
+
+    .managerBtn.active:hover {
+      background-color: #90CBC5;
+      color: #ffffff;
+    }
+
+    .no-entity {
+      font-size: 1em;
+      text-align: center;
+    }
+
+    /* BUTTONS */
+    /* Red buttons styling (large and small) */
+    .myBtn {
+      background-color: #83C5BE;
+      border: none;
+      display: inline-block;
+      cursor: pointer;
+      color: #ffffff;
+      font-family: Arial;
+      padding: 14px 16px;
+      text-decoration: none;
+      font-size: 15px;
+    }
+
+    .myBtn:hover {
+      background-color: #99a9b3;
+    }
+
+    .myBtn:active {
+      position: relative;
+      top: 1px;
+    }
+
+    .myBtnSmall {
+      background-color: #83C5BE;
+      border: 1px solid #83C5BE;
+      cursor: pointer;
+      color: #ffffff;
+      font-family: Arial;
+      font-size: 0.8em;
+      padding: 0.5em 1em;
+      margin-left: 0.2em;
+      text-decoration: none;
+    }
+
+    .myBtnSmall:hover {
+      background-color: #a0a0a0;
+    }
+
+    .myBtnSmall:active {
+      position: relative;
+      top: 1px;
+    }
+
+    .iconBtn {
+      cursor: pointer;
+      font-size: 15px;
+      width: inherit;
+      height: inherit;
+      /* background-color:#cbd9e4; */
+    }
+
+    .iconBtn:hover {
+      background-color: #99a9b3;
+      color: white;
+    }
+
+    #addRelBtn,
+    #editRelBtn,
+    #addAttBtn {
+      margin: 0 auto;
+      display: block;
+    }
+
+
+    /* DROPDOWNS */
+    .dropbtn {
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      padding: 0px;
+      background-color: white;
+    }
+
+
+    .dropbtn:hover,
+    .dropbtn:focus {
+      text-decoration: underline;
+    }
+
+
+    .dropdown,
+    .submenu,
+    .sub-submenu {
+      position: relative;
+      display: inline-block;
+    }
+
+
+    .dropdown-content,
+    .submenu-content,
+    .sub-submenu-content,
+    .sub-sub-submenu-content {
+      display: none;
+      position: absolute;
+      background-color: #f1f1f1;
+      min-width: 120px;
+      box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+      z-index: 3;
+    }
+
+
+    .dropdown-content a,
+    .submenu-content a,
+    .sub-submenu-content a {
+      color: black;
+      padding: 8px;
+      min-width: 120px;
+      text-decoration: none;
+      display: block;
+      z-index: 3;
+    }
+
+
+    .dropdown-content a:hover,
+    .submenu-content a:hover,
+    .sub-submenu-content a:hover,
+    .sub-sub-submenu-content a:hover {
+      background-color: #ddd
+    }
+
+    .show {
+      display: block;
+    }
+
+    .submenu-content,
+    .sub-submenu-content,
+    .sub-sub-submenu-content {
+      top: 0;
+      left: 100%;
+      margin-top: -1px;
+    }
+
+    .submenu:hover .submenu-content,
+    .sub-submenu:hover .sub-submenu-content {
+      display: block;
+    }
+
+    .disabled-link {
+      font-style: italic;
+      color: #808080;
+      /*cursor: not-allowed;*/
+      opacity: 0.5;
+      text-decoration: none;
+      pointer-events: none;
+    }
+
+
+
+
+    /* MODALS */
+    .modal {
+      display: none;
+      /* Hidden by default */
+      position: fixed;
+      top: 25%;
+      left: 25%;
+      /* Sit on top */
+      float: left;
+      /* transform: translate(-50%, -50%); */
+      width: 300px;
+      /* Full width */
+      height: fit-content;
+      /*max-height: 300px;*/
+      /* Full height */
+      font-family: "Lato", serif;
+    }
+
+    /* Make Mark Details modal full sized & resizable */
+    #markDetailsModal {
+      width: 40em;
+      height: fit-content;
+      max-height: 40em;
+      overflow-y: scroll;
+    }
+
+    #helpModal {
+      width: 40em;
+      height: fit-content;
+      max-height: 40em;
+
+    }
+
+    #umlModal {
+      width: fit-content;
+      height: fit-content;
+    }
+
+
+    /* Modal Content/Box */
+
+    .add-modal-content,
+    .edit-modal-content,
+    .markDetails-modal-content,
+    .help-modal-content,
+
+
+    .attribute-modal-content {
+      background-color: #ffffff;
+      margin: 15% auto;
+      /* 15% from the top and centered */
+      padding: 20px;
+      border: 2px solid #888;
+      width: 100%;
+      /* Could be more or less, depending on screen size */
+    }
+
+    /* The Close Button */
+    .closeContainer {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    #closeBtnContainer {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .closebtn {
+      /* position: absolute;
+top: 0;
+right: 25px; */
+      font-size: 25px;
+      margin-right: 0.5em;
+      text-decoration: none;
+      color: #444;
+    }
+
+    .caret {
+      position: absolute;
+      top: 15px;
+      right: 5px;
+    }
+
+
+    .modalTitle {
+      display: flex;
+      justify-content: center;
+    }
+
+    hr.solid {
+        border-top: 2px solid #bbb;
+    }
+    #umlText {
+        white-space: pre-line;
+    }

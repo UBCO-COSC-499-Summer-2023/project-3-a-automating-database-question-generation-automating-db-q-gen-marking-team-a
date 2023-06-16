@@ -1,0 +1,21 @@
+<pl-uml-element random="False" max-grade = "10">
+    <uml-question>Construct a database design in UML for an app store described below.
+        A [Publisher](publisher) where each [publisher](publisher) is identified by an [id](id) and has a [name](name).
+        A [Category](category) where each [category](category) has an [id](id), a [name](name), and may have a parent [category](category).
+        An [App](app) storing each [app](app) that is identified by a field called [id](id) and other attributes include [name](name) and [description](description). An [App](app) is created by one [Publisher](publisher). A [Publisher](publisher) may publish multiple [Apps](app). An [App](app) has a [Category](category).
+        A [AppVersion](appVersion) stores each version of the app. An [AppVersion](appVersion) is associated with exactly one [App](app). Use a [version](version) field to identify between [versions](appVersion) of the same [App](app). Each [AppVersion](appVersion) has a [release date](releaseDate), a [rating](rating), a [price](price), and a [description](description).
+        A [AppVersionReview](appVersionReview) stores [ratings](rating) for each application version. Each [instance](appVersionReview) applies to a single [AppVersion](appVersion), and different [reviews](appVersionReview) are identified by [reviewer](reviewer) attribute (which is name of reviewer). There is also a [reviewDate](reviewDate), [rating](rating), and [review](review).</uml-question>
+    <uml-answer>[Publisher| id{PK}; name]
+[App| id{PK}; name; description]
+[Category| id{PK}; name]
+[AppVersion| appVersion{PPK}; releaseDate; rating; price; description]
+[AppVersionReview| reviewer{PPK}; reviewDate; rating; review]
+[Publisher]1..1 - 0..*[App]
+[App]0..* - 1..1[Category]
+[Category]0..* - 1..1[Category]
+[App]1..1 - 0..*[AppVersion]
+[AppVersionReview]0..* - 1..1[AppVersion]</uml-answer>
+    <uml-marking entity-name="0.2" entity-attributes="0.1" entity-key="0.2" extra-entity-penalty="0.25" weak_entity="0.5" relationship="0.5" cardinality="0.25" extra-relationship-penalty="0.25"></uml-marking>
+</pl-uml-element>
+
+

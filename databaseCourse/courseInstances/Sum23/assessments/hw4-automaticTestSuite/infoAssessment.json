@@ -1,0 +1,35 @@
+{
+    "uuid": "294e5841-b705-4720-b5d4-266b82e9c6c8",
+    "type": "Homework",
+    "title": "Homework For UML Testing",
+    "set": "Homework",
+    "number": "4",
+    "allowAccess": [
+        {
+            "credit": 100
+        }
+    ],
+    "zones": [
+        {
+            "questions": [
+                {"id": "UML_Questions/randomUML",                "points": 10},
+                {"id": "UML_Questions/Autoshop",                "points": 10},
+                {"id": "UML_Questions/Banks",                "points": 10},
+                {"id": "UML_Questions/Claim",                "points": 10},
+                {"id": "UML_Questions/Congress",                "points": 10},
+                {"id": "UML_Questions/Drug",                "points": 10},
+                {"id": "UML_Questions/Fish_Store",                "points": 10},
+                {"id": "UML_Questions/Football",                "points": 10},
+                {"id": "UML_Questions/Game_Database",                "points": 10},
+                {"id": "UML_Questions/Hospital",                "points": 10},
+                {"id": "UML_Questions/Hotel",                "points": 10},
+                {"id": "UML_Questions/Inventory",                "points": 10},
+                {"id": "UML_Questions/Medical_System",                "points": 10},
+                {"id": "UML_Questions/Music_DB",                "points": 10},
+                {"id": "UML_Questions/Project",                "points": 10},
+                {"id": "UML_Questions/Publisher",                "points": 10},
+                {"id": "UML_Questions/Student",                "points": 10}
+            ]
+        }
+    ]
+}

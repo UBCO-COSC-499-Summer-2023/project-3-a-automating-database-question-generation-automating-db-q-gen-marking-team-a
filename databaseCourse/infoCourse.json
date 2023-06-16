@@ -1,0 +1,17 @@
+{
+    "uuid": "5b82b56a-0261-11ed-b939-0242ac120002",
+    "name": "COSC 304 Labs",
+    "title": "Lab Demos",
+    "options": {
+        "useNewQuestionRenderer": true
+    },
+    "assessmentSets": [],
+    "topics": [
+        {"name": "Databases", "color": "red3", "description": "Database Questions"}
+
+    ],
+    "tags": [
+        {"name": "rlawrence", "color": "gray1", "description": "Question originally written by rlawrence"}
+
+    ]
+}
