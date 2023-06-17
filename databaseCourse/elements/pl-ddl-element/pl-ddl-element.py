@@ -7,6 +7,7 @@ def prepare(element_html, data):
         element = lxml.html.fragment_fromstring(element_html)
         data['params']['oldAnswer'] = None
         data['params']['feedback'] = None
+        data['params']['answer'] = pl.inner_html(element[1])
 
 
 
@@ -53,7 +54,24 @@ def render(element_html, data):
     # This will not be displayed on the student page unless a showCorrectAnswer: True 
     # is specified in the info.json file.
     elif data['panel'] == 'answer':
-        correctAnswer = pl.inner_html(element[1])
-        html = correctAnswer
+        
+        html = pl.inner_html(element[1])
     
     return html
+
+
+# Not working as of June 16
+def grade(element_html, data):
+    
+    element = lxml.html.fragment_fromstring(element_html)
+
+    
+    submittedAnswer = data['submitted_answers'].get('c', '')
+    correctAnswer = pl.inner_html(element[1])
+
+    
+    # Check if the submitted answer is correct
+    if submittedAnswer == correctAnswer:
+        data["partial_scores"]["ddl_answer"]["score"] = 1
+    else:
+        data["partial_scores"]["ddl_answer"]["score"] = 0.5
