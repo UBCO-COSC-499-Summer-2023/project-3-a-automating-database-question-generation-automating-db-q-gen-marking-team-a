@@ -55,12 +55,9 @@ $(document).ready(function () {
     });
 
     editor.on("change", function () {
-
-        //$("#textb").val(editor.getValue());
-        
-        studentSubmissionElm.value = editor.getValue();
-        console.log(studentSubmissionElm.value)
-    })
+        const values = editor.getDoc().getValue();
+        studentSubmissionElm.val(values);
+    });
 
     // Function that shows DB schema/tables
     function showDBTables() {

@@ -14,6 +14,7 @@
     <br>
   
     <textarea id="commands">
+    
     </textarea>
   
       <div id="execute" class="button">Execute</div>
@@ -22,8 +23,8 @@
   
       <pre id="output">Results will be displayed here</pre>
 
-    <div id="submissionString">
-      <span  id="textb" name="c" value="{{submitted_answers.c}}"></span>
+    <div id="hiddenAnswerBox">
+        <textarea  id="textb" name="c" type="text">{{submitted_answers.c}}</textarea>
     </div>
   
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.1/mode/sql/sql.min.js"></script>

@@ -5,8 +5,8 @@ import prairielearn as pl
 
 def prepare(element_html, data):
         element = lxml.html.fragment_fromstring(element_html)
-        data['params']['submission'] = None
-
+        data['params']['oldAnswer'] = None
+        data['params']['feedback'] = None
 
 
 
@@ -23,6 +23,7 @@ def render(element_html, data):
 
     
     element = lxml.html.fragment_fromstring(element_html)
+    data['params']['oldAnswer'] = data['submitted_answers'].get('c', '')
      
     # This renders the question into PL
     if data['panel'] == 'question':  
@@ -36,14 +37,14 @@ def render(element_html, data):
         
     # This renders the users submitted answer into the "Submitted answer" box in PL
     elif data['panel'] == 'submission':
-        
-        data['params']['submission'] = data['submitted_answers'].get('c', '')
+
         
         html_params = {
-            'submission': data['params']['submission'],
+            'submission': True,
+            'studentSubmission': data['params']['oldAnswer'],
         }
         
-        print(html_params)
+
         
         with open('pl-ddl-submission.mustache', 'r', encoding='utf-8') as f:
             html = chevron.render(f, html_params)
