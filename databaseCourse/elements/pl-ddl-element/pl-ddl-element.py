@@ -55,23 +55,37 @@ def render(element_html, data):
     # is specified in the info.json file.
     elif data['panel'] == 'answer':
         
-        html = pl.inner_html(element[1])
+        html_params = {
+            'answer': True,
+            'correctAnswer': pl.inner_html(element[1]),
+        }
+        with open('pl-ddl-answer.mustache', 'r', encoding='utf-8') as f:
+            html = chevron.render(f, html_params).strip()
     
     return html
 
 
-# Not working as of June 16
+
 def grade(element_html, data):
     
     element = lxml.html.fragment_fromstring(element_html)
 
     
     submittedAnswer = data['submitted_answers'].get('c', '')
+    stripSA = submittedAnswer.strip()
     correctAnswer = pl.inner_html(element[1])
-
+    stripCA = correctAnswer.strip()
     
-    # Check if the submitted answer is correct
-    if submittedAnswer == correctAnswer:
+    if 'ddl_answer' not in data['partial_scores']:
+        data['partial_scores']['ddl_answer'] = {}
+        
+    # Normalize and split the strings into lists of words
+    words_SA = sorted(stripSA.split())
+    words_CA = sorted(stripCA.split())
+
+    # Check if the sorted lists of words are equal
+    if words_SA == words_CA:
         data["partial_scores"]["ddl_answer"]["score"] = 1
     else:
-        data["partial_scores"]["ddl_answer"]["score"] = 0.5
+        data["partial_scores"]["ddl_answer"]["score"] = 0
+        
