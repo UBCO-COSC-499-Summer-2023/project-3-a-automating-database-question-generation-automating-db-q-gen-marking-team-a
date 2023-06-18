@@ -13,7 +13,7 @@
     <label for='commands'>Enter some SQL</label>
     <br>
   
-    <textarea id="commands">
+    <textarea id="commands" name="c" type="text"> {{submitted_answers.c}}
     
     </textarea>
   
@@ -23,9 +23,6 @@
   
       <pre id="output">Results will be displayed here</pre>
 
-    <div id="hiddenAnswerBox">
-        <textarea  id="textb" name="c" type="text">{{submitted_answers.c}}</textarea>
-    </div>
   
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.1/mode/sql/sql.min.js"></script>
     

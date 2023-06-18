@@ -54,10 +54,14 @@ $(document).ready(function () {
         }
     });
 
+    /* May be obsolete with change to mustache file,
+    can remove after code review to ensure nothing broken.
+
     editor.on("change", function () {
         const values = editor.getDoc().getValue();
         studentSubmissionElm.val(values);
     });
+    */
 
     // Function that shows DB schema/tables
     function showDBTables() {
