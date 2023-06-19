@@ -12,7 +12,11 @@
     "zones": [
         {
             "questions": [
-                {"id": "RelaX_Questions/Q1",             "points": 10}
+                {"id": "RelaX_Questions/1",             "points": 2},
+                {"id": "RelaX_Questions/2",             "points": 2},
+                {"id": "RelaX_Questions/3",             "points": 2},
+                {"id": "RelaX_Questions/4",             "points": 2},
+                {"id": "RelaX_Questions/5",             "points": 2}
             ]
         }
     ]
