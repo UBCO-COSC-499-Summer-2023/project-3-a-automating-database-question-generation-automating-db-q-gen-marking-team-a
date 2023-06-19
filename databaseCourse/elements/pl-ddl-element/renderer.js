@@ -150,3 +150,5 @@ savedbElm.addEventListener("click", savedb, true);
 
 
 });
+
+module.exports = tableCreate;
