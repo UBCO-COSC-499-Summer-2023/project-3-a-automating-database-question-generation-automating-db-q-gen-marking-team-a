@@ -49,3 +49,38 @@ https://e869-64-180-128-103.ngrok-free.app/login
 ```
 
 5. run `docker-compose build` `docker-compose start`
+# Docker Documentation for PrairieLearn and AutoER
+1. Install docker, docker-compose, and docker-desktop(optional)
+
+2. git clone the prairielearn repo, and the AutoER Repo.
+
+3. Make Sure that in the Docker-compose.yml file in the AutoER database the Image line states `prairielearn/prairielearn:latest`, instead of `prairielearn/prairielearn:local`
+or
+build the docker image from the prairielearn repo.
+test to make sure you have the docker image by running `docker images`
+
+4. inside the AutoER repo, run `docker-compose create`
+then `docker-compose start`
+
+5. to check if the docker container is running, run `docker-compose ps`. if the response is empty, run `docker-compose ps -a`, and it will show the status of the closed docker container.
+
+
+### Issues With PrairieLearn pertaining to AutoER
+
+1. the `elements/pl-iml-element` element does not work when loaded universally in the `[prairielearn directory]` and must be loaded in the `[course directory]` of choice. Prairielearn Documentation ***EXPLICITLY*** states that the elements directory be in either directory - depending on desired functionality.
+
+2. The AutoER `docker-compose.yml` file was set to load a local image of prairielearn, which does not exist on a virgin machine. as staeted in step 3. changing the Image line from `prairielearn/prairielearn:latest`, instead of `prairielearn/prairielearn:local` should solve this issue. Otherwise building the image from the PrairieLearn repo, then launching the docker-compose inside the AutoER directory should work.
+
+3. As per the PrairieLearn Documentation. All question directories should have a `server.py` file. none of the AutoER questions have that. This creates confusion.
+
+# Linters
+
+This project makes use of two linters, ESLint for JavaScript and pylint for Python.  
+
+## ESLint
+ESLint requires Node.js to be installed locally. To download Node.js, visit `https://nodejs.org/en`. ESLint can then be run either through the console (visit `https://eslint.org/docs/latest/` for more information) or the recommended route of installing it through Visual Studio Code. The linter automatically runs when used through Visual Studio Code.  
+To adjust ESLinter's configuration, use the `.eslintrc.json` file and adjust the `"rules"` block. Visit `https://eslint.org/docs/latest/rules/` for a complete list of rules.  
+
+## pylint
+pylint must be installed locally. It can be installed using `pip install pylint`. pylint can be run through either the console (visits `https://docs.pylint.org/index.html` for more information) or the recommended route of installing it through Visual Studio Code. The linter automatically runs when used through Visual Studio Code.  
+To adjust pylint's configuration, use the `.pylintrc` file. Visit `https://docs.pylint.org/index.html` for more information about pylint configuration.
