@@ -1,12 +1,12 @@
 {
-    "uuid": "104ccb47-de6f-477c-87dc-1f6969c10973",
-      "title": "SQL Querry 1",
+    "uuid": "2281a3a2-3b22-4811-a3b3-6a868bec8d71",
+      "title": "SQL Query 2",
     "topic": "Databases",
     "singleVariant": true,
     "tags": [
         "rlawrence",
         "Demo",
-        "DDL"
+        "SQL"
     ],
     "type": "v3"
 }

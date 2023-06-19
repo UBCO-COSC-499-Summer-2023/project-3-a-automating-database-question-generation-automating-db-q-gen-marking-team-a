@@ -1,0 +1,43 @@
+<!-- Question introduction -->
+<pl-question-panel>
+    Given the following relational schema, write queries in SQL to answer the English question.
+
+    <markdown>
+        customer(cid: integer, cname: string, address: string, city: string, state: string)
+        product(pid: integer, pname: string, price: currency, inventory: integer)
+        shipment(sid: integer, cid: integer, shipdate: DateTime)
+        shippedproduct(sid: integer, pid: integer, amount: integer)
+    </markdown>
+</pl-question-panel>
+
+<!-- Start Part 1 -->
+
+<!-- Question text -->
+<pl-question-panel>
+    Return the top 5 products for state <strong>'BC'</strong> based on shipment revenue (<strong>amount*price</strong>) for the year <strong>2021</strong>.
+    <br>
+    Expected Output:
+    <br>
+    <markdown>
+        +-------+------+-------------------------+-----------+
+        | state | year | pname                   | revenue   |
+        +-------+------+-------------------------+-----------+
+        | BC    | 2021 | Sports Car              | 247000.00 |
+        | BC    | 2021 | Table                   |   6500.00 |
+        | BC    | 2021 | Textbook                |    500.00 |
+        | BC    | 2021 | Deluxe Sweet Collection |    326.50 |
+        | BC    | 2021 | Teddy Bear              |    103.92 |
+        +-------+------+-------------------------+-----------+
+    </markdown>
+</pl-question-panel>
+
+
+<!-- SQL editor -->
+<pl-ddl-element>
+    <ddl-question>
+    </ddl-question>
+    
+    <ddl-marking ></ddl-marking>
+</pl-ddl-element>
+
+<!-- End Part 1 -->

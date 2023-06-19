@@ -1,0 +1,51 @@
+<!-- Question introduction -->
+<pl-question-panel>
+    Given the following relational schema, write queries in SQL to answer the English question.
+
+    <markdown>
+        customer(cid: integer, cname: string, address: string, city: string, state: string)
+        product(pid: integer, pname: string, price: currency, inventory: integer)
+        shipment(sid: integer, cid: integer, shipdate: DateTime)
+        shippedproduct(sid: integer, pid: integer, amount: integer)
+    </markdown>
+</pl-question-panel>
+
+<!-- Start Part 1 -->
+
+<!-- Question text -->
+<pl-question-panel>
+    Return a list of the distinct city and states of customers. Order output by <strong>state</strong> descending.
+    <br>
+    Expected Output:
+    <br>
+    <markdown>
+        +------------------+-------+
+        | city             | state |
+        +------------------+-------+
+        | Morristown       | NJ    |
+        | Detroit          | MI    |
+        | Wyandotte        | MI    |
+        | Chicago          | IL    |
+        | Springfield      | IL    |
+        | Iowa City        | IA    |
+        | Muscatine        | IA    |
+        | Hollywood        | CA    |
+        | Huntington Beach | CA    |
+        | Kelowna          | BC    |
+        | Lake Country     | BC    |
+        | Vernon           | BC    |
+        | Calgary          | AB    |
+        +------------------+-------+
+    </markdown>
+</pl-question-panel>
+
+
+<!-- SQL editor -->
+<pl-ddl-element>
+    <ddl-question>
+    </ddl-question>
+    
+    <ddl-marking ></ddl-marking>
+</pl-ddl-element>
+
+<!-- End Part 1 -->

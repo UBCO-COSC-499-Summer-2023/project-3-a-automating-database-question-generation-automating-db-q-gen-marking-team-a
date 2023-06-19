@@ -1,0 +1,43 @@
+<!-- Question introduction -->
+<pl-question-panel>
+    Given the following relational schema, write queries in SQL to answer the English question.
+
+    <markdown>
+        customer(cid: integer, cname: string, address: string, city: string, state: string)
+        product(pid: integer, pname: string, price: currency, inventory: integer)
+        shipment(sid: integer, cid: integer, shipdate: DateTime)
+        shippedproduct(sid: integer, pid: integer, amount: integer)
+    </markdown>
+</pl-question-panel>
+
+<!-- Start Part 1 -->
+
+<!-- Question text -->
+<pl-question-panel>
+    Return the customer id, name, state, and shipment date for all customers in <strong>'BC'</strong> or <strong>'IA'</strong> that have had a shipment in <strong>2022</strong>. Note you can use <a href="https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html#function_year">YEAR()</a> function to get the year form the shipment date or use date comparisons. Order by <strong>shipdate</strong> descending.
+    <br>
+    Expected Output:
+    <br>
+    <markdown>
+        +-----+--------------+-------+---------------------+
+        | cid | cname        | state | shipdate            |
+        +-----+--------------+-------+---------------------+
+        |  11 | Aiden Adams  | BC    | 2022-09-24 00:00:00 |
+        |  10 | Suzanne May  | IA    | 2022-08-26 00:00:00 |
+        |   9 | Beth Rosebud | IA    | 2022-08-24 00:00:00 |
+        |  12 | Betty Bains  | BC    | 2022-08-24 00:00:00 |
+        |  15 | Elish Elias  | BC    | 2022-08-24 00:00:00 |
+        +-----+--------------+-------+---------------------+
+    </markdown>
+</pl-question-panel>
+
+
+<!-- SQL editor -->
+<pl-ddl-element>
+    <ddl-question>
+    </ddl-question>
+    
+    <ddl-marking ></ddl-marking>
+</pl-ddl-element>
+
+<!-- End Part 1 -->

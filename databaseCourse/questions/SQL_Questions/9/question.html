@@ -1,0 +1,48 @@
+<!-- Question introduction -->
+<pl-question-panel>
+    Given the following relational schema, write queries in SQL to answer the English question.
+
+    <markdown>
+        customer(cid: integer, cname: string, address: string, city: string, state: string)
+        product(pid: integer, pname: string, price: currency, inventory: integer)
+        shipment(sid: integer, cid: integer, shipdate: DateTime)
+        shippedproduct(sid: integer, pid: integer, amount: integer)
+    </markdown>
+</pl-question-panel>
+
+<!-- Start Part 1 -->
+
+<!-- Question text -->
+<pl-question-panel>
+    Return a complete list of products (<strong>pid</strong>, <strong>pname</strong>), the total number of shipments, and total shipped amount that they have been shipped to customers in <strong>'IA'</strong>. Hint: Start by writing a query to determine total shipments and amount for all products. Not all products will appear. To get all products, need a special join using a subquery that you just produced.
+    <br>
+    Expected Output:
+    <br>
+    <markdown>
+        +-----+-------------------------+--------------+--------------------+
+        | pid | pname                   | numShipments | totalShippedAmount |
+        +-----+-------------------------+--------------+--------------------+
+        |   1 | Swiss Chocolate         |            2 |                 24 |
+        |   2 | Wooden Chair            |            2 |                 34 |
+        |   3 | Teddy Bear              |         NULL |               NULL |
+        |   4 | Chocolate Bar           |         NULL |               NULL |
+        |   5 | Desk                    |         NULL |               NULL |
+        |   6 | Table                   |            1 |                  5 |
+        |   7 | Deluxe Sweet Collection |         NULL |               NULL |
+        |   8 | Table                   |            1 |                 25 |
+        |   9 | Sports Car              |         NULL |               NULL |
+        |  10 | Textbook                |            1 |                  2 |
+        +-----+-------------------------+--------------+--------------------+
+    </markdown>
+</pl-question-panel>
+
+
+<!-- SQL editor -->
+<pl-ddl-element>
+    <ddl-question>
+    </ddl-question>
+    
+    <ddl-marking ></ddl-marking>
+</pl-ddl-element>
+
+<!-- End Part 1 -->
