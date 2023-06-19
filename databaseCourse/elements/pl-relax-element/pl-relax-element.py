@@ -14,16 +14,14 @@ def render(element_html, data):
     element = lxml.html.fragment_fromstring(element_html)
     # Gets each element from the questionHTML
     questionText = pl.inner_html(element[0])
-    relaxFile = pl.inner_html(element[1])
-
+    database = pl.inner_html(element[1])
     # setting the paramaters
     html_params = {
         'questionText' : questionText,
-        'relaxFile' : relaxFile
+        'database' : database
     }
     # Opens and renders mustache file into the question html
     with open('pl-relax-element.mustache', 'r') as f:
         html = chevron.render(f, html_params)
 
     return html
-

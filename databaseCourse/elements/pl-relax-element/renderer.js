@@ -2,6 +2,91 @@
 
 $(document).ready(function () {
     //* QUESTION SETUP
+    const executeRelalg = relalg_bundle.executeRelalg;
+    const Relation = relalg_bundle.Relation;
+    // find all relations used in this branch (recursively)
+    const dbSchema = document.getElementById("database");
+
+    const dbValue = dbSchema.getAttribute("value");
+    const dbArray = dbValue.split(";");
+    // database setup
+    const dataset = [dbArray.length];
+    for (var i = 0; i < dbArray.length; i++){   
+        dataset[i] = executeRelalg(dbArray.at(i), {});
+    }
+    // const S = executeRelalg(dbArray.at(0), {});
+    // const P = executeRelalg(dbArray.at(1), {});
+    
+    
+    
+    //for(elem in dataset) {
+
+    //}
+    //renderDatasSet()
+
+
+
+    
+    console.log(dataset.length)
+    for(var i = 0; i < dataset.length; i++) {
+        dbSchema.innerHTML += createSchemaTables(dataset.at(i)._schema)
+    }
+
+    
+
+    function createSchemaTables(dataSchema) {
+
+        // if tables have no rows, means table does not exist
+        if (dataSchema.length === 0) {
+            return;
+        }
+
+        // let table = $("<table></table>");
+        // let header = $("<thead></thead>");
+        // let headerRow = $("<tr></tr>");
+        // let tableHeader = $(`<th colspan="2">${tableName}</th>`);
+        // headerRow.append(tableHeader);
+        // header.append(headerRow);
+        // table.append(header);
+
+        // for (var i = 0; i < results.length; i++) {
+        //     table.append(createTableRows(results[i].values));
+        // }
+        console.log(dataSchema ,dataSchema._relAliases)
+        let schemaView = "<button type='button' onClick='openMenu(this)' class='dropbtn' id='btn-" + dataSchema._relAliases[0] + "'>" + dataSchema._relAliases[0]
+            + "</button> <div class='dropdown-content' id='schema-" + dataSchema._relAliases[0] + "'>"
+
+        for (var i = 0; i < dataSchema._names.length; i++) {
+            let field = "<div classname='submenu' id='schema-" + dataSchema._relAliases[0] + "'>" + dataSchema._names[i] +", " + dataSchema._types[i] + "</div>"
+            console.log(i)
+            schemaView += (field)
+        }
+
+        schemaView += "</div>"
+        return schemaView
+
+    }
+
+    window.openMenu = function (val) {
+        closeMenus();
+        console.log(val.id.slice(4))
+        document.getElementById('schema-' + val.id.slice(4)).classList.toggle('show');
+    }
+
+    // function to close the modals of the schemas, basically hides each field in the modal
+    function closeMenus() {
+        let dropdowns = document.getElementsByClassName('dropdown-content');
+        for (let i = 0; i < dropdowns.length; i++) {
+            if (dropdowns[i].classList.contains('show')) {
+                dropdowns[i].classList.remove('show')
+            }
+        }
+    }
+    window.onclick = function (e) {
+        if (!e.target.matches('.dropbtn')) {
+            closeMenus()
+        }
+    }
     // adds onclick functionality for the top bar of the relax editor
     document.getElementById("popWrapper_i4m1hevx8hm").onclick = function() { updateCodeMirror("π"); }
     document.getElementById("popWrapper_zk54ccpfgr9").onclick = function() { updateCodeMirror("σ"); }
@@ -38,7 +123,7 @@ $(document).ready(function () {
     // Creates codemirror code block
     var editorInit = $("#RelaX-editor");
     var editor = CodeMirror.fromTextArea(editorInit[0], {
-        mode: 'text/x-mysql',
+        mode: 'text/RelaX',
         viewportMargin: Infinity,
         indentWithTabs: true,
         smartIndent: true,
@@ -46,13 +131,15 @@ $(document).ready(function () {
         matchBrackets: true,
         autofocus: true,
         extraKeys: {
-        //    "Ctrl-Enter": executeEditorContents, //TODO: add functionality
+            "Ctrl-Enter": executeEditorContents,
         }
     });
     // adds functionality for onclick
     function updateCodeMirror(data){
         var doc = editor.getDoc(); //gets the information of the editor
         doc.replaceRange(data, doc.getCursor()); // adds data at position of cursor
+        editor.focus();
+        editor.setCursor(doc.getCursor());
     }
 
 
@@ -63,41 +150,50 @@ $(document).ready(function () {
     execBtn.on("click", executeEditorContents);
 
     // Execute the RelaX Query
-    // TODO: Execute RelaXQuery from editor
-    function execute(RelaXQuery) {
-
+    function executeEditorContents() {
+        var d1 = dataset.at(0)._schema._relAliases.at(0);
+        var d2 = dataset.at(1)._schema._relAliases.at(0);
+        console.log(d1, d2);
+        console.log(editor.getValue());
+        const PR = executeRelalg(editor.getValue(), { "S" : dataset[0], "P" : dataset[1]});
+        console.log(PR);
+        createOutputTable(PR.getResult());
+    }
+    
+    function createOutputTable(output) {
+        outputElm.contents().remove();
+        var table = $("<table></table>");
+        table.append(createTableHeader(output._schema._names));
+        table.append(createTableRows(output._rows));
+        outputElm.append(table);
     }
 
+    // Function that creates the table header
 
+    function createTableHeader(columns) {
+        var header = $("<thead></thead>");
+        var headerRow = $("<tr></tr>");
 
+        for (var i = 0; i < columns.length; i++) {
+            var th = $("<th></th>").text(columns[i]);
+            headerRow.append(th);
+        }
+        header.append(headerRow);
+        return header;
+    }
 
-    //* Below is an example of how to use the relax execute tool.
-    const executeRelalg = relalg_bundle.executeRelalg;
-    const Relation = relalg_bundle.Relation;
+    // Function that creates the table rows for a table
 
-    //console.log();
-
-    const S = executeRelalg(`{
-		S.b, S.d
-		a,   100
-		b,   300
-		c,   400
-		d,   200
-		e,   150
-	}`, {});
-
-
-    const P = executeRelalg(`{
-		P.A, P.C
-		x,   10
-		y,   30
-		z,   00
-		v,   20
-		w,   15
-	}`, {});
-
-    const Q = executeRelalg(`π (S) ∧ (P) `, {"S": S, "P": P});
-
-    
-    console.log(Q);
+    function createTableRows(rows) {
+        var rowElements = [];
+        rows.forEach(function (row) {
+            var tr = $("<tr></tr>");
+            row.forEach(function (value) {
+                var td = $("<td></td>").text(value);
+                tr.append(td);
+            });
+            rowElements.push(tr);
+        });
+        return rowElements;
+    }
 });

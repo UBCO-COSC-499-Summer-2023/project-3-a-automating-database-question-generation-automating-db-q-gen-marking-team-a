@@ -2,7 +2,7 @@
     "controller": "pl-relax-element.py",
     "dependencies": {
         "elementStyles": [
-            "calc.e3c97951ca6ed154aabf.css"
+            "calc.e3c97951ca6ed154aabf.css", "relax-element.css", "codemirror.css"
         ],
         "elementScripts": [
             "renderer.js","relalg_bundle.js", "codemirror.js"
