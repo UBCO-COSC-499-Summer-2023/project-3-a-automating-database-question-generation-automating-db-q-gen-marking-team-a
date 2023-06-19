@@ -1,3 +1,8 @@
+.dropbtn {
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
 .dropdown-content,
 .submenu-content,
 .sub-submenu-content,
@@ -5,9 +10,9 @@
   display: none;
   position: absolute;
   background-color: #f1f1f1;
-  min-width: 120px;
+  min-width: 0px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  z-index: 3;
+  z-index: 1;
 }
 
 
@@ -15,11 +20,11 @@
 .submenu-content a,
 .sub-submenu-content a {
   color: black;
-  padding: 8px;
-  min-width: 120px;
+  padding: 0px;
+  min-width: 0px;
   text-decoration: none;
   display: block;
-  z-index: 3;
+  z-index: 1;
 }
 
 
@@ -32,4 +37,97 @@
 
 .show {
     display: block;
-  }
+}
+
+.flex-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: nowrap;
+}
+
+.flex-container > div {
+background-color: #f1f1f1;
+width: 100px;
+margin: 0px;
+text-align: center;
+line-height: 75px;
+font-size: 15px;
+}
+
+
+#execute.button {
+	color: white;
+	background-color: #007bff;
+	border: 1px solid #222;
+	border-radius: 3px;
+	padding: 7px;
+	margin-right: 5px;
+	transition: .3s;
+	font-family: ubuntu, sans-serif;
+	font-size: 1em;
+}
+
+#execute.button:active {
+	background-color: #0062cc;
+    border-color: #005cbf;
+}
+
+.button:hover, button:focus {
+	cursor: pointer;
+}
+
+#execute {
+	margin-top: 5px;;
+	width: 10%;
+	min-width:100px;
+	text-align: center;
+}
+
+.CodeMirror {
+  border: 1px solid #222;
+  height: auto;
+}
+.CodeMirror-scroll {
+  overflow-y: hidden;
+  overflow-x: auto;
+}
+
+.error {
+	color:red;
+	transition:.5s;
+	overflow:hidden;
+	margin: 15px;
+}
+
+#output {
+	overflow: auto;
+}
+
+table {
+	width:auto;
+	margin:auto;
+	border:2px solid black;
+ 	border-collapse:collapse;
+ 	margin-bottom:10px;
+}
+
+th, td {
+	border:1px solid #777;
+}
+
+#database {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	justify-content: space-evenly;
+	border: 2px solid black;
+}
+
+#database > table {
+	margin: 0;
+	border: 1px solid black;
+	width: 200px; /* Set a fixed width for the tables */
+	box-sizing: border-box; /* Include border width in the total width */
+	margin: 1em 0 1em 0; /* Add some space between the tables */
+	text-align: center;
+}

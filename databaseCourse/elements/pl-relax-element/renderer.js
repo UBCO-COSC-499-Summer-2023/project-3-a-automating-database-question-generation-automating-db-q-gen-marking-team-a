@@ -123,7 +123,7 @@ $(document).ready(function () {
     // Creates codemirror code block
     var editorInit = $("#RelaX-editor");
     var editor = CodeMirror.fromTextArea(editorInit[0], {
-        mode: 'text/x-mysql',
+        mode: 'text/RelaX',
         viewportMargin: Infinity,
         indentWithTabs: true,
         smartIndent: true,
@@ -131,7 +131,7 @@ $(document).ready(function () {
         matchBrackets: true,
         autofocus: true,
         extraKeys: {
-            "Ctrl-Enter": executeEditorContents, //TODO: add functionality
+            "Ctrl-Enter": executeEditorContents,
         }
     });
     // adds functionality for onclick
@@ -150,37 +150,27 @@ $(document).ready(function () {
     execBtn.on("click", executeEditorContents);
 
     // Execute the RelaX Query
-    // TODO: Execute RelaXQuery from editor
     function executeEditorContents() {
         var d1 = dataset.at(0)._schema._relAliases.at(0);
         var d2 = dataset.at(1)._schema._relAliases.at(0);
         console.log(d1, d2);
         console.log(editor.getValue());
-        const PR = executeRelalg(editor.getValue(), { 'S' : dataset[0], "P" : dataset[1]});
-        console.log(PR.getResult());
+        const PR = executeRelalg(editor.getValue(), { "S" : dataset[0], "P" : dataset[1]});
+        console.log(PR);
         createOutputTable(PR.getResult());
-
-
     }
     
     function createOutputTable(output) {
-
+        outputElm.contents().remove();
         var table = $("<table></table>");
-
         table.append(createTableHeader(output._schema._names));
-
         table.append(createTableRows(output._rows));
-
-
         outputElm.append(table);
-
     }
 
     // Function that creates the table header
 
     function createTableHeader(columns) {
-
-
         var header = $("<thead></thead>");
         var headerRow = $("<tr></tr>");
 
@@ -188,11 +178,8 @@ $(document).ready(function () {
             var th = $("<th></th>").text(columns[i]);
             headerRow.append(th);
         }
-
         header.append(headerRow);
-
         return header;
-
     }
 
     // Function that creates the table rows for a table
@@ -209,10 +196,4 @@ $(document).ready(function () {
         });
         return rowElements;
     }
-
-
-
-    //* Below is an example of how to use the relax execute tool.
-    // const Q = executeRelalg(`pi b,d (S)`, {"S": S, "P": P});
-    console.log(Q);
 });
