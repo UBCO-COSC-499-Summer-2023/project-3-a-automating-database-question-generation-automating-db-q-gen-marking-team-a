@@ -65,6 +65,7 @@ th, td {
 	flex-wrap: wrap;
 	align-items: flex-start;
 	justify-content: space-evenly;
+	border:1px solid black;
 }
 
 

@@ -1,0 +1,1 @@
+CREATE TABLE Customer (cid integer,cname string, address string, city string, state string);CREATE TABLE Product (pid integer,pname string, price currency, inventory integer);

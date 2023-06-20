@@ -2,6 +2,11 @@
 
 $(document).ready(function () {
 
+    window.onload = function() {
+        if(editor.getValue() != null){
+            loadQuestionDatabase()
+        }
+    }
     /*
     //
     // Initializing sql.js and wasm--------------------------------------------------------------------------------------------
@@ -175,9 +180,13 @@ $(document).ready(function () {
     // Functions that runs when the button is clicked
     // Executes the sql code
     function executeEditorContents() {
-
         execute(editor.getValue());
 
+    }
+
+    function loadQuestionDatabase() {
+        execute(editor.getValue());
+        editor.setValue('')
     }
 
     // Function that shows the user feedback based on the SQL queries they run

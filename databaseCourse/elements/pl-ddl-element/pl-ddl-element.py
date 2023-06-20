@@ -14,7 +14,6 @@ def render(element_html, data):
     :param data: The data
     :return: The HTML you want rendered
     '''
-
     
     element = lxml.html.fragment_fromstring(element_html)
      
@@ -22,7 +21,8 @@ def render(element_html, data):
     if data['panel'] == 'question':  
         z = pl.inner_html(element[0])
         html_params = {
-            'questionText' : z
+            'questionText' : z,
+            'generateDb' : ''.join(data["params"]["ddl"])
         }
     
         with open('pl-ddl-element.mustache', 'r') as f:
