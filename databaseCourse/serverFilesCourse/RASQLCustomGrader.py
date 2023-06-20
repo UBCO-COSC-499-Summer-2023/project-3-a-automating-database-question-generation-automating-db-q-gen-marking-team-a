@@ -4,9 +4,9 @@
 def customGrader(data):
 
     # Calls the appropraite grader for the question
-    if data['grader'] == 'SQLEditor':
+    if data['params']['grader'] == 'SQLEditor':
         stringMatchSQL(data)
-    elif data['grader'] == 'RAEditor':
+    elif data['params']['grader'] == 'RAEditor':
         stringMatchRA(data)
 
 
