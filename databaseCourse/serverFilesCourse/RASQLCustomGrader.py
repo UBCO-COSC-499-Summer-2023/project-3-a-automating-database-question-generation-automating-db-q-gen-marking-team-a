@@ -25,6 +25,7 @@ def stringMatchSQL(data):
     # Normalize and split the strings into lists of words
     wordsSA = sorted(stripSA.split())
     wordsCA = sorted(stripCA.split())
+    
 
     # Check if the sorted lists of words are equal
     if wordsSA == wordsCA:
@@ -48,6 +49,8 @@ def stringMatchRA(data):
     # Normalize and split the strings into lists of words
     wordsSA = sorted(stripSA.split())
     wordsCA = sorted(stripCA.split())
+    
+    
 
     # Check if the sorted lists of words are equal
     if wordsSA == wordsCA:

@@ -1,11 +1,17 @@
 import RASQLCustomGrader as grader
 
 def imports(data):
-    import RASQLCustomGrader as grader
+    pass
+    #import RASQLCustomGrader as grader
     
 def generate(data):
     data['params']['grader'] = 'SQLEditor'
-    data['correct_answers']['SQLEditor'] = ''
+    data['correct_answers']['SQLEditor'] = """CREATE TABLE airplane (
+        id CHAR(10),
+        model CHAR(20),
+        manufacture_date DATE
+        );"""
+
     
 def prepare(data):
     pass
