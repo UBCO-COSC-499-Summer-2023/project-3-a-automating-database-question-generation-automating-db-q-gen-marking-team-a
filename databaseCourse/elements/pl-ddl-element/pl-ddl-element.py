@@ -16,6 +16,8 @@ def render(element_html, data):
     '''
     
     element = lxml.html.fragment_fromstring(element_html)
+    submittedAnswer = data['submitted_answers'].get('SQLEditor','')
+    correctAnswer = data['correct_answers']['SQLEditor']
      
     # This renders the question into PL
     if data['panel'] == 'question':  
@@ -30,13 +32,12 @@ def render(element_html, data):
         
     # This renders the users submitted answer into the "Submitted answer" box in PL
     elif data['panel'] == 'submission':
-        html = "Submitted string"
+        html = submittedAnswer
     
     # This renders the correct answer into the "Correct answer" box in PL
     # This will not be displayed on the student page unless a showCorrectAnswer: True 
     # is specified in the info.json file.
     elif data['panel'] == 'answer':
-        correctAnswer = pl.inner_html(element[1])
         html = correctAnswer
     
     return html

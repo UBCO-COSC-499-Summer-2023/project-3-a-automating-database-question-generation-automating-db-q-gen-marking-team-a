@@ -2,10 +2,14 @@
 
 $(document).ready(function () {
 
+    //loads up appropriate db schema for question
     window.onload = function() {
-        if(editor.getValue() != null){
-            loadQuestionDatabase()
+        const preLoadDdl = $("#preLoadDdl")
+        let ddlCommand = preLoadDdl.text()
+        if(ddlCommand != null){
+            execute(ddlCommand)
         }
+        preLoadDdl.remove()
     }
     /*
     //
@@ -182,11 +186,6 @@ $(document).ready(function () {
     function executeEditorContents() {
         execute(editor.getValue());
 
-    }
-
-    function loadQuestionDatabase() {
-        execute(editor.getValue());
-        editor.setValue('')
     }
 
     // Function that shows the user feedback based on the SQL queries they run

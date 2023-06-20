@@ -12,9 +12,11 @@
 
     <label for='commands'>Enter some SQL</label>
     <br>
-  
-    <textarea id="commands">
+    <div id="preLoadDdl">
         {{generateDb}}
+    </div>
+  
+    <textarea id="commands" name="SQLEditor" type="text">
     </textarea>
   
       <div id="execute" class="button">Execute</div>
