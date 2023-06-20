@@ -7,9 +7,10 @@ def imports(data):
 def generate(data):
     data['params']['grader'] = 'SQLEditor'
     data['correct_answers']['SQLEditor'] = """CREATE TABLE airplane (
-        id CHAR(10),
-        model CHAR(20),
-        manufacture_date DATE
+        id VARCHAR(10),
+        model VARCHAR(20),
+        manufacture_date DATE,
+        PRIMARY KEY (id)
         );"""
 
     

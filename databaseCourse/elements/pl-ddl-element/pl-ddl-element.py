@@ -21,12 +21,15 @@ def render(element_html, data):
     
     correctAnswer = pl.inner_html(element[1])
     data['correct_answers']['SQLEditor'] = correctAnswer
+    
+    dbInit = data['params'].get('db_initialize', '')
      
     # This renders the question into PL
     if data['panel'] == 'question':  
-        z = pl.inner_html(element[0])
+        
         html_params = {
-            'questionText' : z
+            'question': True,
+            'db_initialize': dbInit
         }
     
         with open('pl-ddl-element.mustache', 'r', encoding='utf-8') as f:
