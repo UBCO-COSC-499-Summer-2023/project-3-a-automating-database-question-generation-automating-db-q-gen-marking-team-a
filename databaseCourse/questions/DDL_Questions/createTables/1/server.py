@@ -5,6 +5,7 @@ def imports(data):
     
 def generate(data):
     data['params']['grader'] = 'SQLEditor'
+    data['correct_answers']['SQLEditor'] = ''
     
 def prepare(data):
     pass
