@@ -5,7 +5,6 @@ $(document).ready(function () {
     // Function to load the required database for the question
     window.onload = function() {
         dbInitElm = $("#db-init");
-        console.log(dbInitElm);
         if (dbInitElm.text().length > 0) {
             execute(dbInitElm.text());
         }
