@@ -15,7 +15,7 @@ class TestSample(unittest.TestCase):
         options.add_argument('--headless')
         driver = webdriver.Firefox(options=options)
         driver.get(baseUrl)
-        assert 'Gjhghgggfg' in driver.title
+        assert 'Google' in driver.title
         driver.quit()
 
 if __name__ == '__main__':
