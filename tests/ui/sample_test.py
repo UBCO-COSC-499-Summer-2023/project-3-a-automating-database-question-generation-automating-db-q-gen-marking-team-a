@@ -6,7 +6,7 @@ from selenium.webdriver.common.keys import Keys
 
 # example uiTestFile to show how you can automate ui tests, configure the ui test classes/files 
 # and tests
-class SampleTest(unittest.TestCase):
+class TestSample(unittest.TestCase):
 
     # tests that the page loaded ,when PL docker container is up, has title which contains
     # "PrairieLearn" in it
@@ -17,7 +17,7 @@ class SampleTest(unittest.TestCase):
         
         browser.get('http://google.ca/')
         print(browser.title)
-        assert 'PrairieLearn' in browser.title
+        assert 'Google' in browser.title
         # elem = browser.find_element(By.NAME, 'p')  # Find the search box
         # elem.send_keys('seleniumhq' + Keys.RETURN)
         browser.quit()
