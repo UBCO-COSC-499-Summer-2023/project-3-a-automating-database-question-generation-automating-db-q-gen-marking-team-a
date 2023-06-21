@@ -1,4 +1,4 @@
-import SQLCustomGrader as grader
+import RASQLCustomGrader as grader
 
 textfile = open("../lab3_db.txt","r")
 textfile1 = open("../lab3_ans.txt","r")
@@ -13,7 +13,7 @@ def imports(data):
 def generate(data):
     data["params"]["ddl"] = lines
     data["params"]["grader"] = "SQLEditor"
-    data["correct_answers"]["SQLEditor"] = """SELECT pname AS product_name, price, inventory, (price * inventory) AS inventoryValue FROM product WHERE price > 20 ORDER BY pname ASC;"""
+    data["correct_answers"]["SQLEditor"] = lines1[3]
     pass
     
 def prepare(data):

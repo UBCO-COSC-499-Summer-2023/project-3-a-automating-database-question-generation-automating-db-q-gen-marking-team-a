@@ -1,4 +1,4 @@
-import SQLCustomGrader as grader
+import RASQLCustomGrader as grader
 
 textfile = open("../lab3_db.txt","r")
 textfile1 = open("../lab3_ans.txt","r")
