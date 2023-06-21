@@ -5,7 +5,7 @@
             "renderer.js", "codemirror.js", "sql.js"
         ],
         "elementStyles": [
-            "pl-ddl-element.css", "demo.css", "codemirror.css"
+            "pl-ddl-element.css", "codemirror.css"
         ]
     }
 }

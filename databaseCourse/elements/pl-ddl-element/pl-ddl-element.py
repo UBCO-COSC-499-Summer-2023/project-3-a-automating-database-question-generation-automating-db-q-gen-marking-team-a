@@ -14,31 +14,22 @@ def render(element_html, data):
     :param data: The data
     :return: The HTML you want rendered
     '''
+
     
     element = lxml.html.fragment_fromstring(element_html)
-<<<<<<< HEAD
-    submittedAnswer = data['submitted_answers'].get('SQLEditor','')
-    correctAnswer = data['correct_answers']['SQLEditor']
-=======
     submittedAnswer = data['submitted_answers'].get('SQLEditor', '')
     
     correctAnswer = pl.inner_html(element[1])
     data['correct_answers']['SQLEditor'] = correctAnswer
     
     dbInit = data['params'].get('db_initialize', '')
->>>>>>> sql/ddl-question-setup
      
     # This renders the question into PL
     if data['panel'] == 'question':  
         
         html_params = {
-<<<<<<< HEAD
-            'questionText' : z,
-            'generateDb' : ''.join(data["params"]["ddl"])
-=======
             'question': True,
             'db_initialize': dbInit
->>>>>>> sql/ddl-question-setup
         }
     
         with open('pl-ddl-element.mustache', 'r', encoding='utf-8') as f:
@@ -46,9 +37,6 @@ def render(element_html, data):
         
     # This renders the users submitted answer into the "Submitted answer" box in PL
     elif data['panel'] == 'submission':
-<<<<<<< HEAD
-        html = submittedAnswer
-=======
 
         
         html_params = {
@@ -60,15 +48,11 @@ def render(element_html, data):
         
         with open('pl-ddl-submission.mustache', 'r', encoding='utf-8') as f:
             html = chevron.render(f, html_params)
->>>>>>> sql/ddl-question-setup
     
     # This renders the correct answer into the "Correct answer" box in PL
     # This will not be displayed on the student page unless a showCorrectAnswer: True 
     # is specified in the info.json file.
     elif data['panel'] == 'answer':
-<<<<<<< HEAD
-        html = correctAnswer
-=======
         
         html_params = {
             'answer': True,
@@ -76,7 +60,5 @@ def render(element_html, data):
         }
         with open('pl-ddl-answer.mustache', 'r', encoding='utf-8') as f:
             html = chevron.render(f, html_params).strip()
->>>>>>> sql/ddl-question-setup
     
     return html
-

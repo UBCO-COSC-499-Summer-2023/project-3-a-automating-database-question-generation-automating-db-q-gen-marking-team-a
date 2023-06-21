@@ -2,23 +2,6 @@
 
 $(document).ready(function () {
 
-<<<<<<< HEAD
-    //loads up appropriate db schema for question
-    window.onload = function() {
-        const preLoadDdl = $("#preLoadDdl")
-        let ddlCommand = preLoadDdl.text()
-        console.log(ddlCommand)
-        if(ddlCommand != null){
-            execute(ddlCommand)
-        }
-        preLoadDdl.remove()
-    }
-    /*
-    //
-    // Initializing sql.js and wasm--------------------------------------------------------------------------------------------
-    //
-    */
-=======
     // Function to load the required database for the question
     window.onload = function() {
         dbInitElm = $("#db-init");
@@ -33,7 +16,6 @@ $(document).ready(function () {
 // Initializing sql.js and wasm--------------------------------------------------------------------------------------------
 //
 */
->>>>>>> sql/ddl-question-setup
 
     // wasm file required for sql.js
     let config = {
@@ -202,6 +184,7 @@ $(document).ready(function () {
     // Functions that runs when the button is clicked
     // Executes the sql code
     function executeEditorContents() {
+
         execute(editor.getValue());
 
     }
