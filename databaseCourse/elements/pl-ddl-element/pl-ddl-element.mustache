@@ -1,0 +1,31 @@
+<div id="question">
+    {{questionText}}
+</div>
+
+<br>
+
+<div id="db-schema">
+  Database schema will be displayed here once tables have been created.
+</div>
+
+<div id="ddl-input">
+
+    <label for='commands'>Enter some SQL</label>
+    <br>
+    <div id="preLoadDdl">
+        {{generateDb}}
+    </div>
+  
+    <textarea id="commands" name="SQLEditor" type="text">
+    </textarea>
+  
+      <div id="execute" class="button">Execute</div>
+      
+      <div id="error" class="error"></div>
+  
+      <pre id="output">Results will be displayed here</pre>
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.1/mode/sql/sql.min.js"></script>
+    
+
+</div>
