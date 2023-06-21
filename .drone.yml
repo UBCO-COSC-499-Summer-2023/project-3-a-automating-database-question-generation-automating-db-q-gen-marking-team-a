@@ -9,5 +9,5 @@ steps:
       - npm install
       - npm test
       - cd tests
-      - py -m unittest discover ui -p "*_test.py"
-      - py -m unittest discover unit -p "*_test.py"
+      - python -m unittest discover ui -p "*_test.py"
+      - python -m unittest discover unit -p "*_test.py"
