@@ -1,3 +1,4 @@
+from difflib import SequenceMatcher
 
 # Here we can choose the grading method
 # For now, there's only a strict string match
@@ -28,10 +29,15 @@ def stringMatchSQL(data):
     
 
     # Check if the sorted lists of words are equal
-    if wordsSA == wordsCA:
+    
+    similarityPercentage = similar(wordsSA, wordsCA)
+    threshold = 0.75
+
+    if similarityPercentage > threshold:
         data["score"] = 1
     else:
-        data["score"] = 0
+        data["score"] = similarityPercentage / threshold
+    
 
 
 # Basic string matching for RA text
@@ -57,3 +63,6 @@ def stringMatchRA(data):
         data["score"] = 1
     else:
         data["score"] = 0
+        
+def similar(a, b):
+    return SequenceMatcher(None, a, b).ratio()
