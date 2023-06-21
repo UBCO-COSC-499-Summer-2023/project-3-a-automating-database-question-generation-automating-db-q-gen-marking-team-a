@@ -8,7 +8,10 @@
 
 <!-- Question text -->
 <pl-question-panel>
-    An <strong>OnFlight</strong> table that stores information about passengers on flights. Each record stores the <strong>passenger id</strong>, <strong>flight number</strong>, <strong>flight departure date/time</strong>, and a <strong>seat number</strong> (exactly 4 characters). <em>Make all foreign keys set to perform no action (generate error) on delete and cascade on update</em>. (3 marks)
+    An <strong>onFlight</strong> table that stores information about passengers on flights. Each record stores the
+    <strong>passenger_id</strong>, <strong>flight_number</strong>, <strong>flight_departure</strong>, and a
+    <strong>seat_number</strong> (exactly 4 characters). <em>Make all foreign keys set to perform no action (generate
+        error) on delete and cascade on update</em>. (3 marks)
 </pl-question-panel>
 
 
@@ -16,8 +19,23 @@
 <pl-ddl-element>
     <ddl-question>
     </ddl-question>
-    
-    <ddl-marking ></ddl-marking>
+
+    <ddl-answer>
+        CREATE TABLE onFlight(
+        passenger_id INTEGER,
+        flight_number CHAR(5),
+        flight_departure DATETIME,
+        seat_number CHAR(4),
+        FOREIGN KEY (passenger_id) REFERENCES passenger (id)
+        ON DELETE NO ACTION ON UPDATE CASCADE,
+        FOREIGN KEY (flight_number) REFERENCES flight(number)
+        ON DELETE NO ACTION ON UPDATE CASCADE,
+        FOREIGN KEY (flight_departure) REFERENCES flight (departure_date)
+        ON DELETE NO ACTION ON UPDATE CASCADE
+        );
+    </ddl-answer>
+
+    <ddl-marking></ddl-marking>
 </pl-ddl-element>
 
 <!-- End Part 1 -->

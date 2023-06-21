@@ -8,7 +8,7 @@ textfile.close()
 textfile1.close()
 
 def imports(data):
-    pass
+    import RASQLCustomGrader as grader
     
 def generate(data):
     data["params"]["ddl"] = lines

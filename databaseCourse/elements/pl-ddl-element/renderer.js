@@ -2,6 +2,7 @@
 
 $(document).ready(function () {
 
+<<<<<<< HEAD
     //loads up appropriate db schema for question
     window.onload = function() {
         const preLoadDdl = $("#preLoadDdl")
@@ -17,6 +18,22 @@ $(document).ready(function () {
     // Initializing sql.js and wasm--------------------------------------------------------------------------------------------
     //
     */
+=======
+    // Function to load the required database for the question
+    window.onload = function() {
+        dbInitElm = $("#db-init");
+        if (dbInitElm.text().length > 0) {
+            execute(dbInitElm.text());
+        }
+        dbInitElm.remove();
+    }
+
+/*
+//
+// Initializing sql.js and wasm--------------------------------------------------------------------------------------------
+//
+*/
+>>>>>>> sql/ddl-question-setup
 
     // wasm file required for sql.js
     let config = {
@@ -59,11 +76,11 @@ $(document).ready(function () {
         }
     });
 
-    /*
-    //
-    // Functions regarding the rendering of the Database Schema -------------------------------------------------------------------
-    // modeled after the schema & dropdowns visualization found in autoEr
-    */
+/*
+//
+// Functions regarding the rendering of the Database Schema -------------------------------------------------------------------
+// modeled after the schema & dropdowns visualization found in autoEr
+*/
 
     // Function that shows DB schema/tables
     function showDBTables() {
@@ -110,11 +127,11 @@ $(document).ready(function () {
         return schemaView
     }
 
-    /*
-    //
-    // Functions regarding the dropdowns' visbility ---------------------------------------------------------------------------
-    // modeled after the dropdowns found in autoEr
-    */
+/*
+//
+// Functions regarding the dropdowns' visbility ---------------------------------------------------------------------------
+// modeled after the dropdowns found in autoEr
+*/
 
     // function to show the dropdown of the selected schema
     window.openMenu = function(tableName){
@@ -143,11 +160,11 @@ $(document).ready(function () {
     }
 
 
-    /*
-    //
-    // Functions regarding the SQL editor execute button -------------------------------------------------------------------
-    //
-    */
+/*
+//
+// Functions regarding the SQL editor execute button -------------------------------------------------------------------
+//
+*/
 
     // Execute the sql code
     // Create table
@@ -240,11 +257,11 @@ $(document).ready(function () {
         }
     }
 
-    /*
-    //
-    // Functions regarding the output table generation -----------------------------------------------------------------------
-    //
-    */
+/*
+//
+// Functions regarding the output table generation -----------------------------------------------------------------------
+//
+*/
 
     // Function that gets the table name from a SELECT SQL statement
     function getTableName(regex, sqlStatement) {
@@ -307,5 +324,8 @@ $(document).ready(function () {
         });
         return rowElements;
     }
+
+
+
 
 });

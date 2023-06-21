@@ -1,8 +1,3 @@
-<div id="question">
-    {{questionText}}
-</div>
-
-<br>
 
 <div id="db-schema">
   Database schema will be displayed here once tables have been created.
@@ -16,7 +11,12 @@
         {{generateDb}}
     </div>
   
+<<<<<<< HEAD
     <textarea id="commands" name="SQLEditor" type="text">
+=======
+    <textarea id="commands" name="SQLEditor" type="text">{{submitted_answers.SQLEditor}} 
+
+>>>>>>> sql/ddl-question-setup
     </textarea>
   
       <div id="execute" class="button">Execute</div>
@@ -24,6 +24,10 @@
       <div id="error" class="error"></div>
   
       <pre id="output">Results will be displayed here</pre>
+
+      <div id="db-init">
+        {{db_initialize}}
+      </div>
   
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.1/mode/sql/sql.min.js"></script>
     

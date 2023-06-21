@@ -48,7 +48,7 @@
 	overflow: auto;
 }
 
-/* table {
+#output table {
 	width:auto;
 	margin:auto;
 	border:1px solid black;
@@ -56,24 +56,24 @@
  	margin-bottom:10px;
 }
 
-th, td {
+#output th, #output td {
 	border:1px solid #777;
-} */
+}
 
 #db-schema {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: flex-start;
 	justify-content: space-evenly;
+<<<<<<< HEAD
 	border:1px solid black;
+=======
+	border: 2px solid black;
+	margin: 1em 0 1em 0;
+	text-align: center;
+>>>>>>> sql/ddl-question-setup
 }
 
-
-/* #db-schema > table {
-	margin: 0;
-	border: 1px solid black;
-	width: 200px; 
-	box-sizing: border-box; 
-	margin: 1em 0 1em 0; 
-	text-align: center;
-}  */
+#db-init{
+	display: none;
+}
