@@ -27,7 +27,7 @@ def render(element_html, data):
             'generateDb' : ''.join(data["params"]["ddl"])
         }
     
-        with open('pl-ddl-element.mustache', 'r') as f:
+        with open('pl-sql-element.mustache', 'r') as f:
             html = chevron.render(f, html_params)
         
     # This renders the users submitted answer into the "Submitted answer" box in PL

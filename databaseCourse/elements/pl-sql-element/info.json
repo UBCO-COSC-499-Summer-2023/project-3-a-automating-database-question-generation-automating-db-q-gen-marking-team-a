@@ -1,11 +1,11 @@
 {
-    "controller": "pl-ddl-element.py",
+    "controller": "pl-sql-element.py",
     "dependencies": {
         "elementScripts": [
             "renderer.js", "codemirror.js", "sql.js"
         ],
         "elementStyles": [
-            "pl-ddl-element.css", "demo.css", "codemirror.css"
+            "pl-sql-element.css", "demo.css", "codemirror.css"
         ]
     }
 }
