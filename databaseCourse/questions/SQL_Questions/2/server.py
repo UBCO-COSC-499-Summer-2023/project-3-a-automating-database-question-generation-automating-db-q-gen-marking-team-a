@@ -1,16 +1,16 @@
 import SQLCustomGrader as grader
 
-textfile = open("../lab3_db.txt","r")
-textfile1 = open("../lab3_ans.txt","r")
-lines = textfile.read().splitlines()
-lines1 = textfile1.read().splitlines()
-textfile.close()
-textfile1.close()
-
 def imports(data):
     import RASQLCustomGrader as grader
     
 def generate(data):
+    textfile = open("../lab3_db.txt","r")
+    textfile1 = open("../lab3_ans.txt","r")
+    lines = textfile.read().splitlines()
+    lines1 = textfile1.read().splitlines()
+    textfile.close()
+    textfile1.close()
+
     data["params"]["ddl"] = lines
     data["params"]["grader"] = "SQLEditor"
     data["correct_answers"]["SQLEditor"] = lines1[1]
