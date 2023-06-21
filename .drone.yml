@@ -9,4 +9,4 @@ steps:
       - npm install
       - npm test
       - cd tests
-      - py -m unittest sample_test.py
+      - python -m unittest sample_test.py
