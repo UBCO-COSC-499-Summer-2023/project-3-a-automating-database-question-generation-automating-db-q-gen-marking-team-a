@@ -7,6 +7,7 @@ steps:
     image: prairielearn/prairielearn
     commands:
       - npm install
+      - pip install -r requirements.txt
       - npm test
       - cd tests
       - python -m unittest discover ui -p "*_test.py"
