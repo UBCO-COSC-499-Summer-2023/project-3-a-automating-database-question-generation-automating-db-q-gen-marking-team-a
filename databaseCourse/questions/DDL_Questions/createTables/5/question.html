@@ -31,7 +31,7 @@
         FOREIGN KEY (flight_number) REFERENCES flight(number)
         ON DELETE NO ACTION ON UPDATE CASCADE,
         FOREIGN KEY (flight_departure) REFERENCES flight (departure_date)
-        ON DELETE NO ACTION ON UPDATE CASCADE,
+        ON DELETE NO ACTION ON UPDATE CASCADE
         );
     </ddl-answer>
 
