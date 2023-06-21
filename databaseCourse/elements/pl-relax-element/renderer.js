@@ -121,7 +121,7 @@ $(document).ready(function () {
     document.getElementById("popWrapper_ieljbcakzad").onclick = function() { updateCodeMirror("Date()"); }
 
     // Creates codemirror code block
-    var editorInit = $("#RelaX-editor");
+    var editorInit = $("#RelaXEditor");
     var editor = CodeMirror.fromTextArea(editorInit[0], {
         mode: 'text/RelaX',
         viewportMargin: Infinity,
@@ -155,13 +155,26 @@ $(document).ready(function () {
         var d2 = dataset.at(1)._schema._relAliases.at(0);
         console.log(d1, d2);
         console.log(editor.getValue());
-        const PR = executeRelalg(editor.getValue(), { "S" : dataset[0], "P" : dataset[1]});
-        console.log(PR);
-        createOutputTable(PR.getResult());
+        try {
+            const PR = executeRelalg(editor.getValue(), { "S" : dataset[0], "P" : dataset[1]});
+            console.log(PR);
+            createOutputTable(PR.getResult());
+        } catch (err) {
+            createErrorOutput(err)
+        }
     }
     
+    function createErrorOutput(err) {
+        errorElm.contents().remove();
+        outputElm.contents().remove();
+
+        errorElm.append(err);
+
+    }
+
     function createOutputTable(output) {
         outputElm.contents().remove();
+        errorElm.contents().remove();
         var table = $("<table></table>");
         table.append(createTableHeader(output._schema._names));
         table.append(createTableRows(output._rows));
