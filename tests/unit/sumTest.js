@@ -1,3 +1,5 @@
-export function sumTest() {
+function sumTest() {
     return 1
 }
+
+module.exports = sumTest;

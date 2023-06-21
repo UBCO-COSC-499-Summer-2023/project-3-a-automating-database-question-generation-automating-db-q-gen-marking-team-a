@@ -6,6 +6,6 @@ steps:
   - name: Run Tests
     image: prairielearn/prairielearn
     commands:
-      - npm jest
+      - npm test
       - cd tests
       - py -m unittest sample_test.py
