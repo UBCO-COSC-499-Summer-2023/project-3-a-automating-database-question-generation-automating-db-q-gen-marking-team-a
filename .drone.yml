@@ -6,7 +6,6 @@ steps:
   - name: Run Tests
     image: prairielearn/prairielearn
     commands:
-      - pip install -r requirements.txt
       - npm jest
       - cd tests
       - py -m unittest sample_test.py
