@@ -6,6 +6,7 @@ $(document).ready(function () {
     window.onload = function() {
         const preLoadDdl = $("#preLoadDdl")
         let ddlCommand = preLoadDdl.text()
+        console.log(ddlCommand)
         if(ddlCommand != null){
             execute(ddlCommand)
         }
