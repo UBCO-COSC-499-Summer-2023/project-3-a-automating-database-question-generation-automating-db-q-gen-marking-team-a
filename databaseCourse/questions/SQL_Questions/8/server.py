@@ -1,20 +1,22 @@
-import SQLCustomGrader as grader
+import RASQLCustomGrader as grader
+import SQLQueryQuestionData as qd
 
-textfile = open("../lab3_db.txt","r")
-textfile1 = open("../lab3_ans.txt","r")
-lines = textfile.read().splitlines()
-lines1 = textfile1.read().splitlines()
-textfile.close()
-textfile1.close()
 
 def imports(data):
     import RASQLCustomGrader as grader
+    import SQLQueryQuestionData as qd
     
 def generate(data):
-    data["params"]["ddl"] = lines
+    # Specifies editor type so we know the grading scheme
     data["params"]["grader"] = "SQLEditor"
-    data["correct_answers"]["SQLEditor"] = lines1[2]
-    pass
+
+    # Sets the files to be read to initialise the database and solutions
+    data["params"]["databaseSchemaFile"] = "../lab3_db.txt"
+    data["params"]["databaseAnswerFile"] = "../lab3_ans.txt"
+
+    # Adds the database data to data
+    qd.generateQuestionData(data, 8)
+    
     
 def prepare(data):
     pass
@@ -25,4 +27,3 @@ def parse(data):
 def grade(data):
     grader.customGrader(data)
     pass
-    

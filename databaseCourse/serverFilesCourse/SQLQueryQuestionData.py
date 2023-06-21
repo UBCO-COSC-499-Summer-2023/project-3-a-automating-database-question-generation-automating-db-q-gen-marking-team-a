@@ -21,5 +21,6 @@ def generateQuestionData(data, questionNumber):
     data["params"]["ddl"] = readFileLines(data["params"]["databaseSchemaFile"])
 
     # Reads and sets the appropriate solution
-    data["correct_answers"]["SQLEditor"] = readFileLines(data["parans"]["databaseAnswerFile"])[questionNumber]
+    # Pass in the question number, but subtract one to map it to array indexes
+    data["correct_answers"]["SQLEditor"] = readFileLines(data["params"]["databaseAnswerFile"])[questionNumber - 1]
     

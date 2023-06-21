@@ -2,6 +2,7 @@
 # Here we can choose the grading method
 # For now, there's only a strict string match
 def customGrader(data):
+
     # Grabs the student answer from data
     submittedAnswer = data['submitted_answers']['SQLEditor']
 
