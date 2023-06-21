@@ -1,5 +1,5 @@
 import RASQLCustomGrader as grader
-import SQLQueryQuestionData as qd
+import SQLCustomGrader as grader
 
 
 def imports(data):
