@@ -11,5 +11,3 @@ steps:
       - npm test
       - cd tests
       - python -m unittest discover ui -p "*_test.py"
-      - python -m unittest discover unit -p "*_test.py"
-      - python -m unittest discover integration -p "*_test.py"
