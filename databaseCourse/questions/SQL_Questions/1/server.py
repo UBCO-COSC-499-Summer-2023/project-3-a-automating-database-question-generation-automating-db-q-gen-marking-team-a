@@ -1,4 +1,4 @@
-import SQLCustomGrader as grader
+import RASQLCustomGrader as grader
 
 textfile = open("../lab3_db.txt","r")
 textfile1 = open("../lab3_ans.txt","r")
@@ -8,7 +8,7 @@ textfile.close()
 textfile1.close()
 
 def imports(data):
-    import RASQLCustomGrader as grader
+    pass
     
 def generate(data):
     data["params"]["ddl"] = lines
