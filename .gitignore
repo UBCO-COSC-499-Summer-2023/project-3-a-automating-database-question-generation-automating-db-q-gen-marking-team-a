@@ -1,6 +1,7 @@
 .env
 drone/database.sqlite
 node_modules
-package-lock.json
+node_modules
+packages
 package.json
-.DS_Store
+package-lock.json
