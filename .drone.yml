@@ -9,4 +9,4 @@ steps:
       - npm install
       - npm test
       - cd tests
-      - python -m unittest sample_test.py
+      - py -m unittest discover ui -p "*_test.py"
