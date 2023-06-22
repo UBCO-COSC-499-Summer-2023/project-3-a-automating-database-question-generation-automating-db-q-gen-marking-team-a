@@ -2,6 +2,7 @@ import unittest
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+import chromedriver_binary
 
 # example uiTestFile to show how you can automate ui tests, configure the ui test classes/files 
 # and tests
