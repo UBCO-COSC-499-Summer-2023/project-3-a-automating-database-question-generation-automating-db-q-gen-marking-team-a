@@ -3,14 +3,6 @@ type: docker
 name: default
 
 steps:
-  - name: docker
-    image: plugin/docker
-    settings:
-      username: nishantsr
-      password: pass
-      repo: foo/bar
-      debug: true
-
   - name: Run JS Unit Tests
     image: prairielearn/prairielearn
     commands:
