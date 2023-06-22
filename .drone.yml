@@ -3,6 +3,11 @@ type: docker
 name: default
 
 steps:
+  - name: Publish Container
+    image: prairielearn/prairielearn:latest
+    commands:
+      - docker compose up
+
   - name: Run JS Unit Tests
     image: prairielearn/prairielearn
     commands:
