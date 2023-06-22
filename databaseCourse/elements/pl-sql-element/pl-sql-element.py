@@ -41,7 +41,7 @@ def render(element_html, data):
             'db_initialize': dbInit
         }
     
-        with open('pl-ddl-element.mustache', 'r', encoding='utf-8') as f:
+        with open('pl-sql-element.mustache', 'r', encoding='utf-8') as f:
             html = chevron.render(f, html_params)
         
     # This renders the users submitted answer into the "Submitted answer" box in PL
@@ -55,7 +55,7 @@ def render(element_html, data):
         
 
         
-        with open('pl-ddl-submission.mustache', 'r', encoding='utf-8') as f:
+        with open('pl-sql-submission.mustache', 'r', encoding='utf-8') as f:
             html = chevron.render(f, html_params)
     
     # This renders the correct answer into the "Correct answer" box in PL
@@ -67,7 +67,7 @@ def render(element_html, data):
             'answer': True,
             'correctAnswer': correctAnswer
         }
-        with open('pl-ddl-answer.mustache', 'r', encoding='utf-8') as f:
+        with open('pl-sql-answer.mustache', 'r', encoding='utf-8') as f:
             html = chevron.render(f, html_params).strip()
     
     return html

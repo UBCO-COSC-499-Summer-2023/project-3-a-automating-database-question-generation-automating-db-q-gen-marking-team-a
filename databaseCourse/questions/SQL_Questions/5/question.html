@@ -34,15 +34,15 @@
 
 
 <!-- SQL editor -->
-<pl-ddl-element>
-    <ddl-question>
-    </ddl-question>
+<pl-sql-element>
+    <sql-question>
+    </sql-question>
     
-    <ddl-answer>SELECT c.city, COUNT(DISTINCT c.cid) AS customer_count, COUNT(DISTINCT s.sid) AS shipment_count FROM customer c LEFT JOIN shipment s ON c.cid = s.cid GROUP BY c.city HAVING COUNT(DISTINCT s.sid) >= 2 ORDER BY shipment_count DESC;
-    </ddl-answer>
+    <sql-answer>SELECT c.city, COUNT(DISTINCT c.cid) AS customer_count, COUNT(DISTINCT s.sid) AS shipment_count FROM customer c LEFT JOIN shipment s ON c.cid = s.cid GROUP BY c.city HAVING COUNT(DISTINCT s.sid) >= 2 ORDER BY shipment_count DESC;
+    </sql-answer>
 
-    <ddl-marking >
-    </ddl-marking>
-</pl-ddl-element>
+    <sql-marking >
+    </sql-marking>
+</pl-sql-element>
 
 <!-- End Part 1 -->

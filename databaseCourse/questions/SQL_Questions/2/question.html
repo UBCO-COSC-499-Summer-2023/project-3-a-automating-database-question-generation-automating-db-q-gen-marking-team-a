@@ -33,15 +33,15 @@
 
 
 <!-- SQL editor -->
-<pl-ddl-element>
-    <ddl-question>
-    </ddl-question>
+<pl-sql-element>
+    <sql-question>
+    </sql-question>
     
-    <ddl-answer>SELECT c.cid, c.cname, c.state, s.shipdate FROM customer AS c JOIN shipment AS s ON c.cid = s.cid WHERE (c.state = 'BC' OR c.state = 'IA') AND YEAR(s.shipdate) = 2022 ORDER BY s.shipdate DESC;
-    </ddl-answer>
+    <sql-answer>SELECT c.cid, c.cname, c.state, s.shipdate FROM customer AS c JOIN shipment AS s ON c.cid = s.cid WHERE (c.state = 'BC' OR c.state = 'IA') AND YEAR(s.shipdate) = 2022 ORDER BY s.shipdate DESC;
+    </sql-answer>
 
-    <ddl-marking>
-    </ddl-marking>
-</pl-ddl-element>
+    <sql-marking>
+    </sql-marking>
+</pl-sql-element>
 
 <!-- End Part 1 -->
