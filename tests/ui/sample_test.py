@@ -1,7 +1,7 @@
 import unittest
 
 from selenium import webdriver
-from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.chrome.options import Options
 
 # example uiTestFile to show how you can automate ui tests, configure the ui test classes/files 
 # and tests
@@ -9,7 +9,7 @@ class TestSample(unittest.TestCase):
 
     def setUp(self):
         options = Options()
-        options.add_argument('--headless')
+        options.add_argument('--headless=new')
         self.driver = webdriver.Chrome(options=options)
 
 
