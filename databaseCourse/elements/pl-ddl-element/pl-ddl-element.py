@@ -28,7 +28,10 @@ def render(element_html, data):
     correctAnswer = pl.inner_html(element[1])
     data['correct_answers']['SQLEditor'] = correctAnswer
     
-    dbInit = data['params'].get('db_initialize', '')
+    # Grabs the string to initialize the database.
+    # The join command turns an array of strings into a single string.
+    # The get returns the entry if it exists or an empty string otherwise.
+    dbInit = ''.join(data['params'].get('db_initialize', ''))
      
     # This renders the question into PL
     if data['panel'] == 'question':  

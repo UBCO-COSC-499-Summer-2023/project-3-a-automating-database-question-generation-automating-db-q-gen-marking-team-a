@@ -11,7 +11,7 @@ def imports(data):
     pass
     
 def generate(data):
-    data["params"]["ddl"] = lines
+    data["params"]['db_initialize'] = lines
     data["params"]["grader"] = "SQLEditor"
     data["correct_answers"]["SQLEditor"] = lines1[0]
     pass
