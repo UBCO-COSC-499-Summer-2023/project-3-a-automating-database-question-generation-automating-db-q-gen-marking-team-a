@@ -3,6 +3,12 @@ import chevron
 import lxml.html
 import prairielearn as pl
 
+def generate(element_html, data):
+    pass
+
+def prepare(element_html, data):
+    pass
+
 
 def render(element_html, data):
     '''
@@ -62,3 +68,12 @@ def render(element_html, data):
             html = chevron.render(f, html_params).strip()
     
     return html
+
+def parse(element_html, data):
+    pass
+
+def grade(element_html, data):
+    pass
+
+def test(element_html, data):
+    pass
