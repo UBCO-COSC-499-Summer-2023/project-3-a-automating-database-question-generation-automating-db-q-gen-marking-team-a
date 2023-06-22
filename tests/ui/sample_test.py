@@ -7,16 +7,22 @@ from selenium.webdriver.firefox.options import Options
 # and tests
 class TestSample(unittest.TestCase):
 
-    # tests that the page loaded ,when PL docker container is up, has title which contains
-    # "PrairieLearn" in it
-    def test_page_name(self):
-        baseUrl = 'http://google.ca/'
+    def setUp(self):
         options = Options()
         options.add_argument('--headless')
-        driver = webdriver.Firefox(options=options)
-        driver.get(baseUrl)
-        assert 'Google' in driver.title
-        driver.quit()
+        self.driver = webdriver.Chrome(options=options)
+
+
+    # tests that the page loaded ,when PL docker container is up, has title which contains
+    # "PrairieLearn" in it
+    def testPageName(self):
+        baseUrl = 'http://google.ca/'
+        self.driver.get(baseUrl)
+        assert 'Google' in self.driver.title
+        print(self.driver.title)
+    
+    def tearDown(self):
+        self.driver.quit()
 
 if __name__ == '__main__':
     unittest.main()
