@@ -37,10 +37,10 @@
     <ddl-question>
     </ddl-question>
     
-    <ddl-answer>
+    <ddl-answer>SELECT c.cid, c.cname, c.state, s.shipdate FROM customer AS c JOIN shipment AS s ON c.cid = s.cid WHERE (c.state = 'BC' OR c.state = 'IA') AND YEAR(s.shipdate) = 2022 ORDER BY s.shipdate DESC;
     </ddl-answer>
 
-    <ddl-marking >
+    <ddl-marking>
     </ddl-marking>
 </pl-ddl-element>
 
