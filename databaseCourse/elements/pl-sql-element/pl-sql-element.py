@@ -24,6 +24,19 @@ def prepare(element_html, data):
     # Sets the correct answer
     data['correct_answers']['SQLEditor'] = correctAnswer
 
+    # Grabs the path to the database file
+    # Only used in static questions
+    databaseFilePath = pl.get_string_attrib(element, 'database', '')
+
+    # If there is a database file, read and loads its contents
+    if databaseFilePath:
+        databaseFile = open(databaseFilePath,"r")
+
+        # Reads the database as an array over lines of a string
+        data['params']['db_initialize'] = databaseFile.read().splitlines()
+        
+        databaseFile.close() 
+
 
 def render(element_html, data):
     '''
