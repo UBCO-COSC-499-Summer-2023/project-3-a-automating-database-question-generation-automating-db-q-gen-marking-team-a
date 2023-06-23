@@ -1,6 +1,7 @@
 .env
 drone/database.sqlite
 node_modules
+node_modules
+packages
 package-lock.json
-package.json
-.DS_Store
+__pycache__/
