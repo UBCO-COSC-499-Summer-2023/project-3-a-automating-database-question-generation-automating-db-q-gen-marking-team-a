@@ -28,5 +28,6 @@
 - Messing around with setting up ui testing to work in drone but some issues keep persisting so gonna put that off and do it separately
 
 ## Friday , June 23:
+- dashboard + peer evals
 
 ## Saturday , June 24:
