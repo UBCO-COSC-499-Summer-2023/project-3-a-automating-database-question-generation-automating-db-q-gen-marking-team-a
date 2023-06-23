@@ -16,11 +16,11 @@
 
 
 <!-- SQL editor -->
-<pl-ddl-element>
-    <ddl-question>
-    </ddl-question>
+<pl-sql-element>
+    <sql-question>
+    </sql-question>
 
-    <ddl-answer>
+    <sql-answer>
         CREATE TABLE onFlight(
         passenger_id INTEGER,
         flight_number CHAR(5),
@@ -33,9 +33,9 @@
         FOREIGN KEY (flight_departure) REFERENCES flight (departure_date)
         ON DELETE NO ACTION ON UPDATE CASCADE
         );
-    </ddl-answer>
+    </sql-answer>
 
-    <ddl-marking></ddl-marking>
-</pl-ddl-element>
+    <sql-marking></sql-marking>
+</pl-sql-element>
 
 <!-- End Part 1 -->

@@ -37,7 +37,11 @@
     <sql-question>
     </sql-question>
     
-    <sql-marking ></sql-marking>
+    <sql-answer>SELECT p.pname AS product_name, SUM(sp.amount * pr.price) AS shipment_revenue FROM customer c JOIN shipment s ON c.cid = s.cid JOIN shippedproduct sp ON s.sid = sp.sid JOIN product p ON sp.pid = p.pid WHERE c.state = 'BC' AND YEAR(s.shipdate) = 2021 GROUP BY p.pname ORDER BY shipment_revenue DESC LIMIT 5;
+    </sql-answer>
+
+    <sql-marking >
+    </sql-marking>
 </pl-sql-element>
 
 <!-- End Part 1 -->

@@ -11,9 +11,9 @@ def imports(data):
     import RASQLCustomGrader as grader
     
 def generate(data):
-    data["params"]["ddl"] = lines
+    data["params"]['db_initialize'] = lines
     data["params"]["grader"] = "SQLEditor"
-    data["correct_answers"]["SQLEditor"] = """SELECT pname AS product_name, price, inventory, (price * inventory) AS inventoryValue FROM product WHERE price > 20 ORDER BY pname ASC;"""
+    data["correct_answers"]["SQLEditor"] = lines1[2]
     pass
     
 def prepare(data):

@@ -11,7 +11,7 @@ def imports(data):
     import RASQLCustomGrader as grader
     
 def generate(data):
-    data["params"]["ddl"] = lines
+    data["params"]['db_initialize'] = lines
     data["params"]["grader"] = "SQLEditor"
     data["correct_answers"]["SQLEditor"] = lines1[3]
     pass

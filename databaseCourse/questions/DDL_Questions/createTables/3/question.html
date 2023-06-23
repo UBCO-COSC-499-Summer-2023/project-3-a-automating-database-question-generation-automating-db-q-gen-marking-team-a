@@ -13,11 +13,11 @@
 
 
 <!-- SQL editor -->
-<pl-ddl-element>
-    <ddl-question>
-    </ddl-question>
+<pl-sql-element>
+    <sql-question>
+    </sql-question>
 
-    <ddl-answer>CREATE TABLE flight(
+    <sql-answer>CREATE TABLE flight(
         number CHAR(5),
         departure_date DATETIME,
         departAirport VARCHAR(30),
@@ -34,9 +34,9 @@
         FOREIGN KEY (airplane_id) REFERENCES airplane (id)
         ON DELETE SET NULL ON UPDATE CASCADE
         );
-    </ddl-answer>
+    </sql-answer>
     
-    <ddl-marking ></ddl-marking>
-</pl-ddl-element>
+    <sql-marking ></sql-marking>
+</pl-sql-element>
 
 <!-- End Part 1 -->
