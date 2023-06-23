@@ -6,7 +6,7 @@ def customGrader(data):
 
     # Calls the appropraite grader for the question
     if data['params']['grader'] == 'SQLEditor':
-        stringMatchSQL(data)
+        return stringMatchSQL(data)
     elif data['params']['grader'] == 'RAEditor':
         stringMatchRA(data)
 
@@ -34,9 +34,13 @@ def stringMatchSQL(data):
     threshold = 0.75
 
     if similarityPercentage > threshold:
-        data["score"] = 1
+        return 1
+        
     else:
-        data["score"] = similarityPercentage / threshold
+        return similarityPercentage / threshold
+        
+
+    
     
 
 

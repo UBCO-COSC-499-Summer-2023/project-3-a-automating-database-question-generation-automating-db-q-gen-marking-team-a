@@ -3,11 +3,26 @@ import chevron
 import lxml.html
 import prairielearn as pl
 
+import RASQLCustomGrader as grader
+
+# Note to devs:
+# It seems you cannot modify params or correct answers from generate().
+# That must be done in prepare().
 def generate(element_html, data):
     pass
 
 def prepare(element_html, data):
-    pass
+
+    # TODO
+    #   Remove this param when we seperate grader into SQL and DDL; it will no longer be needed
+    data['params']['grader'] = 'SQLEditor'
+
+    # Grabs the answer from the question's question.html file
+    element = lxml.html.fragment_fromstring(element_html)    
+    correctAnswer = pl.inner_html(element[1])
+
+    # Sets the correct answer
+    data['correct_answers']['SQLEditor'] = correctAnswer
 
 
 def render(element_html, data):
@@ -20,13 +35,13 @@ def render(element_html, data):
     :param data: The data
     :return: The HTML you want rendered
     '''
-
     
+    # Grabs the student's submitted answer
     element = lxml.html.fragment_fromstring(element_html)
     submittedAnswer = data['submitted_answers'].get('SQLEditor', '')
     
-    correctAnswer = pl.inner_html(element[1])
-    data['correct_answers']['SQLEditor'] = correctAnswer
+    # Grabs the correct answer from the data variable
+    correctAnswer = data['correct_answers']['SQLEditor']
     
     # Grabs the string to initialize the database.
     # The join command turns an array of strings into a single string.
@@ -76,7 +91,21 @@ def parse(element_html, data):
     pass
 
 def grade(element_html, data):
-    pass
+
+    # Grades the student's submission
+    studentScore = grader.customGrader(data)
+    
+    # Places the student's score and other feedback into data.
+    # Score cannot be directly modified in the element folder,
+    # rather it must be placed within partial scores.
+    # Updating final score is done automatically by PrairieLearn
+    # based upon the partial scores.
+    data['partial_scores']['SQLEditor'] = {
+        'score': studentScore,
+        'weight': 1,
+        'feedback': "",
+        'marker_feedback': ""
+    }
 
 def test(element_html, data):
     pass
