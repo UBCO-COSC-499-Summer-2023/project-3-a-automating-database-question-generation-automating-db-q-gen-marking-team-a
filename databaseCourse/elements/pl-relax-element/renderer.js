@@ -35,24 +35,10 @@ $(document).ready(function () {
     
 
     function createSchemaTables(dataSchema) {
-
         // if tables have no rows, means table does not exist
         if (dataSchema.length === 0) {
             return;
         }
-
-        // let table = $("<table></table>");
-        // let header = $("<thead></thead>");
-        // let headerRow = $("<tr></tr>");
-        // let tableHeader = $(`<th colspan="2">${tableName}</th>`);
-        // headerRow.append(tableHeader);
-        // header.append(headerRow);
-        // table.append(header);
-
-        // for (var i = 0; i < results.length; i++) {
-        //     table.append(createTableRows(results[i].values));
-        // }
-        console.log(dataSchema ,dataSchema._relAliases)
         let schemaView = "<button type='button' onClick='openMenu(this)' class='dropbtn' id='btn-" + dataSchema._relAliases[0] + "'>" + dataSchema._relAliases[0]
             + "</button> <div class='dropdown-content' id='schema-" + dataSchema._relAliases[0] + "'>"
 
@@ -69,7 +55,6 @@ $(document).ready(function () {
 
     window.openMenu = function (val) {
         closeMenus();
-        console.log(val.id.slice(4))
         document.getElementById('schema-' + val.id.slice(4)).classList.toggle('show');
     }
 
@@ -143,7 +128,7 @@ $(document).ready(function () {
     }
 
 
-    var commandsElm = $("#commands");
+    var treeElm = $("#tree");
     var outputElm = $("#output");
     var errorElm = $("#error");
     var execBtn = $("#execute");
@@ -158,7 +143,9 @@ $(document).ready(function () {
         try {
             const PR = executeRelalg(editor.getValue(), { "S" : dataset[0], "P" : dataset[1]});
             console.log(PR);
-            createOutputTable(PR.getResult());
+            treeElm.contents().remove();
+            createOutputTable(PR);
+            treeElm.append(createRecList(PR));
         } catch (err) {
             createErrorOutput(err)
         }
@@ -167,17 +154,19 @@ $(document).ready(function () {
     function createErrorOutput(err) {
         errorElm.contents().remove();
         outputElm.contents().remove();
-
+        treeElm.contents().remove();
         errorElm.append(err);
+        errorElm.append(err.stack);
 
     }
 
     function createOutputTable(output) {
         outputElm.contents().remove();
         errorElm.contents().remove();
+
         var table = $("<table></table>");
-        table.append(createTableHeader(output._schema._names));
-        table.append(createTableRows(output._rows));
+        table.append(createTableHeader(output.getResult()._schema._names));
+        table.append(createTableRows(output.getResult()._rows));
         outputElm.append(table);
     }
 
@@ -209,4 +198,50 @@ $(document).ready(function () {
         });
         return rowElements;
     }
+
+    function createRecList(output){
+        console.log("hello")
+        var container = $("<div></div>");
+
+
+        var button = $("<div></div>");
+        button.attr("id", "button-"+output._functionName);
+        button.addClass("btn btn-primary exec-button selection");
+        button.text(output._codeInfo.text);
+        button.on("click", function() {
+            // Call the predefined function with the input parameter
+            createOutputTable(output);
+        });
+        
+        if ((output._child != null) && (output._child2 != null)) {
+            container.append(button);
+            
+            var newContainer = $("<div></div>");
+            newContainer.addClass("flex-container")
+
+            newContainer.append(createRecList(output._child));
+            newContainer.append(createRecList(output._child2));
+            container.append(newContainer);
+            return container;
+        } else if (output._child != null) {
+            container.append(button);
+            container.append(createRecList(output._child));
+            return container;
+        } else {
+            return container.append(button);
+        } 
+    }
 });
+
+/*
+      let schemaView = "<button type='button' onClick='openMenu(this)' class='dropbtn' id='btn-" + dataSchema._relAliases[0] + "'>" + dataSchema._relAliases[0]
+            + "</button> <div class='dropdown-content' id='schema-" + dataSchema._relAliases[0] + "'>"
+
+        for (var i = 0; i < dataSchema._names.length; i++) {
+            let field = "<div classname='submenu' id='schema-" + dataSchema._relAliases[0] + "'>" + dataSchema._names[i] +", " + dataSchema._types[i] + "</div>"
+            console.log(i)
+            schemaView += (field)
+        }
+
+        schemaView += "</div>"
+        */

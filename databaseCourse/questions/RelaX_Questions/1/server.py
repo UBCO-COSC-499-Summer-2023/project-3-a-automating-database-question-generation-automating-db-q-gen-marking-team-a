@@ -6,7 +6,7 @@ def imports(data):
     
 def generate(data):
     data['params']['grader'] = 'RelaXEditor'
-    data["correct_answers"]["RelaXEditor"] = "hello"
+    data["correct_answers"]["RelaXEditor"] = "π b,c,d (S⨝P)"
 
 
 #   End generate()

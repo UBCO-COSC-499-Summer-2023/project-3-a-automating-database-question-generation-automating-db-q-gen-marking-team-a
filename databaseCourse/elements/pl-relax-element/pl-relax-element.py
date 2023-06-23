@@ -17,10 +17,7 @@ def render(element_html, data):
 
     submittedAnswer = data['submitted_answers'].get('RelaXEditor','')
     correctAnswer = data['correct_answers']["RelaXEditor"]
-    print("CA",correctAnswer)
-    print("SA",submittedAnswer)
     # This renders the question into PL
-    print("data is  ",data)
     if data['panel'] == 'question':  
         # setting the paramaters
         html_params = {
@@ -28,7 +25,7 @@ def render(element_html, data):
             'submission': True,
             'questionText' : questionText,
             'database' : database,
-            'studentSubmission': submittedAnswer,
+            'submissionAnswer': submittedAnswer,
             'correctAnswer': correctAnswer
         }
             # Opens and renders mustache file into the question html
@@ -36,14 +33,11 @@ def render(element_html, data):
             html = chevron.render(f, html_params)
 
     elif data['panel'] == 'submission':
-
-        
+        print("submission:", submittedAnswer)
         html_params = {
             'submission': True,
-            'studentSubmission': submittedAnswer
+            'submissionAnswer': submittedAnswer
         }
-        
-
         
         with open('pl-relax-submission.mustache', 'r', encoding='utf-8') as f:
             html = chevron.render(f, html_params)
@@ -52,12 +46,13 @@ def render(element_html, data):
     # This will not be displayed on the student page unless a showCorrectAnswer: True 
     # is specified in the info.json file.
     elif data['panel'] == 'answer':
-        
+        print("correctAnswer:", correctAnswer)
         html_params = {
             'answer': True,
             'correctAnswer': correctAnswer
         }
         with open('pl-relax-answer.mustache', 'r', encoding='utf-8') as f:
             html = chevron.render(f, html_params).strip()
+
 
     return html
