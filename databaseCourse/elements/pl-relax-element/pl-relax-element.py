@@ -17,6 +17,10 @@ def render(element_html, data):
 
     submittedAnswer = data['submitted_answers'].get('RelaXEditor','')
     correctAnswer = data['correct_answers']["RelaXEditor"]
+
+    print("SA", submittedAnswer)
+    print("CA", correctAnswer)
+    
     # This renders the question into PL
     if data['panel'] == 'question':  
         # setting the paramaters

@@ -57,15 +57,15 @@
     </div>
 
     {{! This is what CodeMirror takes to create the Code editor}}
-    <textarea id="RelaXEditor" name="RelaXEditor"></textarea>
+    <textarea id="RelaXEditor" name="RelaXEditor">{{submitted_answer.RelaXEditor}}</textarea>
     <div id="relaxInput">{{relaxInput}}</div>
     </div>
     <div id="execute" type="button" class="btn btn-primary exec-button selection">Execute</div>
     <div id="outputContainer">
         <div id="error" class="error"></div>
         <div id="outputContainer" class="flex-container">
-            <div id="tree">tree</div>   
-            <pre id="output">Test execution will be displayed here</pre>
+            <div id="tree"></div>   
+            <div id="output"></div>
         </div>
     </div>
 </div> 

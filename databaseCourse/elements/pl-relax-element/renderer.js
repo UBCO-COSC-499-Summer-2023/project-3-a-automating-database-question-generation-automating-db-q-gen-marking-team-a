@@ -1,5 +1,3 @@
-//const { update } = require("./relalg_bundle");
-
 $(document).ready(function () {
     //* QUESTION SETUP
     const executeRelalg = relalg_bundle.executeRelalg;
@@ -17,7 +15,8 @@ $(document).ready(function () {
     // const S = executeRelalg(dbArray.at(0), {});
     // const P = executeRelalg(dbArray.at(1), {});
     
-    
+    // const collection = document.getElementsByClassName("card-body submission-body");
+    // collection.item(0).append("Hello")
     
     //for(elem in dataset) {
 
