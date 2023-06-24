@@ -14,6 +14,18 @@ def generate(element_html, data):
 
 # Prepares the question by filling data with necessary parameters
 def prepare(element_html, data):
+    '''
+	Given an element_html and a dictionary data, this function extracts the answer from the element and 
+	sets it as the correct answer in the data dictionary. If the element has a database attribute, its contents
+	are read and added to the data dictionary as a list of strings. 
+
+	Parameters:
+	- element_html (string): A string containing the HTML of an element.
+	- data (dict): A dictionary to which the correct answer and database contents will be added.
+
+	Return:
+	- None
+	'''
 
     # Grabs the answer from the question's question.html file
     element = lxml.html.fragment_fromstring(element_html)    
@@ -104,7 +116,17 @@ def parse(element_html, data):
 
 # Used to grade the student submission
 def grade(element_html, data):
-
+    '''
+	Grades the student's submission and places the student's score and other feedback into data.
+	
+	:param element_html: HTML element of the submission.
+	:type element_html: str
+	:param data: Dictionary containing the submission data.
+	:type data: dict
+	
+	:returns: None
+	'''
+ 
     # Grades the student's submission
     studentScore = grader.customGrader(data)
     
@@ -113,6 +135,7 @@ def grade(element_html, data):
     # rather it must be placed within partial scores.
     # Updating final score is done automatically by PrairieLearn
     # based upon the partial scores.
+    
     data['partial_scores']['SQLEditor'] = {
         'score': studentScore,
         'weight': 1,
