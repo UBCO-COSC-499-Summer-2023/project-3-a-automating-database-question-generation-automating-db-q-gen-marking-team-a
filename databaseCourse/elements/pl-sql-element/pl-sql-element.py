@@ -3,13 +3,52 @@ import chevron
 import lxml.html
 import prairielearn as pl
 
+import SQLElementSharedLibrary.SQLCustomGrader as grader
+
+# Note to devs:
+# It seems you cannot modify params or correct answers from generate().
+# That must be done in prepare().
 def generate(element_html, data):
     pass
 
+
+# Prepares the question by filling data with necessary parameters
 def prepare(element_html, data):
-    pass
+    '''
+	Given an element_html and a dictionary data, this function extracts the answer from the element and 
+	sets it as the correct answer in the data dictionary. If the element has a database attribute, its contents
+	are read and added to the data dictionary as a list of strings. 
+
+	Parameters:
+	- element_html (string): A string containing the HTML of an element.
+	- data (dict): A dictionary to which the correct answer and database contents will be added.
+
+	Return:
+	- None
+	'''
+
+    # Grabs the answer from the question's question.html file
+    element = lxml.html.fragment_fromstring(element_html)    
+    correctAnswer = pl.inner_html(element[1])
+
+    # Sets the correct answer
+    data['correct_answers']['SQLEditor'] = correctAnswer
+
+    # Grabs the path to the database file
+    # Only used in static questions
+    databaseFilePath = pl.get_string_attrib(element, 'database', '')
+
+    # If there is a database file, read and loads its contents
+    if databaseFilePath:
+        databaseFile = open(databaseFilePath,"r")
+
+        # Reads the database as an array over lines of a string
+        data['params']['db_initialize'] = databaseFile.read().splitlines()
+        
+        databaseFile.close() 
 
 
+# Renders the element
 def render(element_html, data):
     '''
     Renders the question, submission and answer into PrairieLearn.
@@ -20,13 +59,13 @@ def render(element_html, data):
     :param data: The data
     :return: The HTML you want rendered
     '''
-
     
+    # Grabs the student's submitted answer
     element = lxml.html.fragment_fromstring(element_html)
     submittedAnswer = data['submitted_answers'].get('SQLEditor', '')
     
-    correctAnswer = pl.inner_html(element[1])
-    data['correct_answers']['SQLEditor'] = correctAnswer
+    # Grabs the correct answer from the data variable
+    correctAnswer = data['correct_answers']['SQLEditor']
     
     # Grabs the string to initialize the database.
     # The join command turns an array of strings into a single string.
@@ -75,8 +114,34 @@ def render(element_html, data):
 def parse(element_html, data):
     pass
 
+# Used to grade the student submission
 def grade(element_html, data):
-    pass
+    '''
+	Grades the student's submission and places the student's score and other feedback into data.
+	
+	:param element_html: HTML element of the submission.
+	:type element_html: str
+	:param data: Dictionary containing the submission data.
+	:type data: dict
+	
+	:returns: None
+	'''
+ 
+    # Grades the student's submission
+    studentScore = grader.customGrader(data)
+    
+    # Places the student's score and other feedback into data.
+    # Score cannot be directly modified in the element folder,
+    # rather it must be placed within partial scores.
+    # Updating final score is done automatically by PrairieLearn
+    # based upon the partial scores.
+    
+    data['partial_scores']['SQLEditor'] = {
+        'score': studentScore,
+        'weight': 1,
+        'feedback': "",
+        'marker_feedback': ""
+    }
 
 def test(element_html, data):
     pass
