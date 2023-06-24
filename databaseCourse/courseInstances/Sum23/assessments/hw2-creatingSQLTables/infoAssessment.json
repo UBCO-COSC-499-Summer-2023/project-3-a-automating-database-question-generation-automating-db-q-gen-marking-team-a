@@ -21,6 +21,12 @@
             ]
         },
         {
+            "title": "Random Create Tables",
+            "questions": [
+                {"id": "DDL_Questions/createTables/random1",          "points": 1}
+            ]
+        },
+        {
             "title": "Modify Tables",
             "questions": [
                 {"id": "DDL_Questions/insertTables/1",                "points": 1},
