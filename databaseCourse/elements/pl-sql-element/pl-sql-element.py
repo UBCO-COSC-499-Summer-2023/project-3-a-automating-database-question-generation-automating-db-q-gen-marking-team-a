@@ -4,6 +4,7 @@ import lxml.html
 import prairielearn as pl
 
 import SQLElementSharedLibrary.SQLCustomGrader as grader
+import SQLElementSharedLibrary.SQLAutogenerator as autogen
 
 # Note to devs:
 # It seems you cannot modify params or correct answers from generate().
@@ -46,6 +47,26 @@ def prepare(element_html, data):
         data['params']['db_initialize'] = databaseFile.read().splitlines()
         
         databaseFile.close() 
+
+    # Loads quesiton parameters into data
+    questionRandom = pl.get_boolean_attrib(element, 'random', False)
+    questionType = pl.get_string_attrib(element, 'questionType', 'query')
+    questionDifficulty = pl.get_string_attrib(element, 'difficulty', 'normal')
+    questionMaxGrade = pl.get_float_attrib(element, 'maxGrade', 1)
+    questionMarkerFeedback = pl.get_boolean_attrib(element, 'markerFeedback', False)
+
+    data['params']['html_params'] = {
+        'random': questionRandom,
+        'questionType': questionType,
+        'difficulty': questionDifficulty,
+        'maxGrade': questionMaxGrade,
+        'markerFeedback': questionMarkerFeedback
+    }
+
+    # If if is a randomised question, generate the question
+    # data['params']['html_params']['random']
+    if questionRandom:
+        autogen.autogenerate(data)
 
 
 # Renders the element
