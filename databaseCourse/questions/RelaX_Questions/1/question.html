@@ -1,20 +1,25 @@
-<pl-question-panel>
-  <pl-relax-element>
-    <pl-relax-question>Select Whole Table</pl-relax-question>
-    <pl-relax-db>{
-      S.b, S.d
-      a,   100
-      b,   300
-      c,   400
-      d,   200
-      e,   150
+<pl-relax-element random="False" max-grade = "10">
+  
+  <relax-question>Select Whole Table
+
+  </relax-question>
+
+  <relax-db>{
+    S.b, S.d
+    a, 100
+    b, 300
+    c, 400
+    d, 200
+    e, 150
     };{
-      P.b, P.c
-      a,   10
-      y,   30
-      c,   00
-      v,   20
-      e,   15
-    }</pl-relax-db>
-  </pl-relax-element>
-</pl-question-panel>
+    P.b, P.c
+    a, 10
+    y, 30
+    c, 00
+    v, 20
+    e, 15
+    }</relax-db>
+
+  <relax-answer>π b,c,d (S⨝P)</relax-answer>
+
+</pl-relax-element>
