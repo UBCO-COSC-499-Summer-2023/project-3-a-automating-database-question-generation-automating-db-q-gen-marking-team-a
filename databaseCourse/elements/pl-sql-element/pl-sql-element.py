@@ -11,6 +11,8 @@ import RASQLCustomGrader as grader
 def generate(element_html, data):
     pass
 
+
+# Prepares the question by filling data with necessary parameters
 def prepare(element_html, data):
 
     # TODO
