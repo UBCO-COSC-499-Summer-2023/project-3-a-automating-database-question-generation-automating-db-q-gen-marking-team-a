@@ -73,8 +73,8 @@ def parse(element_html, data):
 
 def grade(element_html, data):
     # Grades the student's submission
-    studentScore = grader.customGrader(data)
-    
+    grader.customGrader(data)
+    studentScore = data["score"]
     # Places the student's score and other feedback into data.
     # Score cannot be directly modified in the element folder,
     # rather it must be placed within partial scores.
