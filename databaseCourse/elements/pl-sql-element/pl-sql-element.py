@@ -3,7 +3,7 @@ import chevron
 import lxml.html
 import prairielearn as pl
 
-import RASQLCustomGrader as grader
+import SQLElementSharedLibrary.SQLCustomGrader as grader
 
 # Note to devs:
 # It seems you cannot modify params or correct answers from generate().
@@ -14,10 +14,6 @@ def generate(element_html, data):
 
 # Prepares the question by filling data with necessary parameters
 def prepare(element_html, data):
-
-    # TODO
-    #   Remove this param when we seperate grader into SQL and DDL; it will no longer be needed
-    data['params']['grader'] = 'SQLEditor'
 
     # Grabs the answer from the question's question.html file
     element = lxml.html.fragment_fromstring(element_html)    
@@ -40,6 +36,7 @@ def prepare(element_html, data):
         databaseFile.close() 
 
 
+# Renders the element
 def render(element_html, data):
     '''
     Renders the question, submission and answer into PrairieLearn.
@@ -105,6 +102,7 @@ def render(element_html, data):
 def parse(element_html, data):
     pass
 
+# Used to grade the student submission
 def grade(element_html, data):
 
     # Grades the student's submission
