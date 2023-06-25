@@ -5,3 +5,7 @@ packages
 package.json
 package-lock.json
 tests/ui/__pycache__/sample_test.cpython-311.pyc
+node_modules
+packages
+package-lock.json
+__pycache__/
