@@ -117,7 +117,7 @@ def generateInsert(data, difficulty):
         case 'hard': columns = range(5, 10)
         case other: print(f"{difficulty} is not a valid difficulty.\nValid difficulties are: 'easy', 'medium', and 'hard'.")
 
-    db.getAllDatabases()
+    db.getAllDatabaseFiles('./SQLElementSharedLibrary/randomDatabases/')
 
     while len(databaseFile) not in columns:
         pass
