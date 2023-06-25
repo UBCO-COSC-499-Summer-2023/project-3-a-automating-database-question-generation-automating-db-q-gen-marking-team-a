@@ -106,7 +106,12 @@ def generateCreate(data, difficulty):
     data['correct_answers']['SQLEditor'] = db.getDDL(relativeFilePath(databaseFile))
 
 
-
+# Generates a 'insert' style SQL question
+#
+# Another way of doing this is to have a list of possible columns
+# then to select $x amount of them depending on the difficulty.
+# We could also include or exclude unit types based on their difficulty,
+# i.e. easy questions never get a DATETIME.
 def generateInsert(data, difficulty):
 
     # Based on the difficulty, choose a random amount of columns
@@ -142,9 +147,7 @@ def generateInsert(data, difficulty):
     #
     # Alternatively a random generator for each data type.
     # So date returns f"{random(1955, 2023)}-..."
-        
-
-    pass
+    
 
 def generateUpdate(data, difficulty):
     pass
