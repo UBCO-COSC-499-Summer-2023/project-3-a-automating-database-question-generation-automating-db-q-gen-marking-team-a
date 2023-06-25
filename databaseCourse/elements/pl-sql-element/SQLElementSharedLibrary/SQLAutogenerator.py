@@ -41,26 +41,75 @@ def generateCreate(data, difficulty):
     questionString = f"Create a table named {database.name} with columns"
 
     # Adds a list of columns and units to the question string
-    for key in list(database.columns.keys())[:-1]:
+    columnList = list(database.columns.keys())
+    columnValues = list(database.columns.values())
+    for i in range(len(columnList)):
+
+        # Adds an 'and' at the start of the last iteration
+        if i == len(columnList) - 1:
+            questionString += ' and'
+        
+        # Adds the column name
+        questionString += f" {columnValues[i]['name']}"
+
+        # Mentions primary key, if necessary
+        if columnValues[i]['isPrimary']:
+            questionString += ' that is a primary key'
+
+        # Handles the text for units
+        match columnValues[i]['unit']:
+            case 'INTEGER': questionString += ' (an integer)'
+            case 'CHAR': questionString += f" (a string of exaclty {columnValues[i]['unitOther']} characters)"
+            case 'VARCHAR': questionString += f" (a string up to {columnValues[i]['unitOther']} characters)"
+            case 'DATE': questionString += ' (DATE)'
+            case 'DATETIME': questionString += ' (DATETIME)'
+
+        # Mentions foreign key and its clauses, if necessary
+        if columnValues[i]['references']:
+            questionString += f" that references {columnValues[i]['references']}\'s {columnValues[i]['foreignKey']}"
+
+            # Handles cascade
+            if columnValues[i]['isOnUpdateCascade']:
+                questionString += ' that cascades on an update'
+            
+            # Handles delete set null
+            if columnValues[i]['isOnDeleteSetNull']:
+                questionString += ' that is set to null when deleted'
+
+        # Mentions other clauses, if necessary
+        if columnValues[i]['isNotNull']:
+            questionString += ' and cannot be null'
+
+        # Adds a comma at the end of each iteration
+        questionString += ', '
+
+
+    # Remove the last comma and replace it with a period
+    questionString = questionString[:-2] + '.'
+
+    '''
         questionString += f" {key} ({database.columns[key]['unit']}),"
 
     # The last item won't have a comma, so it's serpated
     # Also adds the finishing touches
     questionString += f" and {list(database.columns.keys())[-1]} ({list(database.columns.values())[-1]['unit']})."
+    '''
+
 
 
     # Loads any tables this one references into the schema
+    # First gets a set of all referenced databases
     schemas = set()
     for key in database.columns:
         if database.columns[key]['references']:
             schemas.add(database.columns[key]['references'])
 
-    for schema in schemas:
-        print(schema)
-
+    # Adds the database filepath to data
     if schemas:
         for schema in schemas:
             data['params']['db_initialize'] += db.getDDL(relativeFilePath(schema))
+
+
 
     # Places the question string into data
     data['params']['questionString'] = questionString

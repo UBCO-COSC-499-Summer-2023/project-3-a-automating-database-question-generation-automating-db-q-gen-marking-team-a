@@ -52,25 +52,30 @@ class Database:
 
                 # Gets the foreign key
                 # Removes the parenthesis
-                foreignKey = words[2][1:-1]
+                column = words[2][1:-1]
 
                 # Get the table it references
                 references = words[4]
+
+                # Gets the column it references
+                # Removes parentheses
+                foreignKey = words[5][1:-1]
 
                 # Checks additional clauses
                 isOnUpdateCascade = 'ON UPDATE CASCADE' in line
                 isOnDeleteSetNull = 'ON DELETE SET NULL' in line
 
                 # Updates the column
-                self.columns[foreignKey]['references'] = references
-                self.columns[foreignKey]['isOnUpdateCascade'] = isOnUpdateCascade
-                self.columns[foreignKey]['isOnDeleteSetNull'] = isOnDeleteSetNull
+                self.columns[column]['references'] = references
+                self.columns[column]['foreignKey'] = foreignKey
+                self.columns[column]['isOnUpdateCascade'] = isOnUpdateCascade
+                self.columns[column]['isOnDeleteSetNull'] = isOnDeleteSetNull
 
             # Handles the case where the line describes a primary key
             elif 'PRIMARY KEY' in line:
                 
                 # Gets the primary key
-                # Removes the parenthesis
+                # Removes the parentheses
                 primaryKey = words[2][1:-1]
 
                 # Sets the column as a primary key
@@ -86,6 +91,14 @@ class Database:
                 # Removes the comma if it is present
                 unit = words[1] if ',' not in words[1] else words[1][:-1]
 
+                # If there is some additional clause for the unit, such
+                # as the length of a CHAR, grab it and remove parenthesis
+                unitOther = None
+                if words[1].find('(') != -1:
+                    unitOther = unit[unit.find('(') + 1 : unit.find(')')]
+                    unit = unit[: unit.find('(')]
+
+
                 # Checks if the line has a NOT NULL clause
                 isNotNull = 'NOT NULL' in line
 
@@ -93,9 +106,11 @@ class Database:
                 self.columns[name] = {
                     'name': name,
                     'unit': unit,
+                    'unitOther': unitOther,
                     'isPrimary': False,
                     'isNotNull': isNotNull,
                     'references': None,
+                    'foreignKey': None,
                     'isOnUpdateCascade': False,
                     'isOnDeleteSetNull': False
 
