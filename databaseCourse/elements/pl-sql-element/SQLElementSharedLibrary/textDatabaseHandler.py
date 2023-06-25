@@ -1,3 +1,5 @@
+from os import listdir
+
 # Used for modelling a database during question generation
 # and loading database data from text files
 
@@ -10,6 +12,12 @@ def getDDL(filePath):
 # Loads a database object based on the file
 def load(filePath):
     return Database(filePath)
+
+# Lists all database files in the specified path
+def getAllDatabaseFiles(path):
+    # Removes the file extension of all files, if they exist
+    return [file[:file.find('.')] for file in listdir(path)]
+
 
 # Models a database for easy question generation
 class Database:

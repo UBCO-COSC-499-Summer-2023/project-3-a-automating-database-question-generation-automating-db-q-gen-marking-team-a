@@ -30,7 +30,7 @@ def generateCreate(data, difficulty):
         case 'easy': databaseFile = random.choice(['airport', 'airplane'])
         case 'medium': databaseFile = random.choice(['passenger'])
         case 'hard': databaseFile = random.choice(['flight'])
-        case other: print(f"{difficulty} is not a valid difficulty.")
+        case other: print(f"{difficulty} is not a valid difficulty.\nValid difficulties are: 'easy', 'medium', and 'hard'.")
     
     # Loads the selected database
     database = db.load(relativeFilePath(databaseFile))
@@ -63,6 +63,7 @@ def generateCreate(data, difficulty):
             case 'VARCHAR': questionString += f" (a string up to {columnValues[i]['unitOther']} characters)"
             case 'DATE': questionString += ' (DATE)'
             case 'DATETIME': questionString += ' (DATETIME)'
+            case other: questionString += f" ({columnValues[i]['unit']})"
 
         # Mentions foreign key and its clauses, if necessary
         if columnValues[i]['references']:
@@ -91,17 +92,12 @@ def generateCreate(data, difficulty):
 
     # Loads any tables this one references into the schema
     # First gets a set of all referenced databases
-    schemas = set()
-    for key in database.columns:
-        if database.columns[key]['references']:
-            schemas.add(database.columns[key]['references'])
+    schemas = getReferencedDatabases(database)
 
     # Adds the database filepath to data
     if schemas:
         for schema in schemas:
-            data['params']['db_initialize'] += db.getDDL(relativeFilePath(schema))
-
-
+            data['params']['db_initialize'] += db.getDDL(schema)
 
     # Places the question string into data
     data['params']['questionString'] = questionString
@@ -112,6 +108,20 @@ def generateCreate(data, difficulty):
 
 
 def generateInsert(data, difficulty):
+
+    databaseFile = ''
+    columns = -1
+    match difficulty:
+        case 'easy': columns = range(3, 4)
+        case 'medium': columns = range(4, 6)
+        case 'hard': columns = range(5, 10)
+        case other: print(f"{difficulty} is not a valid difficulty.\nValid difficulties are: 'easy', 'medium', and 'hard'.")
+
+    db.getAllDatabases()
+
+    while len(databaseFile) not in columns:
+        pass
+
     pass
 
 def generateUpdate(data, difficulty):
@@ -125,3 +135,17 @@ def generateQuery(data, difficulty):
 
 def relativeFilePath(filePath):
     return f"./SQLElementSharedLibrary/randomDatabases/{filePath}.txt"
+
+# Gets the filepaths to all databases referenced by this one
+def getReferencedDatabases(database):
+
+    # Uses a set in case a database is refereenced more than once
+    schemas = set()
+
+    # Checks each column for its reference
+    # Adds the referenced item, if it exists
+    for key in database.columns:
+        if database.columns[key]['references']:
+            schemas.add(relativeFilePath(database.columns[key]['references']))
+
+    return schemas
