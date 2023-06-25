@@ -109,7 +109,7 @@ def generateCreate(data, difficulty):
 
 def generateInsert(data, difficulty):
 
-    databaseFile = ''
+    database = {columns: {}}
     columns = -1
     match difficulty:
         case 'easy': columns = range(3, 4)
@@ -119,7 +119,7 @@ def generateInsert(data, difficulty):
 
     db.getAllDatabaseFiles('./SQLElementSharedLibrary/randomDatabases/')
 
-    while len(databaseFile) not in columns:
+    while len(database.columns) not in columns:
         pass
 
     pass
