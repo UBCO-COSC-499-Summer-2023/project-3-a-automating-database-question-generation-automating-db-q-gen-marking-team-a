@@ -100,7 +100,6 @@ $(document).ready(function () {
             + "</button> <div class='dropdown-content' id='schema-" + tableName + "'>"
 
         let foreignKeys = getForeignKey(tableName);
-        console.log("Foreign keys: ", foreignKeys);
 
         // get column widths for styling purposes
         let maxColNameLength = 0;
@@ -249,8 +248,6 @@ $(document).ready(function () {
 
                 // execute sql statement
                 let sqlStatementResult = db.exec(sqlStatement);
-
-                console.log(sqlStatementResult);
 
                 // give user feedback based on type of sql statement
                 showSqlStatementFeedback(sqlStatement, tableColumnNames, sqlStatementResult);
