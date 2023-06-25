@@ -1,4 +1,4 @@
-CREATE TABLE flight(
+CREATE TABLE flight (
     number CHAR(5),
     departure_date DATETIME, 
     departAirport VARCHAR(30), 
