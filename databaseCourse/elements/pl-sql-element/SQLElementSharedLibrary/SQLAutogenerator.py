@@ -30,10 +30,10 @@ def generateCreate(data, difficulty):
         case 'easy': databaseFile = random.choice(['airport', 'airplane'])
         case 'medium': databaseFile = random.choice(['passenger'])
         case 'hard': databaseFile = random.choice(['flight'])
+        case other: print(f"{difficulty} is not a valid difficulty.")
     
     # Loads the selected database
-    database = db.load(databaseFile)
-
+    database = db.load(relativeFilePath(databaseFile))
 
 
     # Creates a string to tell the student what they need
@@ -41,14 +41,26 @@ def generateCreate(data, difficulty):
     questionString = f"Create a table named {database.name} with columns"
 
     # Adds a list of columns and units to the question string
-    for column in database.columns[:-1]:
-        questionString += f" {column.name} ({column.unit}),"
+    for key in list(database.columns.keys())[:-1]:
+        questionString += f" {key} ({database.columns[key]['unit']}),"
 
     # The last item won't have a comma, so it's serpated
     # Also adds the finishing touches
-    questionString += f" and {database.columns[-1].name} ({database.columns[-1].unit})."
+    questionString += f" and {list(database.columns.keys())[-1]} ({list(database.columns.values())[-1]['unit']})."
 
 
+    # Loads any tables this one references into the schema
+    schemas = set()
+    for key in database.columns:
+        if database.columns[key]['references']:
+            schemas.add(database.columns[key]['references'])
+
+    for schema in schemas:
+        print(schema)
+
+    if schemas:
+        for schema in schemas:
+            data['params']['db_initialize'] += db.getDDL(relativeFilePath(schema))
 
     # Places the question string into data
     data['params']['questionString'] = questionString

@@ -17,7 +17,7 @@ class Database:
     # A database has a name and some columns
     def __init__(self, filePath):
         self.name = ''
-        self.columns = []
+        self.columns = {}
 
         # Loads the name and columns
         self.loadDatabase(filePath)
@@ -43,7 +43,64 @@ class Database:
         # The first line contains the database name so ignore it
         # The last line contains '};' so ignore it
         for line in lines[1:-1]:
-            self.columns.append(Column(line))
+
+            # Gets the words from the line
+            words = line.split(' ')
+
+            # Handles the case where the line describes a foreign key
+            if 'FOREIGN KEY' in line:
+
+                # Gets the foreign key
+                # Removes the parenthesis
+                foreignKey = words[2][1:-1]
+
+                # Get the table it references
+                references = words[4]
+
+                # Checks additional clauses
+                isOnUpdateCascade = 'ON UPDATE CASCADE' in line
+                isOnDeleteSetNull = 'ON DELETE SET NULL' in line
+
+                # Updates the column
+                self.columns[foreignKey]['references'] = references
+                self.columns[foreignKey]['isOnUpdateCascade'] = isOnUpdateCascade
+                self.columns[foreignKey]['isOnDeleteSetNull'] = isOnDeleteSetNull
+
+            # Handles the case where the line describes a primary key
+            elif 'PRIMARY KEY' in line:
+                
+                # Gets the primary key
+                # Removes the parenthesis
+                primaryKey = words[2][1:-1]
+
+                # Sets the column as a primary key
+                self.columns[primaryKey]['isPrimary'] = True
+
+            # Otherwise add the column
+            else:
+
+                # The first word is always the name of the column
+                name = words[0]
+
+                # The second word is the unit
+                # Removes the comma if it is present
+                unit = words[1] if ',' not in words[1] else words[1][:-1]
+
+                # Checks if the line has a NOT NULL clause
+                isNotNull = 'NOT NULL' in line
+
+                # Adds the column
+                self.columns[name] = {
+                    'name': name,
+                    'unit': unit,
+                    'isPrimary': False,
+                    'isNotNull': isNotNull,
+                    'references': None,
+                    'isOnUpdateCascade': False,
+                    'isOnDeleteSetNull': False
+
+                }
+
 
     def __str__(self):
         # The Column __str__() function didn't want to work so
@@ -65,4 +122,16 @@ class Column:
         # Sets the column unit
         # Removes the trailing comma, if there is one
         self.unit = words[1] if ',' not in words[1] else words[1][:-1]
+
+        self.isPrimary = False
+
+        self.isNotNull = False
+
+        self.references = None
+        self.isOnUpdateCascade = False
+        self.isOnDeleteSetNull = False
+        
+        
+
+
         

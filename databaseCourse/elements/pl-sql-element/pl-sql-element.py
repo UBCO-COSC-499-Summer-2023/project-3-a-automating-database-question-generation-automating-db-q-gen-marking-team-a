@@ -40,9 +40,11 @@ def prepare(element_html, data):
     databaseFilePath = pl.get_string_attrib(element, 'database', '')
 
     # If there is a database file, read and loads its contents
+    data['params']['db_initialize'] = ''
     if databaseFilePath:
         with open(databaseFilePath,"r") as databaseFile:
-            data['params']['db_initialize'] = databaseFile.read()
+           data['params']['db_initialize'] = databaseFile.read()
+        
 
 
     # Loads quesiton parameters into data
