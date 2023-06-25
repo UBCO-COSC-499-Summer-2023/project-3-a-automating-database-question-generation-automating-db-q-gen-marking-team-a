@@ -41,12 +41,9 @@ def prepare(element_html, data):
 
     # If there is a database file, read and loads its contents
     if databaseFilePath:
-        databaseFile = open(databaseFilePath,"r")
+        with open(databaseFilePath,"r") as databaseFile:
+            data['params']['db_initialize'] = databaseFile.read()
 
-        # Reads the database as an array over lines of a string
-        data['params']['db_initialize'] = databaseFile.read().splitlines()
-        
-        databaseFile.close() 
 
     # Loads quesiton parameters into data
     #
