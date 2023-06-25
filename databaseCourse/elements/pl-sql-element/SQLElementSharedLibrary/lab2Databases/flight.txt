@@ -1,7 +1,42 @@
-    CREATE TABLE airplane (	id VARCHAR(10),	model VARCHAR(20), manufactureDate DATE, PRIMARY KEY (id) );
-    CREATE TABLE airport ( id CHAR(5), name VARCHAR(30), city VARCHAR(40), province VARCHAR(20), country VARCHAR(20), PRIMARY KEY (id));
-    CREATE TABLE flight(num CHAR(5), departAirport CHAR(5),	arriveAirport CHAR(5), airplaneId VARCHAR(10),
-	departDateTime DATETIME, arriveDateTime DATETIME, actualDepartDT DATETIME, actualArriveDT DATETIME,	
-	PRIMARY KEY (num,departDateTime),FOREIGN KEY (departAirport) REFERENCES Airport(id) ON DELETE SET NULL ON UPDATE CASCADE, FOREIGN KEY (arriveAirport) REFERENCES Airport(id) ON DELETE SET NULL ON UPDATE CASCADE, FOREIGN KEY (airplaneId) REFERENCES Airplane(id) ON DELETE SET NULL ON UPDATE CASCADE );
-CREATE TABLE passenger (id int, firstname VARCHAR(30), lastname VARCHAR(30), birthdate DATE, street VARCHAR(50),
-	city VARCHAR(40), province VARCHAR(20),	country VARCHAR(20), PRIMARY KEY (id));
+CREATE TABLE airplane (
+    id VARCHAR(10),
+    model VARCHAR(20),
+    manufactureDate DATE,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE airport (
+    id CHAR(5),
+    name VARCHAR(30),
+    city VARCHAR(40),
+    province VARCHAR(20),
+    country VARCHAR(20),
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE flight (
+    num CHAR(5),
+    departAirport CHAR(5),
+    arriveAirport CHAR(5),
+    airplaneId VARCHAR(10),
+    departDateTime DATETIME,
+    arriveDateTime DATETIME,
+    actualDepartDT DATETIME,
+    actualArriveDT DATETIME,
+    PRIMARY KEY (num,departDateTime),
+    FOREIGN KEY (departAirport) REFERENCES Airport(id) ON DELETE SET NULL ON UPDATE CASCADE,
+    FOREIGN KEY (arriveAirport) REFERENCES Airport(id) ON DELETE SET NULL ON UPDATE CASCADE,
+    FOREIGN KEY (airplaneId) REFERENCES Airplane(id) ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+CREATE TABLE passenger (
+    id int,
+    firstname VARCHAR(30),
+    lastname VARCHAR(30),
+    birthdate DATE,
+    street VARCHAR(50),
+	city VARCHAR(40),
+    province VARCHAR(20),
+    country VARCHAR(20),
+    PRIMARY KEY (id)
+);
