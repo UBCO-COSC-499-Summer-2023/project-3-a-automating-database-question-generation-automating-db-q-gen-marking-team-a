@@ -87,14 +87,6 @@ def generateCreate(data, difficulty):
     # Remove the last comma and replace it with a period
     questionString = questionString[:-2] + '.'
 
-    '''
-        questionString += f" {key} ({database.columns[key]['unit']}),"
-
-    # The last item won't have a comma, so it's serpated
-    # Also adds the finishing touches
-    questionString += f" and {list(database.columns.keys())[-1]} ({list(database.columns.values())[-1]['unit']})."
-    '''
-
 
 
     # Loads any tables this one references into the schema
