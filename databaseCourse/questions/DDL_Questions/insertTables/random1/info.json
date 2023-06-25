@@ -1,12 +1,13 @@
 {
     "uuid": "111323af-33d5-475e-9c68-f7cb329956a4",
-      "title": "Insert Tables 1",
+      "title": "Random Insert Tables 1",
     "topic": "Databases",
     "singleVariant": true,
     "tags": [
         "rlawrence",
         "Demo",
-        "DDL"
+        "DDL",
+        "Random"
     ],
     "type": "v3"
 }
