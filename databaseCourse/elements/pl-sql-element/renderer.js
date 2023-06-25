@@ -66,23 +66,6 @@ $(document).ready(function () {
     // modeled after the schema & dropdowns visualization found in autoEr
     */
 
-
-    /*
-    CREATE TABLE onFlight (
-                passengerId int,
-                flightNum CHAR(5),
-                departDateTime DATETIME,
-                seatNum CHAR(4)	NOT NULL,
-                PRIMARY KEY (passengerId, flightNum, departDateTime),
-                FOREIGN KEY (passengerId) REFERENCES Passenger(id) ON DELETE NO ACTION ON UPDATE CASCADE,
-                FOREIGN KEY (flightNum, departDateTime) REFERENCES Flight(num,departDateTime) ON DELETE NO ACTION ON UPDATE CASCADE
-            );
-    
-    PRAGMA foreign_keys;
-    SELECT * FROM pragma_table_info("flight");
-    PRAGMA foreign_key_list(onFlight);
-    */
-
     // Function that shows DB schema/tables
     function showDBTables() {
 
@@ -144,7 +127,7 @@ $(document).ready(function () {
             }
         }
 
-        // 
+        // populates each row of scehma table
         for (const row of schemaFields[0].values) {
 
             let keys = getKeysString(row, foreignKeys);
@@ -163,6 +146,7 @@ $(document).ready(function () {
         return schemaView
     }
 
+    // function that returns a string indicating the type of keys
     function getKeysString(row, foreignKeys) {
 
         let keyString = "";
@@ -340,12 +324,7 @@ $(document).ready(function () {
         }
     }
 
-    // append tableName.columnName to editor
-    // function addColumnToEditor(tableName, columnName) {
-    //     editor.setValue(editor.getValue() + `\n${tableName}.${columnName}`);
-
-    // }
-
+    // function that allows you to click the column type and add it to editor
     window.addColumnToEditor = function (tableName, columnName) {
 
         editor.setValue(editor.getValue() + `${tableName}.${columnName} `);
