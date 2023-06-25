@@ -9,8 +9,8 @@
 <!-- Question text -->
 <pl-question-panel>
     An <strong>onFlight</strong> table that stores information about passengers on flights. Each record stores the
-    <strong>passenger_id</strong>, <strong>flight_number</strong>, <strong>flight_departure</strong>, and a
-    <strong>seat_number</strong> (exactly 4 characters). <em>Make all foreign keys set to perform no action (generate
+    <strong>passengerId</strong>, <strong>flightNum</strong>, <strong>departDateTime</strong>, and a
+    <strong>seatNum</strong> (exactly 4 characters). Note: A passenger must have a seat number. <em>Make all foreign keys set to perform no action (generate
         error) on delete and cascade on update</em>. (3 marks)
 </pl-question-panel>
 
@@ -21,17 +21,14 @@
     </sql-question>
 
     <sql-answer>
-        CREATE TABLE onFlight(
-        passenger_id INTEGER,
-        flight_number CHAR(5),
-        flight_departure DATETIME,
-        seat_number CHAR(4),
-        FOREIGN KEY (passenger_id) REFERENCES passenger (id)
-        ON DELETE NO ACTION ON UPDATE CASCADE,
-        FOREIGN KEY (flight_number) REFERENCES flight(number)
-        ON DELETE NO ACTION ON UPDATE CASCADE,
-        FOREIGN KEY (flight_departure) REFERENCES flight (departure_date)
-        ON DELETE NO ACTION ON UPDATE CASCADE
+        CREATE TABLE onFlight (
+            passengerId int,
+            flightNum CHAR(5),
+            departDateTime DATETIME,
+            seatNum CHAR(4)	NOT NULL,
+            PRIMARY KEY (passengerId, flightNum, departDateTime),
+            FOREIGN KEY (passengerId) REFERENCES Passenger(id) ON DELETE NO ACTION ON UPDATE CASCADE,
+            FOREIGN KEY (flightNum, departDateTime) REFERENCES Flight(num,departDateTime) ON DELETE NO ACTION ON UPDATE CASCADE
         );
     </sql-answer>
 
