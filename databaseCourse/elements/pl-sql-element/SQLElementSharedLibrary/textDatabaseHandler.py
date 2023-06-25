@@ -128,7 +128,7 @@ class Database:
     def __str__(self):
         # The Column __str__() function didn't want to work so
         # instead here's some gross list comprehension
-        return f"{self.name}: " + str([f"{column.name}: {column.unit}" for column in self.columns])
+        return f"{self.name}: " + str([f"{column['name']}: {column['unit']}" for column in self.columns.values()])
 
 
 # Models a column of a database

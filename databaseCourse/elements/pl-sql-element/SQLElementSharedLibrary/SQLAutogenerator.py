@@ -109,18 +109,40 @@ def generateCreate(data, difficulty):
 
 def generateInsert(data, difficulty):
 
-    database = {columns: {}}
+    # Based on the difficulty, choose a random amount of columns
     columns = -1
     match difficulty:
-        case 'easy': columns = range(3, 4)
-        case 'medium': columns = range(4, 6)
-        case 'hard': columns = range(5, 10)
+        case 'easy': columns = random.randint(3, 4)
+        case 'medium': columns = random.randint(4, 6)
+        case 'hard': columns = random.randint(5, 10)
         case other: print(f"{difficulty} is not a valid difficulty.\nValid difficulties are: 'easy', 'medium', and 'hard'.")
 
-    db.getAllDatabaseFiles('./SQLElementSharedLibrary/randomDatabases/')
+    # Gets all random databases so a random one may be chosen
+    possibleDatabases = db.getAllDatabaseFiles('./SQLElementSharedLibrary/randomDatabases/')
 
-    while len(database.columns) not in columns:
-        pass
+    # Keeps trying random databases until it finds one with enough columns
+    database = None
+    while not database or len(database.columns) < columns:
+        database = db.load(relativeFilePath(random.choice(possibleDatabases)))
+
+    # Removes columns until there is an appropriate amount left
+    while len(database.columns) > columns:
+
+        # We have to convert keys to a list because of subscriptables
+        tryPop = random.choice(list(database.columns.keys()))
+
+        # Don't remove primary keys
+        if not database.columns[tryPop]['isPrimary']:
+            database.columns.pop(tryPop)
+
+    # TODO
+    # Expands upon the database handler so it can 'store' data.
+    # Another textfile that maps variable type to data,
+    # so we have a list of: names E VARCHAR (20) for example.
+    #
+    # Alternatively a random generator for each data type.
+    # So date returns f"{random(1955, 2023)}-..."
+        
 
     pass
 
