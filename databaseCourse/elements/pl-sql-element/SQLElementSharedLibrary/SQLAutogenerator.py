@@ -93,12 +93,7 @@ def generateCreate(data, difficulty):
 
     # Loads any tables this one references into the schema
     # First gets a set of all referenced databases
-    schemas = getReferencedDatabases(database)
-
-    # Adds the database filepath to data
-    if schemas:
-        for schema in schemas:
-            data['params']['db_initialize'] += db.getDDL(schema)
+    loadSchemas(data, getReferencedDatabases(database))
 
     # Places the question string into data
     data['params']['questionString'] = questionString
@@ -163,19 +158,9 @@ def generateInsert(data, difficulty):
     # Creates and adds the question string
     data['params']['questionString'] = f"Insert the following values into the {database.name} table:\n{valuesString}"
 
-
-    # Adds the database to the schema
-    data['params']['db_initialize'] = database.getSchema()
-
-    # Loads any tables this one references into the schema
-    # First gets a set of all referenced databases
-    schemas = getReferencedDatabases(database)
-
-    # Adds the database filepath to data
-    if schemas:
-        for schema in schemas:
-            data['params']['db_initialize'] += db.getDDL(schema)
-
+    # Adds the database to the schema as well as
+    # the schemas of referenced databases
+    loadAllSchema(data, database)
 
     # Creates the answer string
     data['correct_answers']['SQLEditor'] = f"INSERT INTO {database.name} VALUES {valuesString}"
@@ -203,18 +188,42 @@ def relativeFilePath(filePath):
 def getReferencedDatabases(database):
 
     # Uses a set in case a database is refereenced more than once
-    schemas = set()
+    databases = set()
 
     # Checks each column for its reference
     # Adds the referenced item, if it exists
     for key in database.columns:
         if database.columns[key]['references']:
-            schemas.add(relativeFilePath(database.columns[key]['references']))
+            databases.add(db.load(relativeFilePath(database.columns[key]['references'])))
 
-    return schemas
+    return databases
+
+# Adds the schema databases to data
+def loadSchemas(data, databases):
+
+    # Iterate over databases, if there are any
+    # Add their schema to the initialize string
+    if databases:
+        for database in databases:
+            data['params']['db_initialize'] += f"{database.getSchema()}\n"
+
+# Loads the schema of the current database as well
+# as all referenced databases.
+def loadAllSchema(data, database):
+    
+    # Gets all referenced databases
+    databases = getReferencedDatabases(database)
+
+    # Adds this database to the set
+    databases.add(database)
+
+    # Loads all their schema
+    loadSchemas(data, databases)
+
 
 # Generates random data based on the unit type
 def generateNoisyData(unit, unitOther):
+    
     match unit:
         # Integers
         case 'INTEGER': return generateNoisyInteger()
@@ -239,16 +248,19 @@ def generateNoisyInteger():
 
 # Generates a random string of length unitOther
 def generateNoisyChar(unitOther):
+
     # Chooses unitOther amount of random uppcercase and
     # letter characters
     return ''.join(random.choice(ascii_uppercase + '1234567890') for i in range(unitOther))
 
 # Generates a random string up to length unitOther
 def generateNoisyVarchar(unitOther):
+
     return generateNoisyChar(random.randint(1, unitOther))
 
 # Generates a random date between 1955 and 2023
 def generateRandomDate():
+
     # Generates a random month
     month = random.randint(1, 12)
     
@@ -270,6 +282,7 @@ def generateRandomDate():
 
 # Generates a random date time between 1955 and now
 def generateRandomDateTime():
+
     # The minutes portion can be any increment of 5 minutes.
     # the ':02' formatting ensures that the length of the
     # string is a minimum of 2, padded left with zeroes
