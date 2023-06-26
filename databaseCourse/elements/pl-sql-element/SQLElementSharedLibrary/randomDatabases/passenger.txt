@@ -3,9 +3,9 @@ CREATE TABLE passenger (
         first_name VARCHAR(30),
         last_name VARCHAR(30),
         birthdate DATE,
-        street CHAR(50),
-        city CHAR(40),
-        province CHAR(20),
-        country CHAR(20),
+        street VARCHAR(50),
+        city VARCHAR(40),
+        province VARCHAR(20),
+        country VARCHAR(20),
         PRIMARY KEY (id)
         );
