@@ -227,8 +227,25 @@ def updateStatement():
     Begin delete-style question
 '''
 
+'''
+    Current approach:
+    Easy and medium will work like INSERT where they'll select a
+    database of a certain size. In addition, they'll select the
+    number of affected rows. Hard will be about the same as medium,
+    except it will require a subquery, but I first need to first
+    complete the queryStatement() function
+'''
+
 def generateDelete(data, difficulty):
-    pass
+        
+    # Chooses a database to load based on quesiton difficulty
+    # Randomly selects from the list at the given difficulty
+    #databaseFile = ''
+    match difficulty:
+        case 'easy': pass
+        case 'medium': pass
+        case 'hard': pass # Not yet implemented; first requires quesryStatement() to be completed
+        case other: print(f"{difficulty} is not a valid difficulty.\nValid difficulties are: 'easy', 'medium', and 'hard'.")
 
 def deleteStatement():
     pass
