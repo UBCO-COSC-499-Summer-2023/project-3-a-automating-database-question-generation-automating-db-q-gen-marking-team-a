@@ -215,6 +215,9 @@ def insertStatement(database, row):
 def generateUpdate(data, difficulty):
     pass
 
+def updateStatement():
+    pass
+
 '''
     End updatestyle question
 '''
@@ -227,6 +230,9 @@ def generateUpdate(data, difficulty):
 def generateDelete(data, difficulty):
     pass
 
+def deleteStatement():
+    pass
+
 '''
     End delete-style question
 '''
@@ -237,6 +243,9 @@ def generateDelete(data, difficulty):
 '''
 
 def generateQuery(data, difficulty):
+    pass
+
+def queryStatement():
     pass
 
 '''
