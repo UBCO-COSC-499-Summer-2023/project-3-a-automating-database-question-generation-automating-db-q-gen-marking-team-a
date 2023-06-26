@@ -150,30 +150,15 @@ def createStatement(database):
 def generateInsert(data, difficulty):
 
     # Based on the difficulty, choose a random amount of columns
-    columns = -1
+    columns = None
     match difficulty:
         case 'easy': columns = random.randint(3, 4)
         case 'medium': columns = random.randint(4, 6)
         case 'hard': columns = random.randint(5, 8)
         case other: print(f"{difficulty} is not a valid difficulty.\nValid difficulties are: 'easy', 'medium', and 'hard'.")
 
-    # Gets all random databases so a random one may be chosen
-    possibleDatabases = db.getAllDatabaseFiles('./SQLElementSharedLibrary/randomDatabases/')
-
-    # Keeps trying random databases until it finds one with enough columns
-    database = None
-    while not database or len(database.columns) < columns:
-        database = db.load(relativeFilePath(random.choice(possibleDatabases)))
-
-    # Removes columns until there is an appropriate amount left
-    while len(database.columns) > columns:
-
-        # We have to convert keys to a list because of subscriptables
-        tryPop = random.choice(list(database.columns.keys()))
-
-        # Don't remove primary keys
-        if not database.columns[tryPop]['isPrimary']:
-            database.columns.pop(tryPop)
+    # Gets a database with the specified number of columns
+    database = loadTrimmedDatabase(columns)
 
 
 
@@ -314,6 +299,29 @@ def loadAllSchema(data, database):
 
     # Loads all their schema
     loadSchemas(data, databases)
+
+
+# Returns a database with a specified number of columns
+def loadTrimmedDatabase(columnCount):
+        # Gets all random databases so a random one may be chosen
+    possibleDatabases = db.getAllDatabaseFiles('./SQLElementSharedLibrary/randomDatabases/')
+
+    # Keeps trying random databases until it finds one with enough columns
+    database = None
+    while not database or len(database.columns) < columnCount:
+        database = db.load(relativeFilePath(random.choice(possibleDatabases)))
+
+    # Removes columns until there is an appropriate amount left
+    while len(database.columns) > columnCount:
+
+        # We have to convert keys to a list because of subscriptables
+        tryPop = random.choice(list(database.columns.keys()))
+
+        # Don't remove primary keys
+        if not database.columns[tryPop]['isPrimary']:
+            database.columns.pop(tryPop)
+    
+    return database
 
 
 
