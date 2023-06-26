@@ -105,7 +105,36 @@ def generateCreate(data, difficulty):
     data['params']['questionString'] = questionString
 
     # Places the solution into data
+    #
+    # TODO
+    # Replaced the called method with createStatement() when
+    # that method is completed; i.e. it includes clauses,
+    # primary keys, and foreign keys
     data['correct_answers']['SQLEditor'] = db.getDDL(relativeFilePath(databaseFile))
+
+# Returns the schema for the current database.
+# Currently DOES NOT include clauses (such as NOT NULL),
+# foreign keys, or primary keys.
+def createStatement(database):
+    # Starts the string with the create table and name
+    schemaString = f"CREATE TABLE {database.name} ("
+
+    # Iterates over columns
+    for key in database.columns:
+
+        # Adds the columns name and data type
+        schemaString += f"\n\t{database.columns[key]['name']} {database.columns[key]['unit']}"
+
+        # If the data type has another component, add it
+        if database.columns[key]['unitOther']:
+            schemaString += f"({database.columns[key]['unitOther']})"
+        
+        # Adds the trailing comma
+        schemaString += ','
+
+    # Removes the trailing comma from the final line and
+    # on a new line add the ');'
+    return f"{schemaString[:-1]}\n\t);"
 
 '''
     End create-style question
@@ -146,27 +175,16 @@ def generateInsert(data, difficulty):
         if not database.columns[tryPop]['isPrimary']:
             database.columns.pop(tryPop)
 
-    # Grabs the keys and values from the database
-    columnList = list(database.columns.keys())
-    columnValues = list(database.columns.values())
-
 
 
     # Creates the values ands add them to the question string
-    #
-    # I'm keeping this line here but commented out just to
-    # show how gross Python's list comprehension can be. It
-    # is possible to do all of this is one line, but NO.
-    #questionString += f"({str([generateNoisyData(columnValues[i]['unit'], columnValues[i]['unitOther']) for i in range(len(columnList))])[1:-1]})"
 
     # Generates the data to be inserted
-    generatedValues = []
-    for i in range(len(columnList)):
-        generatedValues.append(generateNoisyData(columnValues[i]['unit'], columnValues[i]['unitOther']))
+    row = generateRow(database.columns)
     
     # Adds the data to the question string, replacing the '[]'
     # with '()'
-    valuesString = f"({str(generatedValues)[1:-1]})"
+    valuesString = f"({str(row)[1:-1]})"
 
 
 
@@ -178,7 +196,11 @@ def generateInsert(data, difficulty):
     loadAllSchema(data, database)
 
     # Creates the answer string
-    data['correct_answers']['SQLEditor'] = f"INSERT INTO {database.name} VALUES {valuesString}"
+    data['correct_answers']['SQLEditor'] = insertStatement(database, row)
+
+# Generates an insert statement based on the data
+def insertStatement(database, row):
+    return f"INSERT INTO {database.name} VALUES ({str(row)[1:-1]});\n"
 
 '''
     End insert-style question
@@ -252,7 +274,7 @@ def loadSchemas(data, databases):
     # Add their schema to the initialize string
     if databases:
         for database in databases:
-            data['params']['db_initialize'] += f"{database.getSchema()}\n"
+            data['params']['db_initialize'] += f"{createStatement(database)}\n"
 
 # Loads the schema of the current database as well
 # as all referenced databases.
@@ -266,6 +288,17 @@ def loadAllSchema(data, database):
 
     # Loads all their schema
     loadSchemas(data, databases)
+
+
+
+# Generates one row's worth of noisy data
+def generateRow(columns):
+    return [generateNoisyData(columns[key]['unit'], columns[key]['unitOther']) for key in columns]
+
+# Generates qty's worth of rows of noisy data
+def generateRows(columns, qty):
+    return [generateRow(columns) for i in range(qty)]
+
 
 
 # Generates random data based on the unit type
