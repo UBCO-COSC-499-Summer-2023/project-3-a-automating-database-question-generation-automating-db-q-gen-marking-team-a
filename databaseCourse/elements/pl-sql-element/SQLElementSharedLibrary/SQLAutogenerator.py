@@ -21,6 +21,12 @@ def autogenerate(data):
         case 'query': generateQuery(data, difficulty)
 
 
+
+
+'''
+    Begin create-style question
+'''
+
 # Generates a 'create' style SQL question
 def generateCreate(data, difficulty):
 
@@ -101,6 +107,15 @@ def generateCreate(data, difficulty):
     # Places the solution into data
     data['correct_answers']['SQLEditor'] = db.getDDL(relativeFilePath(databaseFile))
 
+'''
+    End create-style question
+'''
+
+
+
+'''
+    Begin insert-style question
+'''
 
 # Generates a 'insert' style SQL question
 def generateInsert(data, difficulty):
@@ -165,20 +180,52 @@ def generateInsert(data, difficulty):
     # Creates the answer string
     data['correct_answers']['SQLEditor'] = f"INSERT INTO {database.name} VALUES {valuesString}"
 
+'''
+    End insert-style question
+'''
+
+
+
+'''
+    Begin update-stype question
+'''
 
 def generateUpdate(data, difficulty):
     pass
 
+'''
+    End updatestyle question
+'''
+
+
+'''
+    Begin delete-style question
+'''
+
 def generateDelete(data, difficulty):
     pass
+
+'''
+    End delete-style question
+'''
+
+
+'''
+    Begin query-style question
+'''
 
 def generateQuery(data, difficulty):
     pass
 
+'''
+    End query-style question
+'''
 
 
 
-# Begin helper functions
+'''
+    Begin helper functions
+'''
 
 # Returns the file path to the database file
 def relativeFilePath(filePath):
