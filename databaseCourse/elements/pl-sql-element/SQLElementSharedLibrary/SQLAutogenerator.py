@@ -150,15 +150,15 @@ def createStatement(database):
 def generateInsert(data, difficulty):
 
     # Based on the difficulty, choose a random amount of columns
-    columns = None
+    columnCount = None
     match difficulty:
-        case 'easy': columns = random.randint(3, 4)
-        case 'medium': columns = random.randint(4, 6)
-        case 'hard': columns = random.randint(5, 8)
+        case 'easy': columnCount = random.randint(3, 4)
+        case 'medium': columnCount = random.randint(4, 6)
+        case 'hard': columnCount = random.randint(5, 8)
         case other: print(f"{difficulty} is not a valid difficulty.\nValid difficulties are: 'easy', 'medium', and 'hard'.")
 
     # Gets a database with the specified number of columns
-    database = loadTrimmedDatabase(columns)
+    database = loadTrimmedDatabase(columnCount)
 
 
 
@@ -226,10 +226,11 @@ def generateDelete(data, difficulty):
     # Chooses a database to load based on quesiton difficulty
     # Randomly selects from the list at the given difficulty
     #databaseFile = ''
+    columnCount = None
     match difficulty:
         case 'easy': pass
         case 'medium': pass
-        case 'hard': pass # Not yet implemented; first requires quesryStatement() to be completed
+        case 'hard': return None # Not yet implemented; first requires quesryStatement() to be completed
         case other: print(f"{difficulty} is not a valid difficulty.\nValid difficulties are: 'easy', 'medium', and 'hard'.")
 
 def deleteStatement():
