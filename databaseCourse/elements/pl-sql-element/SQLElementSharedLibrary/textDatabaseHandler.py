@@ -125,6 +125,29 @@ class Database:
                 }
 
 
+    # Returns the schema for the current database
+    def getSchema(self):
+
+        # Starts the string with the create table and name
+        schemaString = f"CREATE TABLE {self.name} ("
+
+        # Iterates over columns
+        for key in self.columns:
+
+            # Adds the columns name and data type
+            schemaString += f"\n\t{self.columns[key]['name']} {self.columns[key]['unit']}"
+
+            # If the data type has another component, add it
+            if self.columns[key]['unitOther']:
+                schemaString += f"({self.columns[key]['unitOther']})"
+            
+            # Adds the trailing comma
+            schemaString += ','
+
+        # Removes the trailing comma from the final line and
+        # on a new line add the ');'
+        return f"{schemaString[:-1]}\n\t);"
+
     def __str__(self):
         # The Column __str__() function didn't want to work so
         # instead here's some gross list comprehension

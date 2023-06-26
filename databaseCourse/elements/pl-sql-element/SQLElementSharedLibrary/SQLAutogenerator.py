@@ -1,5 +1,6 @@
 import SQLElementSharedLibrary.textDatabaseHandler as db
 import random
+from string import ascii_uppercase
 
 # Automatically generates an SQL question based on the question's parameters
 def autogenerate(data):
@@ -107,11 +108,6 @@ def generateCreate(data, difficulty):
 
 
 # Generates a 'insert' style SQL question
-#
-# Another way of doing this is to have a list of possible columns
-# then to select $x amount of them depending on the difficulty.
-# We could also include or exclude unit types based on their difficulty,
-# i.e. easy questions never get a DATETIME.
 def generateInsert(data, difficulty):
 
     # Based on the difficulty, choose a random amount of columns
@@ -119,7 +115,7 @@ def generateInsert(data, difficulty):
     match difficulty:
         case 'easy': columns = random.randint(3, 4)
         case 'medium': columns = random.randint(4, 6)
-        case 'hard': columns = random.randint(5, 10)
+        case 'hard': columns = random.randint(5, 8)
         case other: print(f"{difficulty} is not a valid difficulty.\nValid difficulties are: 'easy', 'medium', and 'hard'.")
 
     # Gets all random databases so a random one may be chosen
@@ -140,14 +136,50 @@ def generateInsert(data, difficulty):
         if not database.columns[tryPop]['isPrimary']:
             database.columns.pop(tryPop)
 
-    # TODO
-    # Expands upon the database handler so it can 'store' data.
-    # Another textfile that maps variable type to data,
-    # so we have a list of: names E VARCHAR (20) for example.
+    # Grabs the keys and values from the database
+    columnList = list(database.columns.keys())
+    columnValues = list(database.columns.values())
+
+
+
+    # Creates the values ands add them to the question string
     #
-    # Alternatively a random generator for each data type.
-    # So date returns f"{random(1955, 2023)}-..."
+    # I'm keeping this line here but commented out just to
+    # show how gross Python's list comprehension can be. It
+    # is possible to do all of this is one line, but NO.
+    #questionString += f"({str([generateNoisyData(columnValues[i]['unit'], columnValues[i]['unitOther']) for i in range(len(columnList))])[1:-1]})"
+
+    # Generates the data to be inserted
+    generatedValues = []
+    for i in range(len(columnList)):
+        generatedValues.append(generateNoisyData(columnValues[i]['unit'], columnValues[i]['unitOther']))
     
+    # Adds the data to the question string, replacing the '[]'
+    # with '()'
+    valuesString = f"({str(generatedValues)[1:-1]})"
+
+
+
+    # Creates and adds the question string
+    data['params']['questionString'] = f"Insert the following values into the {database.name} table:\n{valuesString}"
+
+
+    # Adds the database to the schema
+    data['params']['db_initialize'] = database.getSchema()
+
+    # Loads any tables this one references into the schema
+    # First gets a set of all referenced databases
+    schemas = getReferencedDatabases(database)
+
+    # Adds the database filepath to data
+    if schemas:
+        for schema in schemas:
+            data['params']['db_initialize'] += db.getDDL(schema)
+
+
+    # Creates the answer string
+    data['correct_answers']['SQLEditor'] = f"INSERT INTO {database.name} VALUES {valuesString}"
+
 
 def generateUpdate(data, difficulty):
     pass
@@ -158,6 +190,12 @@ def generateDelete(data, difficulty):
 def generateQuery(data, difficulty):
     pass
 
+
+
+
+# Begin helper functions
+
+# Returns the file path to the database file
 def relativeFilePath(filePath):
     return f"./SQLElementSharedLibrary/randomDatabases/{filePath}.txt"
 
@@ -174,3 +212,65 @@ def getReferencedDatabases(database):
             schemas.add(relativeFilePath(database.columns[key]['references']))
 
     return schemas
+
+# Generates random data based on the unit type
+def generateNoisyData(unit, unitOther):
+    match unit:
+        # Integers
+        case 'INTEGER': return generateNoisyInteger()
+
+        # CHARs require the number of characters
+        case 'CHAR': return generateNoisyChar(int(unitOther))
+
+        # VARCHARs are capped at a length of 8 to prevent
+        # a string of 50 random characters
+        case 'VARCHAR': return generateNoisyVarchar(min(int(unitOther), 8))
+
+        # DATE and DATETIME
+        case 'DATE': return generateRandomDate()
+        case 'DATETIME': return generateRandomDateTime()
+
+        # Crash if the datatype is not correct
+        case other: return None
+
+# Generates a random integer in the range 0 to 1000
+def generateNoisyInteger():
+    return random.randint(1, 1000)
+
+# Generates a random string of length unitOther
+def generateNoisyChar(unitOther):
+    # Chooses unitOther amount of random uppcercase and
+    # letter characters
+    return ''.join(random.choice(ascii_uppercase + '1234567890') for i in range(unitOther))
+
+# Generates a random string up to length unitOther
+def generateNoisyVarchar(unitOther):
+    return generateNoisyChar(random.randint(1, unitOther))
+
+# Generates a random date between 1955 and 2023
+def generateRandomDate():
+    # Generates a random month
+    month = random.randint(1, 12)
+    
+    # Ensures the day is valid.
+    # And no, I'm not doing the legwork to check
+    # whether or not it's a leapyear and thus
+    # allow a 29th day in February
+    day = -1
+    if month % 2 == 1:
+        day = random.randint(1, 31)
+    elif month == 2:
+        day = random.randint(1, 28)
+    else:
+        day = random.randint(1, 30)
+
+    # the ':02' formatting ensures that the length of the
+    # string is a minimum of 2, padded left with zeroes
+    return f"{random.randint(1955, 2023)}-{month:02}-{day:02}"
+
+# Generates a random date time between 1955 and now
+def generateRandomDateTime():
+    # The minutes portion can be any increment of 5 minutes.
+    # the ':02' formatting ensures that the length of the
+    # string is a minimum of 2, padded left with zeroes
+    return f"{generateRandomDate()} {random.randint(0, 23):02}:{random.randint(0, 11) * 5:02}:00"
