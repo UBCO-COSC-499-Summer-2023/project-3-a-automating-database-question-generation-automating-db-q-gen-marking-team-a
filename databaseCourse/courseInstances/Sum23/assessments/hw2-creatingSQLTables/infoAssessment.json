@@ -37,7 +37,7 @@
             ]
         },
         {
-            "title": "Random Insert Tables",
+            "title": "Random Insert",
             "questions": [
                 {"id": "DDL_Questions/insertTables/random1",          "points": 1}
             ]
@@ -47,6 +47,12 @@
             "questions": [
                 {"id": "DDL_Questions/updateTables/1",                "points": 1},
                 {"id": "DDL_Questions/updateTables/2",                "points": 1}
+            ]
+        },
+        {
+            "title": "Random Update",
+            "questions": [
+                {"id": "DDL_Questions/updateTables/random1",          "points": 1}
             ]
         },
         {
