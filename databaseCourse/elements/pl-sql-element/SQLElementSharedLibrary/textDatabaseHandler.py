@@ -125,7 +125,9 @@ class Database:
                 }
 
 
-    # Returns the schema for the current database
+    # Returns the schema for the current database.
+    # Currently DOES NOT include clauses (such as NOT NULL),
+    # foreign keys, or primary keys.
     def getSchema(self):
 
         # Starts the string with the create table and name
@@ -169,10 +171,14 @@ class Column:
         # Removes the trailing comma, if there is one
         self.unit = words[1] if ',' not in words[1] else words[1][:-1]
 
+        # Sets whether the column is the primary key
         self.isPrimary = False
 
+        # Sets whether the column is or is not null
         self.isNotNull = False
 
+        # Which table this column references
+        # and other foreign clauses
         self.references = None
         self.isOnUpdateCascade = False
         self.isOnDeleteSetNull = False
