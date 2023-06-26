@@ -164,8 +164,9 @@ def generateInsert(data, difficulty):
 
     # Creates the values ands add them to the question string
 
-    # Generates the data to be inserted
-    row = generateRow(database.columns)
+    # Generates the data to be inserted.
+    # Converts the dictionary row to a list
+    row = list(generateRow(database.columns).values())
     
     # Adds the data to the question string, replacing the '[]'
     # with '()'
@@ -228,13 +229,48 @@ def generateDelete(data, difficulty):
     #databaseFile = ''
     columnCount = None
     match difficulty:
-        case 'easy': pass
-        case 'medium': pass
+        case 'easy': columnCount = random.randint(3, 4)
+        case 'medium': columnCount = random.randint(4, 6)
         case 'hard': return None # Not yet implemented; first requires quesryStatement() to be completed
         case other: print(f"{difficulty} is not a valid difficulty.\nValid difficulties are: 'easy', 'medium', and 'hard'.")
 
-def deleteStatement():
-    pass
+    # Gets a database with the specified number of columns
+    database = loadTrimmedDatabase(columnCount)
+
+
+
+    # Generates a bunch of bogus rows
+    rows = generateRows(database.columns, columnCount * 3 + random.randint(-3, 3))
+
+    # Won't select a foreign key if the difficulty is easy
+    randomKey = None
+    while not randomKey or (database.columns[randomKey]['references'] and difficulty == 'easy'):
+        randomKey = random.choice(list(database.columns.keys()))
+
+    # Chooses a random value from the generated data to be deleted
+    randomValueIndex = random.choice(range(len(rows)))
+
+    # Grabs the randomly selected values
+    #unit = list(database.columns)[randomKeyIndex]
+    deleteValue = rows[randomValueIndex][randomKey]
+
+
+
+    # Creates the question string
+    data['params']['questionString'] = f"From the table {database.name}, delete the entry where {database.columns[randomKey]['unit']} equals '{deleteValue}'."
+
+    # Loads the schema of all referenced databases
+    loadAllSchema(data, database)
+
+    # Loads the noisy data into the primary database
+    loadNoisyData(data, database, rows)
+
+    # Sets the correct answer
+    data['correct_answers']['SQLEditor'] = deleteStatement(database, database.columns[randomKey]['unit'], deleteValue)
+
+# Creates a delete statement
+def deleteStatement(database, unit, deleteValue):
+    return f"DELETE FROM {database.name} WHERE {unit} = '{deleteValue}';\n"
 
 '''
     End delete-style question
@@ -291,7 +327,7 @@ def loadSchemas(data, databases):
 # Loads the schema of the current database as well
 # as all referenced databases.
 def loadAllSchema(data, database):
-    
+
     # Gets all referenced databases
     databases = getReferencedDatabases(database)
 
@@ -300,6 +336,15 @@ def loadAllSchema(data, database):
 
     # Loads all their schema
     loadSchemas(data, databases)
+
+# Loads noisy data into the editors
+def loadNoisyData(data, database, rows):
+    data['params']['db_initialize'] += ''.join(insertStatement(database, list(row.values())) for row in rows)
+
+# Loads the provided noisy data as well as generating
+# and loading noisy data for all referenced databases
+def loadAllNoisyData(data, database, rows):
+    pass
 
 
 # Returns a database with a specified number of columns
@@ -328,7 +373,7 @@ def loadTrimmedDatabase(columnCount):
 
 # Generates one row's worth of noisy data
 def generateRow(columns):
-    return [generateNoisyData(columns[key]['unit'], columns[key]['unitOther']) for key in columns]
+    return {key: generateNoisyData(columns[key]['unit'], columns[key]['unitOther']) for key in columns}
 
 # Generates qty's worth of rows of noisy data
 def generateRows(columns, qty):

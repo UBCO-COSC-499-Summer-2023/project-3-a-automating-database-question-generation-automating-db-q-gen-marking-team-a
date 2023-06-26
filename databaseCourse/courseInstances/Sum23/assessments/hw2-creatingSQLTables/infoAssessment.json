@@ -62,6 +62,12 @@
                 {"id": "DDL_Questions/deleteTables/2",                "points": 1},
                 {"id": "DDL_Questions/deleteTables/3",                "points": 1}
             ]
+        },
+        {
+            "title": "Random Delete",
+            "questions": [
+                {"id": "DDL_Questions/deleteTables/random1",          "points": 1}
+            ]
         }
     ]
 }
