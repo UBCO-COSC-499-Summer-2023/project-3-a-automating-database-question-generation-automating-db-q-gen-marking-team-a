@@ -375,30 +375,30 @@ $(document).ready(function () {
     // Function that creates the table header
     function createTableHeader(columns) {
 
-
         var header = $("<thead></thead>");
         var headerRow = $("<tr></tr>");
-
+      
         for (var i = 0; i < columns.length; i++) {
-            var th = $("<th></th>").text(columns[i]);
-            // Call sort tables
-            /*
+
+            // used to snapshot the i value to pass to sortTable
+          (function (column) {
+            var th = $("<th></th>").text(columns[column]);
+      
             th.on("click", function () {
-                sortTable(this, i)
+              sortTable(this, column);
             });
-            */
-
+      
             headerRow.append(th);
+          })(i);
         }
-
+      
         header.append(headerRow);
-
         return header;
-
-    }
+      }
 
     // Function that creates the table rows for a table
     function createTableRows(rows) {
+        var tbody = $("<tbody></tbody>");
         var rowElements = [];
         rows.forEach(function (row) {
             var tr = $("<tr></tr>");
@@ -412,36 +412,53 @@ $(document).ready(function () {
             });
             rowElements.push(tr);
         });
-        return rowElements;
+
+        tbody.append(rowElements);
+
+        return tbody;
     }
 
-    /*
+    // function that sorts output tables when column names are clicked on
     function sortTable(element, column) {
+
         const $table = $(element).closest("table");
         const $tbody = $table.find("tbody");
         const rows = $tbody.find("tr").toArray();
-        const direction = $table.data("sort-direction") === "asc" ? 1 : -1;
+        const currentDirection = $table.data("sort-direction");
+        let direction;
+    
+        if (currentDirection === "asc" && $table.data("sort-column") === column) {
+            // First click on the same column, reverse the sort direction
+            direction = "desc";
+        } else {
+            // First click on a column or different column, sort in ascending order
+            direction = "asc";
+        }
+    
+        $table.data("sort-direction", direction);
+        $table.data("sort-column", column);
     
         rows.sort((a, b) => {
-            const aValue = $(a).find("td").eq(column).text().trim();
-            const bValue = $(b).find("td").eq(column).text().trim();
+            const aValue = a.cells.item(column).innerHTML;
+            const bValue = b.cells.item(column).innerHTML;
     
-            if (isNaN(aValue) || isNaN(bValue)) {
-                return direction * aValue.localeCompare(bValue);
+            const isANumber = !isNaN(parseFloat(aValue)) && isFinite(aValue);
+            const isBNumber = !isNaN(parseFloat(bValue)) && isFinite(bValue);
+    
+            if (isANumber && isBNumber) {
+                return direction === "asc" ? parseFloat(aValue) - parseFloat(bValue) : parseFloat(bValue) - parseFloat(aValue);
             }
     
-            return direction * (parseFloat(aValue) - parseFloat(bValue));
+            if (!isANumber && !isBNumber) {
+                return direction === "asc" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+            }
+    
+            return isANumber ? -1 : 1;
         });
     
         $tbody.empty();
         rows.forEach(row => $tbody.append(row));
-    
-        $table.data("sort-direction", direction === 1 ? "desc" : "asc");
-
-        console.log($table);
-
     }
-    */
     
 
 });
