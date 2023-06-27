@@ -200,8 +200,7 @@ $(document).ready(function () {
 
     function createRecList(output){
         console.log("hello")
-        var container = $("<div></div>");
-
+        var container = $("<div style='margin: 5px'></div>");
 
         var button = $("<div></div>");
         button.attr("id", "button-"+output._functionName);
