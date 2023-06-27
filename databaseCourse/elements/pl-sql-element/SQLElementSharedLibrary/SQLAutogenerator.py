@@ -235,7 +235,8 @@ def generateDelete(data, difficulty):
         case other: print(f"{difficulty} is not a valid difficulty.\nValid difficulties are: 'easy', 'medium', and 'hard'.")
 
     # Gets a database with the specified number of columns
-    database = loadTrimmedDatabase(columnCount)
+    #database = loadTrimmedDatabase(columnCount)
+    database = db.load(relativeFilePath('flight')) # TODO undo this
 
 
 
@@ -262,11 +263,13 @@ def generateDelete(data, difficulty):
     # Loads the schema of all referenced databases
     loadAllSchema(data, database)
 
-    # Loads the noisy data into the primary database
-    loadNoisyData(data, database, rows)
+    # Loads the noisy data into the primary database as
+    # well as generating noisy data for referenced databases
+    loadAllNoisyData(data, database, rows)
 
     # Sets the correct answer
     data['correct_answers']['SQLEditor'] = deleteStatement(database, database.columns[randomKey]['unit'], deleteValue)
+
 
 # Creates a delete statement
 def deleteStatement(database, unit, deleteValue):
@@ -311,9 +314,9 @@ def getReferencedDatabases(database):
     # Adds the referenced item, if it exists
     for key in database.columns:
         if database.columns[key]['references']:
-            databases.add(db.load(relativeFilePath(database.columns[key]['references'])))
+            databases.add(database.columns[key]['references'])
 
-    return databases
+    return set(db.load(relativeFilePath(referenced)) for referenced in databases)
 
 # Adds the schema databases to data
 def loadSchemas(data, databases):
@@ -341,10 +344,63 @@ def loadAllSchema(data, database):
 def loadNoisyData(data, database, rows):
     data['params']['db_initialize'] += ''.join(insertStatement(database, list(row.values())) for row in rows)
 
-# Loads the provided noisy data as well as generating
-# and loading noisy data for all referenced databases
+
+# Loads the noisy data supplied as well as generating and
+# loading noisy data for the referenced databases.
+#
+# Note: This function respects references so a foreign key
+# reference between two tables will holds the same value.
 def loadAllNoisyData(data, database, rows):
-    pass
+    
+    # First loads the rows into the actual database
+    loadNoisyData(data, database, rows)
+
+    # Gets a dicitonary of referenced databases.
+    # The keys are the name of the database
+    referencedDatabases = {database.columns[key]['references']: db.load(relativeFilePath(database.columns[key]['references'])) for key in database.columns.keys() if database.columns[key]['references']}
+
+
+    # Gets a dictionary that maps the column to both
+    # the referenced database name and foreign key
+    keyMap = {key: {'references': database.columns[key]['references'], 'foreignKey': database.columns[key]['foreignKey']} for key in database.columns.keys() if database.columns[key]['references']}
+
+    # All table of data
+    generatedData = {}
+
+    # Iterates over foreign keys
+    for key in keyMap.keys():
+
+        # Grabs the referenced database
+        referenced = referencedDatabases[keyMap[key]['references']]
+
+        # A table of data
+        generatedData[key] = []
+
+        # Iterates over the provided data
+        for row in rows:
+
+            # A row of data
+            noisyRow = {}
+
+            # Iterates over the referenced database's columns
+            for column in referenced.columns:
+                
+                # If this column is referenced by the original
+                # database, map the data over
+                if column == keyMap[key]['foreignKey']:
+                    noisyRow[column] = row[key]
+
+                # Otherwise generate new data
+                else:
+                    noisyRow[column] = generateNoisyData(referenced.columns[column]['unit'], referenced.columns[column]['unitOther'])
+                
+            # Adds the row of data to the appropriate table
+            generatedData[key].append(noisyRow)
+
+    # Loads the data into the actual database
+    for key in generatedData:
+        loadNoisyData(data, referencedDatabases[keyMap[key]['references']], generatedData[key])
+
 
 
 # Returns a database with a specified number of columns
