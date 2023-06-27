@@ -317,7 +317,14 @@ $(document).ready(function () {
                 default:
                     break;
             }
-            outputElm.append(output.map(item => (item !== undefined ? item : "") + "<br>").join(""));
+            // if query wasn't run from the editor, output equals "Database initialized."
+            if (editor.getValue() == "") {
+                if (outputElm.text() != "Database initialized.") {
+                    outputElm.text("Database initialized.");
+                }
+            } else {
+                outputElm.append(output.map(item => (item !== undefined ? item : "") + "<br>").join(""));
+            }
         }
     }
 
@@ -350,6 +357,8 @@ $(document).ready(function () {
     function createOutputTable(columns, results) {
 
         var table = $("<table></table>");
+        table.addClass("output-tables")
+        
 
         table.append(createTableHeader(columns));
 
@@ -372,6 +381,9 @@ $(document).ready(function () {
 
         for (var i = 0; i < columns.length; i++) {
             var th = $("<th></th>").text(columns[i]);
+            th.on("click", function () {
+                sortTable(this, i);
+            });
             headerRow.append(th);
         }
 
@@ -387,6 +399,10 @@ $(document).ready(function () {
         rows.forEach(function (row) {
             var tr = $("<tr></tr>");
             row.forEach(function (value) {
+                // round to 2 decimal places
+                if (typeof value == 'number' && !Number.isInteger(value)) {
+                    value = value.toFixed(2);
+                }
                 var td = $("<td></td>").text(value);
                 tr.append(td);
             });
@@ -394,8 +410,5 @@ $(document).ready(function () {
         });
         return rowElements;
     }
-
-
-
 
 });
