@@ -1,6 +1,6 @@
 <!-- Question introduction -->
 <pl-question-panel>
-    Insert the following records into the <strong>Airport</strong> table.
+    Insert the following records into the appropriate tables.
     <br>
 </pl-question-panel>
 
@@ -10,19 +10,53 @@
 <pl-question-panel>
     <br>
     <markdown>
+        **airplane**
         ('AC911','Boeing 747', '2001-01-25')
         ('WJ455', 'Airbus A380', '2008-11-15')
+
+        **airport**
+        ('YLW','Kelowna Airport','Kelowna','British Columbia', 'Canada')
+        ('YWG','Winnipeg Airport','Winnipeg','Manitoba', 'Canada')
+
+        **flight**
+        ('AC35', 'YLW', 'YWG', 'AC911', '2022-09-14 07:00:00', '2022-09-14 15:00:00', '2022-09-14 07:05:00', '2022-09-14 15:30:00')
+        ('WJ111', 'YWG', 'YLW', 'WJ455', '2022-09-15 10:00:00', '2022-09-15 12:00:00', '2022-09-15 09:55:00', '2022-09-14 11:49:55')
+
+        **passenger**
+        (1, 'Joe', 'Smith', '1970-12-15', '1350 Springfield Road', 'Kelowna', 'British Columbia', 'Canada')
+        (2, 'Fred', 'Brothers', '1950-01-02', '22 Pembina Highway', 'Winnipeg', 'Manitoba', 'Canada')
+
+        **onFlight**
+        (1, 'AC35', '2022-09-14 07:00:00', '1A')
+        (1, 'WJ111', '2022-09-15 10:00:00', '10C')
+        (2, 'AC35', '2022-09-14 07:00:00', '2A')
+        (2, 'WJ111', '2022-09-15 10:00:00', '10D')
     </markdown>
 </pl-question-panel>
 
 
 <!-- SQL editor -->
-<pl-sql-element>
+<pl-sql-element database = "./SQLElementSharedLibrary/lab2Databases/onlyTables.txt">
     <sql-question>
     </sql-question>
 
-    <sql-answer>INSERT INTO Airplane VALUES ('AC911','Boeing 747', '2001-01-25');
-        INSERT INTO Airplane VALUES ('WJ455', 'Airbus A380', '2008-11-15');</sql-answer>
+    <sql-answer>INSERT INTO airplane VALUES ('AC911','Boeing 747', '2001-01-25');
+        INSERT INTO airplane VALUES ('WJ455', 'Airbus A380', '2008-11-15');
+
+        INSERT INTO airport VALUES ('YLW', 'Kelowna Airport', 'Kelowna','British Columbia', 'Canada');
+        INSERT INTO airport VALUES ('YWG', 'Winnipeg Airport', 'Winnipeg','Manitoba', 'Canada');
+
+        INSERT INTO flight VALUES ('AC35', 'YLW', 'YWG', 'AC911', '2009-03-14 07:00:00', '2009-03-14 15:00:00', '2009-03-14 07:05:00', '2009-03-14 15:30:00');
+        INSERT INTO flight VALUES ('WJ111', 'YWG', 'YLW', 'WJ455', '2009-03-15 10:00:00', '2009-03-15 12:00:00', '2009-03-15 09:55:00', '2009-03-14 11:49:55');
+    
+        INSERT INTO passenger VALUES (1, 'Joe', 'Smith', '1970-12-15', '1350 Springfield Road', 'Kelowna', 'British Columbia', 'Canada');
+        INSERT INTO passenger VALUES (2, 'Fred', 'Brothers', '1950-01-02', '22 Pembina Highway', 'Winnipeg', 'Manitoba', 'Canada');
+
+        INSERT INTO onFlight VALUES (1, 'AC35', '2009-03-14 07:00:00', '1A');
+        INSERT INTO onFlight VALUES (1, 'WJ111', '2009-03-15 10:00:00', '10C');
+        INSERT INTO onFlight VALUES (2, 'AC35', '2009-03-14 07:00:00', '2A');
+        INSERT INTO onFlight VALUES (2, 'WJ111', '2009-03-15 10:00:00', '10D');
+    </sql-answer>
     
     <sql-marking ></sql-marking>
 </pl-sql-element>

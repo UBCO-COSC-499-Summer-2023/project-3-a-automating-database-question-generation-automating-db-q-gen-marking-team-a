@@ -95,17 +95,6 @@
 	overflow: auto;
 }
 
-#output table {
-	width:auto;
-	margin:auto;
-	border:1px solid black;
- 	border-collapse:collapse;
- 	margin-bottom:10px;
-}
-
-#output th, #output td {
-	border:1px solid #777;
-}
 
 #db-schema {
 	display: flex;
@@ -119,4 +108,48 @@
 
 #db-init{
 	display: none;
+}
+
+.output-tables{
+	border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 0.9em;
+    font-family: ubuntu, sans-serif;
+    min-width: 400px;
+	margin: auto;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+	border-radius: 5px 5px 0 0;
+	overflow:hidden;
+}
+
+.output-tables thead tr{
+	background-color: #007bff;
+    color: #ffffff;
+    text-align: left;
+	font-weight: bold;
+}
+
+.output-tables thead th{
+	cursor: pointer;
+}
+
+.output-tables th, .output-tables td{
+	padding: 12px 15px;
+}
+
+.output-tables tr{
+	border-bottom: 1px solid #dddddd;
+}
+
+.output-tables tr:nth-of-type(even){
+	background-color: #f3f3f3;
+}
+
+.output-tables tr:last-of-type{
+	border-bottom: 2px solid #007bff;
+}
+
+.output-tables > tr:hover{
+	background: #000000b6;
+	color: #fff;
 }
