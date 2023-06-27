@@ -235,8 +235,7 @@ def generateDelete(data, difficulty):
         case other: print(f"{difficulty} is not a valid difficulty.\nValid difficulties are: 'easy', 'medium', and 'hard'.")
 
     # Gets a database with the specified number of columns
-    #database = loadTrimmedDatabase(columnCount)
-    database = db.load(relativeFilePath('flight')) # TODO undo this
+    database = loadTrimmedDatabase(columnCount)
 
     # Generates a bunch of bogus rows
     rows = generateRows(database, columnCount * 3 + random.randint(-3, 3))
@@ -256,7 +255,7 @@ def generateDelete(data, difficulty):
 
 
     # Creates the question string
-    data['params']['questionString'] = f"From the table {database.name}, delete the entry where {database.columns[randomKey]['unit']} equals '{deleteValue}'."
+    data['params']['questionString'] = f"From the table {database.name}, delete the entry where {randomKey} equals '{deleteValue}'."
 
     # Loads the schema of all referenced databases
     loadAllSchema(data, database)
