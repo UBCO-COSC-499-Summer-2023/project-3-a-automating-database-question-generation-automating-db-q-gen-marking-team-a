@@ -3,7 +3,7 @@
 - started on testing for renderer.js, worked on modularizing the code but seems like it's gonna be a bit more tricky than just moving the functions to a seperate file
 
 ## Monday , June 26:
--  spent so many hours using so many approaches trying to make the renderer file testable but I don’t think it’s possible
+- spent so many hours using so many approaches trying to make the renderer file testable but I don’t think it’s possible
 - Moving them to a seperate file and importing them into the renderer to be used
 - Keeping them there
 - Using require.js
