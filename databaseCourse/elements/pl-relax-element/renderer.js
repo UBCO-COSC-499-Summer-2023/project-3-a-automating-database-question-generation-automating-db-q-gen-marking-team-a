@@ -232,6 +232,33 @@ $(document).ready(function () {
             return container.append(button);
         } 
     }
+    
+    /*
+
+    let subElm = $(".card-body.submission-body");
+    let correctElm = $(".card-body.answer-body");
+
+    // if "card-body submission-body" is not empty, function takes in the string
+    if (correctElm.length > 0) {
+        
+        let query = correctElm.text();
+        correctElm.append("correct test")
+        console.log(query);
+
+    }
+
+    // if "card-body submission-body" is not empty, function takes in the string
+    if ( subElm.length > 0) {
+
+        //iterate through each element in the array
+        for (var i = 0; i < subElm.length; i++) {
+            subElm[i].append("submission test: ", i);
+        }
+
+    }
+    */
+    
+
 });
 
 /*
@@ -246,3 +273,4 @@ $(document).ready(function () {
 
         schemaView += "</div>"
         */
+
