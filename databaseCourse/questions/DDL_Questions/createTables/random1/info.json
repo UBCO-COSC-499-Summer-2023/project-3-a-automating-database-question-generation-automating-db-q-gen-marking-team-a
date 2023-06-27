@@ -1,12 +1,13 @@
 {
-    "uuid": "02a0865d-3887-4a18-af0f-cd7acada3783",
-      "title": "Create Tables 1",
+    "uuid": "104ccb47-de6f-477c-87dc-1f6969c10973",
+      "title": "Random Create Tables 1",
     "topic": "Databases",
     "singleVariant": true,
     "tags": [
         "rlawrence",
         "Demo",
-        "DDL"
+        "DDL",
+        "Random"
     ],
     "type": "v3"
 }

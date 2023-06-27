@@ -1,12 +1,13 @@
 {
-    "uuid": "02a0865d-3887-4a18-af0f-cd7acada3783",
-      "title": "Create Tables 1",
+    "uuid": "6cc41312-693f-4c01-b190-5abc9d85801a",
+      "title": "Random Delete Tables 1",
     "topic": "Databases",
     "singleVariant": true,
     "tags": [
         "rlawrence",
         "Demo",
-        "DDL"
+        "DDL",
+        "Random"
     ],
     "type": "v3"
 }

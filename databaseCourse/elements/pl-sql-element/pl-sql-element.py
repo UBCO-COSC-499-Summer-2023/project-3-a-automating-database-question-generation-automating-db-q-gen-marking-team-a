@@ -4,6 +4,7 @@ import lxml.html
 import prairielearn as pl
 
 import SQLElementSharedLibrary.SQLCustomGrader as grader
+import SQLElementSharedLibrary.SQLAutogenerator as autogen
 
 # Note to devs:
 # It seems you cannot modify params or correct answers from generate().
@@ -39,13 +40,38 @@ def prepare(element_html, data):
     databaseFilePath = pl.get_string_attrib(element, 'database', '')
 
     # If there is a database file, read and loads its contents
+    data['params']['db_initialize'] = ''
     if databaseFilePath:
-        databaseFile = open(databaseFilePath,"r")
-
-        # Reads the database as an array over lines of a string
-        data['params']['db_initialize'] = databaseFile.read().splitlines()
+        with open(databaseFilePath,"r") as databaseFile:
+           data['params']['db_initialize'] = databaseFile.read()
         
-        databaseFile.close() 
+
+
+    # Loads quesiton parameters into data
+    #
+    # Note to devs:
+    # Notice the strings in the pl.get_... are lowercase despite
+    # the html parameters being uppercase. I have no clue why
+    # this is, but the pl.get_... will fail to find the corresponding
+    # parameter if their string is uppercase. Hence all lowercase
+    questionRandom = pl.get_boolean_attrib(element, 'random', False)
+    questionType = pl.get_string_attrib(element, 'questiontype', 'query')
+    questionDifficulty = pl.get_string_attrib(element, 'difficulty', 'normal')
+    questionMaxGrade = pl.get_float_attrib(element, 'maxgrade', 1)
+    questionMarkerFeedback = pl.get_boolean_attrib(element, 'markerfeedback', False)
+
+    data['params']['html_params'] = {
+        'random': questionRandom,
+        'questionType': questionType,
+        'difficulty': questionDifficulty,
+        'maxGrade': questionMaxGrade,
+        'markerFeedback': questionMarkerFeedback
+    }
+
+    # If if is a randomised question, generate the question
+    # data['params']['html_params']['random']
+    if questionRandom:
+        autogen.autogenerate(data)
 
 
 # Renders the element
@@ -77,7 +103,8 @@ def render(element_html, data):
         
         html_params = {
             'question': True,
-            'db_initialize': dbInit
+            'db_initialize': dbInit,
+            'questionString': data['params'].get('questionString', '')
         }
     
         with open('pl-sql-element.mustache', 'r', encoding='utf-8') as f:
