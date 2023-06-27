@@ -21,9 +21,21 @@
             ]
         },
         {
+            "title": "Random Create Tables",
+            "questions": [
+                {"id": "DDL_Questions/createTables/random1",          "points": 1}
+            ]
+        },
+        {
             "title": "Modify Tables",
             "questions": [
                 {"id": "DDL_Questions/insertTables/1",                "points": 5}
+            ]
+        },
+        {
+            "title": "Random Insert",
+            "questions": [
+                {"id": "DDL_Questions/insertTables/random1",          "points": 1}
             ]
         },
         {
@@ -34,11 +46,23 @@
             ]
         },
         {
+            "title": "Random Update",
+            "questions": [
+                {"id": "DDL_Questions/updateTables/random1",          "points": 1}
+            ]
+        },
+        {
             "title": "Delete",
             "questions": [
                 {"id": "DDL_Questions/deleteTables/1",                "points": 1},
                 {"id": "DDL_Questions/deleteTables/2",                "points": 1},
                 {"id": "DDL_Questions/deleteTables/3",                "points": 1}
+            ]
+        },
+        {
+            "title": "Random Delete",
+            "questions": [
+                {"id": "DDL_Questions/deleteTables/random1",          "points": 1}
             ]
         }
     ]
