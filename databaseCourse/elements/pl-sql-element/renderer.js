@@ -407,6 +407,12 @@ $(document).ready(function () {
                 if (typeof value == 'number' && !Number.isInteger(value)) {
                     value = value.toFixed(2);
                 }
+
+                // add null text if field is null, 0 should show "0"
+                if (value == null) {
+                    value = "NULL";
+                }
+
                 var td = $("<td></td>").text(value);
                 tr.append(td);
             });
