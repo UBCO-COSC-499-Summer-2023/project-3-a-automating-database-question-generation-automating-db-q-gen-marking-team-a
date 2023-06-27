@@ -29,5 +29,8 @@
 
 ## Friday , June 23:
 - dashboard + peer evals
+- met with team to go over next steps again and break down more tasks and action items for mvp
+- gonna be working on testing for renderer.js, element.py, as well as autograding, making the mvp presentation, and a small ui bug fix
 
 ## Saturday , June 24:
+- off day
