@@ -305,10 +305,8 @@ $(document).ready(function () {
             });
             rowElements.push(tr);
         });
+        console.log(rowElements)
         return rowElements;
     }
-
-
-
 
 });
