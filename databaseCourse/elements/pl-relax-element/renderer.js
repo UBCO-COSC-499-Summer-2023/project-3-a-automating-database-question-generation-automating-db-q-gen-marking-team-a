@@ -38,11 +38,11 @@ $(document).ready(function () {
         if (dataSchema.length === 0) {
             return;
         }
-        let schemaView = "<button type='button' onClick='openMenu(this)' class='dropbtn' id='btn-" + dataSchema._relAliases[0] + "'>" + dataSchema._relAliases[0]
+        let schemaView = "<button type='button' onmouseover='openMenu(this)' onClick='updateCodeMirror(\""+dataSchema._relAliases[0]+"\");' class='dropbtn' id='btn-" + dataSchema._relAliases[0] + "'>" + dataSchema._relAliases[0]
             + "</button> <div class='dropdown-content' id='schema-" + dataSchema._relAliases[0] + "'>"
 
         for (var i = 0; i < dataSchema._names.length; i++) {
-            let field = "<div classname='submenu' id='schema-" + dataSchema._relAliases[0] + "'>" + dataSchema._names[i] +", " + dataSchema._types[i] + "</div>"
+            let field = "<div classname='submenu' onClick='updateCodeMirror(\""+dataSchema._names[i]+"\");' id='schema-" + dataSchema._relAliases[0] + "'>" + dataSchema._names[i] +", " + dataSchema._types[i] + "</div>"
             console.log(i)
             schemaView += (field)
         }
@@ -118,6 +118,9 @@ $(document).ready(function () {
             "Ctrl-Enter": executeEditorContents,
         }
     });
+    window.updateCodeMirror = function (data) {
+        updateCodeMirror(data);
+    }
     // adds functionality for onclick
     function updateCodeMirror(data){
         var doc = editor.getDoc(); //gets the information of the editor
