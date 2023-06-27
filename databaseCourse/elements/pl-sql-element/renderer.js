@@ -381,9 +381,6 @@ $(document).ready(function () {
 
         for (var i = 0; i < columns.length; i++) {
             var th = $("<th></th>").text(columns[i]);
-            th.on("click", function () {
-                sortTable(this, i);
-            });
             headerRow.append(th);
         }
 
