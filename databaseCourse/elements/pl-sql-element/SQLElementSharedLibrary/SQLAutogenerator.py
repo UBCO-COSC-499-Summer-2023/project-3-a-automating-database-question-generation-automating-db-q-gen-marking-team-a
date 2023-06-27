@@ -266,12 +266,12 @@ def generateDelete(data, difficulty):
     loadAllNoisyData(data, database, rows)
 
     # Sets the correct answer
-    data['correct_answers']['SQLEditor'] = deleteStatement(database, database.columns[randomKey]['unit'], deleteValue)
+    data['correct_answers']['SQLEditor'] = deleteStatement(database, randomKey, deleteValue)
 
 
 # Creates a delete statement
-def deleteStatement(database, unit, deleteValue):
-    return f"DELETE FROM {database.name} WHERE {unit} = '{deleteValue}';\n"
+def deleteStatement(database, column, deleteValue):
+    return f"DELETE FROM {database.name} WHERE {column} = '{deleteValue}';\n"
 
 '''
     End delete-style question
