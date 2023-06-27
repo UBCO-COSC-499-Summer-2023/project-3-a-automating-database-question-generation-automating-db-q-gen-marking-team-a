@@ -166,7 +166,7 @@ def generateInsert(data, difficulty):
 
     # Generates the data to be inserted.
     # Converts the dictionary row to a list
-    row = list(generateRow(database.columns).values())
+    row = list(generateRow(database).values())
     
     # Adds the data to the question string, replacing the '[]'
     # with '()'
@@ -238,10 +238,8 @@ def generateDelete(data, difficulty):
     #database = loadTrimmedDatabase(columnCount)
     database = db.load(relativeFilePath('flight')) # TODO undo this
 
-
-
     # Generates a bunch of bogus rows
-    rows = generateRows(database.columns, columnCount * 3 + random.randint(-3, 3))
+    rows = generateRows(database, columnCount * 3 + random.randint(-3, 3))
 
     # Won't select a foreign key if the difficulty is easy
     randomKey = None
@@ -392,7 +390,7 @@ def loadAllNoisyData(data, database, rows):
 
                 # Otherwise generate new data
                 else:
-                    noisyRow[column] = generateNoisyData(referenced.columns[column]['unit'], referenced.columns[column]['unitOther'])
+                    noisyRow[column] = generateNoisyData(referenced, column)
                 
             # Adds the row of data to the appropriate table
             generatedData[key].append(noisyRow)
@@ -428,18 +426,23 @@ def loadTrimmedDatabase(columnCount):
 
 
 # Generates one row's worth of noisy data
-def generateRow(columns):
-    return {key: generateNoisyData(columns[key]['unit'], columns[key]['unitOther']) for key in columns}
+def generateRow(database):
+    return {key: generateNoisyData(database, key) for key in database.columns}
 
 # Generates qty's worth of rows of noisy data
-def generateRows(columns, qty):
-    return [generateRow(columns) for i in range(qty)]
+def generateRows(database, qty):
+    return [generateRow(database) for i in range(qty)]
 
 
 
 # Generates random data based on the unit type
-def generateNoisyData(unit, unitOther):
+def generateNoisyData(database, key):
     
+    # Grabs the important information
+    unit = database.columns[key]['unit']
+    unitOther = database.columns[key]['unitOther']
+
+    # Matches on the unit type
     match unit:
         # Integers
         case 'INTEGER': return generateNoisyInteger()
