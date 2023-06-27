@@ -331,7 +331,15 @@ $(document).ready(function () {
     // function that allows you to click the column type and add it to editor
     window.addColumnToEditor = function (tableName, columnName) {
 
-        editor.setValue(editor.getValue() + `${tableName}.${columnName} `);
+       updateCodeMirror(`${tableName}.${columnName} `);
+    }
+
+    // adds table.column to editor at cursor location
+    function updateCodeMirror(data){
+        var doc = editor.getDoc(); //gets the information of the editor
+        doc.replaceRange(data, doc.getCursor()); // adds data at position of cursor
+        editor.focus();
+        editor.setCursor(doc.getCursor());
     }
 
     /*
@@ -352,6 +360,7 @@ $(document).ready(function () {
             return null; // or handle the case where table name is not found
         }
     }
+    
 
     //Function that creates the output table
     function createOutputTable(columns, results) {
@@ -444,6 +453,7 @@ $(document).ready(function () {
         $table.data("sort-direction", direction);
         $table.data("sort-column", column);
     
+        // sorting function
         rows.sort((a, b) => {
             const aValue = a.cells.item(column).innerHTML;
             const bValue = b.cells.item(column).innerHTML;
