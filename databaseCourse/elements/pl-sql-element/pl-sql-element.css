@@ -114,7 +114,7 @@
 	border-collapse: collapse;
     margin: 25px 0;
     font-size: 0.9em;
-    font-family: sans-serif;
+    font-family: ubuntu, sans-serif;
     min-width: 400px;
 	margin: auto;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
@@ -127,6 +127,10 @@
     color: #ffffff;
     text-align: left;
 	font-weight: bold;
+}
+
+.output-tables thead th{
+	cursor: pointer;
 }
 
 .output-tables th, .output-tables td{
@@ -143,4 +147,9 @@
 
 .output-tables tr:last-of-type{
 	border-bottom: 2px solid #007bff;
+}
+
+.output-tables > tr:hover{
+	background: #000000b6;
+	color: #fff;
 }

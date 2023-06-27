@@ -358,7 +358,7 @@ $(document).ready(function () {
 
         var table = $("<table></table>");
         table.addClass("output-tables")
-        
+
 
         table.append(createTableHeader(columns));
 
@@ -381,6 +381,13 @@ $(document).ready(function () {
 
         for (var i = 0; i < columns.length; i++) {
             var th = $("<th></th>").text(columns[i]);
+            // Call sort tables
+            /*
+            th.on("click", function () {
+                sortTable(this, i)
+            });
+            */
+
             headerRow.append(th);
         }
 
@@ -407,5 +414,34 @@ $(document).ready(function () {
         });
         return rowElements;
     }
+
+    /*
+    function sortTable(element, column) {
+        const $table = $(element).closest("table");
+        const $tbody = $table.find("tbody");
+        const rows = $tbody.find("tr").toArray();
+        const direction = $table.data("sort-direction") === "asc" ? 1 : -1;
+    
+        rows.sort((a, b) => {
+            const aValue = $(a).find("td").eq(column).text().trim();
+            const bValue = $(b).find("td").eq(column).text().trim();
+    
+            if (isNaN(aValue) || isNaN(bValue)) {
+                return direction * aValue.localeCompare(bValue);
+            }
+    
+            return direction * (parseFloat(aValue) - parseFloat(bValue));
+        });
+    
+        $tbody.empty();
+        rows.forEach(row => $tbody.append(row));
+    
+        $table.data("sort-direction", direction === 1 ? "desc" : "asc");
+
+        console.log($table);
+
+    }
+    */
+    
 
 });
