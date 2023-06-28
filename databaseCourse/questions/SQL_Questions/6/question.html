@@ -39,17 +39,18 @@
     <sql-question>
     </sql-question>
     
-    <sql-answer>SELECT state, strftime('%Y', shipment.shipdate) AS year, product.pname, SUM(shippedproduct.amount * product.price) AS revenue  
-        FROM customer JOIN shipment
-            on customer.cid = shipment.cid
-            JOIN shippedproduct
-                ON shippedproduct.sid = shipment.sid
-            JOIN product
-                ON shippedproduct.pid = product.pid 
-        WHERE state = 'BC' AND strftime('%Y', shipment.shipdate) = '2021'
-        GROUP BY product.pname
-        ORDER BY revenue DESC
-        LIMIT 5;</sql-answer>
+    <sql-answer answer = "SELECT state, strftime('%Y', shipment.shipdate) AS year, product.pname, SUM(shippedproduct.amount * product.price) AS revenue  
+FROM customer JOIN shipment
+    on customer.cid = shipment.cid
+    JOIN shippedproduct
+        ON shippedproduct.sid = shipment.sid
+        JOIN product
+            ON shippedproduct.pid = product.pid 
+WHERE state = 'BC' AND strftime('%Y', shipment.shipdate) = '2021'
+GROUP BY product.pname
+ORDER BY revenue DESC
+LIMIT 5;"
+    </sql-answer>
 
     <sql-marking >
     </sql-marking>

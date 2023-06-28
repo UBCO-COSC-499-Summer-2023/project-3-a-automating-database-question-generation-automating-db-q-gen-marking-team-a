@@ -38,7 +38,12 @@
     <sql-question>
     </sql-question>
     
-    <sql-answer>SELECT c.city, COUNT(DISTINCT c.cid) AS customer_count, COUNT(DISTINCT s.sid) AS shipment_count FROM customer c LEFT JOIN shipment s ON c.cid = s.cid GROUP BY c.city HAVING COUNT(DISTINCT s.sid) >= 2 ORDER BY shipment_count DESC;
+    <sql-answer answer = "SELECT c.city, COUNT(DISTINCT c.cid) AS customer_count, COUNT(DISTINCT s.sid) AS shipment_count 
+FROM customer c LEFT JOIN shipment s 
+    ON c.cid = s.cid 
+GROUP BY c.city 
+HAVING COUNT(DISTINCT s.sid) >= 2 
+ORDER BY shipment_count DESC;"
     </sql-answer>
 
     <sql-marking >

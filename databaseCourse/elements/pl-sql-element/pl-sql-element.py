@@ -32,6 +32,7 @@ def prepare(element_html, data):
     element = lxml.html.fragment_fromstring(element_html)    
     correctAnswer = pl.inner_html(element[1])
 
+    correctAnswer = pl.get_string_attrib(element[1], 'answer', correctAnswer)
     # Sets the correct answer
     data['correct_answers']['SQLEditor'] = correctAnswer
 
@@ -134,7 +135,7 @@ def render(element_html, data):
             'correctAnswer': correctAnswer
         }
         with open('pl-sql-answer.mustache', 'r', encoding='utf-8') as f:
-            html = chevron.render(f, html_params).strip()
+            html = chevron.render(f, html_params)
     
     return html
 
