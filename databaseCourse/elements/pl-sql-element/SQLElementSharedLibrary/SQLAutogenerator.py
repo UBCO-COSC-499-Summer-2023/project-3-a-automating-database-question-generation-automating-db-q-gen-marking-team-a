@@ -12,6 +12,12 @@ def autogenerate(data):
     maxGrade = data['params']['html_params']['maxGrade']
     markerFeedback = data['params']['html_params']['markerFeedback']
 
+
+    # Checks if the difficulty are valid
+    if difficulty not in ['easy', 'medium', 'hard']:
+        print(f"{difficulty} is not a valid difficulty.\nValid difficulties are 'easy', 'medium', and 'hard'.")
+        return None
+
     # Generates the appropriate question
     match questionType:
         case 'create': generateCreate(data, difficulty)
@@ -37,7 +43,6 @@ def generateCreate(data, difficulty):
         case 'easy': databaseFile = random.choice(['airport', 'airplane'])
         case 'medium': databaseFile = random.choice(['passenger'])
         case 'hard': databaseFile = random.choice(['flight'])
-        case other: print(f"{difficulty} is not a valid difficulty.\nValid difficulties are: 'easy', 'medium', and 'hard'.")
     
     # Loads the selected database
     database = db.load(relativeFilePath(databaseFile))
@@ -155,7 +160,6 @@ def generateInsert(data, difficulty):
         case 'easy': columnCount = random.randint(3, 4)
         case 'medium': columnCount = random.randint(4, 6)
         case 'hard': columnCount = random.randint(5, 8)
-        case other: print(f"{difficulty} is not a valid difficulty.\nValid difficulties are: 'easy', 'medium', and 'hard'.")
 
     # Gets a database with the specified number of columns
     database = loadTrimmedDatabase(columnCount)
@@ -215,9 +219,6 @@ def generateUpdate(data, difficulty):
 
         case 'hard': 
             return None # Not yet implemented; first requires quesryStatement() to be completed
-        
-        case other: 
-            print(f"{difficulty} is not a valid difficulty.\nValid difficulties are: 'easy', 'medium', and 'hard'.")
 
     # Gets a database with the specified number of columns
     database = loadTrimmedDatabase(columnCount)
@@ -297,7 +298,6 @@ def generateDelete(data, difficulty):
         case 'easy': columnCount = random.randint(3, 4)
         case 'medium': columnCount = random.randint(4, 6)
         case 'hard': return None # Not yet implemented; first requires quesryStatement() to be completed
-        case other: print(f"{difficulty} is not a valid difficulty.\nValid difficulties are: 'easy', 'medium', and 'hard'.")
 
     # Gets a database with the specified number of columns
     database = loadTrimmedDatabase(columnCount)
