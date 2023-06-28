@@ -353,8 +353,7 @@ def deleteStatement(database, column, condition):
 
 def generateQuery(data, difficulty):
     
-    # Chooses a database to load based on quesiton difficulty
-    # Randomly selects from the list at the given difficulty
+    # Sets the difficulty
     columnCount = None
     joins = None
     clauses = None
@@ -371,8 +370,29 @@ def generateQuery(data, difficulty):
 
         case 'hard': 
             columnCount = random.randint(4, 6)
-            joins = random.randint(1, 3)
-            clauses = random.randint(1,3)
+            joins = random.randint(1, 2)
+            clauses = random.randint(1, 3)
+
+
+
+    # Selects a database based on the difficulty
+
+    # Gets all random databases so a random one may be chosen
+    possibleDatabases = db.getAllDatabaseFiles('./SQLElementSharedLibrary/randomDatabases/')
+
+    # Keeps trying random databases until it finds one that
+    # fulfills the conditions set by the difficulty
+    #
+    # The len(db.getKeyMap()) ensures that there are enough foreign
+    # keys to fulfill the joins requirement
+    #
+    # The (joins + 1) allows for the main database to have insufficient 
+    # columns since it will be able to use the columns in the joined
+    # databases
+    database = None
+    while not database or len(database.getKeyMap()) < joins or len(database.columns) / (joins + 1) < columnCount:
+        database = db.load(relativeFilePath(random.choice(possibleDatabases)))
+
 
 def queryStatement():
     pass
@@ -492,7 +512,8 @@ def loadAllNoisyData(data, database, rows):
 
 # Returns a database with a specified number of columns
 def loadTrimmedDatabase(columnCount):
-        # Gets all random databases so a random one may be chosen
+    
+    # Gets all random databases so a random one may be chosen
     possibleDatabases = db.getAllDatabaseFiles('./SQLElementSharedLibrary/randomDatabases/')
 
     # Keeps trying random databases until it finds one with enough columns
