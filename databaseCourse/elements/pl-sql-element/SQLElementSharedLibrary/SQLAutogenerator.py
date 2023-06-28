@@ -345,12 +345,6 @@ def deleteStatement(database, column, condition):
     Begin query-style question
 '''
 
-'''
-    Easy:   conditional, no join, no clauses
-    Medium: conditional, join, no clauses
-    Hard:   conditional, join, clauses
-'''
-
 def generateQuery(data, difficulty):
     
     # Sets the difficulty
@@ -358,18 +352,22 @@ def generateQuery(data, difficulty):
     joins = None
     clauses = None
     match difficulty:
+
+        # Easy:   conditional, no join, no clauses
         case 'easy': 
             columnCount = random.randint(1, 3)
             joins = 0
             clauses = 0
 
+        # Medium: conditional, join, no clauses
         case 'medium': 
             columnCount = random.randint(3, 5)
             joins = random.randint(1, 2)
             clauses = 0
 
+        # Hard:   conditional, join, clauses
         case 'hard': 
-            columnCount = random.randint(4, 6)
+            columnCount = random.randint(5, 7)
             joins = random.randint(1, 2)
             clauses = random.randint(1, 3)
 
@@ -392,6 +390,12 @@ def generateQuery(data, difficulty):
     database = None
     while not database or len(database.getKeyMap()) < joins or len(database.columns) / (joins + 1) < columnCount:
         database = db.load(relativeFilePath(random.choice(possibleDatabases)))
+
+    # Gets all the referenced databases
+    referencedDatabases = getReferencedDatabaseDictionary(database)
+
+
+
 
 
 def queryStatement():
