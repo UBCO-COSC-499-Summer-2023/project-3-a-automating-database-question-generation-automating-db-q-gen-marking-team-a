@@ -41,7 +41,9 @@
         {
             "title": "Random Insert",
             "questions": [
-                {"id": "DDL_Questions/insertTables/random1",          "points": 1}
+                {"id": "DDL_Questions/insertTables/randomEasy1",          "points": 1},
+                {"id": "DDL_Questions/insertTables/randomMedium1",          "points": 1},
+                {"id": "DDL_Questions/insertTables/randomHard1",          "points": 1}
             ]
         },
         {
