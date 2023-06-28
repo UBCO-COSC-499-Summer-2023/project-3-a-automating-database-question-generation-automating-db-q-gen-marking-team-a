@@ -213,15 +213,6 @@ def updateStatement():
     Begin delete-style question
 '''
 
-'''
-    Current approach:
-    Easy and medium will work like INSERT where they'll select a
-    database of a certain size. In addition, they'll select the
-    number of affected rows. Hard will be about the same as medium,
-    except it will require a subquery, but I first need to first
-    complete the queryStatement() function
-'''
-
 def generateDelete(data, difficulty):
         
     # Chooses a database to load based on quesiton difficulty
@@ -269,8 +260,8 @@ def generateDelete(data, difficulty):
 
 
 # Creates a delete statement
-def deleteStatement(database, column, deleteValue):
-    return f"DELETE FROM {database.name} WHERE {column} = '{deleteValue}';\n"
+def deleteStatement(database, column, condition):
+    return f"DELETE FROM {database.name} WHERE {column} = '{condition}';\n"
 
 '''
     End delete-style question
