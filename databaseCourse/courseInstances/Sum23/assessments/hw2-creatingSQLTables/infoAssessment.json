@@ -23,7 +23,9 @@
         {
             "title": "Random Create Tables",
             "questions": [
-                {"id": "DDL_Questions/createTables/random1",          "points": 1}
+                {"id": "DDL_Questions/createTables/randomEasy1",          "points": 1},
+                {"id": "DDL_Questions/createTables/randomMedium1",          "points": 1},
+                {"id": "DDL_Questions/createTables/randomHard1",          "points": 1}
             ]
         },
         {
