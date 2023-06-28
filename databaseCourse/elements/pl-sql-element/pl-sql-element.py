@@ -32,7 +32,11 @@ def prepare(element_html, data):
     element = lxml.html.fragment_fromstring(element_html)    
     correctAnswer = pl.inner_html(element[1])
 
+    # This is how the SQL/DDL questions have the correct answer retrieved.
+    # The above correct answer is left in so that the RelaX questions
+    # will continue working.
     correctAnswer = pl.get_string_attrib(element[1], 'answer', correctAnswer)
+    
     # Sets the correct answer
     data['correct_answers']['SQLEditor'] = correctAnswer
 

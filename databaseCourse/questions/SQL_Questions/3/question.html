@@ -36,11 +36,13 @@
 
 
 <!-- SQL editor -->
-<pl-sql-element database = "./SQLElementSharedLibrary/lab3Databases/lab3_db.txt">
+<pl-sql-element database = "./SQLElementSharedLibrary/lab3Databases/shipmentDDL.sql">
     <sql-question>
     </sql-question>
     
-    <sql-answer>SELECT * FROM customer WHERE address LIKE '%street%' OR address IS NULL;
+    <sql-answer answer = "SELECT *
+FROM customer
+WHERE address LIKE '%street%' OR address IS NULL;">
     </sql-answer>
 
     <sql-marking >

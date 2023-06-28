@@ -8,7 +8,11 @@
 
 <!-- Question text -->
 <pl-question-panel>
-    A <strong>flight</strong> table where each flight is identified by both a <strong>num</strong> (exactly 5 characters) and <strong>departDateTime</strong> (DATETIME). Note that the flight number does not by itself identify a flight as airlines reuse flight numbers. A flight departs from one airport (<strong>departAirport</strong>) and arrives at another (<strong>arriveAirport</strong>). Besides the departure date/time, there is an expected <strong>arriveDateTime</strong>, and <strong>actualDepartDT</strong> (DATETIME) and <strong>actualArriveDT</strong> (DATETIME). Each flight record also stores the <strong>airplaneId</strong> of the plane. <em>Make all foreign keys set to null on delete and cascade on update</em>. (3 marks)
+    A <strong>flight</strong> table where each flight is identified by both a <strong>num</strong> (exactly 5 characters) and <strong>departDateTime</strong> (DATETIME). Note that the flight number does not by itself identify a flight as airlines reuse flight numbers. <br> 
+    A flight departs from one airport (<strong>departAirport</strong>) and arrives at another (<strong>arriveAirport</strong>). <br>
+    Besides the departure date/time, there is an expected <strong>arriveDateTime</strong>, and <strong>actualDepartDT</strong> (DATETIME) and <strong>actualArriveDT</strong> (DATETIME). <br>
+    Each flight record also stores the <strong>airplaneId</strong> of the plane.<br>
+    <em>Make all foreign keys set to null on delete and cascade on update</em>. (3 marks)
 </pl-question-panel>
 
 
@@ -17,20 +21,20 @@
     <sql-question>
     </sql-question>
 
-    <sql-answer>CREATE TABLE flight (
-        num CHAR(5), 	
-        departAirport CHAR(5),
-        arriveAirport CHAR(5),
-        airplaneId VARCHAR(10),
-        departDateTime DATETIME,
-        arriveDateTime DATETIME,			
-        actualDepartDT DATETIME,
-        actualArriveDT DATETIME,	
-        PRIMARY KEY (num,departDateTime),
-        FOREIGN KEY (departAirport) REFERENCES Airport(id) ON DELETE SET NULL ON UPDATE CASCADE,
-        FOREIGN KEY (arriveAirport) REFERENCES Airport(id) ON DELETE SET NULL ON UPDATE CASCADE,
-        FOREIGN KEY (airplaneId) REFERENCES Airplane(id) ON DELETE SET NULL ON UPDATE CASCADE
-    );
+    <sql-answer answer = "CREATE TABLE flight (
+    num CHAR(5), 	
+    departAirport CHAR(5),
+    arriveAirport CHAR(5),
+    airplaneId VARCHAR(10),
+    departDateTime DATETIME,
+    arriveDateTime DATETIME,			
+    actualDepartDT DATETIME,
+    actualArriveDT DATETIME,	
+    PRIMARY KEY (num,departDateTime),
+    FOREIGN KEY (departAirport) REFERENCES Airport(id) ON DELETE SET NULL ON UPDATE CASCADE,
+    FOREIGN KEY (arriveAirport) REFERENCES Airport(id) ON DELETE SET NULL ON UPDATE CASCADE,
+    FOREIGN KEY (airplaneId) REFERENCES Airplane(id) ON DELETE SET NULL ON UPDATE CASCADE
+);">
     </sql-answer>
     
     <sql-marking ></sql-marking>
