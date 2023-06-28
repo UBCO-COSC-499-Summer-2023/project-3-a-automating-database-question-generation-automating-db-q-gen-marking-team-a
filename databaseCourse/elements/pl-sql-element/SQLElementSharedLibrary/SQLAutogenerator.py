@@ -424,7 +424,7 @@ def loadAllNoisyData(data, database, rows):
 
     # Gets a dictionary that maps the column to both
     # the referenced database name and foreign key
-    keyMap = {key: {'references': database.columns[key]['references'], 'foreignKey': database.columns[key]['foreignKey']} for key in database.columns.keys() if database.columns[key]['references']}
+    keyMap = database.getKeyMap()
 
     # All table of data
     generatedData = {}

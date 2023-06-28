@@ -124,6 +124,13 @@ class Database:
 
                 }
 
+    # Returns a dictionary with the following mapping:
+    #   column: (if the column is a foreign key)
+    #       'references': the database referenced
+    #       'foreignKey': the column in the referenced database
+    def getKeyMap(self):
+        return {key: {'references': self.columns[key]['references'], 'foreignKey': self.columns[key]['foreignKey']} for key in self.columns.keys() if self.columns[key]['references']}
+
     def __str__(self):
         # The Column __str__() function didn't want to work so
         # instead here's some gross list comprehension
