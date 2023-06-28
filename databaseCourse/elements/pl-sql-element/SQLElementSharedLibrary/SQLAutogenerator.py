@@ -225,7 +225,6 @@ def generateUpdate(data, difficulty):
 
 
 
-
     # Generates a bunch of bogus rows
     rows = generateRows(database, columnCount * 3 + random.randint(-3, 3))
 
@@ -346,8 +345,34 @@ def deleteStatement(database, column, condition):
     Begin query-style question
 '''
 
+'''
+    Easy:   conditional, no join, no clauses
+    Medium: conditional, join, no clauses
+    Hard:   conditional, join, clauses
+'''
+
 def generateQuery(data, difficulty):
-    pass
+    
+    # Chooses a database to load based on quesiton difficulty
+    # Randomly selects from the list at the given difficulty
+    columnCount = None
+    joins = None
+    clauses = None
+    match difficulty:
+        case 'easy': 
+            columnCount = random.randint(1, 3)
+            joins = 0
+            clauses = 0
+
+        case 'medium': 
+            columnCount = random.randint(3, 5)
+            joins = random.randint(1, 2)
+            clauses = 0
+
+        case 'hard': 
+            columnCount = random.randint(4, 6)
+            joins = random.randint(1, 3)
+            clauses = random.randint(1,3)
 
 def queryStatement():
     pass
