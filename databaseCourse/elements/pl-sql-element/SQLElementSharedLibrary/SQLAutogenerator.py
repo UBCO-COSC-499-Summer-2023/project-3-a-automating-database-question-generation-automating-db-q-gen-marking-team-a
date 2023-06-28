@@ -199,10 +199,85 @@ def insertStatement(database, row):
 '''
 
 def generateUpdate(data, difficulty):
-    pass
+    
+    # Chooses a database to load based on quesiton difficulty
+    # Randomly selects from the list at the given difficulty
+    columnCount = None
+    useConditional = None
+    match difficulty:
+        case 'easy': 
+            columnCount = random.randint(3, 4)
+            useConditional = False
 
-def updateStatement():
-    pass
+        case 'medium': 
+            columnCount = random.randint(4, 6)
+            useConditional = True
+
+        case 'hard': 
+            return None # Not yet implemented; first requires quesryStatement() to be completed
+        
+        case other: 
+            print(f"{difficulty} is not a valid difficulty.\nValid difficulties are: 'easy', 'medium', and 'hard'.")
+
+    # Gets a database with the specified number of columns
+    database = loadTrimmedDatabase(columnCount)
+
+
+
+
+    # Generates a bunch of bogus rows
+    rows = generateRows(database, columnCount * 3 + random.randint(-3, 3))
+
+    # Selects a random column to affect
+    updateColumn = random.choice(list(database.columns.keys()))
+
+    # Generates the updated valued
+    updateValue = generateNoisyData(database, updateColumn)
+
+
+    # If the quesiton should use a condition, set parameters
+    conditionalColumn = None
+    conditionalValue = None
+    if useConditional:
+
+        # Selects a random column to affect
+        conditionalColumn = random.choice(list(database.columns.keys()))
+
+        # Chooses a random value from the generated data to be updated
+        randomValueIndex = random.choice(range(len(rows)))
+
+        # Grabs the randomly selected values
+        conditionalValue = rows[randomValueIndex][conditionalColumn]
+
+
+
+    # Generates the question string
+    # Changes depending on whether it uses a conditional or not
+    if useConditional:
+        data['params']['questionString'] = f"From the table {database.name} and in the column {updateColumn}, change all values to be {updateValue} where {conditionalColumn} is equal to {conditionalValue}."
+    else:
+        data['params']['questionString'] = f"From the table {database.name} and in the column {updateColumn}, change all values to be {updateValue}."
+
+    # Loads the schema of all referenced databases
+    loadAllSchema(data, database)
+
+    # Loads the noisy data into the primary database as
+    # well as generating noisy data for referenced databases
+    loadAllNoisyData(data, database, rows)
+
+    # Loads the correct answer
+    data['correct_answers']['SQLEditor'] = updateStatement(database, updateColumn, updateValue, conditionalColumn, conditionalValue)
+
+# Creates an update statement
+def updateStatement(database, updateColumn, updateValue, conditionalColumn, conditionalValue):
+
+    # Includes the conditional if they exist
+    if conditionalColumn and conditionalValue:
+        return f"UPDATE {database.name} SET {updateColumn} = '{updateValue}' WHERE {conditionalColumn} = '{conditionalValue}';\n"
+
+    # This else isn't required but is included for clarity
+    else:
+        return f"UPDATE {database.name} SET {updateColumn} = '{updateValue}';\n"
 
 '''
     End updatestyle question
@@ -217,7 +292,6 @@ def generateDelete(data, difficulty):
         
     # Chooses a database to load based on quesiton difficulty
     # Randomly selects from the list at the given difficulty
-    #databaseFile = ''
     columnCount = None
     match difficulty:
         case 'easy': columnCount = random.randint(3, 4)
@@ -231,6 +305,7 @@ def generateDelete(data, difficulty):
     # Generates a bunch of bogus rows
     rows = generateRows(database, columnCount * 3 + random.randint(-3, 3))
 
+    # Selects a random column to affect
     # Won't select a foreign key if the difficulty is easy
     randomKey = None
     while not randomKey or (database.columns[randomKey]['references'] and difficulty == 'easy'):
@@ -240,7 +315,6 @@ def generateDelete(data, difficulty):
     randomValueIndex = random.choice(range(len(rows)))
 
     # Grabs the randomly selected values
-    #unit = list(database.columns)[randomKeyIndex]
     deleteValue = rows[randomValueIndex][randomKey]
 
 
