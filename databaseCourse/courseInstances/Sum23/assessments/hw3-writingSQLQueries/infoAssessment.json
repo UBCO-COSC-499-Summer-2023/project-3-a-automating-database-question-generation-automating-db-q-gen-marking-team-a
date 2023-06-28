@@ -28,7 +28,9 @@
         {
             "title": "Random Queries",
             "questions": [
-                {"id": "SQL_Questions/random1",          "points": 2}
+                {"id": "SQL_Questions/randomEasy1",          "points": 2},
+                {"id": "SQL_Questions/randomMedium1",          "points": 2},
+                {"id": "SQL_Questions/randomHard1",          "points": 2}
             ]
         }
     ]
