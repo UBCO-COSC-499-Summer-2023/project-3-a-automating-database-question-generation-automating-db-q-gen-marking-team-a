@@ -273,7 +273,7 @@ def updateStatement(database, updateColumn, updateValue, conditionalColumn, cond
 
     # Includes the conditional if they exist
     if conditionalColumn and conditionalValue:
-        return f"UPDATE {database.name} SET {updateColumn} = '{updateValue}' WHERE {conditionalColumn} = '{conditionalValue}';\n"
+        return f"UPDATE {database.name} SET {updateColumn} = '{updateValue}' {conditionalStatement(conditionalColumn, conditionalValue)};\n"
 
     # This else isn't required but is included for clarity
     else:
@@ -334,7 +334,7 @@ def generateDelete(data, difficulty):
 
 # Creates a delete statement
 def deleteStatement(database, column, condition):
-    return f"DELETE FROM {database.name} WHERE {column} = '{condition}';\n"
+    return f"DELETE FROM {database.name} {conditionalStatement(column, condition)};\n"
 
 '''
     End delete-style question
@@ -410,6 +410,10 @@ def queryStatement():
 '''
     Begin helper functions
 '''
+
+# Returns a string for an SQL conditional
+def conditionalStatement(column, condition):
+    return f"WHERE {column} = '{condition}'"
 
 # Returns the file path to the database file
 def relativeFilePath(filePath):
