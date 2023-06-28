@@ -56,7 +56,9 @@
         {
             "title": "Random Update",
             "questions": [
-                {"id": "DDL_Questions/updateTables/random1",          "points": 1}
+                {"id": "DDL_Questions/updateTables/randomEasy1",          "points": 1},
+                {"id": "DDL_Questions/updateTables/randomMedium1",          "points": 1},
+                {"id": "DDL_Questions/updateTables/randomHard1",          "points": 1}
             ]
         },
         {
