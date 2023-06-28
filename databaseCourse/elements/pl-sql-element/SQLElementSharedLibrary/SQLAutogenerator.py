@@ -412,9 +412,11 @@ def relativeFilePath(filePath):
     return f"./SQLElementSharedLibrary/randomDatabases/{filePath}.txt"
 
 # Gets the filepaths to all databases referenced by this one
-def getReferencedDatabases(database):
+# Returns a set to ensure no duplicate databases
+def getReferencedDatabasesSet(database):
 
-    # Uses a set in case a database is refereenced more than once
+    # Uses a set in case a database is referenced more than once
+    # Tracks name, since it is easily hashable
     databases = set()
 
     # Checks each column for its reference
@@ -423,7 +425,25 @@ def getReferencedDatabases(database):
         if database.columns[key]['references']:
             databases.add(database.columns[key]['references'])
 
+    # Doesn't return the database names, returns the database objects
     return set(db.load(relativeFilePath(referenced)) for referenced in databases)
+
+# Returns a dictionary that maps the foreign key of the supplied
+# database to the referenced databases.
+# May contain multiple of the same database, referenced by
+# different foreign keys
+def getReferencedDatabaseDictionary(database):
+    
+    # Uses a dictionary to store the databases
+    databases = {}
+
+    # Checks each column for its reference
+    # Adds the referenced item, if it exists
+    for key in database.columns.keys():
+        if database.columns[key]['references']:
+            databases[database.columns[key]['references']] = db.load(relativeFilePath(database.columns[key]['references']))
+
+    return databases
 
 # Adds the schema databases to data
 def loadSchemas(data, databases):
@@ -439,7 +459,7 @@ def loadSchemas(data, databases):
 def loadAllSchema(data, database):
 
     # Gets all referenced databases
-    databases = getReferencedDatabases(database)
+    databases = getReferencedDatabasesSet(database)
 
     # Adds this database to the set
     databases.add(database)
@@ -464,7 +484,7 @@ def loadAllNoisyData(data, database, rows):
 
     # Gets a dicitonary of referenced databases.
     # The keys are the name of the database
-    referencedDatabases = {database.columns[key]['references']: db.load(relativeFilePath(database.columns[key]['references'])) for key in database.columns.keys() if database.columns[key]['references']}
+    referencedDatabases = getReferencedDatabaseDictionary(database)
 
 
     # Gets a dictionary that maps the column to both
