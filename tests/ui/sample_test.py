@@ -13,7 +13,6 @@ class TestSample(unittest.TestCase):
         options.add_argument('--headless=new')
         self.driver = webdriver.Chrome(options=options)
 
-
     # tests that the page loaded ,when PL docker container is up, has title which contains
     # "PrairieLearn" in it
     def testPageName(self):
