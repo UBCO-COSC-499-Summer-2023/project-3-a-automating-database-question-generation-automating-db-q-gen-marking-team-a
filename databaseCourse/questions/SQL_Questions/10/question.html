@@ -34,11 +34,19 @@
 
 
 <!-- SQL editor -->
-<pl-sql-element database = "./SQLElementSharedLibrary/lab3Databases/lab3_db.txt">
+<pl-sql-element database = "./SQLElementSharedLibrary/lab3Databases/shipmentDDL.sql">
     <sql-question>
     </sql-question>
     
-    <sql-answer>
+    <sql-answer answer = "SELECT C.cid, cname, COUNT(sid) as numShipments
+FROM customer C JOIN shipment S ON C.cid = S.cid
+GROUP BY C.cid, cname
+HAVING numShipments > (
+    SELECT AVG(shipPerCustomer)
+    FROM (
+        SELECT cid, COUNT(*) as shipPerCustomer
+        FROM shipment
+        GROUP BY cid) C);">
     </sql-answer>
 
     <sql-marking >

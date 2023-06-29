@@ -34,11 +34,16 @@
 
 
 <!-- SQL editor -->
-<pl-sql-element database = "./SQLElementSharedLibrary/lab3Databases/lab3_db.txt">
+<pl-sql-element database = "./SQLElementSharedLibrary/lab3Databases/shipmentDDL.sql">
     <sql-question>
     </sql-question>
     
-    <sql-answer>SELECT c.city, COUNT(DISTINCT c.cid) AS customer_count, COUNT(DISTINCT s.sid) AS shipment_count FROM customer c LEFT JOIN shipment s ON c.cid = s.cid GROUP BY c.city HAVING COUNT(DISTINCT s.sid) >= 2 ORDER BY shipment_count DESC;
+    <sql-answer answer = "SELECT city, COUNT(DISTINCT C.cid) AS numCustomers, COUNT(sid) as numShipments
+FROM customer AS C JOIN shipment AS S 
+    ON C.cid = S.cid
+GROUP BY city
+HAVING numShipments >= 2
+ORDER BY numShipments DESC, city ASC;">
     </sql-answer>
 
     <sql-marking >

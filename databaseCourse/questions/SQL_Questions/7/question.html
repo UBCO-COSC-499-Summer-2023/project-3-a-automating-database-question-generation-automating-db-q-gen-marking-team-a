@@ -35,11 +35,16 @@
 
 
 <!-- SQL editor -->
-<pl-sql-element database = "./SQLElementSharedLibrary/lab3Databases/lab3_db.txt">
+<pl-sql-element database = "./SQLElementSharedLibrary/lab3Databases/shipmentDDL.sql">
     <sql-question>
     </sql-question>
     
-    <sql-answer>
+    <sql-answer answer = "SELECT P.pid, pname, COUNT(DISTINCT S.sid) AS numberOfTimesShipped, SUM(amount) AS totalAmountShipped, SUM(amount*price) AS totalValueShipped
+FROM product AS P, shippedproduct AS SP, shipment AS S
+WHERE P.pid = SP.pid AND S.sid = SP.sid AND shipdate > '2022-03-10'
+GROUP BY P.pid, pname
+HAVING numberOfTimesShipped >= 2
+ORDER BY totalValueShipped DESC;">
     </sql-answer>
 
     <sql-marking >

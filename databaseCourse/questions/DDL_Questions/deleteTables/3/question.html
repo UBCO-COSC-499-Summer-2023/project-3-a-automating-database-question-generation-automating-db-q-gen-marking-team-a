@@ -11,8 +11,8 @@
     <sql-question>
     </sql-question>
 
-    <sql-answer>DELETE FROM OnFlight WHERE passengerId = 2;
-        DELETE FROM OnFlight WHERE passengerId = (SELECT id FROM Passenger WHERE firstname = 'Fred' and lastname = 'Brothers');
+    <sql-answer answer = "DELETE FROM OnFlight WHERE passengerId = 2;
+DELETE FROM OnFlight WHERE passengerId = (SELECT id FROM Passenger WHERE firstname = 'Fred' and lastname = 'Brothers');">
     </sql-answer>
     
     <sql-marking ></sql-marking>

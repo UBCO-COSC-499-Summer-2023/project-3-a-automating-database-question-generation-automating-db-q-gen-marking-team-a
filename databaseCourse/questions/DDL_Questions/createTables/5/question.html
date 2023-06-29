@@ -20,16 +20,18 @@
     <sql-question>
     </sql-question>
 
-    <sql-answer>
-        CREATE TABLE onFlight (
-            passengerId int,
-            flightNum CHAR(5),
-            departDateTime DATETIME,
-            seatNum CHAR(4)	NOT NULL,
-            PRIMARY KEY (passengerId, flightNum, departDateTime),
-            FOREIGN KEY (passengerId) REFERENCES Passenger(id) ON DELETE NO ACTION ON UPDATE CASCADE,
-            FOREIGN KEY (flightNum, departDateTime) REFERENCES Flight(num,departDateTime) ON DELETE NO ACTION ON UPDATE CASCADE
-        );
+    <sql-answer answer = "CREATE TABLE onFlight (
+    passengerId int,
+    flightNum CHAR(5),
+    departDateTime DATETIME,
+    seatNum CHAR(4)	NOT NULL,
+    PRIMARY KEY (passengerId, flightNum, departDateTime),
+    FOREIGN KEY (passengerId) REFERENCES Passenger(id) 
+        ON DELETE NO ACTION ON UPDATE CASCADE,
+    FOREIGN KEY (flightNum, departDateTime) REFERENCES Flight(num,departDateTime) 
+        ON DELETE NO ACTION ON UPDATE CASCADE
+);">
+        
     </sql-answer>
 
     <sql-marking></sql-marking>
