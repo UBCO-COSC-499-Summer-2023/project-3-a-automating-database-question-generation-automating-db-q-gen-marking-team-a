@@ -345,6 +345,9 @@ def deleteStatement(database, column, condition):
     Begin query-style question
 '''
 
+# TODO
+# Generate clauses
+# Have proper conditionals
 def generateQuery(data, difficulty):
     
     # Sets the difficulty
@@ -361,13 +364,13 @@ def generateQuery(data, difficulty):
 
         # Medium: conditional, join, no clauses
         case 'medium': 
-            columnCount = random.randint(3, 5)
+            columnCount = random.randint(3, 4)
             joins = random.randint(1, 2)
             clauses = 0
 
         # Hard:   conditional, join, clauses
         case 'hard': 
-            columnCount = random.randint(5, 7)
+            columnCount = random.randint(4, 5)
             joins = random.randint(1, 2)
             clauses = random.randint(1, 3)
 
@@ -388,18 +391,169 @@ def generateQuery(data, difficulty):
     # columns since it will be able to use the columns in the joined
     # databases
     database = None
-    while not database or len(database.getKeyMap()) < joins or len(database.columns) / (joins + 1) < columnCount:
+    while not database or len(database.getKeyMap()) < joins or len(database.columns) < columnCount / (joins + 1):
         database = db.load(relativeFilePath(random.choice(possibleDatabases)))
 
-    # Gets all the referenced databases
-    referencedDatabases = getReferencedDatabaseDictionary(database)
+    # Gets the referenced databases
+    referenced = getReferencedDatabaseDictionary(database)
 
 
 
+    # keyMap maps the primary database's FKs to the other tables
+    # keyMap = {
+    #   $foreignKey: {
+    #       'references': $foreignDatabaseName
+    #       'foreignKey': $columnReferenced
+    #   }
+    # }
+    keyMap = database.getKeyMap()
+
+    # Maps the foreign keys to databases
+    # foreignKeyMap = {
+    #   $columnName: database
+    # }
+    foreignKeyMap = {database.name: database}
+
+    # Randomly chooses which databases are joined together
+    for join in range(joins):
+
+        # Chooses the foreign key randomly from the list
+        foreignKey = random.choice(list(keyMap.keys()))
+
+        # Pops the key out (ensures no repeated joins) and
+        # adds it to the mapping
+        foreignKeyMap[foreignKey] = referenced[keyMap.pop(foreignKey)['references']]
 
 
-def queryStatement():
-    pass
+    # The columns that will be selected by the query
+    # selectedColumns {
+    #   $foreignKey: $column
+    # }
+    selectedColumns = {}
+
+    # Chooses one column randomly from each joined database.
+    # Ensures that at least one column per database joined is
+    # in the query
+    for key in foreignKeyMap:
+        selectedColumns[key] = [random.choice(list(foreignKeyMap[key].columns.keys()))]
+
+    # Adds more columns until there are the amount as
+    # specified by the difficulty
+    for i in range(columnCount - joins - 1):
+
+        # Chooses a foreign key, aka chooses a table
+        foreignKey = random.choice(list(foreignKeyMap.keys()))
+
+        # Chooses unique column
+        uniqueKey = None
+        while not uniqueKey or uniqueKey in selectedColumns[foreignKey]:
+            uniqueKey = random.choice(list(foreignKeyMap[foreignKey].columns.keys()))
+
+        # Adds the column to the appropriate table's selected column
+        selectedColumns[foreignKey].append(uniqueKey)
+
+
+
+    # Generate a new keyMap since the last one was modified
+    # through pop()
+    keyMap = database.getKeyMap()
+
+    # Adds the current database to the keyMap (for ease)
+    keyMap[database.name] = {'references': database.name, 'foreignKey': None}
+
+
+
+    # Creates the question string
+    questionString = 'From the tables'
+
+    # De-pluralizes the string if there are no joins
+    if joins == 0:
+        questionString = questionString[:-1]
+
+    # Adds the tables to the string
+    for key in foreignKeyMap:
+        questionString += f" {keyMap[key]['references']},"
+    
+    # Removes the trailing comma and add the next bit of text
+    questionString = questionString[:-1] + ' select the columns'
+
+    # Adds the columns to be selected
+    for key in selectedColumns:
+
+        # Specifies which table the column belongs to.
+        # Also specifies the 'as' clause
+        questionString += f" ({keyMap[key]['references']} as {keyMap[key]['references'][0:1].upper()})"
+
+        # Adds the column to the string
+        for column in selectedColumns[key]:
+            questionString += f" {column},"
+
+    # Adds the question string to data
+    data['params']['questionString'] = questionString
+
+
+
+    # Loads the schema of all referenced databases
+    loadAllSchema(data, database)
+
+    rows = generateRows(database, len(list(database.columns.keys())) * 3 + random.randint(-3, 3))
+
+    # Loads the noisy data into the primary database as
+    # well as generating noisy data for referenced databases
+    loadAllNoisyData(data, database, rows)
+
+    # Sets the correct answers
+    # TODO: clauses (the '[]') is blank; make it not blank
+    data['correct_answers']['SQLEditor'] = queryStatement(database, keyMap, foreignKeyMap, selectedColumns, [])
+
+# Creates a delete statement
+# TODO
+#   Conditionals
+#   Clauses
+def queryStatement(database, keyMap, foreignKeyMap, selectedColumns, clauses):
+    
+    # Begins the query string
+    queryString = 'SELECT'
+
+    # Adds the columns to the query string
+    # All columns use a '$table.' to specify
+    for key in selectedColumns:
+        for column in selectedColumns[key]:
+            queryString += f" {keyMap[key]['references'][0:1].upper()}.{column},"
+    
+    # Removes trailing comma
+    queryString = queryString[:-1] + ' FROM'
+
+    # Adds the tables to be selected from
+    for key in foreignKeyMap:
+        queryString += f" {keyMap[key]['references']} AS {keyMap[key]['references'][0:1].upper()},"
+
+    # Removes trailing comma
+    queryString = queryString[:-1] + ' WHERE'
+
+
+
+    # Specifies how the tables are joined together
+
+    # Removes the primary database, since it is the holder of all
+    # the foreign keys so we don't want to say "join table to self"
+    foreignKeyMap.pop(database.name)
+
+    if foreignKeyMap:
+        for key in foreignKeyMap:
+            queryString += f" {database.name[0:1].upper()}.{key} = {keyMap[key]['references'][0:1].upper()}.{keyMap[key]['foreignKey']} AND"
+
+        # Removes the final 'AND'
+        queryString = queryString[:-4]
+    
+    # Removes the WHERE clause if necessary
+    if not clauses and not foreignKeyMap:
+        queryString = queryString[:-6]
+
+
+
+    # Returns, appending the finishing touches
+    return queryString + ";\n"
 
 '''
     End query-style question
