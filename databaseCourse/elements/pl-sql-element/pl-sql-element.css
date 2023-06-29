@@ -93,6 +93,7 @@
 
 #output {
 	overflow: auto;
+	max-height: 600px;
 }
 
 
@@ -118,8 +119,7 @@
     min-width: 400px;
 	margin: auto;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-	border-radius: 5px 5px 0 0;
-	overflow:hidden;
+	border-radius: 5px;
 }
 
 .output-tables thead tr{
@@ -127,6 +127,13 @@
     color: #ffffff;
     text-align: left;
 	font-weight: bold;
+	
+}
+
+.output-tables thead {
+	position: sticky;
+	top: 0;
+	z-index: 2;
 }
 
 .output-tables thead th{
@@ -134,7 +141,7 @@
 }
 
 .output-tables th, .output-tables td{
-	padding: 12px 15px;
+	padding: 10px 13px;
 }
 
 .output-tables tr{
@@ -153,3 +160,4 @@
 	background: #000000b6;
 	color: #fff;
 }
+

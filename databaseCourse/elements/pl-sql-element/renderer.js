@@ -43,6 +43,8 @@ $(document).ready(function () {
 
     const dbSchemaElm = $("#db-schema");
 
+    const outputTables = $("#output-tables-wrapper");
+
     const tables = [];
 
     // Add syntax highlighting to the textarea
