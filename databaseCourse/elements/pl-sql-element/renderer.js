@@ -96,8 +96,8 @@ $(document).ready(function () {
 
         // creates html button for the table as well as layout for dropdown
         let schemaView = "<div class='schemaTable'>"
-            + "<button type='button' onClick='openMenu(this)' class='dropbtn' id='btn-" + tableName + "'>" + tableName
-            + "</button> <div class='dropdown-content' id='schema-" + tableName + "'>"
+            + "<button type='button' onmouseover='openMenu(this)' class='dropbtn' id='btn-" + tableName + "'>" + tableName
+            + "</button> <div onmouseleave='closeMenus(this)' class='dropdown-content' id='schema-" + tableName + "'>"
 
         let foreignKeys = getForeignKey(tableName);
 
@@ -198,7 +198,7 @@ $(document).ready(function () {
     }
 
     // function to close any and all dropdowns that are showing
-    function closeMenus() {
+    window.closeMenus = function () {
         let allDropDownsClass = 'dropdown-content'
         let dropdowns = document.getElementsByClassName(allDropDownsClass);
         for (let i = 0; i < dropdowns.length; i++) {
@@ -208,18 +208,17 @@ $(document).ready(function () {
         }
     }
 
-    // close and and all open dropdowns if the user clicks away from schema table name buttons
-    window.onclick = function (e) {
-        const dropdowns = document.getElementsByClassName('dropdown-content');
-        for (let i = 0; i < dropdowns.length; i++) {
-            const dropdown = dropdowns[i];
-            const dropbtn = dropdown.previousElementSibling;
-            if (!dropbtn.contains(e.target) && !dropdown.contains(e.target)) {
-                dropdown.classList.remove('show');
-            }
-        }
-    };
+    
+// close the dropdown when the mouse moves away from the button and the dropdown menu
+window.addEventListener('mouseleave', function (event) {
+    const target = event.target;
+    const relatedTarget = event.relatedTarget;
+    if (!target.classList.contains('dropbtn') && !relatedTarget.classList.contains('dropdown-content')) {
+        closeMenus();
+    }
+});
 
+    
 
 
     /*
