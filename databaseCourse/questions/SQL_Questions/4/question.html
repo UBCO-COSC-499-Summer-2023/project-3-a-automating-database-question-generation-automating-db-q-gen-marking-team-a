@@ -41,11 +41,13 @@
 
 
 <!-- SQL editor -->
-<pl-sql-element database = "./SQLElementSharedLibrary/lab3Databases/lab3_db.txt">
+<pl-sql-element database = "./SQLElementSharedLibrary/lab3Databases/shipmentDDL.sql">
     <sql-question>
     </sql-question>
     
-    <sql-answer>SELECT DISTINCT city, state FROM customer ORDER BY state DESC;
+    <sql-answer answer = "SELECT DISTINCT city, state
+FROM customer
+ORDER BY state DESC, city ASC;">
     </sql-answer>
 
     <sql-marking >

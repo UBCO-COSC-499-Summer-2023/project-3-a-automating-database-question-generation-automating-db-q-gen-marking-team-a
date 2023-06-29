@@ -14,7 +14,7 @@
 
 <!-- Question text -->
 <pl-question-panel>
-    Return the customer id, name, state, and shipment date for all customers in <strong>'BC'</strong> or <strong>'IA'</strong> that have had a shipment in <strong>2022</strong>. Note you can use <a href="https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html#function_year">YEAR()</a> function to get the year form the shipment date or use date comparisons. Order by <strong>shipdate</strong> descending.
+    Return the customer id, name, state, and shipment date for all customers in <strong>'BC'</strong> or <strong>'IA'</strong> that have had a shipment in <strong>2022</strong>.  Order by <strong>shipdate</strong> descending.
     <br>
     Expected Output:
     <br>
@@ -29,15 +29,21 @@
         |  15 | Elish Elias  | BC    | 2022-08-24 00:00:00 |
         +-----+--------------+-------+---------------------+
     </markdown>
+    Note: <strong>PrairieLearn uses SQLite</strong>. To extract year from DATETIME see the following link: <a href="https://database.guide/how-to-extract-the-day-month-and-year-from-a-date-in-sqlite/">Extract Year in SQLite</a>
+    Aside: When using MySQL you can use <a href="https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html#function_year">YEAR()</a> function to get the year form the shipment date or use date comparisons.
 </pl-question-panel>
 
 
 <!-- SQL editor -->
-<pl-sql-element database = "./SQLElementSharedLibrary/lab3Databases/lab3_db.txt">
+<pl-sql-element database = "./SQLElementSharedLibrary/lab3Databases/shipmentDDL.sql">
     <sql-question>
     </sql-question>
     
-    <sql-answer>SELECT c.cid, c.cname, c.state, s.shipdate FROM customer AS c JOIN shipment AS s ON c.cid = s.cid WHERE (c.state = 'BC' OR c.state = 'IA') AND YEAR(s.shipdate) = 2022 ORDER BY s.shipdate DESC;
+    <sql-answer answer = "SELECT customer.cid, cname, state, shipdate
+FROM customer JOIN shipment 
+    ON customer.cid = shipment.cid
+WHERE strftime('%Y', shipdate) = '2022' AND (state = 'BC' OR state = 'IA')
+ORDER BY shipdate DESC, cname ASC;">
     </sql-answer>
 
     <sql-marking>
