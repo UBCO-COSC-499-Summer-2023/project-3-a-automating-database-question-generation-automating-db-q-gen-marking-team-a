@@ -9,3 +9,6 @@ Worked on trying to get PL to display the submitted answer and the correct answe
 
 ### Friday, June 23rd
 Got 90% of the Tree rendering completed for RelaX
+
+### Saturday, Jube 24th
+began implementing RelaX Tree into Answer and Submission cards.
