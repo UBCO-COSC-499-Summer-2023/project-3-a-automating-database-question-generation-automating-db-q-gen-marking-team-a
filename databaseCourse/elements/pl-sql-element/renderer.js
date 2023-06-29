@@ -366,7 +366,9 @@ $(document).ready(function () {
 
     //Function that creates the output table
     function createOutputTable(columns, results) {
-
+    
+        var div = $("<div></div>");
+        div.addClass("scrollable")
         var table = $("<table></table>");
         table.addClass("output-tables")
 
@@ -379,7 +381,8 @@ $(document).ready(function () {
 
         }
 
-        outputElm.append(table);
+        div.append(table);
+        outputElm.append(div);
 
     }
 
@@ -409,6 +412,15 @@ $(document).ready(function () {
 
     // Function that creates the table rows for a table
     function createTableRows(rows) {
+
+        let numRows = rows.length;
+        let limitRows = 10000;
+
+        // limit the number of rows being created in DOM for performance
+        if (numRows > limitRows){
+            rows.length = limitRows;
+        }
+
         var tbody = $("<tbody></tbody>");
         var rowElements = [];
         rows.forEach(function (row) {
@@ -428,6 +440,7 @@ $(document).ready(function () {
                 tr.append(td);
             });
             rowElements.push(tr);
+
         });
 
         tbody.append(rowElements);
