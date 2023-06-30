@@ -1,6 +1,11 @@
 .env
 .vscode/
-node_modules/
-package-lock.json
+drone/database.sqlite
+node_modules
+packages
 package.json
-drone/
+package-lock.json
+node_modules
+packages
+package-lock.json
+__pycache__/

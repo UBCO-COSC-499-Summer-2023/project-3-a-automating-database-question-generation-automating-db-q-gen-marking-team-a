@@ -1,0 +1,33 @@
+<!-- Question introduction -->
+<pl-question-panel>
+    Write the SQL DDL to create the following table.
+    <br>
+</pl-question-panel>
+
+<!-- Start Part 1 -->
+
+<!-- Question text -->
+<pl-question-panel>
+    An <strong>airport</strong> table where each airport has an <strong>id</strong> of exactly 5 characters, a <strong>name</strong> (up to 30 characters), and is located in a <strong>city</strong> (up to 40 characters), a <strong>province</strong> (up to 20 characters), and a <strong>country</strong> (up to 20 characters). (1.5 marks)
+</pl-question-panel>
+
+
+<!-- SQL editor -->
+<pl-sql-element database = "./SQLElementSharedLibrary/lab2Databases/airplane.txt">
+    <sql-question>
+    </sql-question>
+
+    <sql-answer answer = "CREATE TABLE airport (
+    id CHAR(5), 	
+    name VARCHAR(30),
+    city VARCHAR(40),
+    province VARCHAR(20),
+    country VARCHAR(20),
+    PRIMARY KEY (id)
+);">
+    </sql-answer>
+    
+    <sql-marking ></sql-marking>
+</pl-sql-element>
+
+<!-- End Part 1 -->
