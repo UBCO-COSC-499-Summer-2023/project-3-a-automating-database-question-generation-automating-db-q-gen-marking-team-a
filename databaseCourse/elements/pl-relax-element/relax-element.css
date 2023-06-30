@@ -1,15 +1,13 @@
 .dropbtn {
-    padding-left: 30px;
-    padding-right: 30px;
-	background-color: #007bff;
-	color: white;
-	border-radius: 3px;
-	border: 0px#007bff;
+	font-family: ubuntu, sans-serif;
+	border: none;
+    background-color: transparent;
+	margin: 0.25em 0 0.25em 0;
 }
 
-.dropbtn:hover, .dropbtn:focus {
+/*.dropbtn:hover, .dropbtn:focus {
 	background-color: #005cbf;
-}
+}*/
 
 .dropdown-content,
 .submenu-content,
@@ -20,7 +18,7 @@
   background-color: #f1f1f1;
   min-width: 0px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  z-index: 1;
+  z-index: 10;
 }
 
 .popup-content {
@@ -40,12 +38,12 @@
 .dropdown-content a,
 .submenu-content a,
 .sub-submenu-content a {
-  color: black;
-  padding: 0px;
-  min-width: 0px;
-  text-decoration: none;
-  display: block;
-  z-index: 1;
+	color: black;
+	padding: 8px;
+	min-width: 120px;
+	text-decoration: none;
+	display: block;
+	z-index: 10;
 }
 
 
