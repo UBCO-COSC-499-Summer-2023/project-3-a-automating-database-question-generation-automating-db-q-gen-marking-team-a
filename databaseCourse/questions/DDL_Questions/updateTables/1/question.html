@@ -6,9 +6,13 @@
 <!-- Start Part 1 -->
 
 <!-- SQL editor -->
-<pl-sql-element>
+<pl-sql-element database = "./SQLElementSharedLibrary/lab2Databases/tablesInserts.txt">
     <sql-question>
     </sql-question>
+
+    <sql-answer answer = "UPDATE onFlight SET seatNum = '2B' 
+WHERE passengerId = 1 AND flightNum = 'AC35' AND departDateTime = '2022-09-14';">
+    </sql-answer>
     
     <sql-marking ></sql-marking>
 </pl-sql-element>

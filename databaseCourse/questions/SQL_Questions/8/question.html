@@ -41,11 +41,20 @@
 
 
 <!-- SQL editor -->
-<pl-sql-element database = "./SQLElementSharedLibrary/lab3Databases/lab3_db.txt">
+<pl-sql-element database = "./SQLElementSharedLibrary/lab3Databases/shipmentDDL.sql">
     <sql-question>
     </sql-question>
     
-    <sql-answer>
+    <sql-answer answer = "SELECT P1.pname, P2.pname, COUNT(*) as numTogether
+FROM shippedproduct AS SP1 JOIN shippedproduct AS SP2 
+    ON SP1.sid=SP2.sid AND SP1.pid != SP2.pid
+    JOIN product P1 
+        ON SP1.pid=P1.pid 
+        JOIN product P2 
+            ON SP2.pid=P2.pid
+WHERE P1.pname < P2.pname AND SP1.amount >=2 AND SP2.amount >= 2
+GROUP BY P1.pname, P2.pname
+ORDER BY numTogether DESC, P1.pname;">
     </sql-answer>
 
     <sql-marking >

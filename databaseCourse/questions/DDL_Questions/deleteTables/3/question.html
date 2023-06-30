@@ -7,9 +7,13 @@
 
 
 <!-- SQL editor -->
-<pl-sql-element>
+<pl-sql-element database = "./SQLElementSharedLibrary/lab2Databases/tablesInserts.txt">
     <sql-question>
     </sql-question>
+
+    <sql-answer answer = "DELETE FROM OnFlight WHERE passengerId = 2;
+DELETE FROM OnFlight WHERE passengerId = (SELECT id FROM Passenger WHERE firstname = 'Fred' and lastname = 'Brothers');">
+    </sql-answer>
     
     <sql-marking ></sql-marking>
 </pl-sql-element>

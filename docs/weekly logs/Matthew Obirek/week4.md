@@ -12,3 +12,6 @@ Implemented the RelaX editor with no functionality, trimmed the HTML so that it 
 
 ### Thursday, June 8th 
 Implemented some Text Input, and button functionality. For now I am focusing on getting the special characters to appear in the textarea.
+
+### Friday, June 9th
+Presented our design Presentation. 

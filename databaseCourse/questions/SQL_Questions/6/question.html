@@ -29,15 +29,27 @@
         | BC    | 2021 | Teddy Bear              |    103.92 |
         +-------+------+-------------------------+-----------+
     </markdown>
+    <br>
+    Note: PrairieLearn uses SQLite. To extract year from DATETIME see the following link: <a href="https://database.guide/how-to-extract-the-day-month-and-year-from-a-date-in-sqlite/">Extract Year in SQLite</a>
 </pl-question-panel>
 
 
 <!-- SQL editor -->
-<pl-sql-element database = "./SQLElementSharedLibrary/lab3Databases/lab3_db.txt">
+<pl-sql-element database = "./SQLElementSharedLibrary/lab3Databases/shipmentDDL.sql">
     <sql-question>
     </sql-question>
     
-    <sql-answer>SELECT p.pname AS product_name, SUM(sp.amount * pr.price) AS shipment_revenue FROM customer c JOIN shipment s ON c.cid = s.cid JOIN shippedproduct sp ON s.sid = sp.sid JOIN product p ON sp.pid = p.pid WHERE c.state = 'BC' AND YEAR(s.shipdate) = 2021 GROUP BY p.pname ORDER BY shipment_revenue DESC LIMIT 5;
+    <sql-answer answer = "SELECT state, strftime('%Y', shipment.shipdate) AS year, product.pname, SUM(shippedproduct.amount * product.price) AS revenue  
+FROM customer JOIN shipment
+    on customer.cid = shipment.cid
+    JOIN shippedproduct
+        ON shippedproduct.sid = shipment.sid
+        JOIN product
+            ON shippedproduct.pid = product.pid 
+WHERE state = 'BC' AND strftime('%Y', shipment.shipdate) = '2021'
+GROUP BY product.pname
+ORDER BY revenue DESC
+LIMIT 5;"
     </sql-answer>
 
     <sql-marking >

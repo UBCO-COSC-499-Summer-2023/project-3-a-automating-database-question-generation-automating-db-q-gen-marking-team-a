@@ -4,3 +4,7 @@ node_modules
 packages
 package.json
 package-lock.json
+node_modules
+packages
+package-lock.json
+__pycache__/

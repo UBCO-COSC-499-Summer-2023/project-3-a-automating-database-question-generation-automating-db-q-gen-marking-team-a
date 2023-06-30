@@ -317,14 +317,29 @@ $(document).ready(function () {
                 default:
                     break;
             }
-            outputElm.append(output.map(item => (item !== undefined ? item : "") + "<br>").join(""));
+            // if query wasn't run from the editor, output equals "Database initialized."
+            if (editor.getValue() == "") {
+                if (outputElm.text() != "Database initialized.") {
+                    outputElm.text("Database initialized.");
+                }
+            } else {
+                outputElm.append(output.map(item => (item !== undefined ? item : "") + "<br>").join(""));
+            }
         }
     }
 
     // function that allows you to click the column type and add it to editor
     window.addColumnToEditor = function (tableName, columnName) {
 
-        editor.setValue(editor.getValue() + `${tableName}.${columnName} `);
+       updateCodeMirror(`${tableName}.${columnName} `);
+    }
+
+    // adds table.column to editor at cursor location
+    function updateCodeMirror(data){
+        var doc = editor.getDoc(); //gets the information of the editor
+        doc.replaceRange(data, doc.getCursor()); // adds data at position of cursor
+        editor.focus();
+        editor.setCursor(doc.getCursor());
     }
 
     /*
@@ -345,11 +360,14 @@ $(document).ready(function () {
             return null; // or handle the case where table name is not found
         }
     }
+    
 
     //Function that creates the output table
     function createOutputTable(columns, results) {
 
         var table = $("<table></table>");
+        table.addClass("output-tables")
+
 
         table.append(createTableHeader(columns));
 
@@ -366,36 +384,97 @@ $(document).ready(function () {
     // Function that creates the table header
     function createTableHeader(columns) {
 
-
         var header = $("<thead></thead>");
         var headerRow = $("<tr></tr>");
-
+      
         for (var i = 0; i < columns.length; i++) {
-            var th = $("<th></th>").text(columns[i]);
+
+            // used to snapshot the i value to pass to sortTable
+          (function (column) {
+            var th = $("<th></th>").text(columns[column]);
+      
+            th.on("click", function () {
+              sortTable(this, column);
+            });
+      
             headerRow.append(th);
+          })(i);
         }
-
+      
         header.append(headerRow);
-
         return header;
-
-    }
+      }
 
     // Function that creates the table rows for a table
     function createTableRows(rows) {
+        var tbody = $("<tbody></tbody>");
         var rowElements = [];
         rows.forEach(function (row) {
             var tr = $("<tr></tr>");
             row.forEach(function (value) {
+                // round to 2 decimal places
+                if (typeof value == 'number' && !Number.isInteger(value)) {
+                    value = value.toFixed(2);
+                }
+
+                // add null text if field is null, 0 should show "0"
+                if (value == null) {
+                    value = "NULL";
+                }
+
                 var td = $("<td></td>").text(value);
                 tr.append(td);
             });
             rowElements.push(tr);
         });
-        return rowElements;
+
+        tbody.append(rowElements);
+
+        return tbody;
     }
 
+    // function that sorts output tables when column names are clicked on
+    function sortTable(element, column) {
 
-
+        const $table = $(element).closest("table");
+        const $tbody = $table.find("tbody");
+        const rows = $tbody.find("tr").toArray();
+        const currentDirection = $table.data("sort-direction");
+        let direction;
+    
+        if (currentDirection === "asc" && $table.data("sort-column") === column) {
+            // First click on the same column, reverse the sort direction
+            direction = "desc";
+        } else {
+            // First click on a column or different column, sort in ascending order
+            direction = "asc";
+        }
+    
+        $table.data("sort-direction", direction);
+        $table.data("sort-column", column);
+    
+        // sorting function
+        rows.sort((a, b) => {
+            const aValue = a.cells.item(column).innerHTML;
+            const bValue = b.cells.item(column).innerHTML;
+    
+            const isANumber = !isNaN(parseFloat(aValue)) && isFinite(aValue);
+            const isBNumber = !isNaN(parseFloat(bValue)) && isFinite(bValue);
+    
+            if (isANumber && isBNumber) {
+                return direction === "asc" ? parseFloat(aValue) - parseFloat(bValue) : parseFloat(bValue) - parseFloat(aValue);
+            }
+    
+            if (!isANumber && !isBNumber) {
+                return direction === "asc" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+            }
+    
+            return isANumber ? -1 : 1;
+        });
+    
+        $tbody.empty();
+        rows.forEach(row => $tbody.append(row));
+    }
+    
 
 });

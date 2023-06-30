@@ -38,11 +38,19 @@
 
 
 <!-- SQL editor -->
-<pl-sql-element database = "./SQLElementSharedLibrary/lab3Databases/lab3_db.txt">
+<pl-sql-element database = "./SQLElementSharedLibrary/lab3Databases/shipmentDDL.sql">
     <sql-question>
     </sql-question>
     
-    <sql-answer>
+    <sql-answer answer = "SELECT P.pid, pname, numShipments, totalShippedAmount
+    FROM product 
+        AS P LEFT OUTER JOIN (SELECT SP.pid, COUNT(DISTINCT SP.sid) as numShipments, SUM(amount) as totalShippedAmount 
+                            FROM shippedproduct AS SP LEFT OUTER JOIN shipment S 
+                                ON S.sid=SP.sid LEFT OUTER JOIN customer C 
+                                    ON S.cid=C.cid 
+                            WHERE state = 'IA' 
+                            GROUP BY SP.pid) 
+            SP ON P.pid = SP.pid;">
     </sql-answer>
 
     <sql-marking >
