@@ -7,3 +7,6 @@ Cleaned up display for relax tree and table and schema.
 
 ### Wednesday, June 28th
 Implemented new css for output table and schema. added button functionality for the schema.
+
+### Thursday, June 29th
+Added button hover functionality for the RA commands.
