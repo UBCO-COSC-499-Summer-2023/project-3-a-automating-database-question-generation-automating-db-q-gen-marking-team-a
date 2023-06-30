@@ -9,9 +9,9 @@ steps:
       - npm install --silent
       - npm test
 
-  # - name: Run Python UI Tests
-  #   image: prairielearn/prairielearn
-  #   commands: 
-  #     - pip install -r requirements.txt --quiet
-  #     - cd tests
-  #     - python -m unittest discover ui -p "*_test.py"
+    # - name: Run Autogenerator tests
+    #   image: prairielearn/prairielearn
+    #   commands: 
+    #     - pip install -r requirements.txt --quiet
+    #     - cd databaseCourse\elements\pl-sql-element\SQLElementSharedLibrary
+    #     - python -m unittest discover -p "*_test.py"
