@@ -15,7 +15,6 @@ def autogenerate(data):
 
     # Checks if the difficulty are valid
     if difficulty not in ['easy', 'medium', 'hard']:
-        print(f"{difficulty} is not a valid difficulty.\nValid difficulties are 'easy', 'medium', and 'hard'.")
         return None
 
     # Generates the appropriate question
