@@ -471,14 +471,33 @@ def generateQuery(data, difficulty):
         questionString = questionString[:-1]
 
     # Adds the tables to the string
+    keyIndex = 0
     for key in foreignKeyMap:
+
+        # Used to track when the 'and' needs to be added
+        keyIndex += 1
+
+        # Adds an 'and' if it's the last item and
+        # there are more than one item
+        if keyIndex == len(list(foreignKeyMap)) and joins > 0:
+            questionString += ' and'
+
         questionString += f" {keyMap[key]['references']},"
     
     # Removes the trailing comma and add the next bit of text
     questionString = questionString[:-1] + ' select the columns'
 
+    # De-pluralizes the string if there is only one column
+    if columnCount == 1:
+        questionString = questionString[:-1]
+
     # Adds the columns to be selected
+    keyIndex = 0
     for key in selectedColumns:
+
+        # Used to keep track of the and
+        columnIndex = 0
+        keyIndex += 1
 
         # Specifies which table the column belongs to.
         # Also specifies the 'as' clause
@@ -486,7 +505,17 @@ def generateQuery(data, difficulty):
 
         # Adds the column to the string
         for column in selectedColumns[key]:
+            columnIndex += 1
+
+            # Adds an 'and' if it's the last item and
+            # there are more than one item
+            if columnIndex == len(list(selectedColumns[key])) and keyIndex == len(list(selectedColumns)) and columnCount > 1:
+                questionString += ' and'
+            
             questionString += f" {column},"
+
+    # Removes the trailing comma
+    questionString = questionString[:-1] + '.'
 
     # Adds the question string to data
     data['params']['questionString'] = questionString
