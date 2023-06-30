@@ -22,7 +22,6 @@
   z-index: 10;
 }
 
-
 .dropdown-content a:hover,
 .submenu-content a:hover,
 .sub-submenu-content a:hover,
@@ -30,20 +29,17 @@
   background-color: #ddd
 }
 
-.show {
-    display: block;
-  }
+
 
 .dropbtn{
+	font-family: ubuntu, sans-serif;
+	border: none;
     background-color: transparent;
-    border: none;
+	margin: 0.25em 0 0.25em 0;
 }
 
-#db-schema{
-    display: flex;
-	flex-wrap: wrap;
-	align-items: flex-start;
-	justify-content: space-evenly;
+.schemaTable:hover div{
+	display: block;
 }
 
 
@@ -91,10 +87,6 @@
 	margin: 15px;
 }
 
-#output {
-	overflow: auto;
-}
-
 
 #db-schema {
 	display: flex;
@@ -110,16 +102,20 @@
 	display: none;
 }
 
+.scrollable{
+	height: auto;
+	max-height: 400px;
+	overflow-y: auto;
+}
+
 .output-tables{
 	border-collapse: collapse;
     margin: 25px 0;
     font-size: 0.9em;
     font-family: ubuntu, sans-serif;
-    min-width: 400px;
 	margin: auto;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-	border-radius: 5px 5px 0 0;
-	overflow:hidden;
+	border-radius: 5px;
 }
 
 .output-tables thead tr{
@@ -127,14 +123,30 @@
     color: #ffffff;
     text-align: left;
 	font-weight: bold;
+	
+}
+
+.output-tables thead {
+	position: sticky;
+	top: 0;
+	z-index: 2;
 }
 
 .output-tables thead th{
 	cursor: pointer;
 }
 
+.output-tables thead th:first-child{
+	border-top-left-radius: 5px;
+}
+
+.output-tables thead th:last-child{
+	border-top-right-radius: 5px;
+}
+
+
 .output-tables th, .output-tables td{
-	padding: 12px 15px;
+	padding: 10px 13px;
 }
 
 .output-tables tr{
@@ -153,3 +165,4 @@
 	background: #000000b6;
 	color: #fff;
 }
+

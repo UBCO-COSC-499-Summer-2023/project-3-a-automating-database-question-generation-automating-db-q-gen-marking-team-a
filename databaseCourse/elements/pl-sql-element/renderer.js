@@ -96,8 +96,8 @@ $(document).ready(function () {
 
         // creates html button for the table as well as layout for dropdown
         let schemaView = "<div class='schemaTable'>"
-            + "<button type='button' onClick='openMenu(this)' class='dropbtn' id='btn-" + tableName + "'>" + tableName
-            + "</button> <div class='dropdown-content' id='schema-" + tableName + "'>"
+            + `<button type='button' onclick='addTableToEditor("${tableName}")' class='dropbtn' id='btn-" + tableName + "'>` + tableName
+            + "</button> <div onmouseleave='' class='dropdown-content' id='schema-" + tableName + "'>"
 
         let foreignKeys = getForeignKey(tableName);
 
@@ -189,6 +189,11 @@ $(document).ready(function () {
     // modeled after the dropdowns found in autoEr
     */
 
+    // REFACTORED USING CSS
+    // CAN DELETE IF NOT NEEDED
+
+    /*
+
     // function to show the dropdown of the selected schema
     window.openMenu = function (tableName) {
         // so that only the dropdown of one schema is open at a time
@@ -198,7 +203,7 @@ $(document).ready(function () {
     }
 
     // function to close any and all dropdowns that are showing
-    function closeMenus() {
+    window.closeMenus = function () {
         let allDropDownsClass = 'dropdown-content'
         let dropdowns = document.getElementsByClassName(allDropDownsClass);
         for (let i = 0; i < dropdowns.length; i++) {
@@ -208,18 +213,20 @@ $(document).ready(function () {
         }
     }
 
-    // close and and all open dropdowns if the user clicks away from schema table name buttons
-    window.onclick = function (e) {
-        const dropdowns = document.getElementsByClassName('dropdown-content');
-        for (let i = 0; i < dropdowns.length; i++) {
-            const dropdown = dropdowns[i];
-            const dropbtn = dropdown.previousElementSibling;
-            if (!dropbtn.contains(e.target) && !dropdown.contains(e.target)) {
-                dropdown.classList.remove('show');
-            }
-        }
-    };
 
+    // close the dropdown when the mouse moves away from the button and the dropdown menu
+    
+    window.addEventListener('mouseleave', function (event) {
+        const target = event.target;
+        const relatedTarget = event.relatedTarget;
+        console.log(target);
+        console.log(relatedTarget);
+        if (!target.classList.contains('dropbtn') || !relatedTarget.classList.contains('dropdown-content')) {
+            closeMenus();
+        }
+    });
+
+    */
 
 
     /*
@@ -328,14 +335,19 @@ $(document).ready(function () {
         }
     }
 
+    // function that allows you to click the table and add it to editor
+    window.addTableToEditor = function (tableName){
+        updateCodeMirror(`${tableName}`);
+    }
+
     // function that allows you to click the column type and add it to editor
     window.addColumnToEditor = function (tableName, columnName) {
 
-       updateCodeMirror(`${tableName}.${columnName} `);
+        updateCodeMirror(`${columnName}`);
     }
 
     // adds table.column to editor at cursor location
-    function updateCodeMirror(data){
+    function updateCodeMirror(data) {
         var doc = editor.getDoc(); //gets the information of the editor
         doc.replaceRange(data, doc.getCursor()); // adds data at position of cursor
         editor.focus();
@@ -360,11 +372,13 @@ $(document).ready(function () {
             return null; // or handle the case where table name is not found
         }
     }
-    
+
 
     //Function that creates the output table
     function createOutputTable(columns, results) {
 
+        var div = $("<div></div>");
+        div.addClass("scrollable")
         var table = $("<table></table>");
         table.addClass("output-tables")
 
@@ -377,7 +391,8 @@ $(document).ready(function () {
 
         }
 
-        outputElm.append(table);
+        div.append(table);
+        outputElm.append(div);
 
     }
 
@@ -386,27 +401,36 @@ $(document).ready(function () {
 
         var header = $("<thead></thead>");
         var headerRow = $("<tr></tr>");
-      
+
         for (var i = 0; i < columns.length; i++) {
 
             // used to snapshot the i value to pass to sortTable
-          (function (column) {
-            var th = $("<th></th>").text(columns[column]);
-      
-            th.on("click", function () {
-              sortTable(this, column);
-            });
-      
-            headerRow.append(th);
-          })(i);
+            (function (column) {
+                var th = $("<th></th>").text(columns[column]);
+
+                th.on("click", function () {
+                    sortTable(this, column);
+                });
+
+                headerRow.append(th);
+            })(i);
         }
-      
+
         header.append(headerRow);
         return header;
-      }
+    }
 
     // Function that creates the table rows for a table
     function createTableRows(rows) {
+
+        let numRows = rows.length;
+        let limitRows = 10000;
+
+        // limit the number of rows being created in DOM for performance
+        if (numRows > limitRows) {
+            rows.length = limitRows;
+        }
+
         var tbody = $("<tbody></tbody>");
         var rowElements = [];
         rows.forEach(function (row) {
@@ -426,6 +450,7 @@ $(document).ready(function () {
                 tr.append(td);
             });
             rowElements.push(tr);
+
         });
 
         tbody.append(rowElements);
@@ -441,7 +466,7 @@ $(document).ready(function () {
         const rows = $tbody.find("tr").toArray();
         const currentDirection = $table.data("sort-direction");
         let direction;
-    
+
         if (currentDirection === "asc" && $table.data("sort-column") === column) {
             // First click on the same column, reverse the sort direction
             direction = "desc";
@@ -449,32 +474,32 @@ $(document).ready(function () {
             // First click on a column or different column, sort in ascending order
             direction = "asc";
         }
-    
+
         $table.data("sort-direction", direction);
         $table.data("sort-column", column);
-    
+
         // sorting function
         rows.sort((a, b) => {
             const aValue = a.cells.item(column).innerHTML;
             const bValue = b.cells.item(column).innerHTML;
-    
+
             const isANumber = !isNaN(parseFloat(aValue)) && isFinite(aValue);
             const isBNumber = !isNaN(parseFloat(bValue)) && isFinite(bValue);
-    
+
             if (isANumber && isBNumber) {
                 return direction === "asc" ? parseFloat(aValue) - parseFloat(bValue) : parseFloat(bValue) - parseFloat(aValue);
             }
-    
+
             if (!isANumber && !isBNumber) {
                 return direction === "asc" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
             }
-    
+
             return isANumber ? -1 : 1;
         });
-    
+
         $tbody.empty();
         rows.forEach(row => $tbody.append(row));
     }
-    
+
 
 });
