@@ -88,12 +88,12 @@ $(document).ready(function () {
         var d2 = dataset.at(1)._schema._relAliases.at(0);
 
         try {
-            const PR = executeRelalg(editor.getValue(), { "S" : dataset[0], "P" : dataset[1]}); // gets query results
+            const PR = executeRelalg(editor.getValue(), { "Customer" : dataset[0], "Product" : dataset[1], "Shipment" : dataset[2], "ShippedProduct" : dataset[3] }); // gets query results
             treeElm.contents().remove(); // clears Tree previous results
             createOutputTable(PR); // creates and renders new output table
             treeElm.append(createRecList(PR)); // creates and renders new tree
         } catch (err) {
-            createErrorOutput(err); // creates and renders error in event user has incorrect RA query 
+            createErrorOutput(err.stack); // creates and renders error in event user has incorrect RA query 
         }
     }
 0

@@ -1,6 +1,7 @@
 import json
 import chevron
 import lxml.html
+import html
 import prairielearn as pl
 import RASQLCustomGrader as grader
 
@@ -14,7 +15,7 @@ def prepare(element_html, data):
     data['params']['grader'] = 'RelaXEditor'
     element = lxml.html.fragment_fromstring(element_html)
     
-    correctAnswer = pl.inner_html(element[2])
+    correctAnswer = lxml.html.fromstring(pl.inner_html(element[2])).text_content()
     data['correct_answers']['RelaXEditor'] = correctAnswer
 
 def render(element_html, data):
@@ -22,12 +23,11 @@ def render(element_html, data):
     element = lxml.html.fragment_fromstring(element_html)
     # # Gets each element from the questionHTML
         
-    questionText = pl.inner_html(element[0])
-    database = pl.inner_html(element[1])
-
+    questionText = lxml.html.fromstring(pl.inner_html(element[0])).text_content()
+    database = lxml.html.fromstring(pl.inner_html(element[1])).text_content()
 
     submittedAnswer = data['submitted_answers'].get('RelaXEditor','')
-    correctAnswer = data['correct_answers']['RelaXEditor']
+    correctAnswer = data['correct_answers'].get('RelaXEditor', '')
     
     # This renders the question into PL
     if data['panel'] == 'question':
