@@ -12,6 +12,12 @@ def autogenerate(data):
     maxGrade = data['params']['html_params']['maxGrade']
     markerFeedback = data['params']['html_params']['markerFeedback']
 
+
+    # Checks if the difficulty are valid
+    if difficulty not in ['easy', 'medium', 'hard']:
+        print(f"{difficulty} is not a valid difficulty.\nValid difficulties are 'easy', 'medium', and 'hard'.")
+        return None
+
     # Generates the appropriate question
     match questionType:
         case 'create': generateCreate(data, difficulty)
@@ -37,7 +43,6 @@ def generateCreate(data, difficulty):
         case 'easy': databaseFile = random.choice(['airport', 'airplane'])
         case 'medium': databaseFile = random.choice(['passenger'])
         case 'hard': databaseFile = random.choice(['flight'])
-        case other: print(f"{difficulty} is not a valid difficulty.\nValid difficulties are: 'easy', 'medium', and 'hard'.")
     
     # Loads the selected database
     database = db.load(relativeFilePath(databaseFile))
@@ -99,7 +104,7 @@ def generateCreate(data, difficulty):
 
     # Loads any tables this one references into the schema
     # First gets a set of all referenced databases
-    loadSchemas(data, getReferencedDatabases(database))
+    loadSchemas(data, getReferencedDatabasesSet(database))
 
     # Places the question string into data
     data['params']['questionString'] = questionString
@@ -155,7 +160,6 @@ def generateInsert(data, difficulty):
         case 'easy': columnCount = random.randint(3, 4)
         case 'medium': columnCount = random.randint(4, 6)
         case 'hard': columnCount = random.randint(5, 8)
-        case other: print(f"{difficulty} is not a valid difficulty.\nValid difficulties are: 'easy', 'medium', and 'hard'.")
 
     # Gets a database with the specified number of columns
     database = loadTrimmedDatabase(columnCount)
@@ -199,10 +203,81 @@ def insertStatement(database, row):
 '''
 
 def generateUpdate(data, difficulty):
-    pass
+    
+    # Chooses a database to load based on quesiton difficulty
+    # Randomly selects from the list at the given difficulty
+    columnCount = None
+    useConditional = None
+    match difficulty:
+        case 'easy': 
+            columnCount = random.randint(3, 4)
+            useConditional = False
 
-def updateStatement():
-    pass
+        case 'medium': 
+            columnCount = random.randint(4, 6)
+            useConditional = True
+
+        case 'hard': 
+            return None # Not yet implemented; first requires quesryStatement() to be completed
+
+    # Gets a database with the specified number of columns
+    database = loadTrimmedDatabase(columnCount)
+
+
+
+    # Generates a bunch of bogus rows
+    rows = generateRows(database, columnCount * 3 + random.randint(-3, 3))
+
+    # Selects a random column to affect
+    updateColumn = random.choice(list(database.columns.keys()))
+
+    # Generates the updated valued
+    updateValue = generateNoisyData(database, updateColumn)
+
+
+    # If the quesiton should use a condition, set parameters
+    conditionalColumn = None
+    conditionalValue = None
+    if useConditional:
+
+        # Selects a random column to affect
+        conditionalColumn = random.choice(list(database.columns.keys()))
+
+        # Chooses a random value from the generated data to be updated
+        randomValueIndex = random.choice(range(len(rows)))
+
+        # Grabs the randomly selected values
+        conditionalValue = rows[randomValueIndex][conditionalColumn]
+
+
+
+    # Generates the question string
+    # Changes depending on whether it uses a conditional or not
+    if useConditional:
+        data['params']['questionString'] = f"From the table {database.name} and in the column {updateColumn}, change all values to be {updateValue} where {conditionalColumn} is equal to {conditionalValue}."
+    else:
+        data['params']['questionString'] = f"From the table {database.name} and in the column {updateColumn}, change all values to be {updateValue}."
+
+    # Loads the schema of all referenced databases
+    loadAllSchema(data, database)
+
+    # Loads the noisy data into the primary database as
+    # well as generating noisy data for referenced databases
+    loadAllNoisyData(data, database, rows)
+
+    # Loads the correct answer
+    data['correct_answers']['SQLEditor'] = updateStatement(database, updateColumn, updateValue, conditionalColumn, conditionalValue)
+
+# Creates an update statement
+def updateStatement(database, updateColumn, updateValue, conditionalColumn, conditionalValue):
+
+    # Includes the conditional if they exist
+    if conditionalColumn and conditionalValue:
+        return f"UPDATE {database.name} SET {updateColumn} = '{updateValue}' {conditionalStatement(conditionalColumn, conditionalValue)};\n"
+
+    # This else isn't required but is included for clarity
+    else:
+        return f"UPDATE {database.name} SET {updateColumn} = '{updateValue}';\n"
 
 '''
     End updatestyle question
@@ -213,26 +288,15 @@ def updateStatement():
     Begin delete-style question
 '''
 
-'''
-    Current approach:
-    Easy and medium will work like INSERT where they'll select a
-    database of a certain size. In addition, they'll select the
-    number of affected rows. Hard will be about the same as medium,
-    except it will require a subquery, but I first need to first
-    complete the queryStatement() function
-'''
-
 def generateDelete(data, difficulty):
         
     # Chooses a database to load based on quesiton difficulty
     # Randomly selects from the list at the given difficulty
-    #databaseFile = ''
     columnCount = None
     match difficulty:
         case 'easy': columnCount = random.randint(3, 4)
         case 'medium': columnCount = random.randint(4, 6)
         case 'hard': return None # Not yet implemented; first requires quesryStatement() to be completed
-        case other: print(f"{difficulty} is not a valid difficulty.\nValid difficulties are: 'easy', 'medium', and 'hard'.")
 
     # Gets a database with the specified number of columns
     database = loadTrimmedDatabase(columnCount)
@@ -240,6 +304,7 @@ def generateDelete(data, difficulty):
     # Generates a bunch of bogus rows
     rows = generateRows(database, columnCount * 3 + random.randint(-3, 3))
 
+    # Selects a random column to affect
     # Won't select a foreign key if the difficulty is easy
     randomKey = None
     while not randomKey or (database.columns[randomKey]['references'] and difficulty == 'easy'):
@@ -249,7 +314,6 @@ def generateDelete(data, difficulty):
     randomValueIndex = random.choice(range(len(rows)))
 
     # Grabs the randomly selected values
-    #unit = list(database.columns)[randomKeyIndex]
     deleteValue = rows[randomValueIndex][randomKey]
 
 
@@ -269,8 +333,8 @@ def generateDelete(data, difficulty):
 
 
 # Creates a delete statement
-def deleteStatement(database, column, deleteValue):
-    return f"DELETE FROM {database.name} WHERE {column} = '{deleteValue}';\n"
+def deleteStatement(database, column, condition):
+    return f"DELETE FROM {database.name} {conditionalStatement(column, condition)};\n"
 
 '''
     End delete-style question
@@ -281,11 +345,244 @@ def deleteStatement(database, column, deleteValue):
     Begin query-style question
 '''
 
+# TODO
+# Generate clauses
+# Have proper conditionals
 def generateQuery(data, difficulty):
-    pass
+    
+    # Sets the difficulty
+    columnCount = None
+    joins = None
+    clauses = None
+    match difficulty:
 
-def queryStatement():
-    pass
+        # Easy:   conditional, no join, no clauses
+        case 'easy': 
+            columnCount = random.randint(1, 3)
+            joins = 0
+            clauses = 0
+
+        # Medium: conditional, join, no clauses
+        case 'medium': 
+            columnCount = random.randint(3, 4)
+            joins = random.randint(1, 2)
+            clauses = 0
+
+        # Hard:   conditional, join, clauses
+        case 'hard': 
+            columnCount = random.randint(4, 5)
+            joins = random.randint(1, 2)
+            clauses = random.randint(1, 3)
+
+
+
+    # Selects a database based on the difficulty
+
+    # Gets all random databases so a random one may be chosen
+    possibleDatabases = db.getAllDatabaseFiles('./SQLElementSharedLibrary/randomDatabases/')
+
+    # Keeps trying random databases until it finds one that
+    # fulfills the conditions set by the difficulty
+    #
+    # The len(db.getKeyMap()) ensures that there are enough foreign
+    # keys to fulfill the joins requirement
+    #
+    # The (joins + 1) allows for the main database to have insufficient 
+    # columns since it will be able to use the columns in the joined
+    # databases
+    database = None
+    while not database or len(database.getKeyMap()) < joins or len(database.columns) < columnCount / (joins + 1):
+        database = db.load(relativeFilePath(random.choice(possibleDatabases)))
+
+    # Gets the referenced databases
+    referenced = getReferencedDatabaseDictionary(database)
+
+
+
+    # keyMap maps the primary database's FKs to the other tables
+    # keyMap = {
+    #   $foreignKey: {
+    #       'references': $foreignDatabaseName
+    #       'foreignKey': $columnReferenced
+    #   }
+    # }
+    keyMap = database.getKeyMap()
+
+    # Maps the foreign keys to databases
+    # foreignKeyMap = {
+    #   $columnName: database
+    # }
+    foreignKeyMap = {database.name: database}
+
+    # Randomly chooses which databases are joined together
+    for join in range(joins):
+
+        # Chooses the foreign key randomly from the list
+        foreignKey = random.choice(list(keyMap.keys()))
+
+        # Pops the key out (ensures no repeated joins) and
+        # adds it to the mapping
+        foreignKeyMap[foreignKey] = referenced[keyMap.pop(foreignKey)['references']]
+
+
+    # The columns that will be selected by the query
+    # selectedColumns {
+    #   $foreignKey: $column
+    # }
+    selectedColumns = {}
+
+    # Chooses one column randomly from each joined database.
+    # Ensures that at least one column per database joined is
+    # in the query
+    for key in foreignKeyMap:
+        selectedColumns[key] = [random.choice(list(foreignKeyMap[key].columns.keys()))]
+
+    # Adds more columns until there are the amount as
+    # specified by the difficulty
+    for i in range(columnCount - joins - 1):
+
+        # Chooses a foreign key, aka chooses a table
+        foreignKey = random.choice(list(foreignKeyMap.keys()))
+
+        # Chooses unique column
+        uniqueKey = None
+        while not uniqueKey or uniqueKey in selectedColumns[foreignKey]:
+            uniqueKey = random.choice(list(foreignKeyMap[foreignKey].columns.keys()))
+
+        # Adds the column to the appropriate table's selected column
+        selectedColumns[foreignKey].append(uniqueKey)
+
+
+
+    # Generate a new keyMap since the last one was modified
+    # through pop()
+    keyMap = database.getKeyMap()
+
+    # Adds the current database to the keyMap (for ease)
+    keyMap[database.name] = {'references': database.name, 'foreignKey': None}
+
+
+
+    # Creates the question string
+    questionString = 'From the tables'
+
+    # De-pluralizes the string if there are no joins
+    if joins == 0:
+        questionString = questionString[:-1]
+
+    # Adds the tables to the string
+    keyIndex = 0
+    for key in foreignKeyMap:
+
+        # Used to track when the 'and' needs to be added
+        keyIndex += 1
+
+        # Adds an 'and' if it's the last item and
+        # there are more than one item
+        if keyIndex == len(list(foreignKeyMap)) and joins > 0:
+            questionString += ' and'
+
+        questionString += f" {keyMap[key]['references']},"
+    
+    # Removes the trailing comma and add the next bit of text
+    questionString = questionString[:-1] + ' select the columns'
+
+    # De-pluralizes the string if there is only one column
+    if columnCount == 1:
+        questionString = questionString[:-1]
+
+    # Adds the columns to be selected
+    keyIndex = 0
+    for key in selectedColumns:
+
+        # Used to keep track of the and
+        columnIndex = 0
+        keyIndex += 1
+
+        # Specifies which table the column belongs to.
+        # Also specifies the 'as' clause
+        questionString += f" ({keyMap[key]['references']} as {keyMap[key]['references'][0:1].upper()})"
+
+        # Adds the column to the string
+        for column in selectedColumns[key]:
+            columnIndex += 1
+
+            # Adds an 'and' if it's the last item and
+            # there are more than one item
+            if columnIndex == len(list(selectedColumns[key])) and keyIndex == len(list(selectedColumns)) and columnCount > 1:
+                questionString += ' and'
+            
+            questionString += f" {column},"
+
+    # Removes the trailing comma
+    questionString = questionString[:-1] + '.'
+
+    # Adds the question string to data
+    data['params']['questionString'] = questionString
+
+
+
+    # Loads the schema of all referenced databases
+    loadAllSchema(data, database)
+
+    rows = generateRows(database, len(list(database.columns.keys())) * 3 + random.randint(-3, 3))
+
+    # Loads the noisy data into the primary database as
+    # well as generating noisy data for referenced databases
+    loadAllNoisyData(data, database, rows)
+
+    # Sets the correct answers
+    # TODO: clauses (the '[]') is blank; make it not blank
+    data['correct_answers']['SQLEditor'] = queryStatement(database, keyMap, foreignKeyMap, selectedColumns, [])
+
+# Creates a delete statement
+# TODO
+#   Conditionals
+#   Clauses
+def queryStatement(database, keyMap, foreignKeyMap, selectedColumns, clauses):
+    
+    # Begins the query string
+    queryString = 'SELECT'
+
+    # Adds the columns to the query string
+    # All columns use a '$table.' to specify
+    for key in selectedColumns:
+        for column in selectedColumns[key]:
+            queryString += f" {keyMap[key]['references'][0:1].upper()}.{column},"
+    
+    # Removes trailing comma
+    queryString = queryString[:-1] + ' FROM'
+
+    # Adds the tables to be selected from
+    for key in foreignKeyMap:
+        queryString += f" {keyMap[key]['references']} AS {keyMap[key]['references'][0:1].upper()},"
+
+    # Removes trailing comma
+    queryString = queryString[:-1] + ' WHERE'
+
+
+
+    # Specifies how the tables are joined together
+
+    # Removes the primary database, since it is the holder of all
+    # the foreign keys so we don't want to say "join table to self"
+    foreignKeyMap.pop(database.name)
+
+    if foreignKeyMap:
+        for key in foreignKeyMap:
+            queryString += f" {database.name[0:1].upper()}.{key} = {keyMap[key]['references'][0:1].upper()}.{keyMap[key]['foreignKey']} AND"
+
+        # Removes the final 'AND'
+        queryString = queryString[:-4]
+    
+    # Removes the WHERE clause if necessary
+    if not clauses and not foreignKeyMap:
+        queryString = queryString[:-6]
+
+
+
+    # Returns, appending the finishing touches
+    return queryString + ";\n"
 
 '''
     End query-style question
@@ -297,14 +594,20 @@ def queryStatement():
     Begin helper functions
 '''
 
+# Returns a string for an SQL conditional
+def conditionalStatement(column, condition):
+    return f"WHERE {column} = '{condition}'"
+
 # Returns the file path to the database file
 def relativeFilePath(filePath):
     return f"./SQLElementSharedLibrary/randomDatabases/{filePath}.txt"
 
 # Gets the filepaths to all databases referenced by this one
-def getReferencedDatabases(database):
+# Returns a set to ensure no duplicate databases
+def getReferencedDatabasesSet(database):
 
-    # Uses a set in case a database is refereenced more than once
+    # Uses a set in case a database is referenced more than once
+    # Tracks name, since it is easily hashable
     databases = set()
 
     # Checks each column for its reference
@@ -313,7 +616,25 @@ def getReferencedDatabases(database):
         if database.columns[key]['references']:
             databases.add(database.columns[key]['references'])
 
+    # Doesn't return the database names, returns the database objects
     return set(db.load(relativeFilePath(referenced)) for referenced in databases)
+
+# Returns a dictionary that maps the foreign key of the supplied
+# database to the referenced databases.
+# May contain multiple of the same database, referenced by
+# different foreign keys
+def getReferencedDatabaseDictionary(database):
+    
+    # Uses a dictionary to store the databases
+    databases = {}
+
+    # Checks each column for its reference
+    # Adds the referenced item, if it exists
+    for key in database.columns.keys():
+        if database.columns[key]['references']:
+            databases[database.columns[key]['references']] = db.load(relativeFilePath(database.columns[key]['references']))
+
+    return databases
 
 # Adds the schema databases to data
 def loadSchemas(data, databases):
@@ -329,7 +650,7 @@ def loadSchemas(data, databases):
 def loadAllSchema(data, database):
 
     # Gets all referenced databases
-    databases = getReferencedDatabases(database)
+    databases = getReferencedDatabasesSet(database)
 
     # Adds this database to the set
     databases.add(database)
@@ -354,12 +675,12 @@ def loadAllNoisyData(data, database, rows):
 
     # Gets a dicitonary of referenced databases.
     # The keys are the name of the database
-    referencedDatabases = {database.columns[key]['references']: db.load(relativeFilePath(database.columns[key]['references'])) for key in database.columns.keys() if database.columns[key]['references']}
+    referencedDatabases = getReferencedDatabaseDictionary(database)
 
 
     # Gets a dictionary that maps the column to both
     # the referenced database name and foreign key
-    keyMap = {key: {'references': database.columns[key]['references'], 'foreignKey': database.columns[key]['foreignKey']} for key in database.columns.keys() if database.columns[key]['references']}
+    keyMap = database.getKeyMap()
 
     # All table of data
     generatedData = {}
@@ -402,7 +723,8 @@ def loadAllNoisyData(data, database, rows):
 
 # Returns a database with a specified number of columns
 def loadTrimmedDatabase(columnCount):
-        # Gets all random databases so a random one may be chosen
+    
+    # Gets all random databases so a random one may be chosen
     possibleDatabases = db.getAllDatabaseFiles('./SQLElementSharedLibrary/randomDatabases/')
 
     # Keeps trying random databases until it finds one with enough columns

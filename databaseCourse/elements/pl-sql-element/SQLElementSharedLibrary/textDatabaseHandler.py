@@ -124,40 +124,14 @@ class Database:
 
                 }
 
+    # Returns a dictionary with the following mapping:
+    #   column: (if the column is a foreign key)
+    #       'references': the database referenced
+    #       'foreignKey': the column in the referenced database
+    def getKeyMap(self):
+        return {key: {'references': self.columns[key]['references'], 'foreignKey': self.columns[key]['foreignKey']} for key in self.columns.keys() if self.columns[key]['references']}
+
     def __str__(self):
         # The Column __str__() function didn't want to work so
         # instead here's some gross list comprehension
         return f"{self.name}: " + str([f"{column['name']}: {column['unit']}" for column in self.columns.values()])
-
-
-# Models a column of a database
-class Column:
-
-    # A column has a name and a unit
-    def __init__(self, databaseLine):
-        # Gets the words from the lines
-        words = databaseLine.split(' ')
-
-        # Sets the column name
-        self.name = words[0]
-
-        # Sets the column unit
-        # Removes the trailing comma, if there is one
-        self.unit = words[1] if ',' not in words[1] else words[1][:-1]
-
-        # Sets whether the column is the primary key
-        self.isPrimary = False
-
-        # Sets whether the column is or is not null
-        self.isNotNull = False
-
-        # Which table this column references
-        # and other foreign clauses
-        self.references = None
-        self.isOnUpdateCascade = False
-        self.isOnDeleteSetNull = False
-        
-        
-
-
-        

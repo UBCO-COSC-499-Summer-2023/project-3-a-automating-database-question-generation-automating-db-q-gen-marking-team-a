@@ -11,6 +11,7 @@
     ],
     "zones": [
         {
+            "title": "Lab Questions",
             "questions": [
                 {"id": "SQL_Questions/1",                "points": 2},
                 {"id": "SQL_Questions/2",                "points": 2},
@@ -22,6 +23,14 @@
                 {"id": "SQL_Questions/8",                "points": 2},
                 {"id": "SQL_Questions/9",                "points": 2},
                 {"id": "SQL_Questions/10",                "points": 2}
+            ]
+        },
+        {
+            "title": "Random Queries",
+            "questions": [
+                {"id": "SQL_Questions/randomEasy1",          "points": 2},
+                {"id": "SQL_Questions/randomMedium1",          "points": 2},
+                {"id": "SQL_Questions/randomHard1",          "points": 2}
             ]
         }
     ]

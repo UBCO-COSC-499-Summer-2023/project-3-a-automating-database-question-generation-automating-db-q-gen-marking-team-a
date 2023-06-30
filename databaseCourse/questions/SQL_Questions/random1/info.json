@@ -1,12 +1,12 @@
 {
-    "uuid": "6cc41312-693f-4c01-b190-5abc9d85801a",
-      "title": "Random Delete Tables 1",
+    "uuid": "f3cc92c2-4c7c-40c8-963c-60c38bfd3a1c",
+      "title": "Random SQL Query 1",
     "topic": "Databases",
     "singleVariant": true,
     "tags": [
         "rlawrence",
         "Demo",
-        "DDL",
+        "SQL",
         "Random"
     ],
     "type": "v3"
