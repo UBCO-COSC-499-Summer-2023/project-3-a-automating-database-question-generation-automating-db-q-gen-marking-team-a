@@ -13,6 +13,7 @@ $(document).ready(function () {
     }
     // Creating dropbtn (Schema) tables
     for(var i = 0; i < dataset.length; i++) {
+
         dbSchema.innerHTML += createSchemaTables(dataset.at(i)._schema)
     }
 
@@ -46,6 +47,10 @@ $(document).ready(function () {
     
     //* FUNCTIONS - USER ACTIONS
     // opens Schema list for selected schema.
+
+
+    /*
+
     window.openMenu = function (val) {
         closeMenus();
         document.getElementById('schema-' + val.id.slice(4)).classList.toggle('show');
@@ -67,6 +72,8 @@ $(document).ready(function () {
             }
         }
     }
+
+    */
 
     // adds functionality for onclick
     function updateCodeMirror(data){
@@ -105,16 +112,16 @@ $(document).ready(function () {
             return;
         }
         // Creates the button HTML element for the table; onclick it adds the tablename to Editor, onhover it shows the schema of the table.
-        let schemaView = "<button type='button' onmouseover='openMenu(this)' onClick='updateCodeMirror(\""+dataSchema._relAliases[0]+"\");' class='dropbtn' id='btn-" + dataSchema._relAliases[0] + "'>" + dataSchema._relAliases[0]
+        let schemaView = "<div class='schemaTable'><button type='button' onmouseover='' onClick='updateCodeMirror(\""+dataSchema._relAliases[0]+"\");' class='dropbtn' id='btn-" + dataSchema._relAliases[0] + "'>" + dataSchema._relAliases[0]
             + "</button> <div class='dropdown-content' id='schema-" + dataSchema._relAliases[0] + "'>"
 
         // Creates the submenue element for the table, onclick each member of the table will add itself to the editor
         for (var i = 0; i < dataSchema._names.length; i++) {
-            let field = "<div classname='submenu' onClick='updateCodeMirror(\""+dataSchema._names[i]+"\");' id='schema-" + dataSchema._relAliases[0] + "'>" + dataSchema._names[i] +", " + dataSchema._types[i] + "</div>"
+            let field = "<div class='submenu' onClick='updateCodeMirror(\""+dataSchema._names[i]+"\");' id='schema-" + dataSchema._relAliases[0] + "'>" + dataSchema._names[i] +", " + dataSchema._types[i] + "</div>"
             schemaView += field;
         }
 
-        schemaView += "</div>"
+        schemaView += "</div></div>"
         return schemaView
 
     }

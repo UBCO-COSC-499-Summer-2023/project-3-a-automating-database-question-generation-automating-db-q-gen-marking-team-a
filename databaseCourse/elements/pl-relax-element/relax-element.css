@@ -1,14 +1,3 @@
-.dropbtn {
-	font-family: ubuntu, sans-serif;
-	border: none;
-    background-color: transparent;
-	margin: 0.25em 0 0.25em 0;
-}
-
-/*.dropbtn:hover, .dropbtn:focus {
-	background-color: #005cbf;
-}*/
-
 .dropdown-content,
 .submenu-content,
 .sub-submenu-content,
@@ -16,23 +5,9 @@
   display: none;
   position: absolute;
   background-color: #f1f1f1;
-  min-width: 0px;
+  min-width: 120px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 10;
-}
-
-.popup-content {
-	display: none;
-	position:absolute;
-	background-color: #f1f1f1;
-	min-width: 0px;
-	box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-	z-index: 1;
-	height: 10px;
-  }
-
-.button:hover div {
-	display: block;
 }
 
 .dropdown-content a,
@@ -46,6 +21,9 @@
 	z-index: 10;
 }
 
+/*.dropbtn:hover, .dropbtn:focus {
+	background-color: #005cbf;
+}*/
 
 .dropdown-content a:hover,
 .submenu-content a:hover,
@@ -54,8 +32,31 @@
   background-color: #ddd
 }
 
-.show {
-    display: block;
+
+.popup-content {
+	display: none;
+	position:absolute;
+	background-color: #f1f1f1;
+	min-width: 0px;
+	box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+	z-index: 1;
+	height: 10px;
+}
+
+.dropbtn {
+	font-family: ubuntu, sans-serif;
+	border: none;
+    background-color: transparent;
+	margin: 0.25em 0 0.25em 0;
+}
+
+.submenu {
+	cursor: pointer;
+}
+
+.schemaTable:hover .dropdown-content,
+.schemaTable:hover div.dropdown-content {
+  display: block;
 }
 
 .flex-container, .flex-container-answer-card {
@@ -65,14 +66,12 @@
 }
 
 .flex-container > div, .flex-container-answer-card > div {
-	margin: 5px;
 	text-align: center;
 	width:fit-content;
 	justify-content:space-evenly;
 }
 
 .flex-container > div > div, .flex-container-answer-card > div > div {
-	margin: 5px;
 	text-align: center;
 	width:fit-content;
 	justify-content: center;
