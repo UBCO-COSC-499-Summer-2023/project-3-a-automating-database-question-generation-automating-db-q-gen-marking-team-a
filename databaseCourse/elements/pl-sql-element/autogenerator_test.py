@@ -2,7 +2,7 @@ import unittest
 from parameterized import parameterized
 from SQLElementSharedLibrary.SQLAutogenerator import *
 
-class AutogeneratorTest(unittest.TestCase):
+class AutogenerateTest(unittest.TestCase):
 
     # DONE
 #---# autogenerate() Tests------------------------------------------------------------------------------------------------------------------
@@ -33,7 +33,7 @@ class AutogeneratorTest(unittest.TestCase):
             # ["delete","hard","delete"], #not implemented yet
             ["query","hard","select"]
             ])
-    def test_autogenerate(self,testType,difficulty,keyWord):
+    def testAutogenerateReturnsCorrectQuestionType(self,testType,difficulty,keyWord):
         initialAns = "\n"
         db_initalize = ""
         data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
@@ -41,16 +41,17 @@ class AutogeneratorTest(unittest.TestCase):
                 'correct_answers':{'SQLEditor': initialAns}}
         
         autogenerate(data)
-        if testType == "query":
-            print("start",data['params']['questionString'],"end")
+        print(data['params']['questionString'])
         
         self.assertGreater(len(data['correct_answers']['SQLEditor']),len(initialAns))
         actualQuestionType = ''.join(data['params']['questionString']).lower()
         self.assertIn(keyWord,actualQuestionType)
     
     # TODO
-    # generate*QuestionType*() Tests------------------------------------------------------------------------------------------------------------------
-    
+     # generate*QuestionType*() Tests------------------------------------------------------------------------------------------------------------------
+class QuestionGenerationTest(unittest.TestCase):
+    def emptyTest(self):
+        pass 
 #---# generateCreate() Test(s)
 #---# generateInsert() Test(s)
 #---# generateUpdate() Test(s)
@@ -58,7 +59,10 @@ class AutogeneratorTest(unittest.TestCase):
 #---# generateQuery() Test(s)
 
     # TODO
-    # *questionType*Statement() Tests------------------------------------------------------------------------------------------------------------------
+     # *questionType*Statement() Tests------------------------------------------------------------------------------------------------------------------
+class QuestionTypeStatementsTest(unittest.TestCase):
+    def emptyTest(self):
+        pass
 
 #---# createStatement() Test(s)
 #---# insertStatement() Test(s)
@@ -68,7 +72,9 @@ class AutogeneratorTest(unittest.TestCase):
 
     # TODO
     # helper functions Tests------------------------------------------------------------------------------------------------------------------
-
+class HelperFnsTest(unittest.TestCase):
+    def emptyTest(self):
+        pass
 #---# conditionalStatement Test(s)
 
 #---# relativeFilePath Test(s)
