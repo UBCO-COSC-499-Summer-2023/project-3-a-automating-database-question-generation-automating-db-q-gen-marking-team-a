@@ -15,3 +15,7 @@
 | 2023/05/31    | Team A & Scott   | Team Meeting | Charter and Scope Review | None |
 | 2023/05/31    | Matthew O. & Dr. Lawrence   | Email | Meeting Confirmation, Question, and  Requirements confirmation | [Here](../communication/emails/Friday-12_00-Noon-Meeting-Confirmation.pdf) |
 | 2023/06/01    | Matthew O. & Dr. Lawrence   | Email | Additional Resources | [Here](../communication/emails/Resources-for-499-Project.pdf) |
+| 2023/06/14    | Matthew O. & Dr. Lawrence   | Email | Weekly Update | [Here](../communication/emails/Week-5-update.pdf)
+| 2023/06/21    | Matthew O. & Dr. Lawrence   | Email | Meeting Confirmation | [Here](../communication/emails/Meeting-Wednesday-at-12_00.pdf)
+| 2023/06/28    | Matthew O. & Dr. Lawrence   | Email | Weekly Update | [Here](../communication/emails/Week-7-update.pdf)
+| 2023/06/30    | Andrei Z, & Dr. Lawrence    | Email | Ngrok Links| [Here](../communication/emails/COSC-944-PrairieLearn-Team-A.pdf)
