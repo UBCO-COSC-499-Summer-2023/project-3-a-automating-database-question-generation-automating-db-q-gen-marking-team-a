@@ -33,7 +33,7 @@ $(document).ready(function () {
         }
     });
 
-    //* needed elemnents for rendering.
+    //* needed elements for rendering.
     var treeElm = $("#tree");
     var outputElm = $("#output");
     var errorElm = $("#error");
@@ -89,6 +89,7 @@ $(document).ready(function () {
 
         try {
             const PR = executeRelalg(editor.getValue(), { "Customer" : dataset[0], "Product" : dataset[1], "Shipment" : dataset[2], "ShippedProduct" : dataset[3] }); // gets query results
+            console.log(PR);
             treeElm.contents().remove(); // clears Tree previous results
             createOutputTable(PR); // creates and renders new output table
             treeElm.append(createRecList(PR)); // creates and renders new tree
