@@ -112,12 +112,38 @@ $(document).ready(function () {
         let schemaView = "<button type='button' onmouseover='openMenu(this)' onClick='updateCodeMirror(\""+dataSchema._relAliases[0]+"\");' class='dropbtn' id='btn-" + dataSchema._relAliases[0] + "'>" + dataSchema._relAliases[0]
             + "</button> <div class='dropdown-content' id='schema-" + dataSchema._relAliases[0] + "'>"
 
-        // Creates the submenue element for the table, onclick each member of the table will add itself to the editor
+        // get column widths for styling purposes
+        let maxColNameLength = 0;
+        let maxColTypeLength = 0;
+
         for (var i = 0; i < dataSchema._names.length; i++) {
-            let field = "<div classname='submenu' onClick='updateCodeMirror(\""+dataSchema._names[i]+"\");' id='schema-" + dataSchema._relAliases[0] + "'>" + dataSchema._names[i] +", " + dataSchema._types[i] + "</div>"
-            schemaView += field;
+            let colName = `${dataSchema._names[i]}`;
+            let colType = `${dataSchema._types[i]}`;
+
+            if (colName.length > maxColNameLength) {
+                maxColNameLength = colName.length + 2;
+            }
+
+            if (colType.length > maxColTypeLength) {
+                maxColTypeLength = colType.length + 2;
+            }
         }
 
+        // Creates the submenue element for the table, onclick each member of the table will add itself to the editor
+        for (var i = 0; i < dataSchema._names.length; i++) {
+            let field = `<div style="text-align: center; border: 1px solid white; padding: 0.2em; display: flex; justify-content: space-around;" classname='submenu' onClick='updateCodeMirror('${dataSchema._names[i]}');' id='schema-${dataSchema._relAliases[0]}'>`;
+            let name = `<span style='cursor: pointer; width: ${maxColNameLength}ch;'>${dataSchema._names[i]}</span>`;
+            let type = `<span style='cursor: pointer; width: ${maxColTypeLength}ch;'>${dataSchema._types[i].toUpperCase()}</span>`;
+
+            schemaView += field + name + type + '</div>';
+        }
+
+        // let field = `<div style="text-align: center; border: 1px solid white; padding: 0.2em; display: flex; justify-content: space-around;" class="submenu" id="schema-${tableName}">`;
+        // let colName = `<span onclick="addColumnToEditor('${tableName}', '${row[0]}')" style=" cursor: pointer; width: ${maxColNameLength}ch;">${row[0]}</span>`;
+        // let colType = `<span style=" width: ${maxColTypeLength}ch;">${row[1]}</span>`;
+        // let colKey = `<span style=" width: ${maxColKeyLength}ch;">${keys}</span>`;
+
+        // field += colName + colType + colKey + '</div>';
         schemaView += "</div>"
         return schemaView
 
