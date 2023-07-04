@@ -46,35 +46,6 @@ $(document).ready(function () {
     //* FUNCTION DEFINITIONS
     
     //* FUNCTIONS - USER ACTIONS
-    // opens Schema list for selected schema.
-
-
-    /*
-
-    window.openMenu = function (val) {
-        closeMenus();
-        document.getElementById('schema-' + val.id.slice(4)).classList.toggle('show');
-    }
-    // closes menus when mouse is clicked elsewhere
-    window.onclick = function (e) {
-        if (!e.target.matches('.dropbtn')) {
-            closeMenus()
-        }
-    }
-
-    // function to close the modals of the schemas, basically hides each field in the modal
-    // helper function for above two window methods.
-    function closeMenus() {
-        let dropdowns = document.getElementsByClassName('dropdown-content');
-        for (let i = 0; i < dropdowns.length; i++) {
-            if (dropdowns[i].classList.contains('show')) {
-                dropdowns[i].classList.remove('show')
-            }
-        }
-    }
-
-    */
-
     // adds functionality for onclick
     function updateCodeMirror(data){
         var doc = editor.getDoc(); // gets the information of the editor
@@ -96,10 +67,10 @@ $(document).ready(function () {
 
         try {
             const PR = executeRelalg(editor.getValue(), { "Customer" : dataset[0], "Product" : dataset[1], "Shipment" : dataset[2], "ShippedProduct" : dataset[3] }); // gets query results
-            console.log(PR);
-            console.log(PR.getSchema());
-            console.log(PR._child);
-            console.log(PR._child.getSchema());
+            // console.log(PR);
+            // console.log(PR.getSchema());
+            // console.log(PR._child);
+            // console.log(PR._child.getSchema());
             treeElm.contents().remove(); // clears Tree previous results
             createOutputTable(PR); // creates and renders new output table
             treeElm.append(createRecList(PR)); // creates and renders new tree
@@ -138,19 +109,14 @@ $(document).ready(function () {
 
         // Creates the submenue element for the table, onclick each member of the table will add itself to the editor
         for (var i = 0; i < dataSchema._names.length; i++) {
-            let field = `<div style="text-align: center; border: 1px solid white; padding: 0.2em; display: flex; justify-content: space-around;" classname='submenu' onClick='updateCodeMirror('${dataSchema._names[i]}');' id='schema-${dataSchema._relAliases[0]}'>`;
-            let name = `<span style='cursor: pointer; width: ${maxColNameLength}ch;'>${dataSchema._names[i]}</span>`;
+            console.log(dataSchema._names[i])
+            let field = `<div style="text-align: center; border: 1px solid white; padding: 0.2em; display: flex; justify-content: space-around;" classname='submenu' id='schema-${dataSchema._relAliases[0]}'>`;
+            let name = `<span onClick='updateCodeMirror("${dataSchema._names[i]}")' style='cursor: pointer; width: ${maxColNameLength}ch;'>${dataSchema._names[i]}</span>`;
             let type = `<span style='cursor: pointer; width: ${maxColTypeLength}ch;'>${dataSchema._types[i].toUpperCase()}</span>`;
 
             schemaView += field + name + type + '</div>';
         }
 
-        // let field = `<div style="text-align: center; border: 1px solid white; padding: 0.2em; display: flex; justify-content: space-around;" class="submenu" id="schema-${tableName}">`;
-        // let colName = `<span onclick="addColumnToEditor('${tableName}', '${row[0]}')" style=" cursor: pointer; width: ${maxColNameLength}ch;">${row[0]}</span>`;
-        // let colType = `<span style=" width: ${maxColTypeLength}ch;">${row[1]}</span>`;
-        // let colKey = `<span style=" width: ${maxColKeyLength}ch;">${keys}</span>`;
-
-        // field += colName + colType + colKey + '</div>';
         schemaView += "</div>"
         return schemaView
 
