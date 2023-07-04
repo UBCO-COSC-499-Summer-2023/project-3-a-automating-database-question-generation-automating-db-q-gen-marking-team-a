@@ -6,28 +6,24 @@ from string import ascii_uppercase
 def autogenerate(data):
     
     # Gets question parameters
-    random = data['params']['html_params']['random']
+    # random = data['params']['html_params']['random']
+    # maxGrade = data['params']['html_params']['maxGrade']
+    # markerFeedback = data['params']['html_params']['markerFeedback']
     questionType = data['params']['html_params']['questionType']
     difficulty = data['params']['html_params']['difficulty']
-    maxGrade = data['params']['html_params']['maxGrade']
-    markerFeedback = data['params']['html_params']['markerFeedback']
 
 
     # Checks if the difficulty are valid
     if difficulty not in ['easy', 'medium', 'hard']:
-        print(f"{difficulty} is not a valid difficulty.\nValid difficulties are 'easy', 'medium', and 'hard'.")
         return None
 
     # Generates the appropriate question
     match questionType:
-        case 'create': generateCreate(data, difficulty)
+        case 'create':  generateCreate(data, difficulty)
         case 'insert': generateInsert(data, difficulty)
         case 'update': generateUpdate(data, difficulty)
         case 'delete': generateDelete(data, difficulty)
         case 'query': generateQuery(data, difficulty)
-
-
-
 
 '''
     Begin create-style question
