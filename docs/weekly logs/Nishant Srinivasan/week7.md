@@ -40,3 +40,4 @@
 - made the tests for Auotgen function into one big paramterized test
 - looking into ways to make the testing output results more visual and easier to keep track of for debugging
 - setting up test file and going through coverage for all functions and organizing the file in accordance with that
+- dashboard
