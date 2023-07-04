@@ -110,12 +110,11 @@
 
 .output-tables{
 	border-collapse: collapse;
-    margin: 25px 0;
     font-size: 0.9em;
     font-family: ubuntu, sans-serif;
-	margin: auto;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
 	border-radius: 5px;
+	width: -webkit-fill-available;
 }
 
 .output-tables thead tr{
