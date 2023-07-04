@@ -59,6 +59,10 @@
   display: block;
 }
 
+.toolbar .button:hover .popup-content {
+  display: block;
+}
+
 .flex-container, .flex-container-answer-card {
     display: flex;
     justify-content: center;
