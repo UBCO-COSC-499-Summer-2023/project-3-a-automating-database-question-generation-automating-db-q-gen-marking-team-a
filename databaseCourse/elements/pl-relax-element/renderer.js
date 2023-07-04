@@ -34,7 +34,7 @@ $(document).ready(function () {
         }
     });
 
-    //* needed elemnents for rendering.
+    //* needed elements for rendering.
     var treeElm = $("#tree");
     var outputElm = $("#output");
     var errorElm = $("#error");
@@ -96,6 +96,10 @@ $(document).ready(function () {
 
         try {
             const PR = executeRelalg(editor.getValue(), { "Customer" : dataset[0], "Product" : dataset[1], "Shipment" : dataset[2], "ShippedProduct" : dataset[3] }); // gets query results
+            console.log(PR);
+            console.log(PR.getSchema());
+            console.log(PR._child);
+            console.log(PR._child.getSchema());
             treeElm.contents().remove(); // clears Tree previous results
             createOutputTable(PR); // creates and renders new output table
             treeElm.append(createRecList(PR)); // creates and renders new tree
@@ -115,13 +119,39 @@ $(document).ready(function () {
         let schemaView = "<div class='schemaTable'><button type='button' onmouseover='' onClick='updateCodeMirror(\""+dataSchema._relAliases[0]+"\");' class='dropbtn' id='btn-" + dataSchema._relAliases[0] + "'>" + dataSchema._relAliases[0]
             + "</button> <div class='dropdown-content' id='schema-" + dataSchema._relAliases[0] + "'>"
 
-        // Creates the submenue element for the table, onclick each member of the table will add itself to the editor
+        // get column widths for styling purposes
+        let maxColNameLength = 0;
+        let maxColTypeLength = 0;
+
         for (var i = 0; i < dataSchema._names.length; i++) {
-            let field = "<div class='submenu' onClick='updateCodeMirror(\""+dataSchema._names[i]+"\");' id='schema-" + dataSchema._relAliases[0] + "'>" + dataSchema._names[i] +", " + dataSchema._types[i] + "</div>"
-            schemaView += field;
+            let colName = `${dataSchema._names[i]}`;
+            let colType = `${dataSchema._types[i]}`;
+
+            if (colName.length > maxColNameLength) {
+                maxColNameLength = colName.length + 2;
+            }
+
+            if (colType.length > maxColTypeLength) {
+                maxColTypeLength = colType.length + 2;
+            }
         }
 
-        schemaView += "</div></div>"
+        // Creates the submenue element for the table, onclick each member of the table will add itself to the editor
+        for (var i = 0; i < dataSchema._names.length; i++) {
+            let field = `<div style="text-align: center; border: 1px solid white; padding: 0.2em; display: flex; justify-content: space-around;" classname='submenu' onClick='updateCodeMirror('${dataSchema._names[i]}');' id='schema-${dataSchema._relAliases[0]}'>`;
+            let name = `<span style='cursor: pointer; width: ${maxColNameLength}ch;'>${dataSchema._names[i]}</span>`;
+            let type = `<span style='cursor: pointer; width: ${maxColTypeLength}ch;'>${dataSchema._types[i].toUpperCase()}</span>`;
+
+            schemaView += field + name + type + '</div>';
+        }
+
+        // let field = `<div style="text-align: center; border: 1px solid white; padding: 0.2em; display: flex; justify-content: space-around;" class="submenu" id="schema-${tableName}">`;
+        // let colName = `<span onclick="addColumnToEditor('${tableName}', '${row[0]}')" style=" cursor: pointer; width: ${maxColNameLength}ch;">${row[0]}</span>`;
+        // let colType = `<span style=" width: ${maxColTypeLength}ch;">${row[1]}</span>`;
+        // let colKey = `<span style=" width: ${maxColKeyLength}ch;">${keys}</span>`;
+
+        // field += colName + colType + colKey + '</div>';
+        schemaView += "</div>"
         return schemaView
 
     }
@@ -141,35 +171,45 @@ $(document).ready(function () {
         errorElm.contents().remove();
 
         var table = $("<table></table>"); // creates new table element to be filled
-        table.append(createTableHeader(output.getResult()._schema._names)); // creates table headers
-        table.append(createTableRows(output.getResult()._rows)); // fills table rows
+        table.append(createTableContent(output.getResult()._schema, output.getResult()._rows)); // creates table headers
+        //table.append(createTableRows(output.getResult()._rows)); // fills table rows
         outputElm.append(table);
     }
 
     // Function that creates the table header
-    function createTableHeader(columns) {
+    function createTableContent(columnSchema, rows) {
         var header = $("<thead></thead>");
         var headerRow = $("<tr></tr>");
-
+        var rowElements = [];
+        var ifDateChecker = [];
         // reads each header
-        for (var i = 0; i < columns.length; i++) {
-            var th = $("<th></th>").text(columns[i]);
+        for (var i = 0; i < columnSchema._names.length; i++) {
+            var th = $("<th></th>").text(columnSchema._names[i]);
+            if(columnSchema._types[i] == 'date')
+                ifDateChecker.push(i);
             headerRow.append(th);
         }
         header.append(headerRow);
-        return header;
-    }
-
-    // Function that creates the table rows for a table
-    function createTableRows(rows) {
-        var rowElements = [];
+        rowElements.push(header);
+        
+        console.log(rows)
         // reads each row in rows and adds them to the row element array.
         rows.forEach(function (row) {
             var tr = $("<tr></tr>");
-            row.forEach(function (value) {
-                var td = $("<td></td>").text(value);
+            for (var i = 0; i < row.length; i++) {
+                if(ifDateChecker.includes(i)) {
+                    const date = new Date(row[i]);
+                    const year = date.getFullYear();
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const day = String(date.getDate()).padStart(2, '0');
+
+                    var td = $("<td></td>").text(`${year}-${month}-${day}`);
+                } else {
+                    var td = $("<td></td>").text(row[i]);
+                }
+
                 tr.append(td);
-            });
+            }
             rowElements.push(tr);
         });
         return rowElements;
