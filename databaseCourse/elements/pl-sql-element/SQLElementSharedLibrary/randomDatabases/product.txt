@@ -1,0 +1,7 @@
+CREATE TABLE product (
+        pid integer,
+        pname varchar(30),
+        price decimal(9,2),
+        inventory integer,
+        primary key (pid) 
+        )

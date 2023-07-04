@@ -36,9 +36,9 @@ def generateCreate(data, difficulty):
     # Randomly selects from the list at the given difficulty
     databaseFile = ''
     match difficulty:
-        case 'easy': databaseFile = random.choice(['airport', 'airplane'])
-        case 'medium': databaseFile = random.choice(['passenger'])
-        case 'hard': databaseFile = random.choice(['flight'])
+        case 'easy': databaseFile = random.choice(['airport', 'airplane', 'product', 'customer'])
+        case 'medium': databaseFile = random.choice(['passenger', 'shipment'])
+        case 'hard': databaseFile = random.choice(['flight', 'shippedproduct'])
     
     # Loads the selected database
     database = db.load(relativeFilePath(databaseFile))

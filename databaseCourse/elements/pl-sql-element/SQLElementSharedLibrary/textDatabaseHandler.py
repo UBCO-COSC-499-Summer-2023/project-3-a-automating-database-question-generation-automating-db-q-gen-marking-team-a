@@ -56,7 +56,7 @@ class Database:
             words = line.split(' ')
 
             # Handles the case where the line describes a foreign key
-            if 'FOREIGN KEY' in line:
+            if 'FOREIGN KEY' in line.upper():
 
                 # Gets the foreign key
                 # Removes the parenthesis
@@ -67,11 +67,11 @@ class Database:
 
                 # Gets the column it references
                 # Removes parentheses
-                foreignKey = words[5][1:-1]
+                foreignKey = words[5][words[5].find('(') + 1 : words[5].find(')')]
 
                 # Checks additional clauses
-                isOnUpdateCascade = 'ON UPDATE CASCADE' in line
-                isOnDeleteSetNull = 'ON DELETE SET NULL' in line
+                isOnUpdateCascade = 'ON UPDATE CASCADE' in line.upper()
+                isOnDeleteSetNull = 'ON DELETE SET NULL' in line.upper()
 
                 # Updates the column
                 self.columns[column]['references'] = references
@@ -80,11 +80,11 @@ class Database:
                 self.columns[column]['isOnDeleteSetNull'] = isOnDeleteSetNull
 
             # Handles the case where the line describes a primary key
-            elif 'PRIMARY KEY' in line:
+            elif 'PRIMARY KEY' in line.upper():
                 
                 # Gets the primary key
                 # Removes the parentheses
-                primaryKey = words[2][1:-1]
+                primaryKey = words[2][words[2].find('(') + 1 : words[2].find(')')]
 
                 # Sets the column as a primary key
                 self.columns[primaryKey]['isPrimary'] = True
@@ -97,7 +97,7 @@ class Database:
 
                 # The second word is the unit
                 # Removes the comma if it is present
-                unit = words[1] if ',' not in words[1] else words[1][:-1]
+                unit = words[1].upper() if ',' not in words[1] else words[1][:-1].upper()
 
                 # If there is some additional clause for the unit, such
                 # as the length of a CHAR, grab it and remove parenthesis
@@ -108,7 +108,7 @@ class Database:
 
 
                 # Checks if the line has a NOT NULL clause
-                isNotNull = 'NOT NULL' in line
+                isNotNull = 'NOT NULL' in line.upper()
 
                 # Adds the column
                 self.columns[name] = {
