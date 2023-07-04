@@ -90,6 +90,9 @@ $(document).ready(function () {
         try {
             const PR = executeRelalg(editor.getValue(), { "Customer" : dataset[0], "Product" : dataset[1], "Shipment" : dataset[2], "ShippedProduct" : dataset[3] }); // gets query results
             console.log(PR);
+            console.log(PR.getSchema());
+            console.log(PR._child);
+            console.log(PR._child.getSchema());
             treeElm.contents().remove(); // clears Tree previous results
             createOutputTable(PR); // creates and renders new output table
             treeElm.append(createRecList(PR)); // creates and renders new tree
@@ -135,35 +138,45 @@ $(document).ready(function () {
         errorElm.contents().remove();
 
         var table = $("<table></table>"); // creates new table element to be filled
-        table.append(createTableHeader(output.getResult()._schema._names)); // creates table headers
-        table.append(createTableRows(output.getResult()._rows)); // fills table rows
+        table.append(createTableContent(output.getResult()._schema, output.getResult()._rows)); // creates table headers
+        //table.append(createTableRows(output.getResult()._rows)); // fills table rows
         outputElm.append(table);
     }
 
     // Function that creates the table header
-    function createTableHeader(columns) {
+    function createTableContent(columnSchema, rows) {
         var header = $("<thead></thead>");
         var headerRow = $("<tr></tr>");
-
+        var rowElements = [];
+        var ifDateChecker = [];
         // reads each header
-        for (var i = 0; i < columns.length; i++) {
-            var th = $("<th></th>").text(columns[i]);
+        for (var i = 0; i < columnSchema._names.length; i++) {
+            var th = $("<th></th>").text(columnSchema._names[i]);
+            if(columnSchema._types[i] == 'date')
+                ifDateChecker.push(i);
             headerRow.append(th);
         }
         header.append(headerRow);
-        return header;
-    }
-
-    // Function that creates the table rows for a table
-    function createTableRows(rows) {
-        var rowElements = [];
+        rowElements.push(header);
+        
+        console.log(rows)
         // reads each row in rows and adds them to the row element array.
         rows.forEach(function (row) {
             var tr = $("<tr></tr>");
-            row.forEach(function (value) {
-                var td = $("<td></td>").text(value);
+            for (var i = 0; i < row.length; i++) {
+                if(ifDateChecker.includes(i)) {
+                    const date = new Date(row[i]);
+                    const year = date.getFullYear();
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const day = String(date.getDate()).padStart(2, '0');
+
+                    var td = $("<td></td>").text(`${year}-${month}-${day}`);
+                } else {
+                    var td = $("<td></td>").text(row[i]);
+                }
+
                 tr.append(td);
-            });
+            }
             rowElements.push(tr);
         });
         return rowElements;
