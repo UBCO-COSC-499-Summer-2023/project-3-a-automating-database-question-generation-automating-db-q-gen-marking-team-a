@@ -1,6 +1,6 @@
 <pl-relax-element random="False" max-grade = "10">
   
-  <relax-question>Return a list of customer ids and names where the customer has no shipments or has a shipment with a shipped product with a price greater than $40.
+  <relax-question>Return a list of customer ids and names where the customer has no shipments or has a shipment with a shipped product with a price greater than \$40.
   </relax-question>
 
   <relax-db>{
@@ -54,6 +54,6 @@
     12, 		4, 		10
   }</relax-db>
 
-  <relax-answer>π pname,inventory,amount,price (σ amount ≥ inventory ∧ price < 5 ∨ price ≥ 50 (Product⨝ShippedProduct))</relax-answer>
+  <relax-answer>π cid,cname(σ sid=null ∨ price>40 (Customer⟕Shipment⟕ShippedProduct⟕Product))</relax-answer>
 
 </pl-relax-element>

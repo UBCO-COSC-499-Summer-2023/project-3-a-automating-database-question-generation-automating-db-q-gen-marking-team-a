@@ -1,6 +1,6 @@
 <pl-relax-element random="False" max-grade = "10">
   
-  <relax-question>Return the product name, current inventory, shipment amount, and price where the product had a shipment of an amount greater than 60% of its current inventory and the product price is less than $5 or greater than or equal to $50.
+  <relax-question>Return the product name, current inventory, shipment amount, and price where the product had a shipment of an amount greater than 60% of its current inventory and the product price is less than \$5 or greater than or equal to \$50.
   </relax-question>
 
   <relax-db>{
@@ -54,6 +54,6 @@
     12, 		4, 		10
   }</relax-db>
 
-  <relax-answer>π pname,inventory,amount,price (σ amount ≥ inventory ∧ price < 5 ∨ price ≥ 50 (Product⨝ShippedProduct))</relax-answer>
+  <relax-answer>π pname, inventory, amount, price (σ amount > inventory*0.6  and (price <5 or price >=50) (Product ⨝ ShippedProduct ⨝ Shipment))</relax-answer>
 
 </pl-relax-element>
