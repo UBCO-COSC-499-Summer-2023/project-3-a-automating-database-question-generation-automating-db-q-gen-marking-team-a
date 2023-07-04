@@ -29,6 +29,7 @@ class AutogenerateTest(unittest.TestCase):
             ["query","medium","select"],
             ["create","hard","create"],
             ["insert","hard","insert"],
+            # TODO
             # ["update","hard","change"], #not implemented yet
             # ["delete","hard","delete"], #not implemented yet
             ["query","hard","select"]
@@ -41,22 +42,68 @@ class AutogenerateTest(unittest.TestCase):
                 'correct_answers':{'SQLEditor': initialAns}}
         
         autogenerate(data)
-        print(data['params']['questionString'])
         
         self.assertGreater(len(data['correct_answers']['SQLEditor']),len(initialAns))
         actualQuestionType = ''.join(data['params']['questionString']).lower()
         self.assertIn(keyWord,actualQuestionType)
     
     # TODO
-     # generate*QuestionType*() Tests------------------------------------------------------------------------------------------------------------------
+    # generate*QuestionType*() Tests------------------------------------------------------------------------------------------------------------------
+        # generateCreate() - already tested & covered in AutogenerateTest class
+        # generateInsert() - already tested & covered in AutogenerateTest class
+        # generateDelete() Test(s) - already tested & covered in AutogenerateTest class
 class QuestionGenerationTest(unittest.TestCase):
-    def emptyTest(self):
-        pass 
-#---# generateCreate() Test(s)
-#---# generateInsert() Test(s)
 #---# generateUpdate() Test(s)
-#---# generateDelete() Test(s)
+    # Does not use a conditional clause
+    def testGenerateUpdateDoesNotReturnConditionalClauseWhenEasy(self):
+        testType = "Update"
+        db_initialize = ""
+        initialAns = ""
+        difficulty = "easy"
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
+                          'db_initialize':db_initialize},
+                'correct_answers':{'SQLEditor': initialAns}}
+        
+        generateUpdate(data,difficulty)
+
+        actualQuestionType = ''.join(data['params']['questionString']).lower()
+        self.assertNotIn("where",actualQuestionType)
+
+    # Uses a conditional clause when medium
+    def testGenerateUpdateReturnsConditionalClauseWhenMedium(self):
+        testType = "Update"
+        db_initialize = ""
+        initialAns = ""
+        difficulty = "medium"
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
+                          'db_initialize':db_initialize},
+                'correct_answers':{'SQLEditor': initialAns}}
+        
+        generateUpdate(data,difficulty)
+
+        actualQuestionType = ''.join(data['params']['questionString']).lower()
+        self.assertIn("where",actualQuestionType)
+    
+    # case for hard difficulty
+
 #---# generateQuery() Test(s)
+    # joins == 0, clauses == 0
+    def test(self):
+        testType = "query"
+        db_initialize = ""
+        initialAns = ""
+        difficulty = "hard"
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
+                          'db_initialize':db_initialize},
+                'correct_answers':{'SQLEditor': initialAns}}
+        
+        generateQuery(data,difficulty)
+        print(data)
+
+        actualQuestionType = ''.join(data['params']['questionString']).lower()
+        self.assertIn("where",actualQuestionType)
+    # joins != 0, clauses == 0
+    # joins != 0, clauses != 0
 
     # TODO
      # *questionType*Statement() Tests------------------------------------------------------------------------------------------------------------------
