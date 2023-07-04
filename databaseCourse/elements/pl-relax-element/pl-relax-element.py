@@ -3,7 +3,7 @@ import chevron
 import lxml.html
 import html
 import prairielearn as pl
-import RASQLCustomGrader as grader
+import RelaXElementSharedLibrary.RelaXCustomGrader as grader
 
 
 def generate(element_html, data):
@@ -73,8 +73,7 @@ def parse(element_html, data):
 
 def grade(element_html, data):
     # Grades the student's submission
-    grader.customGrader(data)
-    studentScore = data["score"]
+    studentScore = grader.customGrader(data)
     # Places the student's score and other feedback into data.
     # Score cannot be directly modified in the element folder,
     # rather it must be placed within partial scores.
