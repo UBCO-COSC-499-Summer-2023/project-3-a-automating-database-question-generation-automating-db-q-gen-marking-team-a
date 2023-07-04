@@ -1,8 +1,8 @@
+<img src="clientFilesQuestion/ra_q1.png" style="width: 80%;">
 <pl-relax-element random="False" max-grade = "10">
   
   <relax-question>Return the customer id, name, address, and state where the customer is either in the state of Iowa ("IA") or California ('CA').
   </relax-question>
-
   <relax-db>{
     Customer.cid:number, 	Customer.cname:string, 		Customer.address:string, 		Customer.city:string, 		Customer.state:string
     1, 		'Fred Smith', 		'101 Evergreen Terrace', 	'Springfield', 		'IL'
@@ -55,5 +55,4 @@
   }</relax-db>
 
   <relax-answer>π cid,cname,address,state (σ state ='IA' ∨ state = 'CA' Customer)</relax-answer>
-
 </pl-relax-element>
