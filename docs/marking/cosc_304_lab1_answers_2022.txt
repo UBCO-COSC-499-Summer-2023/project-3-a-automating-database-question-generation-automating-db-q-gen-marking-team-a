@@ -1,0 +1,37 @@
+COSC 304 Lab 1 Relational Algebra Answers - 2022
+
+1. Return the customer id,  name, address, and state where the customer is either in the state of Iowa ('IA') or California ('CA').
+
+πcid,cname,address,state(σstate='IA'∨state='CA'(Customer))
+
+2. Return the shipment id, shipped amount, product id, product name, and inventory for products that have 10 or less current inventory and have been in a shipment with a shipment amount over 3. 
+
+πsid,pid,amount,pname,inventory(σinventory<=10∧amount>3(ShippedProduct⨝Product))
+
+3. Return a list of all the product id, name, and price that have been in a shipment before May 17, 2014. The product price must be less than $50, and the shipped amount < 5.
+
+πpid,pname,price(σshipdate<date('2014-05-17')∧amount<5∧price<50(Product⨝ShippedProduct⨝Shipment))
+
+4. Return the product name, current inventory, shipment amount, and price where the product had a shipment of an amount greater than 60% of its current inventory and the product price is less than $5 or greater than or equal to $50.
+
+πpname, inventory, amount, price (σ amount > inventory*0.6  and (price <5 or price >=50) (Product ⨝ ShippedProduct ⨝ Shipment))
+
+Note: Join with Shipment is not needed but is correct.
+
+5. Return a list of customer ids and names where the customer has no shipments or has a shipment with a shipped product with a price greater than $40.
+
+Solution with anti-join and set union:
+πcid, cname (Customer▷Shipment) ∪ πcid,cname(σprice>40(Customer⨝Shipment⨝ShippedProduct⨝Product))
+
+Solution with set difference and set union:
+
+(πcid, cname (Customer) - πcid, cname (Customer⨝Shipment)) ∪ πcid,cname(σprice>40(Customer⨝Shipment⨝ShippedProduct⨝Product))
+
+πcid, cname (( πcid(Customer) - πcid(Shipment) ) ⨝ Customer) ∪ πcid,cname(σprice>40(Customer⨝Shipment⨝ShippedProduct⨝Product))
+
+Solution with left outer join:
+
+πcid,cname(σsid=null ∨ price>40(Customer⟕Shipment⟕ShippedProduct⟕Product))
+
+
+
