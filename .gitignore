@@ -5,11 +5,7 @@ node_modules
 packages
 package.json
 package-lock.json
-node_modules
-packages
-package-lock.json
 __pycache__/
-package.json
 .DS_Store
 databaseCourse/elements/pl-sql-element/SQLElementSharedLibrary/__pycache__/textDatabaseHandler.cpython-311.pyc
 databaseCourse/elements/pl-sql-element/SQLElementSharedLibrary/__pycache__/__init__.cpython-311.pyc
