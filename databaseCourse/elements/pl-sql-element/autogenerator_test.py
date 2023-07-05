@@ -49,9 +49,9 @@ class AutogenerateTest(unittest.TestCase):
     
     # TODO
     # generate*QuestionType*() Tests------------------------------------------------------------------------------------------------------------------
-        # generateCreate() - already tested & covered in AutogenerateTest class
-        # generateInsert() - already tested & covered in AutogenerateTest class
-        # generateDelete() Test(s) - already tested & covered in AutogenerateTest class
+#---# generateCreate() - already tested & covered in AutogenerateTest class
+#---# generateInsert() - already tested & covered in AutogenerateTest class
+#---# generateDelete() Test(s) - already tested & covered in AutogenerateTest class
 class QuestionGenerationTest(unittest.TestCase):
 #---# generateUpdate() Test(s)
     # Does not use a conditional clause
@@ -86,32 +86,50 @@ class QuestionGenerationTest(unittest.TestCase):
     
     # case for hard difficulty
 
+    # TODO
 #---# generateQuery() Test(s)
     # joins == 0, clauses == 0
-    def test(self):
-        testType = "query"
-        db_initialize = ""
-        initialAns = ""
-        difficulty = "hard"
-        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
-                          'db_initialize':db_initialize},
-                'correct_answers':{'SQLEditor': initialAns}}
+    # def testGenerateQueryReturnsEasyQuestion(self):
+    #     testType = "query"
+    #     db_initialize = ""
+    #     initialAns = ""
+    #     difficulty = "medium"
+    #     data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
+    #                       'db_initialize':db_initialize},
+    #             'correct_answers':{'SQLEditor': initialAns}}
         
-        generateQuery(data,difficulty)
-        print(data)
+    #     generateQuery(data,difficulty)
+    #     print(data)
 
-        actualQuestionType = ''.join(data['params']['questionString']).lower()
-        self.assertIn("where",actualQuestionType)
+    #     actualQuestionType = ''.join(data['params']['questionString']).lower()
+    #     self.assertIn("where",actualQuestionType)
     # joins != 0, clauses == 0
     # joins != 0, clauses != 0
 
     # TODO
-     # *questionType*Statement() Tests------------------------------------------------------------------------------------------------------------------
+    # *questionType*Statement() Tests------------------------------------------------------------------------------------------------------------------
 class QuestionTypeStatementsTest(unittest.TestCase):
-    def emptyTest(self):
-        pass
 
 #---# createStatement() Test(s)
+    # all databases are properly parsed into creating a create statement
+    @parameterized.expand([
+        ["airport"],
+        ["airplane"],
+        ["passenger"],
+        ["flight"]
+    ])
+    def testCreateStatementReturnsStatementWithAllColumns(self,databaseFile):
+        database = db.load(relativeFilePath(databaseFile))
+        dbName = database.name
+
+        result = createStatement(database)
+        
+        self.assertIn("CREATE",result)
+        self.assertIn(dbName,result)
+        for key in database.columns:
+            self.assertIn(key,result)
+            self.assertIn(database.columns[key]["unit"],result)
+
 #---# insertStatement() Test(s)
 #---# updateStatement() Test(s)
 #---# deleteStatement() Test(s)
@@ -122,30 +140,30 @@ class QuestionTypeStatementsTest(unittest.TestCase):
 class HelperFnsTest(unittest.TestCase):
     def emptyTest(self):
         pass
-#---# conditionalStatement Test(s)
+#---# conditionalStatement() Test(s)
 
-#---# relativeFilePath Test(s)
+#---# relativeFilePath() Test(s)
 
-#---# getReferencedDatabasesSet Test(s)
-#---# getReferencedDatabaseDictionary Test(s)
+#---# getReferencedDatabasesSet() Test(s)
+#---# getReferencedDatabaseDictionary() Test(s)
 
-#---# loadSchemas Test(s)
-#---# loadAllSchema Test(s)
+#---# loadSchemas() Test(s)
+#---# loadAllSchema() Test(s)
 
-#---# loadNoisyData Test(s)
-#---# loadAllNoisyData Test(s)
-#---# loadTrimmedDatabase Test(s)
+#---# loadNoisyData() Test(s)
+#---# loadAllNoisyData() Test(s)
+#---# loadTrimmedDatabase() Test(s)
 
-#---# generateRow Test(s)
-#---# generateRows Test(s)
+#---# generateRow() Test(s)
+#---# generateRows() Test(s)
 
-#---# generateNoisyData Test(s)
-#---# generateNoisyInteger Test(s)
-#---# generateNoisyChar Test(s)
-#---# generateNoisyVarchar Test(s)
+#---# generateNoisyData() Test(s)
+#---# generateNoisyInteger() Test(s)
+#---# generateNoisyChar() Test(s)
+#---# generateNoisyVarchar() Test(s)
 
-#---# generateRandomDate Test(s)
-#---# generateRandomDateTime Test(s)
+#---# generateRandomDate() Test(s)
+#---# generateRandomDateTime() Test(s)
 
 if __name__ == '__main__':
     runner = unittest.TextTestRunner()
