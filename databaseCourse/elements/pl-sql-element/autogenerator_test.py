@@ -125,14 +125,99 @@ class QuestionTypeStatementsTest(unittest.TestCase):
         result = createStatement(database)
         
         self.assertIn("CREATE",result)
+        self.assertNotIn("INSERT",result)
+        self.assertNotIn("UPDATE",result)
+        self.assertNotIn("DELETE",result)
+        self.assertNotIn("SELECT",result)
         self.assertIn(dbName,result)
         for key in database.columns:
             self.assertIn(key,result)
             self.assertIn(database.columns[key]["unit"],result)
 
 #---# insertStatement() Test(s)
+    # valid input -> valid output
+    def testInsertStatementReturnsCorrectTableNameAndValuesInStatement(self):
+        dbName = "airport"
+        row = [9,8,0]
+        database = db.load(relativeFilePath(dbName))
+
+        result = insertStatement(database,row)
+
+        self.assertIn(dbName,result)
+        for x in row:
+            self.assertIn(str(x),result)
+        self.assertIn("INSERT",result)
+        self.assertNotIn("CREATE",result)
+        self.assertNotIn("UPDATE",result)
+        self.assertNotIn("DELETE",result)
+        self.assertNotIn("SELECT",result)
+
 #---# updateStatement() Test(s)
+    # with conditional
+    def testUpdateStatementWithConditional(self):
+        dbName = "airport"
+        database = db.load(relativeFilePath(dbName))
+        updateCol= "province"
+        updateVal = "Alberta"
+        conditionalCol = updateCol
+        conditionalVal = "Ontario"
+
+        result = updateStatement(database,updateCol,updateVal,conditionalCol,conditionalVal)
+
+        self.assertIn("UPDATE",result)
+        self.assertIn("WHERE",result)
+        self.assertNotIn("CREATE",result)
+        self.assertNotIn("INSERT",result)
+        self.assertNotIn("DELETE",result)
+        self.assertNotIn("SELECT",result)
+
+    # without conditional
+    def testUpdateStatementWithoutConditional(self):
+        dbName = "airport"
+        database = db.load(relativeFilePath(dbName))
+        updateCol = "province"
+        updateVal = "Alberta"
+
+        result = updateStatement(database,updateCol,updateVal)
+
+        self.assertIn("UPDATE",result)
+        self.assertNotIn("WHERE",result)
+        self.assertNotIn("CREATE",result)
+        self.assertNotIn("INSERT",result)
+        self.assertNotIn("DELETE",result)
+        self.assertNotIn("SELECT",result)
+        
 #---# deleteStatement() Test(s)
+    # with a condition
+    def testDeleteStatementWithConditional(self):
+        dbName = "airport"
+        database = db.load(relativeFilePath(dbName))
+        col = "province"
+        condition = "Alberta"
+
+        result = deleteStatement(database,col,condition)
+
+        self.assertIn("DELETE",result)
+        self.assertIn("WHERE",result)
+        self.assertNotIn("CREATE",result)
+        self.assertNotIn("INSERT",result)
+        self.assertNotIn("UPDATE",result)
+        self.assertNotIn("SELECT",result)
+
+    # without a condition
+    def testDeleteStatementWithoutConditional(self):
+        dbName = "airport"
+        database = db.load(relativeFilePath(dbName))
+
+        result = deleteStatement(database)
+
+        self.assertIn("DELETE",result)
+        self.assertNotIn("WHERE",result)
+        self.assertNotIn("CREATE",result)
+        self.assertNotIn("INSERT",result)
+        self.assertNotIn("UPDATE",result)
+        self.assertNotIn("SELECT",result)
+
 #---# queryStatement() Test(s)
 
     # TODO

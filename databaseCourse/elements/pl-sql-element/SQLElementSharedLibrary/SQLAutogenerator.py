@@ -265,7 +265,7 @@ def generateUpdate(data, difficulty):
     data['correct_answers']['SQLEditor'] = updateStatement(database, updateColumn, updateValue, conditionalColumn, conditionalValue)
 
 # Creates an update statement
-def updateStatement(database, updateColumn, updateValue, conditionalColumn, conditionalValue):
+def updateStatement(database, updateColumn, updateValue, conditionalColumn = None, conditionalValue = None):
 
     # Includes the conditional if they exist
     if conditionalColumn and conditionalValue:
@@ -329,8 +329,11 @@ def generateDelete(data, difficulty):
 
 
 # Creates a delete statement
-def deleteStatement(database, column, condition):
-    return f"DELETE FROM {database.name} {conditionalStatement(column, condition)};\n"
+def deleteStatement(database, column = None, condition = None):
+    ans = f"DELETE FROM {database.name}"
+    if(column and condition):
+        ans += f"{conditionalStatement(column, condition)};\n"
+    return ans
 
 '''
     End delete-style question
