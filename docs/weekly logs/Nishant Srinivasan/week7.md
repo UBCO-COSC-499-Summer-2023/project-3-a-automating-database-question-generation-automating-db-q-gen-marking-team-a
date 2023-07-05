@@ -21,11 +21,6 @@
 - in the end still kept getting errors from a bunch of different libraries, got MemoryErrors, got errors from the unittest module that I wasn’t getting before
 - don’t think this is going to work either, testing shouldn’t take this much messing around just to setup
 
-## Wednesday , June 28:
-- met with team to talk mvp, ui opinions, what's next
-- I will be working on testing the autogenerator, autograder, making the mvp slides, and taking on the backedn SQLite DB for autograding
-- worked on ui testing for a bit, still running into chrome binary error on drone
-
 ## Thursday , June 29:
 - worked on mvp powerpoint, basically done now, just a few loose ends to tie up
 - visuals and all the necessary info gathered from going through what we've done so far

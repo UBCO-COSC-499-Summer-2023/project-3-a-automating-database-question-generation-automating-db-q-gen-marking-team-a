@@ -1,0 +1,52 @@
+<!-- Question introduction -->
+<pl-question-panel>
+    Given the following relational schema, write queries in SQL to answer the English question.
+
+    <markdown>
+        customer(cid: integer, cname: string, address: string, city: string, state: string)
+        product(pid: integer, pname: string, price: currency, inventory: integer)
+        shipment(sid: integer, cid: integer, shipdate: DateTime)
+        shippedproduct(sid: integer, pid: integer, amount: integer)
+    </markdown>
+</pl-question-panel>
+
+<!-- Start Part 1 -->
+
+<!-- Question text -->
+<pl-question-panel>
+    Find all customers that either have the word <strong>'street'</strong> in their address or have no address.
+    <br>
+    Expected Output:
+    <br>
+    <markdown>
+        +-----+-----------------+---------------------+-----------+-------+
+        | cid | cname           | address             | city      | state |
+        +-----+-----------------+---------------------+-----------+-------+
+        |   2 | Joe Smithsonian | 245 Straight Street | Iowa City | IA    |
+        |   8 | Shannon Rose    | NULL                | Wyandotte | MI    |
+        |   9 | Beth Rosebud    | 1 First Street      | Muscatine | IA    |
+        |  10 | Suzanne May     | 2 Second Street     | Iowa City | IA    |
+        |  11 | Aiden Adams     | 324 2A Street       | Kelowna   | BC    |
+        |  12 | Betty Bains     | NULL                | Kelowna   | BC    |
+        |  13 | Cindy Champion  | 1 1st Street        | Calgary   | AB    |
+        |  14 | David Denter    | 23456 Main Street   | Vernon    | BC    |
+        +-----+-----------------+---------------------+-----------+-------+
+    </markdown>
+</pl-question-panel>
+
+
+<!-- SQL editor -->
+<pl-sql-element database = "./SQLElementSharedLibrary/lab3Databases/shipmentDDL.sql">
+    <sql-question>
+    </sql-question>
+    
+    <sql-answer answer = "SELECT *
+FROM customer
+WHERE address LIKE '%street%' OR address IS NULL;">
+    </sql-answer>
+
+    <sql-marking >
+    </sql-marking>
+</pl-sql-element>
+
+<!-- End Part 1 -->

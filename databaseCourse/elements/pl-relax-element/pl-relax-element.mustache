@@ -1,0 +1,72 @@
+<!--Begining-->
+<div id="question">
+    {{questionText}}
+</div>
+
+<div id="database" value="{{database}}" class="flex-container">
+
+</div>
+
+<div id="relax_input">
+    
+
+    {{! this is where the relax editor will be placed}}
+    <div class="editor-base">
+        {{! These are the buttons for the tool bar}}
+        <div class="toolbar codemirror-toolbar">
+            <div id="popWrapper_i4m1hevx8hm" class="button"  onClick='updateCodeMirror("π");'><span>π</span><div class="popup-content">Projection</div></div>
+            <div id="popWrapper_zk54ccpfgr9" class="button"  onClick='updateCodeMirror("σ");'><span>σ</span><div class="popup-content">Selection</div></div>
+            <div id="popWrapper_opmskf8udx" class="button"   onClick='updateCodeMirror("ρ");'><span>ρ</span><div class="popup-content">Rename relation/columns</div></div>
+            <div id="popWrapper_vqmsrbz4lhh" class="button"  onClick='updateCodeMirror("←");'><span>←</span><div class="popup-content">Rename Columns</div></div>
+            <div id="popWrapper_r4e8qivo9x" class="button"   onClick='updateCodeMirror("→");'><span>→</span><div class="popup-content">Right Arrow</div></div>
+            <div id="popWrapper_rm8nadc63ta" class="button"  onClick='updateCodeMirror("τ");'><span>τ</span><div class="popup-content">Order By</div></div>
+            <div id="popWrapper_yelfh6roevh" class="button" onClick='updateCodeMirror("γ");'><span>γ</span><div class="popup-content">Group By</div></div>
+            <div id="popWrapper_lv4upm1exe" class="button"  onClick='updateCodeMirror("∧");'><span>∧</span><div class="popup-content">And</div></div>
+            <div id="popWrapper_wihrg7pw86c" class="button"  onClick='updateCodeMirror("∨");'><span>∨</span><div class="popup-content">Or</div></div>
+            <div id="popWrapper_mx0q4np8lms" class="button" onClick='updateCodeMirror("¬");'><span>¬</span><div class="popup-content">Not</div></div>
+            <div id="popWrapper_iwcqg10p7gn" class="button" onClick='updateCodeMirror("=");'><span>=</span><div class="popup-content">Equal</div></div>
+            <div id="popWrapper_qfox1fuq55" class="button"  onClick='updateCodeMirror("≠");'><span>≠</span><div class="popup-content">Not Equal</div></div>
+            <div id="popWrapper_3ixqdjahm8v" class="button" onClick='updateCodeMirror("≥");'><span>≥</span><div class="popup-content">Greater than or Equal</div></div>
+            <div id="popWrapper_tc2rsc59fbq" class="button" onClick='updateCodeMirror("≤");'><span>≤</span><div class="popup-content">Lesser than or Equal</div></div>
+            <div id="popWrapper_q8ve1atlpu" class="button"  onClick='updateCodeMirror("∩");'><span>∩</span><div class="popup-content">Intersection</div></div>
+            <div id="popWrapper_o60hh3goasp" class="button" onClick='updateCodeMirror("∪");'><span>∪</span><div class="popup-content">Union</div></div>
+            <div id="popWrapper_ytckmx1p4tk" class="button" onClick='updateCodeMirror("÷");'><span>÷</span><div class="popup-content">Division</div></div>
+            <div id="popWrapper_2131akj8rbn" class="button" onClick='updateCodeMirror("-");'><span>-</span><div class="popup-content">Subtraction</div></div>
+            <div id="popWrapper_bcy1hzhtzbq" class="button" onClick='updateCodeMirror("⨯");'><span>⨯</span><div class="popup-content">Cross Join</div></div>
+            <div id="popWrapper_jgzn81np8i" class="button"  onClick='updateCodeMirror("⨝");'><span>⨝</span><div class="popup-content">Natural Join</div></div>
+            <div id="popWrapper_99cz04sajcd" class="button" onClick='updateCodeMirror("⟕");'><span>⟕</span><div class="popup-content">Outer Left Join</div></div>
+            <div id="popWrapper_wrwiiwklzc" class="button"  onClick='updateCodeMirror("⟖");'><span>⟖</span><div class="popup-content">Outer Right Join</div></div>
+            <div id="popWrapper_xzmnvtls6zk" class="button" onClick='updateCodeMirror("⟗");'><span>⟗</span><div class="popup-content">Outer Full Join</div></div>
+            <div id="popWrapper_7lmq0e5lt2k" class="button" onClick='updateCodeMirror("⋉");'><span>⋉</span><div class="popup-content">Semi Left Join</div></div>
+            <div id="popWrapper_h8t7el4tebi" class="button" onClick='updateCodeMirror("⋊");'><span>⋊</span><div class="popup-content">Semi Right Join</div></div>
+            <div id="popWrapper_ntphproh2gh" class="button" onClick='updateCodeMirror("▷");'><span>▷</span><div class="popup-content">Anti Join</div></div>
+            <div id="popWrapper_aq5dkivxzhk" class="button" onClick='updateCodeMirror("=");'><span>=</span><div class="popup-content">Assignment</div></div>
+            <div id="popWrapper_r2u4dj6ind" class="button"  onClick='updateCodeMirror("--");'><span>--</span><div class="popup-content">Single Line Comment</div></div>
+            <div id="popWrapper_2znla6h967q" class="button" onClick='updateCodeMirror("/*Comment*/");'><span>/*</span><div class="popup-content">Block Comment</div></div>
+            <div id="popWrapper_2aod06t35hu" class="button" onClick='updateCodeMirror("{}");'><span>{}</span><div class="popup-content">Inline Relation</div></div>
+            <div id="popWrapper_ieljbcakzad" class="button" onClick='updateCodeMirror("Date()")'>
+                <span>
+                    <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="calendar-alt" class="svg-inline--fa fa-calendar-alt " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                        <path fill="currentColor" d="M0 464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V192H0v272zm320-196c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zm0 128c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zM192 268c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zm0 128c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zM64 268c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H76c-6.6 0-12-5.4-12-12v-40zm0 128c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H76c-6.6 0-12-5.4-12-12v-40zM400 64h-48V16c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v48H160V16c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v48H48C21.5 64 0 85.5 0 112v48h448v-48c0-26.5-21.5-48-48-48z">
+                        </path>
+                    </svg>
+                </span>
+                <div class="popup-content">Insert Date</div>
+            </div>
+        </div>
+    </div>
+
+    {{! This is what CodeMirror takes to create the Code editor}}
+    <textarea id="RelaXEditor" name="RelaXEditor">{{submitted_answer.RelaXEditor}}</textarea>
+    <div id="relaxInput">{{relaxInput}}</div>
+    </div>
+    <div id="execute" type="button" class="btn btn-primary exec-button selection">Execute</div>
+    <div id="outputContainer">
+        <div id="error" class="error"></div>
+        <div id="outputContainer" class="flex-container">
+            <div id="tree"></div>   
+            <div id="output" class="output-tables"></div>
+        </div>
+    </div>
+</div> 
+<!-- End of File -->

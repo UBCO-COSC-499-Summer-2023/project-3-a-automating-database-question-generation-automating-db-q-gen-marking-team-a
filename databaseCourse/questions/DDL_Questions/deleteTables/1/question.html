@@ -1,0 +1,19 @@
+<!-- Question introduction -->
+<pl-question-panel>
+    The Kelowna airport is destroyed! Remove it from the <strong>Airport</strong> table. Note the changes to the flight table due to <strong>SET NULL</strong> foreign key action.
+</pl-question-panel>
+
+<!-- Start Part 1 -->
+
+<!-- SQL editor -->
+<pl-sql-element database = "./SQLElementSharedLibrary/lab2Databases/tablesInserts.txt">
+    <sql-question>
+    </sql-question>
+
+    <sql-answer answer = "DELETE FROM Airport WHERE city = 'Kelowna';">
+    </sql-answer>
+    
+    <sql-marking ></sql-marking>
+</pl-sql-element>
+
+<!-- End Part 1 -->

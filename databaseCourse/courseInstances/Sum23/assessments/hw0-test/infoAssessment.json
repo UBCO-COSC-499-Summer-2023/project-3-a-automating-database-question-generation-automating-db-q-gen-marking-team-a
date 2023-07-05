@@ -1,0 +1,19 @@
+{
+    "uuid": "03be8505-61b2-49a7-95f5-c9b85e53f922",
+    "type": "Homework",
+    "title": "A Test Assignment",
+    "set": "Homework",
+    "number": "1",
+    "allowAccess": [
+        {
+            "credit": 100
+        }
+    ],
+    "zones": [
+        {
+            "questions": [
+                {"id": "Test_Questions/test1",                "points": 10}
+            ]
+        }
+    ]
+}
