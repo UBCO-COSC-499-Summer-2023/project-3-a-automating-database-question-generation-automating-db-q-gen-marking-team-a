@@ -1,9 +1,13 @@
 # Week 8:
-## Sunday , July 2:
 
 ## Monday , July 3:
+- worked on autogen testing
 
 ## Tuesday , July 4:
+- worked on autogen testing
+- met with team to prepare for mvp and updating everything
+- logs
+- dashboard
 
 ## Wednesday , July 5:
 

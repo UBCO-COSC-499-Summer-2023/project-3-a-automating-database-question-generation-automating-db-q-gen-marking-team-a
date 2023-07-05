@@ -21,10 +21,18 @@
 - in the end still kept getting errors from a bunch of different libraries, got MemoryErrors, got errors from the unittest module that I wasn’t getting before
 - don’t think this is going to work either, testing shouldn’t take this much messing around just to setup
 
-## Wednesday , June 28:
-
 ## Thursday , June 29:
+- worked on mvp powerpoint, basically done now, just a few loose ends to tie up
+- visuals and all the necessary info gathered from going through what we've done so far
 
 ## Friday , June 30:
+- worked on autogenerator testing, ran into so many issues with setting up the test file and just import/export stuff was such a pain
+- got a few cases covered for the autogenerate function and both tests passing before leaving town for the weekend
 
 ## Saturday , July 1:
+- autogenerate() function is basically done being tested - all cases covered
+- looking into why tests can only run properly either from the terminal or from the file/vscode - very weird but want to fix it so it's easier for teammates AND works on drone
+- made the tests for Auotgen function into one big paramterized test
+- looking into ways to make the testing output results more visual and easier to keep track of for debugging
+- setting up test file and going through coverage for all functions and organizing the file in accordance with that
+- dashboard
