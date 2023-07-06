@@ -2,6 +2,7 @@
 # for randomly generated questions.
 
 import random
+from math import log10
 from string import ascii_uppercase
 
 # Generates random data based on the unit type
@@ -15,6 +16,9 @@ def generateNoisyData(database, key):
     match unit:
         # Integers
         case 'INTEGER': return generateNoisyInteger()
+
+        # Decimals require total digits plus decimal precision
+        case 'DECIMAL': return generateRandomDecimal(unitOther)
 
         # CHARs require the number of characters
         case 'CHAR': return generateNoisyChar(int(unitOther))
@@ -33,6 +37,48 @@ def generateNoisyData(database, key):
 # Generates a random integer in the range 0 to 1000
 def generateNoisyInteger():
     return random.randint(1, 1000)
+
+# Generates a random decimal, as specified by the unit
+def generateRandomDecimal(unitOther):
+
+    # Grabs the whole and decimal portions of the string
+    whole, decimal = unitOther.split(',')
+
+    # Converts the strings into integers
+    whole = int(whole)
+    decimal = int(decimal)
+
+    # Creates a random decimal values
+    # Ensures the final digit is either a 0 or a 5,
+    # since it looks better than a purely random number.
+    # Plus, decimals are mostly used for currency.
+    randomDecimal = str(random.randint(0, 10 ** (decimal - 1) - 1)) + random.choice(['0', '5'])
+    
+
+
+    # Generates a random whole number
+    
+    # Gives an exponentially greater likelihood that
+    # smaller numbers are returned. Otherwise, it
+    # would be linearly more likely that large
+    # numbers appear
+    choices = []
+    weights = []
+    for i in range(whole - decimal):
+        choices.append(i + 1)
+        weights.append(2 ** (whole - i))
+
+    # Chooses a max order of magnitude for the size
+    # of the whole number, where small orders of
+    # magnitude are preferred
+    randomPower = random.choices(choices, weights)
+
+    # Creates the whole number
+    randomWhole = random.randint(5, 10 ** randomPower[0])
+
+    # Formats and returns
+    return float(f"{randomWhole}.{randomDecimal}")
+
 
 # Generates a random string of length unitOther
 def generateNoisyChar(unitOther):

@@ -230,7 +230,7 @@ def generateUpdate(data, difficulty):
     updateColumn = random.choice(list(database.columns.keys()))
 
     # Generates the updated valued
-    updateValue = generateNoisyData(database, updateColumn)
+    updateValue = nd.generateNoisyData(database, updateColumn)
 
 
     # If the quesiton should use a condition, set parameters
@@ -391,6 +391,8 @@ def generateQuery(data, difficulty):
     database = None
     while not database or len(database.getKeyMap()) < joins or len(database.columns) < columnCount / (joins + 1):
         database = db.load(relativeFilePath(random.choice(possibleDatabases)))
+
+    database = db.load(relativeFilePath('product'))
 
     # Gets the referenced databases
     referenced = getReferencedDatabaseDictionary(database)
@@ -708,7 +710,7 @@ def loadAllNoisyData(data, database, rows):
 
                 # Otherwise generate new data
                 else:
-                    noisyRow[column] = generateNoisyData(referenced, column)
+                    noisyRow[column] = nd.generateNoisyData(referenced, column)
                 
             # Adds the row of data to the appropriate table
             generatedData[key].append(noisyRow)
