@@ -47,7 +47,6 @@ class AutogenerateTest(unittest.TestCase):
         actualQuestionType = ''.join(data['params']['questionString']).lower()
         self.assertIn(keyWord,actualQuestionType)
     
-    # TODO
     # generate*QuestionType*() Tests------------------------------------------------------------------------------------------------------------------
 #---# generateCreate() - already tested & covered in AutogenerateTest class
 #---# generateInsert() - already tested & covered in AutogenerateTest class
@@ -106,7 +105,6 @@ class QuestionGenerationTest(unittest.TestCase):
     # joins != 0, clauses == 0
     # joins != 0, clauses != 0
 
-    # TODO
     # *questionType*Statement() Tests------------------------------------------------------------------------------------------------------------------
 class QuestionTypeStatementsTest(unittest.TestCase):
 
@@ -218,37 +216,106 @@ class QuestionTypeStatementsTest(unittest.TestCase):
         self.assertNotIn("UPDATE",result)
         self.assertNotIn("SELECT",result)
 
-#---# queryStatement() Test(s)
-
     # TODO
+#---# queryStatement() Test(s)
+    # no foreignkeys
+    # def testQueryStatementWithoutForeignKeys(self):
+    #     dbName = "airport"
+    #     database = db.load(relativeFilePath(dbName))
+    #     keyMap = {"airport"}
+    #     foreignKeyMap = {}
+    #     selectedColumns = []
+    #     clauses = None
+
+    #     result = queryStatement(database,keyMap,foreignKeyMap,selectedColumns,clauses)
+        
     # helper functions Tests------------------------------------------------------------------------------------------------------------------
 class HelperFnsTest(unittest.TestCase):
-    def emptyTest(self):
-        pass
 #---# conditionalStatement() Test(s)
+    def testConditionalStatementReturnsStatementWithWhere(self):
+        column = ""
+        condition = ""
+
+        result = conditionalStatement(column,condition)
+
+        self.assertIn("WHERE",result)
 
 #---# relativeFilePath() Test(s)
+    def testRelativeFilePathReturnsFilePathWithFileName(self):
+        file = "random"
+
+        result = relativeFilePath(file)
+
+        self.assertEqual(f"./SQLElementSharedLibrary/randomDatabases/{file}.txt",result)
 
 #---# getReferencedDatabasesSet() Test(s)
-#---# getReferencedDatabaseDictionary() Test(s)
+    # has referenced databases
+    def testGetReferencedDatabasesSetGetsAllReferencedDbs(self):
+        dbName = "flight"
+        referenced = ["airplane","airport","passenger"]
+        database = db.load(relativeFilePath(dbName))
 
+        result = getReferencedDatabasesSet(database)
+
+        self.assertIsInstance(result,set)
+        for x in result:
+            self.assertIn(x.name,referenced)
+
+    # has no referenced databases
+    def testGetReferencedDatabasesSetGetsAllZeroReferencedDbs(self):
+        dbName = "airport"
+        referenced = ["airplane","airport","passenger"]
+        database = db.load(relativeFilePath(dbName))
+
+        result = getReferencedDatabasesSet(database)
+
+        self.assertIsInstance(result,set)
+        for x in result:
+            self.assertNotIn(x.name,referenced)
+
+#---# getReferencedDatabaseDictionary() Test(s)
+    # has referenced databases
+    def testGetReferencedDatabasesDictionaryGetsAllReferencedDbs(self):
+        dbName = "flight"
+        referenced = ["airplane","airport","passenger"]
+        database = db.load(relativeFilePath(dbName))
+
+        result = getReferencedDatabaseDictionary(database)
+
+        self.assertIsInstance(result,dict)
+        for x in result:
+            self.assertIn(x,referenced)
+
+    # has no referenced databases
+    def testGetReferencedDatabasesDictionaryGetsAllZeroReferencedDbs(self):
+        dbName = "airport"
+        referenced = ["airplane","airport","passenger"]
+        database = db.load(relativeFilePath(dbName))
+
+        result = getReferencedDatabaseDictionary(database)
+
+        self.assertIsInstance(result,dict)
+        for x in result:
+            self.assertNotIn(x,referenced)
+
+
+    # TODO
 #---# loadSchemas() Test(s)
+    # TODO
 #---# loadAllSchema() Test(s)
 
+    # TODO
 #---# loadNoisyData() Test(s)
+    # TODO
 #---# loadAllNoisyData() Test(s)
+
+    # TODO
 #---# loadTrimmedDatabase() Test(s)
 
+    # TODO
 #---# generateRow() Test(s)
+    # TODO
 #---# generateRows() Test(s)
-
-#---# generateNoisyData() Test(s)
-#---# generateNoisyInteger() Test(s)
-#---# generateNoisyChar() Test(s)
-#---# generateNoisyVarchar() Test(s)
-
-#---# generateRandomDate() Test(s)
-#---# generateRandomDateTime() Test(s)
 
 if __name__ == '__main__':
     runner = unittest.TextTestRunner()
