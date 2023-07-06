@@ -67,13 +67,14 @@ $(document).ready(function () {
 
         try {
             const PR = executeRelalg(editor.getValue(), { "Customer" : dataset[0], "Product" : dataset[1], "Shipment" : dataset[2], "ShippedProduct" : dataset[3] }); // gets query results
-            // console.log(PR);
-            // console.log(PR.getSchema());
-            // console.log(PR._child);
-            // console.log(PR._child.getSchema());
             treeElm.contents().remove(); // clears Tree previous results
             createOutputTable(PR); // creates and renders new output table
-            treeElm.append(createRecList(PR)); // creates and renders new tree
+            var treeDiv = $('<div class="tree"></div>');
+            var ulDiv = $("<ul></ul>");
+            
+            ulDiv.append(createRecList(PR)); // creates and renders new tree
+            treeDiv.append(ulDiv);
+            treeElm.append(treeDiv);
         } catch (err) {
             createErrorOutput(err.stack); // creates and renders error in event user has incorrect RA query 
         }
@@ -109,7 +110,6 @@ $(document).ready(function () {
 
         // Creates the submenue element for the table, onclick each member of the table will add itself to the editor
         for (var i = 0; i < dataSchema._names.length; i++) {
-            console.log(dataSchema._names[i])
             let field = `<div style="text-align: center; border: 1px solid white; padding: 0.2em; display: flex; justify-content: space-around;" classname='submenu' id='schema-${dataSchema._relAliases[0]}'>`;
             let name = `<span onClick='updateCodeMirror("${dataSchema._names[i]}")' style='cursor: pointer; width: ${maxColNameLength}ch;'>${dataSchema._names[i]}</span>`;
             let type = `<span style='cursor: pointer; width: ${maxColTypeLength}ch;'>${dataSchema._types[i].toUpperCase()}</span>`;
@@ -157,8 +157,6 @@ $(document).ready(function () {
         }
         header.append(headerRow);
         rowElements.push(header);
-        
-        console.log(rows)
         // reads each row in rows and adds them to the row element array.
         rows.forEach(function (row) {
             var tr = $("<tr></tr>");
@@ -183,13 +181,18 @@ $(document).ready(function () {
 
     //* Recursive function that creates the RelaX output Tree
     function createRecList(output){
-        var container = $("<div style='margin: 5px'></div>"); // Creates container holding section of tree
+        var container = $("<li></li>"); // Creates container holding section of tree
         var button = $("<div></div>"); // creates first node of this secton tree
 
         // fills node attributes
         button.attr("id", "button-"+output._functionName);
-        button.addClass("btn btn-primary exec-button selection");
-        button.text(output._codeInfo.text);
+        button.attr("class", "node");
+        var text = output._functionName
+        if (text === '_inlineRelation8') {
+            button.append(output._codeInfo.text); 
+        } else {
+            button.append(output.getFormulaHtml(false));
+        }
         // allows each node to return the output at that point of execution 
         button.on("click", function() { createOutputTable(output); });
         
@@ -197,20 +200,66 @@ $(document).ready(function () {
         if ((output._child != null) && (output._child2 != null)) {
             container.append(button); // adds the main node
             // creates flex container.for children - allowing for side by side rendering
-            var newContainer = $("<div></div>");
-            newContainer.addClass("flex-container")
-            
+            var newUlDiv = $("<ul></ul>");
+            var newLiDiv = $("<li></li>");
+
             // adds the child nodes
-            newContainer.append(createRecList(output._child));
-            newContainer.append(createRecList(output._child2));
-            container.append(newContainer); // appends flex container to above container
+
+            newLiDiv.append(createRecList(output._child));
+            newLiDiv.append(createRecList(output._child2));
+            newUlDiv.append(newLiDiv);
+            container.append(newUlDiv); // appends flex container to above container
             return container;
         } else if (output._child != null) { 
+            var newUlDiv = $("<ul></ul>");
+            var newLiDiv = $("<li></li>");
+            
             container.append(button); // adds the main node.
-            container.append(createRecList(output._child)); // adds the child node
+            
+            newLiDiv.append(createRecList(output._child)); // adds the child node
+            newUlDiv.append(newLiDiv);
+            container.append(newUlDiv);
             return container; 
         } else {
             return container.append(button); // adds the main node
         } 
     }
 });
+
+
+/**
+ * 				<li>
+					<div
+						className={classNames({
+							'node': true,
+							'active': n === activeNode,
+						})}
+						onClick={() => setActiveNode && setActiveNode(n)}
+					>
+						<Popover
+							title={<div>{fromVariableMarker}<div dangerouslySetInnerHTML={{ __html: n.getFormulaHtml(true, false) }}></div></div>}
+							body={popoverBody}
+							placement="right"
+							trigger="hover"
+						>
+
+							<a className="formula">
+								{fromVariableMarker}<span dangerouslySetInnerHTML={{ __html: n.getFormulaHtml(false, false) }} /><br/>
+								<span className="resultCountLabel">{`${n.getResultNumRows()} row${n.getResultNumRows() === 1 ? '' : 's'}`}</span>
+							</a>
+
+						</Popover>
+					</div>
+					{child || child2
+						? (
+							<ul>
+								{child}
+								{child2}
+							</ul>
+						)
+						: null
+					}
+				</li>
+			);
+		};
+ */
