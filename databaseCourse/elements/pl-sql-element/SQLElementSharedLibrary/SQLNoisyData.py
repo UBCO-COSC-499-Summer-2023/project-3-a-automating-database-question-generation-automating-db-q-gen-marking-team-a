@@ -21,11 +21,11 @@ def generateNoisyData(database, key):
         case 'DECIMAL': return generateRandomDecimal(unitOther)
 
         # CHARs require the number of characters
-        case 'CHAR': return generateNoisyChar(int(unitOther))
+        case 'CHAR': return generateNoisyChar(key, int(unitOther))
 
         # VARCHARs are capped at a length of 8 to prevent
         # a string of 50 random characters
-        case 'VARCHAR': return generateNoisyVarchar(min(int(unitOther), 8))
+        case 'VARCHAR': return generateNoisyVarchar(key, min(int(unitOther), 8))
 
         # DATE and DATETIME
         case 'DATE': return generateRandomDate()
@@ -81,16 +81,22 @@ def generateRandomDecimal(unitOther):
 
 
 # Generates a random string of length unitOther
-def generateNoisyChar(unitOther):
+def generateNoisyChar(column, unitOther):
 
     # Chooses unitOther amount of random uppcercase and
     # letter characters
     return ''.join(random.choice(ascii_uppercase + '1234567890') for i in range(unitOther))
 
 # Generates a random string up to length unitOther
-def generateNoisyVarchar(unitOther):
+def generateNoisyVarchar(column, unitOther):
 
-    return generateNoisyChar(random.randint(1, unitOther))
+    # Specific cases
+    if column == 'state':
+        return randomLine('states')
+
+    # Generates noisy data if the column does not
+    # match a specific case
+    return generateNoisyChar(column, random.randint(1, unitOther))
 
 # Generates a random date between 1955 and 2023
 def generateRandomDate():
@@ -121,3 +127,14 @@ def generateRandomDateTime():
     # the ':02' formatting ensures that the length of the
     # string is a minimum of 2, padded left with zeroes
     return f"{generateRandomDate()} {random.randint(0, 23):02}:{random.randint(0, 11) * 5:02}:00"
+
+
+
+# Returns the filepath to a specific noisy data file
+def relativeFilePath(filePath):
+    return f"./SQLElementSharedLibrary/noisyData/{filePath}.txt"
+
+# Selects a random line from the specified text file
+def randomLine(filePath):
+    with open(relativeFilePath(filePath), 'r') as file:
+        return random.choice(file.readlines()).strip()

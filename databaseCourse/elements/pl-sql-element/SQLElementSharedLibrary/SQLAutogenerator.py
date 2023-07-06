@@ -392,7 +392,7 @@ def generateQuery(data, difficulty):
     while not database or len(database.getKeyMap()) < joins or len(database.columns) < columnCount / (joins + 1):
         database = db.load(relativeFilePath(random.choice(possibleDatabases)))
 
-    database = db.load(relativeFilePath('product'))
+    database = db.load(relativeFilePath('customer'))
 
     # Gets the referenced databases
     referenced = getReferencedDatabaseDictionary(database)
