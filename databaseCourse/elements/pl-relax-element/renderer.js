@@ -59,6 +59,8 @@ $(document).ready(function () {
     }
     
     // Execute the RelaX Query
+    var activeNode = null;
+
     function executeEditorContents() {
         //! d1 and d2 cannot be used to replace "S" and "P"
         //? How can we fix the "S" and "P" issue
@@ -66,16 +68,18 @@ $(document).ready(function () {
         var d2 = dataset.at(1)._schema._relAliases.at(0);
 
         try {
+            activeNode = null;
             const PR = executeRelalg(editor.getValue(), { "Customer" : dataset[0], "Product" : dataset[1], "Shipment" : dataset[2], "ShippedProduct" : dataset[3] }); // gets query results
             treeElm.contents().remove(); // clears Tree previous results
             createOutputTable(PR); // creates and renders new output table
             var treeDiv = $('<div class="tree"></div>');
             var ulDiv = $("<ul></ul>");
-            
+            console.log(PR)
             ulDiv.append(createRecList(PR)); // creates and renders new tree
             treeDiv.append(ulDiv);
             treeElm.append(treeDiv);
         } catch (err) {
+            console.log(err.stack)
             createErrorOutput(err.stack); // creates and renders error in event user has incorrect RA query 
         }
     }
@@ -179,22 +183,60 @@ $(document).ready(function () {
         return rowElements;
     }
 
+
     //* Recursive function that creates the RelaX output Tree
     function createRecList(output){
         var container = $("<li></li>"); // Creates container holding section of tree
         var button = $("<div></div>"); // creates first node of this secton tree
-
+        
         // fills node attributes
         button.attr("id", "button-"+output._functionName);
-        button.attr("class", "node");
+        if (activeNode == null) {
+            button.attr("class", "node active");
+            activeNode = button;
+        } else {
+            button.attr("class", "node");
+        }
+
         var text = output._functionName
         if (text === '_inlineRelation8') {
             button.append(output._codeInfo.text); 
         } else {
             button.append(output.getFormulaHtml(false));
         }
-        // allows each node to return the output at that point of execution 
-        button.on("click", function() { createOutputTable(output); });
+
+        var dropdown = $("<div class='tree-popup'>Columns:</div>")
+        var columns = output.getSchema().getColumns().map( function(col, i) {
+            var li = $("<div></div>")
+            li.attr("key", i);
+            li.append(`* ${col.toString()}<small> -- ${output.getSchema().getType(i)}</small>`);
+            return li;
+        });
+        console.log(columns)
+        dropdown.append(columns);
+        if (output.hasMetaData('naturalJoinConditions')) {
+            var naturalJoinConditions = output.getMetaData('naturalJoinConditions');
+            var listItems = naturalJoinConditions.map( function(condition) {
+                var li = $("<div></div>");
+                li.append(condition.getFormulaHtml());
+                return li;
+            });
+            dropdown.append("Natural Join Conditions:");
+            dropdown.append(listItems);
+        }
+        if (output.getMetaData('isInlineRelation') === true && n.hasMetaData('inlineRelationDefinition')) {
+            dropdown.append(output.getMetaData('inlineRelationDefinition'))
+            console.log(output.getMetaData('inlineRelationDefinition'))
+        }
+        dropdown.append(`<p>${output.getResultNumRows()} row${output.getResultNumRows() === 1 ? '' : 's'}</p>`)
+        button.append(dropdown)
+        // allows each node to return the output at that point of  execution 
+        button.on("click", function() { 
+            activeNode.attr("class", "node");
+            button.attr("class", "node active");
+            activeNode = button;
+            createOutputTable(output); 
+        });
         
         // Checks to see if there are 2, 1, or no Children
         if ((output._child != null) && (output._child2 != null)) {
@@ -228,38 +270,44 @@ $(document).ready(function () {
 
 
 /**
- * 				<li>
-					<div
-						className={classNames({
-							'node': true,
-							'active': n === activeNode,
-						})}
-						onClick={() => setActiveNode && setActiveNode(n)}
-					>
-						<Popover
-							title={<div>{fromVariableMarker}<div dangerouslySetInnerHTML={{ __html: n.getFormulaHtml(true, false) }}></div></div>}
-							body={popoverBody}
-							placement="right"
-							trigger="hover"
-						>
+ * return (
+					<div>
+						columns:
+						<ul>
+							{schema.getColumns().map((col, i) => (
+								<li key={i}>{col.toString()} <small className="muted text-muted">{schema.getType(i)}</small></li>
+							))}
+						</ul>
 
-							<a className="formula">
-								{fromVariableMarker}<span dangerouslySetInnerHTML={{ __html: n.getFormulaHtml(false, false) }} /><br/>
-								<span className="resultCountLabel">{`${n.getResultNumRows()} row${n.getResultNumRows() === 1 ? '' : 's'}`}</span>
-							</a>
+						{(n.hasMetaData('naturalJoinConditions'))
+							? (
+								<div>natural join conditions:
+									<ul>
+										{n.getMetaData('naturalJoinConditions')!.map(condition => (
+											<li dangerouslySetInnerHTML={{ __html: condition.getFormulaHtml() }}></li>
+										))}
+									</ul>
+								</div>
+							)
+							: null
+						}
 
-						</Popover>
+						<p>{`${numRows} row${numRows === 1 ? '' : 's'}`}</p>
+
+						{n.getMetaData('isInlineRelation') === true && n.hasMetaData('inlineRelationDefinition')
+							? <pre>{n.getMetaData('inlineRelationDefinition')}</pre>
+							: null
+						}
+						{
+							n._execTime ? <p>{t('calc.result.exec.time')} {n._execTime}ms</p> : <p>{t('calc.result.exec.time')} - ms</p>
+						}
+						
+						
 					</div>
-					{child || child2
-						? (
-							<ul>
-								{child}
-								{child2}
-							</ul>
-						)
-						: null
-					}
-				</li>
-			);
-		};
- */
+				);
+ * 
+ * 
+ * 
+ * 
+ * 
+*/
