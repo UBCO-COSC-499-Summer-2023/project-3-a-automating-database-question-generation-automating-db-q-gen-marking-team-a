@@ -90,13 +90,25 @@ def generateNoisyChar(column, unitOther):
 # Generates a random string up to length unitOther
 def generateNoisyVarchar(column, unitOther):
 
-    # Specific cases
-    if column == 'state':
-        return randomLine('states')
+    # Chooses data generation method
+    match column:
 
-    # Generates noisy data if the column does not
-    # match a specific case
-    return generateNoisyChar(column, random.randint(1, unitOther))
+        # Specific cases
+        case 'state': return randomLine('states')
+        case 'city': return randomLine('cities')
+        case 'cname': return f"{randomLine('firstNames')} {randomLine('lastNames')}"
+        case 'address': return randomLine('addresses')
+        case 'province': return randomLine('provinces')
+        case 'aname': return randomLine('airports')
+        case 'departAirport': return randomLine('airports')
+        case 'arriveAirport': return randomLine('airports')
+        case 'first_name': return randomLine('firstNames')
+        case 'last_name': return randomLine('lastNames')
+        case 'street': return randomLine('addresses')
+        case 'country': return randomLine('countries')
+
+        # Generic case
+        case _: return generateNoisyChar(column, random.randint(1, unitOther))
 
 # Generates a random date between 1955 and 2023
 def generateRandomDate():
