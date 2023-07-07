@@ -13,9 +13,14 @@
 - dashboard
 
 ## Wednesday , July 5:
+- presentations all day
+- met with client just to update them on our progress
+- worked on autogen tests in between
 
 ## Thursday , July 6:
+- worked on autogen testing ; almost done that one, shouldn't be much longer
 
 ## Friday , July 7:
+- updating logs
 
 ## Saturday , July 8:
