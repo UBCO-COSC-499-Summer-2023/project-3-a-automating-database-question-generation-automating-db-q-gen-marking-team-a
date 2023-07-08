@@ -9,6 +9,16 @@ class TestSample(unittest.TestCase):
         options.add_argument('--headless')
         options.add_argument('--no-sandbox')  # Add this line to avoid sandbox issues
         options.add_argument('--disable-dev-shm-usage')  # Add this line to avoid /dev/shm usage
+        options.add_argument('--disable-gpu')  # Add this line to disable GPU usage
+        options.add_argument('--window-size=1920,1080')  # Add this line to set the window size
+        options.add_argument('--disable-infobars')  # Add this line to disable infobars
+        options.add_argument('--disable-extensions')  # Add this line to disable extensions
+        options.add_argument('--disable-dev-shm-usage')  # Add this line to disable /dev/shm usage
+        options.add_argument('--no-sandbox')  # Add this line to avoid sandbox issues
+
+        # Set the path to the ChromeDriver executable
+        options.add_argument('--webdriver=/usr/bin/chromedriver')
+
         self.driver = webdriver.Chrome(options=options)
 
     def testPageName(self):
