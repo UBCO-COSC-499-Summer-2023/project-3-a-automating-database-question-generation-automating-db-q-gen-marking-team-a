@@ -1,4 +1,3 @@
-import os
 import unittest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -8,33 +7,37 @@ class TestSample(unittest.TestCase):
     def setUp(self):
         options = Options()
         options.add_argument('--headless')
-        options.add_argument('--no-sandbox')  # Add this line to avoid sandbox issues
-        options.add_argument('--disable-dev-shm-usage')  # Add this line to avoid /dev/shm usage
-        options.add_argument('--disable-gpu')  # Add this line to disable GPU usage
-        options.add_argument('--window-size=1920,1080')  # Add this line to set the window size
-        options.add_argument('--disable-infobars')  # Add this line to disable infobars
-        options.add_argument('--disable-extensions')  # Add this line to disable extensions
-        options.add_argument('--disable-dev-shm-usage')  # Add this line to disable /dev/shm usage
-        options.add_argument('--no-sandbox')  # Add this line to avoid sandbox issues
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
 
         # Set the path to the ChromeDriver executable
-        options.add_argument('--webdriver=/usr/bin/chromedriver')
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--disable-dev-shm-usage')
+        chrome_options.add_argument('--disable-gpu')
+        chrome_options.add_argument('--window-size=1920,1080')
+        chrome_options.add_argument('--disable-infobars')
+        chrome_options.add_argument('--disable-extensions')
+        chrome_options.add_argument('--disable-dev-shm-usage')
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--disable-setuid-sandbox')
+        chrome_options.add_argument('--remote-debugging-port=9222')
+        chrome_options.add_argument('--disable-blink-features=BlockCredentialedSubresources')
+        chrome_options.add_argument('--disable-web-security')
 
-        self.driver = webdriver.Chrome(options=options)
+        # Set the path to the ChromeDriver executable
+        chrome_driver_path = '/usr/bin/chromedriver'
+        self.driver = webdriver.Chrome(executable_path=chrome_driver_path, options=chrome_options)
 
     def testPageName(self):
-        baseUrl = 'http://pl:3000/'  # Update the URL to use the service name defined in docker-compose.yml
+        baseUrl = 'http://pl:3000/'
         driver = self.driver
         driver.get(baseUrl)
-        assert 'PrairieLearn' in self.driver.title
-        print(self.driver.title)
+        assert 'PrairieLearn' in driver.title
+        print(driver.title)
 
     def tearDown(self):
         self.driver.quit()
 
 if __name__ == '__main__':
-    # Print the contents of /usr/bin directory
-    print("Contents of /usr/bin directory:")
-    print(os.listdir('/usr/bin'))
-
     unittest.main()
