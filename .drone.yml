@@ -18,5 +18,12 @@ steps:
     image: prairielearn/prairielearn
     commands: 
       - pip install -r requirements.txt --quiet
-      - cd tests/
-      - python -m unittest discover -p "*_test.py"
+      - cd tests/ui
+      - python -m unittest discover -s . -p "*_test.py"
+
+  - name: Run Integration Tests
+    image: prairielearn/prairielearn
+    commands: 
+      - pip install -r requirements.txt --quiet
+      - cd tests/integration
+      - python -m unittest discover -s . -p "*_test.py"
