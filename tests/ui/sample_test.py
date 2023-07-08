@@ -1,6 +1,7 @@
 import unittest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 
 class TestSample(unittest.TestCase):
 
@@ -25,8 +26,8 @@ class TestSample(unittest.TestCase):
         chrome_options.add_argument('--disable-blink-features=BlockCredentialedSubresources')
         chrome_options.add_argument('--disable-web-security')
 
-        # Set the path to the ChromeDriver executable
-        chrome_driver_path = '/usr/bin/chromedriver'
+        # Use webdriver_manager to manage ChromeDriver
+        chrome_driver_path = ChromeDriverManager().install()
         self.driver = webdriver.Chrome(executable_path=chrome_driver_path, options=chrome_options)
 
     def testPageName(self):
