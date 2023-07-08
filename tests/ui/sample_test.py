@@ -9,7 +9,6 @@ class TestSample(unittest.TestCase):
         options.add_argument('--headless')
         options.add_argument('--no-sandbox')  # Add this line to avoid sandbox issues
         options.add_argument('--disable-dev-shm-usage')  # Add this line to avoid /dev/shm usage
-        options.binary_location = '/usr/bin/chromium-browser'  # Set the path to the Chromium browser binary
         self.driver = webdriver.Chrome(options=options)
 
     def testPageName(self):
