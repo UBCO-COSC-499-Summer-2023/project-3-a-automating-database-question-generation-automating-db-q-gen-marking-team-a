@@ -384,7 +384,7 @@ class HelperFnsTest(unittest.TestCase):
     def testLoadTrimmedDatabaseReturnsValidDatabaseWhenGivenValidSize(self):
         columnCount = 3
 
-        result = loadTrimmedDatabase(columnCount)
+        result = loadTrimmedDatabase(columnCount, 0)
 
         self.assertIsNotNone(result)
     
@@ -392,18 +392,42 @@ class HelperFnsTest(unittest.TestCase):
     def testLoadTrimmedDatabaseReturnsNoDatabaseWhenGivenSizeZero(self):
         columnCount = 0
 
-        result = loadTrimmedDatabase(columnCount)
+        result = loadTrimmedDatabase(columnCount, 0)
 
         self.assertIsNone(result)
     
-    # TODO: function doesn't cover this case and right now it just keeps running
-    # doesnt return a database if there aren't any of specified size
-    # def testLoadTrimmedDatabaseReturnsNoDatabaseWhenGivenInvalidSize(self):
-    #     columnCount = 200
+    # doesn't return a database if no tables have enough columns
+    def testLoadTrimmedDatabaseReturnsNoDatabaseWhenGivenInvalidSize(self):
+        columnCount = 200
         
-    #     result = loadTrimmedDatabase(columnCount)
+        result = loadTrimmedDatabase(columnCount, 0)
 
-    #     self.assertIsNone(result)
+        self.assertIsNone(result)
+    
+    # returns a database with a number of joins that we know will work
+    def testLoadTrimmedDatabaseReturnsValidDatabaseWhenGivenValidSize(self):
+        joins = 2
+
+        result = loadTrimmedDatabase(1, joins)
+
+        self.assertIsNotNone(result)
+
+    # doesn't return a database if the number of joins is invalid
+    def testLoadTrimmedDatabaseReturnsNoDatabaseWhenGivenJoinsZero(self):
+        joins = -1
+
+        result = loadTrimmedDatabase(1, joins)
+
+        self.assertIsNone(result)
+
+    # doesn't return a database if no tables have enough columns
+    def testLoadTrimmedDatabaseReturnsNoDatabaseWhenGivenInvalidJoins(self):
+        joins = 200
+        
+        result = loadTrimmedDatabase(1, joins)
+
+        self.assertIsNone(result)
+
 
 if __name__ == '__main__':
     runner = unittest.TextTestRunner()
