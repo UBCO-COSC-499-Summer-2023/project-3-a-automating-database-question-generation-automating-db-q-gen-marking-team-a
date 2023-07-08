@@ -377,9 +377,6 @@ def generateQuery(data, difficulty):
 
     # Selects a database based on the difficulty
 
-    # Gets all random databases so a random one may be chosen
-    possibleDatabases = db.getAllDatabaseFiles('./SQLElementSharedLibrary/randomDatabases/')
-
     # Keeps trying random databases until it finds one that
     # fulfills the conditions set by the difficulty
     database = loadTrimmedDatabase(columnCount, joins)
@@ -742,8 +739,10 @@ def loadTrimmedDatabase(columnCount, joinCount):
         # We have to convert keys to a list because of subscriptables
         tryPop = random.choice(list(database.columns.keys()))
 
-        # Don't remove primary keys
-        if not database.columns[tryPop]['isPrimary']:
+        # Don't remove...
+        # primary keys, or
+        # foreign keys if it would cause there to be not enough joins
+        if not database.columns[tryPop]['isPrimary'] and (not database.columns[tryPop]['references'] or len(database.getKeyMap()) > joinCount):
             database.columns.pop(tryPop)
     
     return database
