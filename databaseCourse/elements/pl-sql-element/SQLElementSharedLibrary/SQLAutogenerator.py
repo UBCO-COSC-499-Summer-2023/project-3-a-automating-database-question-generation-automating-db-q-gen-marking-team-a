@@ -715,7 +715,7 @@ def loadAllNoisyData(data, database, rows):
 def loadTrimmedDatabase(columnCount, joinCount):
 
     # Checks to see if the column count is valid
-    if(columnCount <= 0 or joinCount <= 0):
+    if(columnCount <= 0 or joinCount < 0):
         return None
 
     # Gets all random databases so a random one may be chosen
