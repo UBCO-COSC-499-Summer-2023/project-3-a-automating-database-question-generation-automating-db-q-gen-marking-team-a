@@ -1,3 +1,4 @@
+import os
 import unittest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -32,4 +33,8 @@ class TestSample(unittest.TestCase):
         self.driver.quit()
 
 if __name__ == '__main__':
+    # Print the contents of /usr/bin directory
+    print("Contents of /usr/bin directory:")
+    print(os.listdir('/usr/bin'))
+
     unittest.main()
