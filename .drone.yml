@@ -3,12 +3,6 @@ type: docker
 name: default
 
 steps:
-  # - name: Run JS Unit Tests
-  #   image: prairielearn/prairielearn
-  #   commands:
-  #     - npm install --silent
-  #     - npm test
-
   - name: Run Autogenerator tests
     image: prairielearn/prairielearn
     commands: 
@@ -19,3 +13,10 @@ steps:
   # detailed run of one file
   #     - python -m unittest -v autogenerator_test.py
   #     - py -m unittest discover -p "*_test.py"
+
+  -name: Run UI Tests
+    image: prairielearn/prairielearn
+    commands: 
+      - pip install -r requirements.txt --quiet
+      - cd tests/
+      - python -m unittest discover -p "*_test.py"

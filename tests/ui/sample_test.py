@@ -17,10 +17,10 @@ class TestSample(unittest.TestCase):
     # tests that the page loaded ,when PL docker container is up, has title which contains
     # "PrairieLearn" in it
     def testPageName(self):
-        baseUrl = 'http://google.ca/'
+        baseUrl = 'http://localhost:3000/'
         driver = self.driver
         driver.get(baseUrl)
-        assert 'Google' in self.driver.title
+        assert 'PrairieLearn' in self.driver.title
         print(self.driver.title)
     
     def tearDown(self):
