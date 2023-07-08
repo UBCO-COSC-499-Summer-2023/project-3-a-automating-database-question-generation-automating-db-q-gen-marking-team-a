@@ -7,18 +7,13 @@ RUN yum update -y && \
     yum localinstall -y google-chrome-stable_current_x86_64.rpm && \
     rm google-chrome-stable_current_x86_64.rpm
 
-# Add the ChromeDriver binary to the system path
-ENV PATH="/usr/bin/chromedriver:${PATH}"
+# Download and install the corresponding version of ChromeDriver
+RUN wget -O /usr/bin/chromedriver https://chromedriver.storage.googleapis.com/94.0.4606.61/chromedriver_linux64.zip && \
+    unzip /usr/bin/chromedriver -d /usr/bin/ && \
+    chmod +x /usr/bin/chromedriver
 
-# Copy the ChromeDriver binary to the appropriate location
-COPY chromedriver/chromedriver /usr/bin/chromedriver
-
-# Set executable permissions for ChromeDriver
-RUN chmod +x /usr/bin/chromedriver
+# Set the PATH environment variable to include ChromeDriver
+ENV PATH="/usr/bin:${PATH}"
 
 # Continue with the existing commands and configuration for your application
 # ...
-
-
-#to see container bash
-# docker exec -it pl bash
