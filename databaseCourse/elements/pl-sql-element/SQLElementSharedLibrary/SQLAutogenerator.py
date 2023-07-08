@@ -734,7 +734,14 @@ def loadTrimmedDatabase(columnCount, joinCount):
         database = db.load(relativeFilePath(possibleDatabase))
 
     # Removes columns until there is an appropriate amount left
+    doomCounter = 10
     while len(database.columns) > columnCount:
+
+        # If the doom counter reaches 0, it means that we are unable to remove
+        # enough columns because they are PKs or necessary FKs. In that case,
+        # just return the database, even if it has too many columns
+        if doomCounter == 0:
+            return database
 
         # We have to convert keys to a list because of subscriptables
         tryPop = random.choice(list(database.columns.keys()))
@@ -744,6 +751,8 @@ def loadTrimmedDatabase(columnCount, joinCount):
         # foreign keys if it would cause there to be not enough joins
         if not database.columns[tryPop]['isPrimary'] and (not database.columns[tryPop]['references'] or len(database.getKeyMap()) > joinCount):
             database.columns.pop(tryPop)
+        else:
+            doomCounter -= 1
     
     return database
 
