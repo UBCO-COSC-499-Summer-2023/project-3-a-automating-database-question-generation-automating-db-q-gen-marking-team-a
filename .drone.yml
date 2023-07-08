@@ -19,3 +19,9 @@ steps:
   # detailed run of one file
   #     - python -m unittest -v autogenerator_test.py
   #     - py -m unittest discover -p "*_test.py"
+
+  - name: Run UI tests
+    image: prairielearn/prairielearn
+    commands:
+      - cd tests/ui
+      - python -m unittest discover -p "*_test.py"
