@@ -17,5 +17,5 @@ steps:
   # just run all test files
       - python -m unittest discover -p "*_test.py"
   # detailed run of one file
-  #     - python -m unittest -v autogenerator_test.py
+  #     - python -m unittest -v autograder_test.py
   #     - py -m unittest discover -p "*_test.py"
