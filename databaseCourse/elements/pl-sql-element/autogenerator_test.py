@@ -29,7 +29,7 @@ class AutogenerateTest(unittest.TestCase):
             ["query","medium","select"],
             ["create","hard","create"],
             ["insert","hard","insert"],
-            # TODO
+            # TODO: needs to be implemented
             # ["update","hard","change"], #not implemented yet
             # ["delete","hard","delete"], #not implemented yet
             ["query","hard","select"]
@@ -88,20 +88,19 @@ class QuestionGenerationTest(unittest.TestCase):
     # TODO
 #---# generateQuery() Test(s)
     # joins == 0, clauses == 0
-    # def testGenerateQueryReturnsEasyQuestion(self):
-    #     testType = "query"
-    #     db_initialize = ""
-    #     initialAns = ""
-    #     difficulty = "medium"
-    #     data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
-    #                       'db_initialize':db_initialize},
-    #             'correct_answers':{'SQLEditor': initialAns}}
+    def testGenerateQueryReturnsEasyQuestion(self):
+        testType = "query"
+        db_initialize = ""
+        initialAns = ""
+        difficulty = "medium"
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
+                          'db_initialize':db_initialize},
+                'correct_answers':{'SQLEditor': initialAns}}
         
-    #     generateQuery(data,difficulty)
-    #     print(data)
+        generateQuery(data,difficulty)
 
-    #     actualQuestionType = ''.join(data['params']['questionString']).lower()
-    #     self.assertIn("where",actualQuestionType)
+        actualQuestionType = ''.join(data['params']['questionString']).lower()
+        self.assertIn("select the columns",actualQuestionType)
     # joins != 0, clauses == 0
     # joins != 0, clauses != 0
 
@@ -216,7 +215,7 @@ class QuestionTypeStatementsTest(unittest.TestCase):
         self.assertNotIn("UPDATE",result)
         self.assertNotIn("SELECT",result)
 
-    # TODO
+    # TODO: not fully implemented yet
 #---# queryStatement() Test(s)
     # no foreignkeys
     # def testQueryStatementWithoutForeignKeys(self):
@@ -298,24 +297,113 @@ class HelperFnsTest(unittest.TestCase):
         for x in result:
             self.assertNotIn(x,referenced)
 
-
-    # TODO
 #---# loadSchemas() Test(s)
-    # TODO
+    # all databases are added to db init 
+    def testLoadSchemasAddsDatabasesToDbInit(self):
+        testType = "Update"
+        db_initialize = ""
+        initialAns = ""
+        difficulty = "easy"
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
+                          'db_initialize':db_initialize},
+                'correct_answers':{'SQLEditor': initialAns}}
+        dbOne = "airport"
+        databaseAirport = db.load(relativeFilePath(dbOne))
+        dbTwo = "flight"
+        databaseFlight = db.load(relativeFilePath(dbTwo))
+        dbThree = "airplane"
+        databaseAirplane = db.load(relativeFilePath(dbThree))
+        databases = [databaseAirport,databaseAirplane,databaseFlight]
+
+        self.assertEqual(len(data['params']['db_initialize']),0)
+
+        loadSchemas(data,databases)
+
+        self.assertIn(dbOne,data['params']['db_initialize'])
+        self.assertIn(dbTwo,data['params']['db_initialize'])
+        self.assertIn(dbThree,data['params']['db_initialize'])
+
+    # no databases are added to db init when input is empty
+    def testLoadSchemasAddsNoDatabasesToDbInit(self):
+        testType = "Update"
+        db_initialize = ""
+        initialAns = ""
+        difficulty = "easy"
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
+                          'db_initialize':db_initialize},
+                'correct_answers':{'SQLEditor': initialAns}}
+        databases = []
+
+        self.assertEqual(len(data['params']['db_initialize']),0)
+
+        loadSchemas(data,databases)
+
+        self.assertEqual(len(data['params']['db_initialize']),0)
+
 #---# loadAllSchema() Test(s)
+    # db with no other referenced dbs
+    def testLoadAllSchemaAddsDatabaseWithNoReferencesToDbInit(self):
+        testType = "Update"
+        db_initialize = ""
+        initialAns = ""
+        difficulty = "easy"
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
+                          'db_initialize':db_initialize},
+                'correct_answers':{'SQLEditor': initialAns}}
+        dbOne = "airport"
+        databaseAirport = db.load(relativeFilePath(dbOne))
 
-    # TODO
-#---# loadNoisyData() Test(s)
-    # TODO
-#---# loadAllNoisyData() Test(s)
+        self.assertEqual(len(data['params']['db_initialize']),0)
 
-    # TODO
+        loadAllSchema(data,databaseAirport)
+
+        self.assertIn(dbOne,data['params']['db_initialize'])
+    
+    # db with other referenced dbs
+    def testLoadAllSchemaAddsDatabaseWithReferencesToDbInit(self):
+        testType = "Update"
+        db_initialize = ""
+        initialAns = ""
+        difficulty = "easy"
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
+                          'db_initialize':db_initialize},
+                'correct_answers':{'SQLEditor': initialAns}}
+        dbOne = "flight"
+        databaseAirport = db.load(relativeFilePath(dbOne))
+
+        self.assertEqual(len(data['params']['db_initialize']),0)
+
+        loadAllSchema(data,databaseAirport)
+
+        self.assertIn(dbOne,data['params']['db_initialize'])
+        self.assertIn("airplane",data['params']['db_initialize'])
+        self.assertIn("airport",data['params']['db_initialize'])
+
 #---# loadTrimmedDatabase() Test(s)
+    # returns a database with a number of columns that we know will work
+    def testLoadTrimmedDatabaseReturnsValidDatabaseWhenGivenValidSize(self):
+        columnCount = 3
 
-    # TODO
-#---# generateRow() Test(s)
-    # TODO
-#---# generateRows() Test(s)
+        result = loadTrimmedDatabase(columnCount)
+
+        self.assertIsNotNone(result)
+    
+    # doesnt return a database because 0 columns isn't possible
+    def testLoadTrimmedDatabaseReturnsNoDatabaseWhenGivenSizeZero(self):
+        columnCount = 0
+
+        result = loadTrimmedDatabase(columnCount)
+
+        self.assertIsNone(result)
+    
+    # TODO: function doesn't cover this case and right now it just keeps running
+    # doesnt return a database if there aren't any of specified size
+    # def testLoadTrimmedDatabaseReturnsNoDatabaseWhenGivenInvalidSize(self):
+    #     columnCount = 200
+        
+    #     result = loadTrimmedDatabase(columnCount)
+
+    #     self.assertIsNone(result)
 
 if __name__ == '__main__':
     runner = unittest.TextTestRunner()

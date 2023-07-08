@@ -728,6 +728,10 @@ def loadTrimmedDatabase(columnCount):
 
     # Keeps trying random databases until it finds one with enough columns
     database = None
+
+    if(columnCount == 0):
+        return database
+
     while not database or len(database.columns) < columnCount:
         database = db.load(relativeFilePath(random.choice(possibleDatabases)))
 
