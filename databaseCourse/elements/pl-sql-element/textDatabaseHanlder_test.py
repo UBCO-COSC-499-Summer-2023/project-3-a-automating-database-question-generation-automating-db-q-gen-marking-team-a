@@ -50,9 +50,11 @@ class TableTest(unittest.TestCase):
     
     # Tests static object instantiation
     # Case: filepath is correct
-    # TODO
     def testStaticTableGenerationWithCorrectFilePath(self):
-        pass
+        tableName = 'airport'
+        table = Database(f"./SQLElementSharedLibrary/randomDatabases/{tableName}.txt")
+
+        self.assertIsNotNone(table)
 
     # Case: filepath is incorrect
     # TODO
