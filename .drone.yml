@@ -12,6 +12,7 @@ steps:
   - name: Run Autogenerator tests
     image: prairielearn/prairielearn
     commands: 
+      - docker system prune
       - pip install -r requirements.txt --quiet
       - cd databaseCourse/elements/pl-sql-element
   # just run all test files
