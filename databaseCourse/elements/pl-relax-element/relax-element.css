@@ -333,6 +333,16 @@
   border-color: #007bff !important;
 }
 
+.ra-tree .popup-content .normal-list,
+.ra-tree .popup-content .normal-list ul
+.ra-tree .popup-content .normal-list ul li {
+
+}
+
+.normal-list {
+
+}
+
 .ra-tree li .node {
   cursor: pointer;
 }

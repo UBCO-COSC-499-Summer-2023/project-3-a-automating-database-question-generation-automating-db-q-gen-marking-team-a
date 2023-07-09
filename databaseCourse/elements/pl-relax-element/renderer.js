@@ -207,17 +207,18 @@ $(document).ready(function () {
 
         var dropdown = $("<div class='tree-popup'>Columns:</div>")
         var columns = output.getSchema().getColumns().map( function(col, i) {
-            var li = $("<div></div>")
+            var li = $("<li></li>")
             li.attr("key", i);
-            li.append(`* ${col.toString()}<small> -- ${output.getSchema().getType(i)}</small>`);
+//            li.attr("style", "all: unset; list-style-type: circle;");
+            li.append(`${col.toString()}<small> -- ${output.getSchema().getType(i)}</small>`);
             return li;
         });
         console.log(columns)
-        dropdown.append(columns);
+        dropdown.append($("<ul class='normal-list'></ul>").append(columns));
         if (output.hasMetaData('naturalJoinConditions')) {
             var naturalJoinConditions = output.getMetaData('naturalJoinConditions');
             var listItems = naturalJoinConditions.map( function(condition) {
-                var li = $("<div></div>");
+                var li = $("<li></li>");
                 li.append(condition.getFormulaHtml());
                 return li;
             });
