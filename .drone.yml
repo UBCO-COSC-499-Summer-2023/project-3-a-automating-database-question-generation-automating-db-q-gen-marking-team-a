@@ -10,12 +10,6 @@ steps:
       - cd databaseCourse/elements/pl-sql-element
       - python -m unittest discover -p "*_test.py"
 
-  - name: Debug
-    image: docker
-    commands:
-      - echo "Debugging information"
-      - docker pull azipis/prairielearn-chrome:latest
-
   - name: Run UI Tests
     image: azipis/prairielearn-chrome:latest
     commands: 
