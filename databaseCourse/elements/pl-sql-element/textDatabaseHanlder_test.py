@@ -56,16 +56,26 @@ class TableTest(unittest.TestCase):
 
         self.assertIsNotNone(table)
 
-    # Case: filepath is incorrect
-    # TODO
+    # No need to test the incorrect case, since the prior load()
+    # test covers that case.
 
 
     # Tests getKeyMap()
     # Case: table has no relations
-    # TODO
+    def testGetKeyMapWhenTableHasNoRelations(self):
+        tableName = 'airport'
+        table = load(f"./SQLElementSharedLibrary/randomDatabases/{tableName}.txt")
+
+        keyMap = table.getKeyMap()
+        self.assertEquals(len(keyMap), 0)
 
     # Case: table has at least one relation
-    # TODO
+    def testGetKeyMapWhenTableHasAtleastOneRelation(self):
+        tableName = 'flight'
+        table = load(f"./SQLElementSharedLibrary/randomDatabases/{tableName}.txt")
+
+        keyMap = table.getKeyMap()
+        self.assertGreater(len(keyMap), 0)
 
 
 
