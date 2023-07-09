@@ -13,7 +13,7 @@ steps:
   - name: Run UI Tests
     image: prairielearn/prairielearn
     commands: 
-      - pip install -r requirements.txt --quiet
+      - pip install -r requirements.txt
       - cd tests/ui
       - python -m unittest discover -s . -p "*_test.py"
 
