@@ -19,14 +19,18 @@ steps:
       # - py -m unittest discover -p "*_test.py"
 
   - name: Run UI Tests
-    image: prairielearn/prairielearn
+    image: selenium/standalone-chrome
+    volumes:
+      - /dev/shm:/dev/shm
     commands: 
-      - pip install -r requirements.txt
+      - pip install -r requirements.txt --quiet
       - cd tests/ui
       - python -m unittest discover -s . -p "*_test.py"
 
   # - name: Run Integration Tests
-  #   image: prairielearn/prairielearn
+  #   image: selenium/standalone-chrome
+  #   volumes:
+  #     - /dev/shm:/dev/shm
   #   commands: 
   #     - pip install -r requirements.txt --quiet
   #     - cd tests/integration
