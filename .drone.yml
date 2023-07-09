@@ -2,10 +2,6 @@ kind: pipeline
 type: docker
 name: default
 
-services:
-  - name: selenium-chrome
-    image: selenium/standalone-chrome
-
 steps:
   - name: Run Autogenerator tests
     image: prairielearn/prairielearn
@@ -20,18 +16,14 @@ steps:
 
   - name: Run UI Tests
     image: selenium/standalone-chrome
-    volumes:
-      - /dev/shm:/dev/shm
     commands: 
       - pip install -r requirements.txt --quiet
       - cd tests/ui
-      - python -m unittest discover -s . -p "*_test.py"
+      - docker run -v /dev/shm:/dev/shm selenium/standalone-chrome python -m unittest discover -s . -p "*_test.py"
 
   # - name: Run Integration Tests
   #   image: selenium/standalone-chrome
-  #   volumes:
-  #     - /dev/shm:/dev/shm
   #   commands: 
   #     - pip install -r requirements.txt --quiet
   #     - cd tests/integration
-  #     - python -m unittest discover -s . -p "*_test.py"
+  #     - docker run -v /dev/shm:/dev/shm selenium/standalone-chrome python -m unittest discover -s . -p "*_test.py"
