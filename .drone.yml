@@ -2,6 +2,10 @@ kind: pipeline
 type: docker
 name: default
 
+services:
+  - name: selenium-chrome
+    image: selenium/standalone-chrome
+
 steps:
   - name: Run Autogenerator tests
     image: prairielearn/prairielearn
@@ -15,10 +19,15 @@ steps:
       # - py -m unittest discover -p "*_test.py"
 
   - name: Run UI Tests
-    image: selenium/standalone-chrome
-    ports:
-      - "4444:4444"
+    image: prairielearn/prairielearn
     commands: 
       - pip install -r requirements.txt --quiet
       - cd tests/ui
+      - python -m unittest discover -s . -p "*_test.py"
+
+  - name: Run Integration Tests
+    image: prairielearn/prairielearn
+    commands: 
+      - pip install -r requirements.txt --quiet
+      - cd tests/integration
       - python -m unittest discover -s . -p "*_test.py"
