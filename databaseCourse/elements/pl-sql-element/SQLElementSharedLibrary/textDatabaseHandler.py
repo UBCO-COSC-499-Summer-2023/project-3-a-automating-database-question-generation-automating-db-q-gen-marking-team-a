@@ -11,12 +11,18 @@ def getDDL(filePath):
 
 # Loads a database object based on the file
 def load(filePath):
-    return Database(filePath)
+    try:
+        return Database(filePath)
+    except:
+        return None
 
 # Lists all database files in the specified path
 def getAllDatabaseFiles(path):
-    # Removes the file extension of all files, if they exist
-    return [file[:file.find('.')] for file in listdir(path)]
+    try:
+        # Removes the file extension of all files, if they exist
+        return [file[:file.find('.')] for file in listdir(path)]
+    except:
+        return None
 
 
 # Models a database for easy question generation
