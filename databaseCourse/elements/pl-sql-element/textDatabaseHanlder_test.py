@@ -41,7 +41,7 @@ class TableHelperFunctionsTest(unittest.TestCase):
         path = './not/a/path/'
         tableList = getAllDatabaseFiles(path)
 
-        self.assertIsNotNone(tableList)
+        self.assertFalse(tableList)
 
 
 

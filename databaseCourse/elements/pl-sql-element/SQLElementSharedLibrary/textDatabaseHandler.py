@@ -22,7 +22,7 @@ def getAllDatabaseFiles(path):
         # Removes the file extension of all files, if they exist
         return [file[:file.find('.')] for file in listdir(path)]
     except:
-        return None
+        return []
 
 
 # Models a database for easy question generation
