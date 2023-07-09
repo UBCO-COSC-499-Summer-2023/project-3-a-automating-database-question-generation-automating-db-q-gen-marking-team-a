@@ -17,7 +17,7 @@ steps:
   - name: Run UI Tests
     image: selenium/standalone-chrome
     ports:
-      - 4444:4444
+      - "4444:4444"
     commands: 
       - pip install -r requirements.txt --quiet
       - cd tests/ui
