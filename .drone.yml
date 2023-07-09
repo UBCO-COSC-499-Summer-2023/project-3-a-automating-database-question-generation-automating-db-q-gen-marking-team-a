@@ -11,7 +11,7 @@ steps:
       - python -m unittest discover -p "*_test.py"
 
   - name: Run UI Tests
-    image: selenium/standalone-chrome
+    image: prairielearn/prairielearn
     commands: 
       - pip install -r requirements.txt --quiet
       - cd tests/ui
