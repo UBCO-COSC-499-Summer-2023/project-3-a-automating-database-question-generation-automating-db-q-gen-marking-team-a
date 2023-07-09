@@ -8,22 +8,18 @@ steps:
     commands: 
       - pip install -r requirements.txt --quiet
       - cd databaseCourse/elements/pl-sql-element
-      # just run all test files
       - python -m unittest discover -p "*_test.py"
-      # detailed run of one file
-      # - python -m unittest -v autogenerator_test.py
-      # - py -m unittest discover -p "*_test.py"
 
   - name: Run UI Tests
     image: selenium/standalone-chrome
     commands: 
       - pip install -r requirements.txt --quiet
       - cd tests/ui
-      - docker run -v /dev/shm:/dev/shm selenium/standalone-chrome python -m unittest discover -s . -p "*_test.py"
+      - python -m unittest discover -s . -p "*_test.py"
 
-  # - name: Run Integration Tests
-  #   image: selenium/standalone-chrome
-  #   commands: 
-  #     - pip install -r requirements.txt --quiet
-  #     - cd tests/integration
-  #     - docker run -v /dev/shm:/dev/shm selenium/standalone-chrome python -m unittest discover -s . -p "*_test.py"
+  - name: Run Integration Tests
+    image: selenium/standalone-chrome
+    commands: 
+      - pip install -r requirements.txt --quiet
+      - cd tests/integration
+      - python -m unittest discover -s . -p "*_test.py"
