@@ -14,14 +14,32 @@ steps:
       # - python -m unittest -v autogenerator_test.py
       # - py -m unittest discover -p "*_test.py"
 
-  - name: Run UI Tests
+
+If you want to run your tests using an image that already has Selenium installed, and your Python tests are configured to run on localhost:3000, you can modify the drone.yml file accordingly. Here's an example:
+
+yaml
+Copy code
+kind: pipeline
+type: docker
+name: default
+
+steps:
+  - name: Run Autogenerator tests
     image: prairielearn/prairielearn
     commands: 
       - pip install -r requirements.txt --quiet
-      - yum update -y
-      - yum install -y wget
-      - wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
-      - yum localinstall -y google-chrome-stable_current_x86_64.rpm
-      - rm google-chrome-stable_current_x86_64.rpm
+      - cd databaseCourse/elements/pl-sql-element
+      # just run all test files
+      - python -m unittest discover -p "*_test.py"
+      # detailed run of one file
+      # - python -m unittest -v autogenerator_test.py
+      # - py -m unittest discover -p "*_test.py"
+
+  - name: Run UI Tests
+    image: selenium/standalone-chrome
+    ports:
+      - 4444:4444
+    commands: 
+      - pip install -r requirements.txt --quiet
       - cd tests/ui
       - python -m unittest discover -s . -p "*_test.py"
