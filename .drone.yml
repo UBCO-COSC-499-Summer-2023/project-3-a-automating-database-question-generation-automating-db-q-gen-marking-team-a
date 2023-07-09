@@ -3,23 +3,20 @@ type: docker
 name: default
 
 steps:
-  - name: Run Autogenerator tests
+  - name: Install Dependencies
     image: prairielearn/prairielearn
     commands: 
       - pip install -r requirements.txt --quiet
+
+  - name: Run Autogenerator tests
+    image: prairielearn/prairielearn
+    commands: 
       - cd databaseCourse/elements/pl-sql-element
       - python -m unittest discover -p "*_test.py"
 
   - name: Run UI Tests
     image: prairielearn/prairielearn
     commands: 
-      - pip install -r requirements.txt --quiet
       - cd tests/ui
       - python -m unittest discover -s . -p "*_test.py"
 
-  # - name: Run Integration Tests
-  #   image: selenium/standalone-chrome
-  #   commands: 
-  #     - pip install -r requirements.txt --quiet
-  #     - cd tests/integration
-  #     - python -m unittest discover -s . -p "*_test.py"
