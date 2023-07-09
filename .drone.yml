@@ -11,10 +11,10 @@ steps:
       - python -m unittest discover -p "*_test.py"
 
   - name: Debug
-    image: alpine
+    image: docker
     commands:
       - echo "Debugging information"
-      - cat requirements.txt
+      - docker pull azipis/prairielearn-chrome:latest
 
   - name: Run UI Tests
     image: azipis/prairielearn-chrome:latest
