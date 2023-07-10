@@ -3,11 +3,14 @@ from os import listdir
 # Used for modelling a tables during question generation
 # and loading table data from text files
 
-# Returns the create table statement for a table,
-# which is just the text in the table file
-def getDDL(filePath):
-    with open(filePath) as file:
-        return file.read()
+# Returns the create table statement from the
+# text file
+def getStaticDDL(filePath):
+    try:
+        with open(filePath) as file:
+            return file.read()
+    except:
+        return None
 
 # Loads a table object based on the file
 def load(filePath):

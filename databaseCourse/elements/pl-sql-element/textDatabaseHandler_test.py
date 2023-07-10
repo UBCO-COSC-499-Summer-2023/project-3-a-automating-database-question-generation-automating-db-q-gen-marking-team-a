@@ -5,13 +5,26 @@ from SQLElementSharedLibrary.textDatabaseHandler import *
 # Tests the helper functions
 class TableHelperFunctionsTest(unittest.TestCase):
     
-    # We're NOT testing the getDDL() funciton since it is
-    # depricated in favour of an Table object-specific function that
-    # returns the current DDL, not the DDL from a file.
+    # Tests getStaticDDL()
+    # Case: file is found
+    def testGetStaticDDLFileIsFound(self):
+        tableName = 'airport'
+        schema = getStaticDDL(f"./SQLElementSharedLibrary/randomTables/{tableName}.txt")
+
+        self.assertIsNotNone(schema)
+
+    # Case: file is not found
+    def testGetStaticDDLFileIsNotFound(self):
+        tableName = 'noSuchTable'
+        schema = getStaticDDL(f"./SQLElementSharedLibrary/randomTables/{tableName}.txt")
+
+        self.assertIsNone(schema)
+
+
 
     # Tests the load() function
     # Case: file is found
-    def testLoadReturnsTableIfFileIsFound(self):
+    def testLoadReturnsTableFileIsFound(self):
         tableName = 'airport'
         table = load(f"./SQLElementSharedLibrary/randomTables/{tableName}.txt")
 
@@ -19,7 +32,7 @@ class TableHelperFunctionsTest(unittest.TestCase):
 
     # Case: file is not found
     ''' ! Function does not yet exists !
-    def testLoadReturnsNoneIfFileIsNotFound(self):
+    def testLoadReturnsNoneFileIsNotFound(self):
         tableName = 'noSuchTable'
         table = load(f"./SQLElementSharedLibrary/randomTables/{tableName}.txt")
 

@@ -112,7 +112,7 @@ def generateCreate(data, difficulty):
     # Replaced the called method with createStatement() when
     # that method is completed; i.e. it includes clauses,
     # primary keys, and foreign keys
-    data['correct_answers']['SQLEditor'] = db.getDDL(relativeFilePath(tableFile))
+    data['correct_answers']['SQLEditor'] = db.getStaticDDL(relativeFilePath(tableFile))
 
 # Returns the schema for the current table.
 # Currently DOES NOT include clauses (such as NOT NULL),
