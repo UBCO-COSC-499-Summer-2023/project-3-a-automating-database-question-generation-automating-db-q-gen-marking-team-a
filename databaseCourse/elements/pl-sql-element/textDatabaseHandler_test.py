@@ -32,25 +32,6 @@ class TableHelperFunctionsTest(unittest.TestCase):
 
 
 
-    # Tests the load() function
-    # Case: file is found
-    def testLoadReturnsTableFileIsFound(self):
-        tableName = 'airport'
-        table = load(tableName)
-
-        self.assertIsNotNone(table)
-
-    # Case: file is not found
-    ''' ! Function does not yet exists !
-    def testLoadReturnsNoneFileIsNotFound(self):
-        tableName = 'noSuchTable'
-        table = load(f"./SQLElementSharedLibrary/randomTables/{tableName}.txt")
-
-        self.assertEqual(table.name, tableName)
-    '''
-
-
-
     # Tests the getAllTableFiles() function
     # Case: path is correct
     def testGetAllTableFilesReturnsPathsIfFilesFound(self):
@@ -71,7 +52,7 @@ class TableHelperFunctionsTest(unittest.TestCase):
 # Tests the table object
 class TableTest(unittest.TestCase):
     
-    # Tests static object instantiation
+    # Tests object instantiation, thus the load() function
     # Case: filepath is correct
     def testStaticTableGeneration(self):
         table = Table()
@@ -135,7 +116,7 @@ class TableTest(unittest.TestCase):
     # Case: table has no relations
     def testGetKeyMapWhenTableHasNoRelations(self):
         tableName = 'airport'
-        table = load(tableName)
+        table = Table(tableName)
 
         keyMap = table.getKeyMap()
         self.assertEquals(len(keyMap), 0)
@@ -143,7 +124,7 @@ class TableTest(unittest.TestCase):
     # Case: table has at least one relation
     def testGetKeyMapWhenTableHasAtleastOneRelation(self):
         tableName = 'flight'
-        table = load(tableName)
+        table = Table(tableName)
 
         keyMap = table.getKeyMap()
         self.assertGreater(len(keyMap), 0)

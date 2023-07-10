@@ -16,21 +16,6 @@ def getStaticSchema(file):
     except:
         return None
 
-# Loads a table object based on the file.
-# All parameters other than file only matter to
-# random tables, not static tables; for random tables,
-# f"{file}" will become the table name"
-def load(file, columns = 1, joins = 0, clauses = []):
-    table = Table()
-    
-    # Loads the table appropriately
-    try:
-        table.loadFromText(relativeFilePath(file))
-    except:
-        table.loadRandom(columns, joins, clauses)
-    
-    return table
-
 # Lists all table files in the specified path
 def getAllTableFiles(path):
     try:
@@ -44,9 +29,23 @@ def getAllTableFiles(path):
 class Table:
 
     # A table has a name and some columns
-    def __init__(self):
+    def __init__(self, file, columns=1, joins=0, clauses=[]):
         self.name = ''
         self.columns = {}
+
+        self.load(file, columns, joins, clauses)
+
+
+
+    # Loads a table object based on the file.
+    # All parameters other than file only matter to
+    # random tables, not static tables; for random tables,
+    # f"{file}" will become the table name"
+    def load(self, file, columns, joins, clauses):
+        try:
+            self.loadFromText(relativeFilePath(file))
+        except:
+            self.loadRandom(file, columns, joins, clauses)
 
     # Given the path to a text file, loads its data
     def loadFromText(self, filePath):
@@ -147,7 +146,7 @@ class Table:
 
 
     # Creates a random table
-    def loadRandom(columns, joins, clauses):
+    def loadRandom(file, columns, joins, clauses):
         pass
 
 

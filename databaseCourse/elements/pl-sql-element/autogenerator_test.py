@@ -143,7 +143,7 @@ class QuestionTypeStatementsTest(unittest.TestCase):
     def testInsertStatementReturnsCorrectTableNameAndValuesInStatement(self):
         tableName = "airport"
         row = [9,8,0]
-        table = db.load(tableName)
+        table = db.Table(tableName)
 
         result = insertStatement(table,row)
 
