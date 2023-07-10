@@ -9,14 +9,14 @@ class TableHelperFunctionsTest(unittest.TestCase):
     # Case: file is found
     def testGetStaticDDLFileIsFound(self):
         tableName = 'airport'
-        schema = getStaticDDL(f"./SQLElementSharedLibrary/randomTables/{tableName}.txt")
+        schema = getStaticSchema(f"./SQLElementSharedLibrary/randomTables/{tableName}.txt")
 
         self.assertIsNotNone(schema)
 
     # Case: file is not found
     def testGetStaticDDLFileIsNotFound(self):
         tableName = 'noSuchTable'
-        schema = getStaticDDL(f"./SQLElementSharedLibrary/randomTables/{tableName}.txt")
+        schema = getStaticSchema(f"./SQLElementSharedLibrary/randomTables/{tableName}.txt")
 
         self.assertIsNone(schema)
 
