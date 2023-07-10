@@ -5,7 +5,7 @@ from os import listdir
 
 # Returns the create table statement from the
 # text file
-def getStaticDDL(filePath):
+def getStaticSchema(filePath):
     try:
         with open(filePath) as file:
             return file.read()
@@ -133,12 +133,86 @@ class Table:
 
                 }
 
+
+
     # Returns a dictionary with the following mapping:
     #   column: (if the column is a foreign key)
     #       'references': the table referenced
     #       'foreignKey': the column in the referenced table
     def getKeyMap(self):
         return {key: {'references': self.columns[key]['references'], 'foreignKey': self.columns[key]['foreignKey']} for key in self.columns.keys() if self.columns[key]['references']}
+
+
+
+    # Returns the table's DDL schema
+    def getSchema(self):
+
+        # Creates the first line
+        schema = f"CREATE TABLE {self.name}" + " (\n"
+
+        # Adds each column
+        for column in self.columns:
+            schema += f"\t{self.columns[column]['name']} {self.columns[column]['unit']}"
+
+            # Includes the unit other in parentheses
+            if self.columns[column]['unitOther']:
+                schema += f"({self.columns[column]['unitOther']})"
+            
+            # Includes the not null clause if necessary
+            if self.columns[column]['isNotNull']:
+                schema += ' NOT NULL'
+
+            # Adds a comma at the end
+            schema += ',\n'
+        
+
+
+        # Adds the primary keys
+        for column in self.columns:
+
+            # Adds a primary key
+            if self.columns[column]['isPrimary']:
+
+                # For the first primary key
+                if "PRIMARY KEY" not in schema:
+                    schema += f"\tPRIMARY KEY ({self.columns[column]['name']}"
+                # For all subsequent primary keys
+                else:
+                    schema += f", {self.columns[column]['name']}"
+        
+        # Closes the parenthesis if necessary
+        if "PRIMARY KEY" in schema:
+            schema += ')'
+        else:
+            print('huh?')
+
+        # Adds a comma and a new line to the end
+        schema += ",\n"
+
+
+
+        # Adds the foreign keys
+        for column in self.columns:
+            if self.columns[column]['references']:
+                schema += f"\tFOREIGN KEY ({self.columns[column]['name']}) REFERENCES {self.columns[column]['references']} ({self.columns[column]['foreignKey']})"
+
+                # Set null clause
+                if self.columns[column]['isOnDeleteSetNull']:
+                    schema += ' ON DELETE SET NULL'
+
+                # Cascade clause
+                if self.columns[column]['isOnUpdateCascade']:
+                    schema += ' ON UPDATE CASCADE'
+
+                # Comma and newline
+                schema += f",\n"
+        
+        # Removes the comma at the end; closes schema
+        schema = schema[0:-2] + "\n);"
+
+        return schema
+
+
 
     def __str__(self):
         # The Column __str__() function didn't want to work so
