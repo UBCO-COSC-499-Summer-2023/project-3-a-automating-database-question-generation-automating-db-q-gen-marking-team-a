@@ -126,9 +126,12 @@ class QuestionTypeStatementsTest(unittest.TestCase):
         # erroneously fail the test
         #self.assertNotIn("UPDATE",result)
 
+        # Similarly, DELETE is untestable due to the 
+        # clause "ON DELETE SET NULL"
+        #self.assertNotIn("DELETE",result)
+
         self.assertIn("CREATE",result)
         self.assertNotIn("INSERT",result)
-        self.assertNotIn("DELETE",result)
         self.assertNotIn("SELECT",result)
         self.assertIn(tableName,result)
         for key in table.columns:
