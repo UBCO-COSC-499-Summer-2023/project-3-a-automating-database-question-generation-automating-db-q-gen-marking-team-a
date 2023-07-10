@@ -55,12 +55,12 @@ class TableTest(unittest.TestCase):
     # Tests object instantiation, thus the load() function
     # Case: filepath is correct
     def testStaticTableGeneration(self):
-        tableName = 'testTable'
+        tableName = 'flight'
         table = Table(tableName)
 
         self.assertIsNotNone(table)
 
-    # Case: the table is random
+    # Case: the table is random (i.e. filepath is incorrect)
     ''' ! Function does not yet exists !
     def testRandomTableGeneration(self):
         tableName = 'randomTable'
