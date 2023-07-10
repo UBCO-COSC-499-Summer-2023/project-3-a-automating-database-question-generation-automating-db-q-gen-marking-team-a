@@ -41,7 +41,7 @@ def generateCreate(data, difficulty):
         case 'hard': tableFile = random.choice(['flight', 'shippedproduct'])
     
     # Loads the selected table
-    table = db.load(relativeFilePath(tableFile))
+    table = db.load(tableFile)
 
 
     # Creates a string to tell the student what they need
@@ -561,10 +561,6 @@ def queryStatement(table, keyMap, foreignKeyMap, selectedColumns, clauses):
 def conditionalStatement(column, condition):
     return f"WHERE {column} = '{condition}'"
 
-# Returns the file path to the table file
-def relativeFilePath(filePath):
-    return f"./SQLElementSharedLibrary/randomTables/{filePath}.txt"
-
 # Gets the filepaths to all tables referenced by this one
 # Returns a set to ensure no duplicate tables
 def getReferencedTablesSet(table):
@@ -580,7 +576,7 @@ def getReferencedTablesSet(table):
             tables.add(table.columns[key]['references'])
 
     # Doesn't return the table names, returns the table objects
-    return set(db.load(relativeFilePath(referenced)) for referenced in tables)
+    return set(db.load(referenced) for referenced in tables)
 
 # Returns a dictionary that maps the foreign key of the supplied
 # table to the referenced tables.
@@ -595,7 +591,7 @@ def getReferencedTableDictionary(table):
     # Adds the referenced item, if it exists
     for key in table.columns.keys():
         if table.columns[key]['references']:
-            tables[table.columns[key]['references']] = db.load(relativeFilePath(table.columns[key]['references']))
+            tables[table.columns[key]['references']] = db.load(table.columns[key]['references'])
 
     return tables
 
@@ -707,7 +703,7 @@ def loadTrimmedTable(columnCount, joinCount):
 
         # Pops the current table so there's no repeats
         possibleTable = possibleTables.pop(random.choice(range(len(possibleTables))))
-        table = db.load(relativeFilePath(possibleTable))
+        table = db.load(possibleTable)
 
     # Removes columns until there is an appropriate amount left
     doomCounter = 10

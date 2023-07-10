@@ -5,6 +5,16 @@ from SQLElementSharedLibrary.textDatabaseHandler import *
 # Tests the helper functions
 class TableHelperFunctionsTest(unittest.TestCase):
     
+    #---# relativeFilePath() Test(s)
+    def testRelativeFilePathReturnsFilePathWithFileName(self):
+        file = "random"
+
+        result = relativeFilePath(file)
+
+        self.assertEqual(f"./SQLElementSharedLibrary/randomTables/{file}.txt",result)
+
+
+
     # Tests getStaticDDL()
     # Case: file is found
     def testGetStaticDDLFileIsFound(self):

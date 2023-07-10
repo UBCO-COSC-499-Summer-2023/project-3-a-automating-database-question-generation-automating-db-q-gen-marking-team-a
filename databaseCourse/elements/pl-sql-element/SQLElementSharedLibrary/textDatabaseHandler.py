@@ -3,24 +3,29 @@ from os import listdir
 # Used for modelling a tables during question generation
 # and loading table data from text files
 
+# Returns the file path to the table file
+def relativeFilePath(file):
+    return f"./SQLElementSharedLibrary/randomTables/{file}.txt"
+
 # Returns the create table statement from the
 # text file
-def getStaticSchema(filePath):
+def getStaticSchema(file):
     try:
-        with open(filePath) as file:
+        with open(relativeFilePath(file)) as file:
             return file.read()
     except:
         return None
 
 # Loads a table object based on the file.
-# All parameters other than filePath only matter to
-# random tables, not static tables.
-def load(filePath, columns = 1, joins = 0, clauses = []):
+# All parameters other than file only matter to
+# random tables, not static tables; for random tables,
+# f"{file}" will become the table name"
+def load(file, columns = 1, joins = 0, clauses = []):
     table = Table()
     
     # Loads the table appropriately
     try:
-        table.loadFromText(filePath)
+        table.loadFromText(relativeFilePath(file))
     except:
         table.loadRandom(columns, joins, clauses)
     

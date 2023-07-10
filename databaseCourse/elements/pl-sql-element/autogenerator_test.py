@@ -116,7 +116,7 @@ class QuestionTypeStatementsTest(unittest.TestCase):
         ["flight"]
     ])
     def testCreateStatementReturnsStatementWithAllColumns(self,tableFile):
-        table = db.load(relativeFilePath(tableFile))
+        table = db.load(tableFile)
         tableName = table.name
 
         result = createStatement(table)
@@ -143,7 +143,7 @@ class QuestionTypeStatementsTest(unittest.TestCase):
     def testInsertStatementReturnsCorrectTableNameAndValuesInStatement(self):
         tableName = "airport"
         row = [9,8,0]
-        table = db.load(relativeFilePath(tableName))
+        table = db.load(tableName)
 
         result = insertStatement(table,row)
 
@@ -160,7 +160,7 @@ class QuestionTypeStatementsTest(unittest.TestCase):
     # with conditional
     def testUpdateStatementWithConditional(self):
         tableName = "airport"
-        table = db.load(relativeFilePath(tableName))
+        table = db.load(tableName)
         updateCol= "province"
         updateVal = "Alberta"
         conditionalCol = updateCol
@@ -178,7 +178,7 @@ class QuestionTypeStatementsTest(unittest.TestCase):
     # without conditional
     def testUpdateStatementWithoutConditional(self):
         tableName = "airport"
-        table = db.load(relativeFilePath(tableName))
+        table = db.load(tableName)
         updateCol = "province"
         updateVal = "Alberta"
 
@@ -195,7 +195,7 @@ class QuestionTypeStatementsTest(unittest.TestCase):
     # with a condition
     def testDeleteStatementWithConditional(self):
         tableName = "airport"
-        table = db.load(relativeFilePath(tableName))
+        table = db.load(tableName)
         col = "province"
         condition = "Alberta"
 
@@ -211,7 +211,7 @@ class QuestionTypeStatementsTest(unittest.TestCase):
     # without a condition
     def testDeleteStatementWithoutConditional(self):
         tableName = "airport"
-        table = db.load(relativeFilePath(tableName))
+        table = db.load(tableName)
 
         result = deleteStatement(table)
 
@@ -227,7 +227,7 @@ class QuestionTypeStatementsTest(unittest.TestCase):
     # no foreignkeys
     # def testQueryStatementWithoutForeignKeys(self):
     #     tableName = "airport"
-    #     table = db.load(relativeFilePath(tableName))
+    #     table = db.load(tableName)
     #     keyMap = {"airport"}
     #     foreignKeyMap = {}
     #     selectedColumns = []
@@ -246,20 +246,12 @@ class HelperFnsTest(unittest.TestCase):
 
         self.assertIn("WHERE",result)
 
-#---# relativeFilePath() Test(s)
-    def testRelativeFilePathReturnsFilePathWithFileName(self):
-        file = "random"
-
-        result = relativeFilePath(file)
-
-        self.assertEqual(f"./SQLElementSharedLibrary/randomTables/{file}.txt",result)
-
 #---# getReferencedTablesSet() Test(s)
     # has referenced tables
     def testGetReferencedTablesSetGetsAllReferencedDbs(self):
         tableName = "flight"
         referenced = ["airplane","airport","passenger"]
-        table = db.load(relativeFilePath(tableName))
+        table = db.load(tableName)
 
         result = getReferencedTablesSet(table)
 
@@ -271,7 +263,7 @@ class HelperFnsTest(unittest.TestCase):
     def testGetReferencedTablesSetGetsAllZeroReferencedDbs(self):
         tableName = "airport"
         referenced = ["airplane","airport","passenger"]
-        table = db.load(relativeFilePath(tableName))
+        table = db.load(tableName)
 
         result = getReferencedTablesSet(table)
 
@@ -284,7 +276,7 @@ class HelperFnsTest(unittest.TestCase):
     def testGetReferencedTablesDictionaryGetsAllReferencedDbs(self):
         tableName = "flight"
         referenced = ["airplane","airport","passenger"]
-        table = db.load(relativeFilePath(tableName))
+        table = db.load(tableName)
 
         result = getReferencedTableDictionary(table)
 
@@ -296,7 +288,7 @@ class HelperFnsTest(unittest.TestCase):
     def testGetReferencedTablesDictionaryGetsAllZeroReferencedDbs(self):
         tableName = "airport"
         referenced = ["airplane","airport","passenger"]
-        table = db.load(relativeFilePath(tableName))
+        table = db.load(tableName)
 
         result = getReferencedTableDictionary(table)
 
@@ -315,11 +307,11 @@ class HelperFnsTest(unittest.TestCase):
                           'db_initialize':db_initialize},
                 'correct_answers':{'SQLEditor': initialAns}}
         tableOne = "airport"
-        tableAirport = db.load(relativeFilePath(tableOne))
+        tableAirport = db.load(tableOne)
         tableTwo = "flight"
-        tableFlight = db.load(relativeFilePath(tableTwo))
+        tableFlight = db.load(tableTwo)
         tableThree = "airplane"
-        tableAirplane = db.load(relativeFilePath(tableThree))
+        tableAirplane = db.load(tableThree)
         tables = [tableAirport,tableAirplane,tableFlight]
 
         self.assertEqual(len(data['params']['db_initialize']),0)
@@ -358,7 +350,7 @@ class HelperFnsTest(unittest.TestCase):
                           'db_initialize':db_initialize},
                 'correct_answers':{'SQLEditor': initialAns}}
         tableOne = "airport"
-        tableAirport = db.load(relativeFilePath(tableOne))
+        tableAirport = db.load(tableOne)
 
         self.assertEqual(len(data['params']['db_initialize']),0)
 
@@ -376,7 +368,7 @@ class HelperFnsTest(unittest.TestCase):
                           'db_initialize':db_initialize},
                 'correct_answers':{'SQLEditor': initialAns}}
         tableOne = "flight"
-        tableAirport = db.load(relativeFilePath(tableOne))
+        tableAirport = db.load(tableOne)
 
         self.assertEqual(len(data['params']['db_initialize']),0)
 
