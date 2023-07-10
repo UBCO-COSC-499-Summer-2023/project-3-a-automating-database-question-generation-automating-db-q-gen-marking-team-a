@@ -5,11 +5,9 @@ from SQLElementSharedLibrary.textDatabaseHandler import *
 # Tests the helper functions
 class TableHelperFunctionsTest(unittest.TestCase):
     
-    # We're NOT testing the getDDL() funciton since it should
-    # be depricated in favour of an object-specific function that
-    # returns the current DDL, not the DDL from a file. Those tests
-    # will be implemented later, just prior to the creation of
-    # said function.
+    # We're NOT testing the getDDL() funciton since it is
+    # depricated in favour of an Table object-specific function that
+    # returns the current DDL, not the DDL from a file.
 
     # Tests the load() function
     # Case: file is found
@@ -20,11 +18,13 @@ class TableHelperFunctionsTest(unittest.TestCase):
         self.assertIsNotNone(table)
 
     # Case: file is not found
+    ''' ! Function does not yet exists !
     def testLoadReturnsNoneIfFileIsNotFound(self):
-        tableName = '-1'
+        tableName = 'noSuchTable'
         table = load(f"./SQLElementSharedLibrary/randomDatabases/{tableName}.txt")
 
-        self.assertIsNone(table)
+        self.assertEqual(table.name, tableName)
+    '''
 
 
 
@@ -50,14 +50,63 @@ class TableTest(unittest.TestCase):
     
     # Tests static object instantiation
     # Case: filepath is correct
-    def testStaticTableGenerationWithCorrectFilePath(self):
+    def testStaticTableGeneration(self):
         tableName = 'airport'
         table = Database(f"./SQLElementSharedLibrary/randomDatabases/{tableName}.txt")
 
         self.assertIsNotNone(table)
 
-    # No need to test the incorrect case, since the prior load()
-    # test covers that case.
+    # Case: the table is random
+    ''' ! Function does not yet exists !
+    def testRandomTableGeneration(self):
+        tableName = 'randomTable'
+        table = Database(tableName)
+
+        self.assertIsNotNone(table)
+    '''
+
+
+
+    ''' ! Functions does not yet exists !
+    # Tests random object instantiation
+    # Case: Valid columns and valid joins
+    def testRandomTableValidColumnsValidJoins(self):
+        tableName = 'randomTable'
+        columns = 3
+        joins = 1
+        table = load(tableName, columns, joins)
+
+        self.assertEqual(len(table.columns), columns)
+        self.assertAlmostEqual(len(table.getKeyMap()), joins)
+
+    # Case: Valid columns and invalid joins
+    def testRandomTableValidColumnsInvalidJoins(self):
+        tableName = 'randomTable'
+        columns = 3
+        joins = -1
+        table = load(tableName, columns, joins)
+
+        self.assertIsNone(table)
+
+    # Case: Invalid columns and valid joins
+    def testRandomTableInvalidColumnsValidJoins(self):
+        tableName = 'randomTable'
+        columns = -1
+        joins = 1
+        table = load(tableName, columns, joins)
+
+        self.assertIsNone(table)
+
+    # Case: Invalid columns and invalid joins
+    def testRandomTableInvalidColumnsInvalidJoins(self):
+        tableName = 'randomTable'
+        columns = -1
+        joins = -1
+        table = load(tableName, columns, joins)
+
+        self.assertIsNone(table)
+    '''
+
 
 
     # Tests getKeyMap()
@@ -79,18 +128,37 @@ class TableTest(unittest.TestCase):
 
 
 
-    # Tests random object instantiation
-    # Case: Valid columns and valid joins
-    # TODO
+    # Tests getDDL()
+    # Case: table is unmodified from file DDL
+    ''' ! Function does not yet exists !
+    def testGetDDLWhenTableIsUnmodified(self):
+        tableName = 'flight'
+        table = load(f"./SQLElementSharedLibrary/randomDatabases/{tableName}.txt")
+        tableDDL = table.getDDL()
 
-    # Case: Valid columns and invalid joins
-    # TODO
+        unmodifiedDDL = getDDL(f"./SQLElementSharedLibrary/randomDatabases/{tableName}.txt")
 
-    # Case: Invalid columns and valid joins
-    # TODO
+        self.assertEqual(tableDDL, unmodifiedDDL)
+    '''
 
-    # Case: Invalid columns and invalid joins
-    # TODO
+
+    # Case: table is modified from DDL
+    ''' ! Function does not yet exists !
+    def testGetDDLWhenTableIsUnmodified(self):
+        tableName = 'flight'
+        table = load(f"./SQLElementSharedLibrary/randomDatabases/{tableName}.txt")
+        table.columns.pop('departAirport')
+        tableDDL = table.getDDL().split('\n')
+
+        # To check if the table was correctly modified, 
+        # count the number of foreign keys in the table
+        fks = 0
+        for line in tableDDL:
+            if 'FOREIGN KEY' in line:
+                fks += 1
+
+        self.assertEqual(fks, 1)
+    '''
 
 
 
