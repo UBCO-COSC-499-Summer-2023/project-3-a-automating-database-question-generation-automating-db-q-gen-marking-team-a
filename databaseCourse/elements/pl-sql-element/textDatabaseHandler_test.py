@@ -60,17 +60,6 @@ class TableTest(unittest.TestCase):
 
         self.assertIsNotNone(table)
 
-    # Case: the table is random (i.e. filepath is incorrect)
-    ''' ! Function does not yet exists !
-    def testRandomTableGeneration(self):
-        tableName = 'randomTable'
-        table = Table(tableName)
-
-        self.assertIsNotNone(table)
-    '''
-
-
-
     ''' ! Functions does not yet exists !
     # Tests random object instantiation
     # Case: Valid columns and valid joins
@@ -120,7 +109,7 @@ class TableTest(unittest.TestCase):
         table = Table(tableName)
 
         keyMap = table.getKeyMap()
-        self.assertEquals(len(keyMap), 0)
+        self.assertEqual(len(keyMap), 0)
 
     # Case: table has at least one relation
     def testGetKeyMapWhenTableHasAtleastOneRelation(self):
