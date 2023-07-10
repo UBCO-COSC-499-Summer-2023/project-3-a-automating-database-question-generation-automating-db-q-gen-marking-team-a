@@ -121,9 +121,13 @@ class QuestionTypeStatementsTest(unittest.TestCase):
 
         result = createStatement(table)
         
+        # Can't test UPDATE not in tables for all tables
+        # since the clause "ON UPDATE CASCADE" would
+        # erroneously fail the test
+        #self.assertNotIn("UPDATE",result)
+
         self.assertIn("CREATE",result)
         self.assertNotIn("INSERT",result)
-        self.assertNotIn("UPDATE",result)
         self.assertNotIn("DELETE",result)
         self.assertNotIn("SELECT",result)
         self.assertIn(tableName,result)
