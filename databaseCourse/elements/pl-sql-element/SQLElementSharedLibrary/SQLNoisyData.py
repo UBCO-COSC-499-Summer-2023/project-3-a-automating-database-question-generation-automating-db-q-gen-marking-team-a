@@ -102,8 +102,8 @@ def generateNoisyVarchar(column, unitOther):
         case 'aname': return randomLine('airports')
         case 'departAirport': return randomLine('airports')
         case 'arriveAirport': return randomLine('airports')
-        case 'first_name': return randomLine('firstNames')
-        case 'last_name': return randomLine('lastNames')
+        case 'firstName': return randomLine('firstNames')
+        case 'lastName': return randomLine('lastNames')
         case 'street': return randomLine('addresses')
         case 'country': return randomLine('countries')
 
