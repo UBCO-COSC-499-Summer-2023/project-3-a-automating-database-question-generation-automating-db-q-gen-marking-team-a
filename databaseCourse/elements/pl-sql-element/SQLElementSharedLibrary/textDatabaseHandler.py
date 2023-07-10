@@ -1,4 +1,5 @@
 from os import listdir
+from random import choice
 
 # Used for modelling a tables during question generation
 # and loading table data from text files
@@ -29,8 +30,9 @@ def getAllTableFiles(path):
 class Table:
 
     # A table has a name and some columns
+    # File name and table name are equivalent
     def __init__(self, file, columns=1, joins=0, clauses=[]):
-        self.name = ''
+        self.name = file
         self.columns = {}
 
         self.load(file, columns, joins, clauses)
@@ -42,9 +44,11 @@ class Table:
     # random tables, not static tables; for random tables,
     # f"{file}" will become the table name"
     def load(self, file, columns, joins, clauses):
-        try:
+        tableFiles = getAllTableFiles('./SQLElementSharedLibrary/randomTables/')
+
+        if file in tableFiles:
             self.loadFromText(relativeFilePath(file))
-        except:
+        else:
             self.loadRandom(file, columns, joins, clauses)
 
     # Given the path to a text file, loads its data
@@ -61,10 +65,6 @@ class Table:
                 if not str.isspace(line):
                     lines.append(line.strip())
         
-
-
-        # Gets the table name
-        self.name = lines[0].split(' ')[2]
 
         # Creates the column and adds it
         # The first line contains the table name so ignore it
@@ -147,26 +147,39 @@ class Table:
 
     # Creates a random table
     # TODO
+    #   - intentional joins
     #   - clauses
     #   - improve selection source for column names
     def loadRandom(self, name, columns, joins, clauses):
-        
-        # Sets the table name
-        self.name = name
 
-        # Gets a selection of column names
-        # TODO: improve this!
-        possibleColumns = {
-            'INTEGER': ['id', 'name', f"{self.name[0:1].lower()}name", 'pname'],
-            'CHAR': [],
-            'VARCHAR': [],
-            'DATE': [],
-            'DATETIME': []
-            }
+        # Current approach for loading a random table is
+        # to create one very large table with all columns
+        # from every table and pop them out randomly until
+        # we have enough tables
+        # 
+        # Some issues with this approach is that columns with
+        # duplicate names over different tables will override
+        # each other. Additionally, it is difficult to specify
+        # how many joins you want, and very difficuly to set
+        # clauses. Finally, it is barely better than the
+        # previous 'random' table generation, where it selects
+        # a random table from a list; the only improvement this
+        # offers it the columns are swapped around a bit.
+
+        # Creates the mega-table
+        selectionTable = Table('airport')
+
+        # Gets all possible tables
+        tableFiles = getAllTableFiles('./SQLElementSharedLibrary/randomTables/')
+
+        # Adds ALL columns to the selection table
+        for tableFile in tableFiles:
+            selectionTable.loadFromText(relativeFilePath(tableFile))
 
         # Adds columns
-        while len(self.columns < columns):
-            pass
+        while len(self.columns) < columns:
+            pop = selectionTable.columns.pop(choice(list(selectionTable.columns.keys())))
+            self.columns[pop['name']] = pop
 
 
 
@@ -215,12 +228,9 @@ class Table:
                 else:
                     schema += f", {self.columns[column]['name']}"
         
-        # Closes the parenthesis if necessary
+        # Finishes the line, if necessary
         if "PRIMARY KEY" in schema:
-            schema += ')'
-
-        # Adds a comma and a new line to the end
-        schema += ",\n"
+            schema += "),\n"
 
 
 
@@ -238,7 +248,7 @@ class Table:
                     schema += ' ON UPDATE CASCADE'
 
                 # Comma and newline
-                schema += f",\n"
+                schema += ",\n"
         
         # Removes the comma at the end; closes schema
         schema = schema[0:-2] + "\n);"
