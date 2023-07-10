@@ -200,8 +200,6 @@ class Table:
         # Closes the parenthesis if necessary
         if "PRIMARY KEY" in schema:
             schema += ')'
-        else:
-            print('huh?')
 
         # Adds a comma and a new line to the end
         schema += ",\n"

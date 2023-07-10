@@ -19,14 +19,14 @@ class TableHelperFunctionsTest(unittest.TestCase):
     # Case: file is found
     def testGetStaticDDLFileIsFound(self):
         tableName = 'airport'
-        schema = getStaticSchema(f"./SQLElementSharedLibrary/randomTables/{tableName}.txt")
+        schema = getStaticSchema(tableName)
 
         self.assertIsNotNone(schema)
 
     # Case: file is not found
     def testGetStaticDDLFileIsNotFound(self):
         tableName = 'noSuchTable'
-        schema = getStaticSchema(f"./SQLElementSharedLibrary/randomTables/{tableName}.txt")
+        schema = getStaticSchema(tableName)
 
         self.assertIsNone(schema)
 
@@ -36,7 +36,7 @@ class TableHelperFunctionsTest(unittest.TestCase):
     # Case: file is found
     def testLoadReturnsTableFileIsFound(self):
         tableName = 'airport'
-        table = load(f"./SQLElementSharedLibrary/randomTables/{tableName}.txt")
+        table = load(tableName)
 
         self.assertIsNotNone(table)
 
@@ -135,7 +135,7 @@ class TableTest(unittest.TestCase):
     # Case: table has no relations
     def testGetKeyMapWhenTableHasNoRelations(self):
         tableName = 'airport'
-        table = load(f"./SQLElementSharedLibrary/randomTables/{tableName}.txt")
+        table = load(tableName)
 
         keyMap = table.getKeyMap()
         self.assertEquals(len(keyMap), 0)
@@ -143,7 +143,7 @@ class TableTest(unittest.TestCase):
     # Case: table has at least one relation
     def testGetKeyMapWhenTableHasAtleastOneRelation(self):
         tableName = 'flight'
-        table = load(f"./SQLElementSharedLibrary/randomTables/{tableName}.txt")
+        table = load(tableName)
 
         keyMap = table.getKeyMap()
         self.assertGreater(len(keyMap), 0)
