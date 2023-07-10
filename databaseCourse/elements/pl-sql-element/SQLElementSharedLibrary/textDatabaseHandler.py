@@ -12,12 +12,19 @@ def getStaticSchema(filePath):
     except:
         return None
 
-# Loads a table object based on the file
-def load(filePath):
+# Loads a table object based on the file.
+# All parameters other than filePath only matter to
+# random tables, not static tables.
+def load(filePath, columns = 1, joins = 0, clauses = []):
+    table = Table()
+    
+    # Loads the table appropriately
     try:
-        return Table(filePath)
+        table.loadFromText(filePath)
     except:
-        return None
+        table.loadRandom(columns, joins, clauses)
+    
+    return table
 
 # Lists all table files in the specified path
 def getAllTableFiles(path):
@@ -32,12 +39,9 @@ def getAllTableFiles(path):
 class Table:
 
     # A table has a name and some columns
-    def __init__(self, filePath):
+    def __init__(self):
         self.name = ''
         self.columns = {}
-
-        # Loads the name and columns
-        self.loadFromText(filePath)
 
     # Given the path to a text file, loads its data
     def loadFromText(self, filePath):
@@ -53,6 +57,8 @@ class Table:
                 if not str.isspace(line):
                     lines.append(line.strip())
         
+
+
         # Gets the table name
         self.name = lines[0].split(' ')[2]
 
@@ -132,6 +138,12 @@ class Table:
                     'isOnDeleteSetNull': False
 
                 }
+
+
+
+    # Creates a random table
+    def loadRandom(columns, joins, clauses):
+        pass
 
 
 
