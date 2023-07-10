@@ -13,7 +13,7 @@ class TableHelperFunctionsTest(unittest.TestCase):
     # Case: file is found
     def testLoadReturnsTableIfFileIsFound(self):
         tableName = 'airport'
-        table = load(f"./SQLElementSharedLibrary/randomDatabases/{tableName}.txt")
+        table = load(f"./SQLElementSharedLibrary/randomTables/{tableName}.txt")
 
         self.assertIsNotNone(table)
 
@@ -21,25 +21,25 @@ class TableHelperFunctionsTest(unittest.TestCase):
     ''' ! Function does not yet exists !
     def testLoadReturnsNoneIfFileIsNotFound(self):
         tableName = 'noSuchTable'
-        table = load(f"./SQLElementSharedLibrary/randomDatabases/{tableName}.txt")
+        table = load(f"./SQLElementSharedLibrary/randomTables/{tableName}.txt")
 
         self.assertEqual(table.name, tableName)
     '''
 
 
 
-    # Tests the getAllDatabaseFiles() function
+    # Tests the getAllTableFiles() function
     # Case: path is correct
-    def testGetAllDatabaseFilesReturnsPathsIfFilesFound(self):
-        path = './SQLElementSharedLibrary/randomDatabases/'
-        tableList = getAllDatabaseFiles(path)
+    def testGetAllTableFilesReturnsPathsIfFilesFound(self):
+        path = './SQLElementSharedLibrary/randomTables/'
+        tableList = getAllTableFiles(path)
 
         self.assertIsNotNone(tableList)
 
     # Case: path is not corret
-    def testGetAllDatabaseFilesReturnsNoneIfFilesNotFound(self):
+    def testGetAllTableFilesReturnsNoneIfFilesNotFound(self):
         path = './not/a/path/'
-        tableList = getAllDatabaseFiles(path)
+        tableList = getAllTableFiles(path)
 
         self.assertFalse(tableList)
 
@@ -52,7 +52,7 @@ class TableTest(unittest.TestCase):
     # Case: filepath is correct
     def testStaticTableGeneration(self):
         tableName = 'airport'
-        table = Database(f"./SQLElementSharedLibrary/randomDatabases/{tableName}.txt")
+        table = Table(f"./SQLElementSharedLibrary/randomTables/{tableName}.txt")
 
         self.assertIsNotNone(table)
 
@@ -60,7 +60,7 @@ class TableTest(unittest.TestCase):
     ''' ! Function does not yet exists !
     def testRandomTableGeneration(self):
         tableName = 'randomTable'
-        table = Database(tableName)
+        table = Table(tableName)
 
         self.assertIsNotNone(table)
     '''
@@ -113,7 +113,7 @@ class TableTest(unittest.TestCase):
     # Case: table has no relations
     def testGetKeyMapWhenTableHasNoRelations(self):
         tableName = 'airport'
-        table = load(f"./SQLElementSharedLibrary/randomDatabases/{tableName}.txt")
+        table = load(f"./SQLElementSharedLibrary/randomTables/{tableName}.txt")
 
         keyMap = table.getKeyMap()
         self.assertEquals(len(keyMap), 0)
@@ -121,7 +121,7 @@ class TableTest(unittest.TestCase):
     # Case: table has at least one relation
     def testGetKeyMapWhenTableHasAtleastOneRelation(self):
         tableName = 'flight'
-        table = load(f"./SQLElementSharedLibrary/randomDatabases/{tableName}.txt")
+        table = load(f"./SQLElementSharedLibrary/randomTables/{tableName}.txt")
 
         keyMap = table.getKeyMap()
         self.assertGreater(len(keyMap), 0)
@@ -133,10 +133,10 @@ class TableTest(unittest.TestCase):
     ''' ! Function does not yet exists !
     def testGetDDLWhenTableIsUnmodified(self):
         tableName = 'flight'
-        table = load(f"./SQLElementSharedLibrary/randomDatabases/{tableName}.txt")
+        table = load(f"./SQLElementSharedLibrary/randomTables/{tableName}.txt")
         tableDDL = table.getDDL()
 
-        unmodifiedDDL = getDDL(f"./SQLElementSharedLibrary/randomDatabases/{tableName}.txt")
+        unmodifiedDDL = getDDL(f"./SQLElementSharedLibrary/randomTables/{tableName}.txt")
 
         self.assertEqual(tableDDL, unmodifiedDDL)
     '''
@@ -146,7 +146,7 @@ class TableTest(unittest.TestCase):
     ''' ! Function does not yet exists !
     def testGetDDLWhenTableIsUnmodified(self):
         tableName = 'flight'
-        table = load(f"./SQLElementSharedLibrary/randomDatabases/{tableName}.txt")
+        table = load(f"./SQLElementSharedLibrary/randomTables/{tableName}.txt")
         table.columns.pop('departAirport')
         tableDDL = table.getDDL().split('\n')
 
