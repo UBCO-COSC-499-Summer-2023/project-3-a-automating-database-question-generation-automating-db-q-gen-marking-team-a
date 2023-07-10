@@ -108,39 +108,39 @@ class QuestionGenerationTest(unittest.TestCase):
 class QuestionTypeStatementsTest(unittest.TestCase):
 
 #---# createStatement() Test(s)
-    # all databases are properly parsed into creating a create statement
+    # all tables are properly parsed into creating a create statement
     @parameterized.expand([
         ["airport"],
         ["airplane"],
         ["passenger"],
         ["flight"]
     ])
-    def testCreateStatementReturnsStatementWithAllColumns(self,databaseFile):
-        database = db.load(relativeFilePath(databaseFile))
-        dbName = database.name
+    def testCreateStatementReturnsStatementWithAllColumns(self,tableFile):
+        table = db.load(relativeFilePath(tableFile))
+        tableName = table.name
 
-        result = createStatement(database)
+        result = createStatement(table)
         
         self.assertIn("CREATE",result)
         self.assertNotIn("INSERT",result)
         self.assertNotIn("UPDATE",result)
         self.assertNotIn("DELETE",result)
         self.assertNotIn("SELECT",result)
-        self.assertIn(dbName,result)
-        for key in database.columns:
+        self.assertIn(tableName,result)
+        for key in table.columns:
             self.assertIn(key,result)
-            self.assertIn(database.columns[key]["unit"],result)
+            self.assertIn(table.columns[key]["unit"],result)
 
 #---# insertStatement() Test(s)
     # valid input -> valid output
     def testInsertStatementReturnsCorrectTableNameAndValuesInStatement(self):
-        dbName = "airport"
+        tableName = "airport"
         row = [9,8,0]
-        database = db.load(relativeFilePath(dbName))
+        table = db.load(relativeFilePath(tableName))
 
-        result = insertStatement(database,row)
+        result = insertStatement(table,row)
 
-        self.assertIn(dbName,result)
+        self.assertIn(tableName,result)
         for x in row:
             self.assertIn(str(x),result)
         self.assertIn("INSERT",result)
@@ -152,14 +152,14 @@ class QuestionTypeStatementsTest(unittest.TestCase):
 #---# updateStatement() Test(s)
     # with conditional
     def testUpdateStatementWithConditional(self):
-        dbName = "airport"
-        database = db.load(relativeFilePath(dbName))
+        tableName = "airport"
+        table = db.load(relativeFilePath(tableName))
         updateCol= "province"
         updateVal = "Alberta"
         conditionalCol = updateCol
         conditionalVal = "Ontario"
 
-        result = updateStatement(database,updateCol,updateVal,conditionalCol,conditionalVal)
+        result = updateStatement(table,updateCol,updateVal,conditionalCol,conditionalVal)
 
         self.assertIn("UPDATE",result)
         self.assertIn("WHERE",result)
@@ -170,12 +170,12 @@ class QuestionTypeStatementsTest(unittest.TestCase):
 
     # without conditional
     def testUpdateStatementWithoutConditional(self):
-        dbName = "airport"
-        database = db.load(relativeFilePath(dbName))
+        tableName = "airport"
+        table = db.load(relativeFilePath(tableName))
         updateCol = "province"
         updateVal = "Alberta"
 
-        result = updateStatement(database,updateCol,updateVal)
+        result = updateStatement(table,updateCol,updateVal)
 
         self.assertIn("UPDATE",result)
         self.assertNotIn("WHERE",result)
@@ -187,12 +187,12 @@ class QuestionTypeStatementsTest(unittest.TestCase):
 #---# deleteStatement() Test(s)
     # with a condition
     def testDeleteStatementWithConditional(self):
-        dbName = "airport"
-        database = db.load(relativeFilePath(dbName))
+        tableName = "airport"
+        table = db.load(relativeFilePath(tableName))
         col = "province"
         condition = "Alberta"
 
-        result = deleteStatement(database,col,condition)
+        result = deleteStatement(table,col,condition)
 
         self.assertIn("DELETE",result)
         self.assertIn("WHERE",result)
@@ -203,10 +203,10 @@ class QuestionTypeStatementsTest(unittest.TestCase):
 
     # without a condition
     def testDeleteStatementWithoutConditional(self):
-        dbName = "airport"
-        database = db.load(relativeFilePath(dbName))
+        tableName = "airport"
+        table = db.load(relativeFilePath(tableName))
 
-        result = deleteStatement(database)
+        result = deleteStatement(table)
 
         self.assertIn("DELETE",result)
         self.assertNotIn("WHERE",result)
@@ -219,14 +219,14 @@ class QuestionTypeStatementsTest(unittest.TestCase):
 #---# queryStatement() Test(s)
     # no foreignkeys
     # def testQueryStatementWithoutForeignKeys(self):
-    #     dbName = "airport"
-    #     database = db.load(relativeFilePath(dbName))
+    #     tableName = "airport"
+    #     table = db.load(relativeFilePath(tableName))
     #     keyMap = {"airport"}
     #     foreignKeyMap = {}
     #     selectedColumns = []
     #     clauses = None
 
-    #     result = queryStatement(database,keyMap,foreignKeyMap,selectedColumns,clauses)
+    #     result = queryStatement(table,keyMap,foreignKeyMap,selectedColumns,clauses)
         
     # helper functions Tests------------------------------------------------------------------------------------------------------------------
 class HelperFnsTest(unittest.TestCase):
@@ -245,61 +245,61 @@ class HelperFnsTest(unittest.TestCase):
 
         result = relativeFilePath(file)
 
-        self.assertEqual(f"./SQLElementSharedLibrary/randomDatabases/{file}.txt",result)
+        self.assertEqual(f"./SQLElementSharedLibrary/randomTables/{file}.txt",result)
 
-#---# getReferencedDatabasesSet() Test(s)
-    # has referenced databases
-    def testGetReferencedDatabasesSetGetsAllReferencedDbs(self):
-        dbName = "flight"
+#---# getReferencedTablesSet() Test(s)
+    # has referenced tables
+    def testGetReferencedTablesSetGetsAllReferencedDbs(self):
+        tableName = "flight"
         referenced = ["airplane","airport","passenger"]
-        database = db.load(relativeFilePath(dbName))
+        table = db.load(relativeFilePath(tableName))
 
-        result = getReferencedDatabasesSet(database)
+        result = getReferencedTablesSet(table)
 
         self.assertIsInstance(result,set)
         for x in result:
             self.assertIn(x.name,referenced)
 
-    # has no referenced databases
-    def testGetReferencedDatabasesSetGetsAllZeroReferencedDbs(self):
-        dbName = "airport"
+    # has no referenced tables
+    def testGetReferencedTablesSetGetsAllZeroReferencedDbs(self):
+        tableName = "airport"
         referenced = ["airplane","airport","passenger"]
-        database = db.load(relativeFilePath(dbName))
+        table = db.load(relativeFilePath(tableName))
 
-        result = getReferencedDatabasesSet(database)
+        result = getReferencedTablesSet(table)
 
         self.assertIsInstance(result,set)
         for x in result:
             self.assertNotIn(x.name,referenced)
 
-#---# getReferencedDatabaseDictionary() Test(s)
-    # has referenced databases
-    def testGetReferencedDatabasesDictionaryGetsAllReferencedDbs(self):
-        dbName = "flight"
+#---# getReferencedTableDictionary() Test(s)
+    # has referenced tables
+    def testGetReferencedTablesDictionaryGetsAllReferencedDbs(self):
+        tableName = "flight"
         referenced = ["airplane","airport","passenger"]
-        database = db.load(relativeFilePath(dbName))
+        table = db.load(relativeFilePath(tableName))
 
-        result = getReferencedDatabaseDictionary(database)
+        result = getReferencedTableDictionary(table)
 
         self.assertIsInstance(result,dict)
         for x in result:
             self.assertIn(x,referenced)
 
-    # has no referenced databases
-    def testGetReferencedDatabasesDictionaryGetsAllZeroReferencedDbs(self):
-        dbName = "airport"
+    # has no referenced tables
+    def testGetReferencedTablesDictionaryGetsAllZeroReferencedDbs(self):
+        tableName = "airport"
         referenced = ["airplane","airport","passenger"]
-        database = db.load(relativeFilePath(dbName))
+        table = db.load(relativeFilePath(tableName))
 
-        result = getReferencedDatabaseDictionary(database)
+        result = getReferencedTableDictionary(table)
 
         self.assertIsInstance(result,dict)
         for x in result:
             self.assertNotIn(x,referenced)
 
 #---# loadSchemas() Test(s)
-    # all databases are added to db init 
-    def testLoadSchemasAddsDatabasesToDbInit(self):
+    # all tables are added to db init 
+    def testLoadSchemasAddsTablesToDbInit(self):
         testType = "Update"
         db_initialize = ""
         initialAns = ""
@@ -307,24 +307,24 @@ class HelperFnsTest(unittest.TestCase):
         data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
                           'db_initialize':db_initialize},
                 'correct_answers':{'SQLEditor': initialAns}}
-        dbOne = "airport"
-        databaseAirport = db.load(relativeFilePath(dbOne))
-        dbTwo = "flight"
-        databaseFlight = db.load(relativeFilePath(dbTwo))
-        dbThree = "airplane"
-        databaseAirplane = db.load(relativeFilePath(dbThree))
-        databases = [databaseAirport,databaseAirplane,databaseFlight]
+        tableOne = "airport"
+        tableAirport = db.load(relativeFilePath(tableOne))
+        tableTwo = "flight"
+        tableFlight = db.load(relativeFilePath(tableTwo))
+        tableThree = "airplane"
+        tableAirplane = db.load(relativeFilePath(tableThree))
+        tables = [tableAirport,tableAirplane,tableFlight]
 
         self.assertEqual(len(data['params']['db_initialize']),0)
 
-        loadSchemas(data,databases)
+        loadSchemas(data,tables)
 
-        self.assertIn(dbOne,data['params']['db_initialize'])
-        self.assertIn(dbTwo,data['params']['db_initialize'])
-        self.assertIn(dbThree,data['params']['db_initialize'])
+        self.assertIn(tableOne,data['params']['db_initialize'])
+        self.assertIn(tableTwo,data['params']['db_initialize'])
+        self.assertIn(tableThree,data['params']['db_initialize'])
 
-    # no databases are added to db init when input is empty
-    def testLoadSchemasAddsNoDatabasesToDbInit(self):
+    # no tables are added to db init when input is empty
+    def testLoadSchemasAddsNoTablesToDbInit(self):
         testType = "Update"
         db_initialize = ""
         initialAns = ""
@@ -332,17 +332,17 @@ class HelperFnsTest(unittest.TestCase):
         data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
                           'db_initialize':db_initialize},
                 'correct_answers':{'SQLEditor': initialAns}}
-        databases = []
+        tables = []
 
         self.assertEqual(len(data['params']['db_initialize']),0)
 
-        loadSchemas(data,databases)
+        loadSchemas(data,tables)
 
         self.assertEqual(len(data['params']['db_initialize']),0)
 
 #---# loadAllSchema() Test(s)
-    # db with no other referenced dbs
-    def testLoadAllSchemaAddsDatabaseWithNoReferencesToDbInit(self):
+    # table with no other referenced tables
+    def testLoadAllSchemaAddsTableWithNoReferencesToDbInit(self):
         testType = "Update"
         db_initialize = ""
         initialAns = ""
@@ -350,17 +350,17 @@ class HelperFnsTest(unittest.TestCase):
         data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
                           'db_initialize':db_initialize},
                 'correct_answers':{'SQLEditor': initialAns}}
-        dbOne = "airport"
-        databaseAirport = db.load(relativeFilePath(dbOne))
+        tableOne = "airport"
+        tableAirport = db.load(relativeFilePath(tableOne))
 
         self.assertEqual(len(data['params']['db_initialize']),0)
 
-        loadAllSchema(data,databaseAirport)
+        loadAllSchema(data,tableAirport)
 
-        self.assertIn(dbOne,data['params']['db_initialize'])
+        self.assertIn(tableOne,data['params']['db_initialize'])
     
-    # db with other referenced dbs
-    def testLoadAllSchemaAddsDatabaseWithReferencesToDbInit(self):
+    # table with other referenced tables
+    def testLoadAllSchemaAddsTableWithReferencesToDbInit(self):
         testType = "Update"
         db_initialize = ""
         initialAns = ""
@@ -368,63 +368,63 @@ class HelperFnsTest(unittest.TestCase):
         data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
                           'db_initialize':db_initialize},
                 'correct_answers':{'SQLEditor': initialAns}}
-        dbOne = "flight"
-        databaseAirport = db.load(relativeFilePath(dbOne))
+        tableOne = "flight"
+        tableAirport = db.load(relativeFilePath(tableOne))
 
         self.assertEqual(len(data['params']['db_initialize']),0)
 
-        loadAllSchema(data,databaseAirport)
+        loadAllSchema(data,tableAirport)
 
-        self.assertIn(dbOne,data['params']['db_initialize'])
+        self.assertIn(tableOne,data['params']['db_initialize'])
         self.assertIn("airplane",data['params']['db_initialize'])
         self.assertIn("airport",data['params']['db_initialize'])
 
-#---# loadTrimmedDatabase() Test(s)
-    # returns a database with a number of columns that we know will work
-    def testLoadTrimmedDatabaseReturnsValidDatabaseWhenGivenValidSize(self):
+#---# loadTrimmedTable() Test(s)
+    # returns a table with a number of columns that we know will work
+    def testLoadTrimmedTableReturnsValidTableWhenGivenValidSize(self):
         columnCount = 3
 
-        result = loadTrimmedDatabase(columnCount, 0)
+        result = loadTrimmedTable(columnCount, 0)
 
         self.assertIsNotNone(result)
     
-    # doesnt return a database because 0 columns isn't possible
-    def testLoadTrimmedDatabaseReturnsNoDatabaseWhenGivenSizeZero(self):
+    # doesnt return a table because 0 columns isn't possible
+    def testLoadTrimmedTableReturnsNoTableWhenGivenSizeZero(self):
         columnCount = 0
 
-        result = loadTrimmedDatabase(columnCount, 0)
+        result = loadTrimmedTable(columnCount, 0)
 
         self.assertIsNone(result)
     
-    # doesn't return a database if no tables have enough columns
-    def testLoadTrimmedDatabaseReturnsNoDatabaseWhenGivenInvalidSize(self):
+    # doesn't return a table if no tables have enough columns
+    def testLoadTrimmedTableReturnsNoTableWhenGivenInvalidSize(self):
         columnCount = 200
         
-        result = loadTrimmedDatabase(columnCount, 0)
+        result = loadTrimmedTable(columnCount, 0)
 
         self.assertIsNone(result)
     
-    # returns a database with a number of joins that we know will work
-    def testLoadTrimmedDatabaseReturnsValidDatabaseWhenGivenValidSize(self):
+    # returns a table with a number of joins that we know will work
+    def testLoadTrimmedTableReturnsValidTableWhenGivenValidSize(self):
         joins = 2
 
-        result = loadTrimmedDatabase(1, joins)
+        result = loadTrimmedTable(1, joins)
 
         self.assertIsNotNone(result)
 
-    # doesn't return a database if the number of joins is invalid
-    def testLoadTrimmedDatabaseReturnsNoDatabaseWhenGivenJoinsZero(self):
+    # doesn't return a table if the number of joins is invalid
+    def testLoadTrimmedTableReturnsNoTableWhenGivenJoinsZero(self):
         joins = -1
 
-        result = loadTrimmedDatabase(1, joins)
+        result = loadTrimmedTable(1, joins)
 
         self.assertIsNone(result)
 
-    # doesn't return a database if no tables have enough columns
-    def testLoadTrimmedDatabaseReturnsNoDatabaseWhenGivenInvalidJoins(self):
+    # doesn't return a table if no tables have enough columns
+    def testLoadTrimmedTableReturnsNoTableWhenGivenInvalidJoins(self):
         joins = 200
         
-        result = loadTrimmedDatabase(1, joins)
+        result = loadTrimmedTable(1, joins)
 
         self.assertIsNone(result)
 
