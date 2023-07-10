@@ -146,8 +146,27 @@ class Table:
 
 
     # Creates a random table
-    def loadRandom(file, columns, joins, clauses):
-        pass
+    # TODO
+    #   - clauses
+    #   - improve selection source for column names
+    def loadRandom(self, name, columns, joins, clauses):
+        
+        # Sets the table name
+        self.name = name
+
+        # Gets a selection of column names
+        # TODO: improve this!
+        possibleColumns = {
+            'INTEGER': ['id', 'name', f"{self.name[0:1].lower()}name", 'pname'],
+            'CHAR': [],
+            'VARCHAR': [],
+            'DATE': [],
+            'DATETIME': []
+            }
+
+        # Adds columns
+        while len(self.columns < columns):
+            pass
 
 
 
