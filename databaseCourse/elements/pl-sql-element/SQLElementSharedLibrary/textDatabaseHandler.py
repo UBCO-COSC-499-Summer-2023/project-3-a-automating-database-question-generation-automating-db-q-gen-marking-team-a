@@ -140,7 +140,6 @@ class Table:
                     'foreignKey': None,
                     'isOnUpdateCascade': False,
                     'isOnDeleteSetNull': False
-
                 }
 
 
@@ -167,6 +166,7 @@ class Table:
         # offers it the columns are swapped around a bit.
 
         # Creates the mega-table
+        '''
         selectionTable = Table('airport')
 
         # Gets all possible tables
@@ -180,6 +180,60 @@ class Table:
         while len(self.columns) < columns:
             pop = selectionTable.columns.pop(choice(list(selectionTable.columns.keys())))
             self.columns[pop['name']] = pop
+        '''
+
+        self.name = name
+
+        '''
+        possibleColumns = {
+            'INTEGER': ['id', 'name', f"{name[0:1].lower()}id"],
+            'DECIMAL': [['price', 0]],
+            'CHAR': [['id', 5], ['state', 2]],
+            'VARCHAR': [[f"{name[0:1].lower()}name", 30], ['name', 30], ['city', 30]],
+            'DATE': [],
+            'DATETIME': []
+        }
+        '''
+
+        # Lists all possible columns
+        possibleColumns = [
+            ['id', 'INTEGER'], ['name', 'INTEGER'], [f"{name[0:1].lower()}id", 'INTEGER'], ['inventory', 'INTEGER'], ['quantity', 'INTEGER'],
+            ['price', 'DECIMAL', range(2, 10), range(1, 3)],
+            ['id', 'CHAR', range(3,6)], ['state', 'CHAR', 2],
+            ['name', 'VARCHAR', range(20, 41, 5)], [f"{name[0:1].lower()}name", 'VARCHAR', range(20, 41, 5)], ['city', 'VARCHAR', range(25, 51, 5)], ['province', 'VARCHAR', range(20, 31, 5)], ['country', 'VARCHAR', range(20, 31, 5)], ['address', 'VARCHAR', range(40, 56, 5)], ['departAirport', 'VARCHAR', range(25, 36, 5)], ['arriveAirport', 'VARCHAR', range(25, 36, 5)], ['firstName', 'VARCHAR', range(25, 36, 5)], ['lastName', 'VARCHAR', range(25, 36, 5)],
+            ['birthdate', 'DATE'], ['manufactureDate', 'DATE'],
+            ['arrivalDate', 'DATETIME'], ['departureDate', 'DATETIME'], ['shipdate', 'DATETIME']
+        ]
+
+        # Keeps adding columns until there are enough
+        while len(self.columns) < columns:
+
+            # Chooses a random column to add
+            addColumn = possibleColumns.pop(choice(range(len(possibleColumns))))
+            
+            # Grabs important parameters
+            columnName = addColumn[0]
+            columnUnit = addColumn[1]
+
+            columnUnitOther = None
+            try:
+                rc = choice(addColumn[2])
+                columnUnitOther = rc
+                print(addColumn[2], rc)
+            except:
+                pass
+
+            self.columns[columnName] = {
+                    'name': columnName,
+                    'unit': columnUnit,
+                    'unitOther': columnUnitOther,
+                    'isPrimary': False,
+                    'isNotNull': False,
+                    'references': None,
+                    'foreignKey': None,
+                    'isOnUpdateCascade': False,
+                    'isOnDeleteSetNull': False
+                }
 
 
 
