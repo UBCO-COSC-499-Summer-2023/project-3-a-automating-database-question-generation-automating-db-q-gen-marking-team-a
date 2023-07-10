@@ -1,23 +1,23 @@
 from os import listdir
 
-# Used for modelling a database during question generation
-# and loading database data from text files
+# Used for modelling a tables during question generation
+# and loading table data from text files
 
-# Returns the create table statement for a database,
-# which is just the text in the database file
+# Returns the create table statement for a table,
+# which is just the text in the table file
 def getDDL(filePath):
     with open(filePath) as file:
         return file.read()
 
-# Loads a database object based on the file
+# Loads a table object based on the file
 def load(filePath):
     try:
-        return Database(filePath)
+        return Table(filePath)
     except:
         return None
 
-# Lists all database files in the specified path
-def getAllDatabaseFiles(path):
+# Lists all table files in the specified path
+def getAllTableFiles(path):
     try:
         # Removes the file extension of all files, if they exist
         return [file[:file.find('.')] for file in listdir(path)]
@@ -25,36 +25,36 @@ def getAllDatabaseFiles(path):
         return []
 
 
-# Models a database for easy question generation
-class Database:
+# Models a table for easy question generation
+class Table:
 
-    # A database has a name and some columns
+    # A table has a name and some columns
     def __init__(self, filePath):
         self.name = ''
         self.columns = {}
 
         # Loads the name and columns
-        self.loadDatabase(filePath)
+        self.loadFromText(filePath)
 
     # Given the path to a text file, loads its data
-    def loadDatabase(self, filePath):
+    def loadFromText(self, filePath):
 
         # Contains all the lines of the file
         lines = []
 
         # Opens the file and iterate over lines
-        with open(filePath, 'r') as databaseFile:
-            for line in databaseFile:
+        with open(filePath, 'r') as tableFile:
+            for line in tableFile:
 
                 # Does not add the lines if it is whitespace
                 if not str.isspace(line):
                     lines.append(line.strip())
         
-        # Gets the database name
+        # Gets the table name
         self.name = lines[0].split(' ')[2]
 
         # Creates the column and adds it
-        # The first line contains the database name so ignore it
+        # The first line contains the table name so ignore it
         # The last line contains '};' so ignore it
         for line in lines[1:-1]:
 
@@ -132,8 +132,8 @@ class Database:
 
     # Returns a dictionary with the following mapping:
     #   column: (if the column is a foreign key)
-    #       'references': the database referenced
-    #       'foreignKey': the column in the referenced database
+    #       'references': the table referenced
+    #       'foreignKey': the column in the referenced table
     def getKeyMap(self):
         return {key: {'references': self.columns[key]['references'], 'foreignKey': self.columns[key]['foreignKey']} for key in self.columns.keys() if self.columns[key]['references']}
 
