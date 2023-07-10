@@ -159,7 +159,7 @@ def generateInsert(data, difficulty):
         case 'hard': columnCount = random.randint(5, 8)
 
     # Gets a database with the specified number of columns
-    database = loadTrimmedDatabase(columnCount)
+    database = loadTrimmedDatabase(columnCount, 0)
 
 
 
@@ -218,7 +218,7 @@ def generateUpdate(data, difficulty):
             return None # Not yet implemented; first requires quesryStatement() to be completed
 
     # Gets a database with the specified number of columns
-    database = loadTrimmedDatabase(columnCount)
+    database = loadTrimmedDatabase(columnCount, 0)
 
 
 
@@ -266,7 +266,7 @@ def generateUpdate(data, difficulty):
     data['correct_answers']['SQLEditor'] = updateStatement(database, updateColumn, updateValue, conditionalColumn, conditionalValue)
 
 # Creates an update statement
-def updateStatement(database, updateColumn, updateValue, conditionalColumn, conditionalValue):
+def updateStatement(database, updateColumn, updateValue, conditionalColumn = None, conditionalValue = None):
 
     # Includes the conditional if they exist
     if conditionalColumn and conditionalValue:
@@ -296,7 +296,7 @@ def generateDelete(data, difficulty):
         case 'hard': return None # Not yet implemented; first requires quesryStatement() to be completed
 
     # Gets a database with the specified number of columns
-    database = loadTrimmedDatabase(columnCount)
+    database = loadTrimmedDatabase(columnCount, 0)
 
     # Generates a bunch of bogus rows
     rows = generateRows(database, columnCount * 3 + random.randint(-3, 3))
@@ -330,8 +330,11 @@ def generateDelete(data, difficulty):
 
 
 # Creates a delete statement
-def deleteStatement(database, column, condition):
-    return f"DELETE FROM {database.name} {conditionalStatement(column, condition)};\n"
+def deleteStatement(database, column = None, condition = None):
+    ans = f"DELETE FROM {database.name}"
+    if(column and condition):
+        ans += f"{conditionalStatement(column, condition)};\n"
+    return ans
 
 '''
     End delete-style question
@@ -375,21 +378,9 @@ def generateQuery(data, difficulty):
 
     # Selects a database based on the difficulty
 
-    # Gets all random databases so a random one may be chosen
-    possibleDatabases = db.getAllDatabaseFiles('./SQLElementSharedLibrary/randomDatabases/')
-
     # Keeps trying random databases until it finds one that
     # fulfills the conditions set by the difficulty
-    #
-    # The len(db.getKeyMap()) ensures that there are enough foreign
-    # keys to fulfill the joins requirement
-    #
-    # The (joins + 1) allows for the main database to have insufficient 
-    # columns since it will be able to use the columns in the joined
-    # databases
-    database = None
-    while not database or len(database.getKeyMap()) < joins or len(database.columns) < columnCount / (joins + 1):
-        database = db.load(relativeFilePath(random.choice(possibleDatabases)))
+    database = loadTrimmedDatabase(columnCount, joins)
 
     # Gets the referenced databases
     referenced = getReferencedDatabaseDictionary(database)
@@ -719,25 +710,50 @@ def loadAllNoisyData(data, database, rows):
 
 
 # Returns a database with a specified number of columns
-def loadTrimmedDatabase(columnCount):
-    
+def loadTrimmedDatabase(columnCount, joinCount):
+
+    # Checks to see if the column count is valid
+    if(columnCount <= 0 or joinCount < 0):
+        return None
+
     # Gets all random databases so a random one may be chosen
     possibleDatabases = db.getAllDatabaseFiles('./SQLElementSharedLibrary/randomDatabases/')
 
     # Keeps trying random databases until it finds one with enough columns
+    # and a enough foreign keys
     database = None
-    while not database or len(database.columns) < columnCount:
-        database = db.load(relativeFilePath(random.choice(possibleDatabases)))
+    while not database or len(database.columns) < columnCount or len(database.getKeyMap()) < joinCount:
+
+        # Checks to see if there are no possible databases left.
+        # This will only occur if there are no tables with enough
+        # columns to satisfy the requirements.
+        if len(possibleDatabases) == 0:
+            return None
+
+        # Pops the current database so there's no repeats
+        possibleDatabase = possibleDatabases.pop(random.choice(range(len(possibleDatabases))))
+        database = db.load(relativeFilePath(possibleDatabase))
 
     # Removes columns until there is an appropriate amount left
+    doomCounter = 10
     while len(database.columns) > columnCount:
+
+        # If the doom counter reaches 0, it means that we are unable to remove
+        # enough columns because they are PKs or necessary FKs. In that case,
+        # just return the database, even if it has too many columns
+        if doomCounter == 0:
+            return database
 
         # We have to convert keys to a list because of subscriptables
         tryPop = random.choice(list(database.columns.keys()))
 
-        # Don't remove primary keys
-        if not database.columns[tryPop]['isPrimary']:
+        # Don't remove...
+        # primary keys, or
+        # foreign keys if it would cause there to be not enough joins
+        if not database.columns[tryPop]['isPrimary'] and (not database.columns[tryPop]['references'] or len(database.getKeyMap()) > joinCount):
             database.columns.pop(tryPop)
+        else:
+            doomCounter -= 1
     
     return database
 
