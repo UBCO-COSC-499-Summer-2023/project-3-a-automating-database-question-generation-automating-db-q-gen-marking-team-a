@@ -107,36 +107,11 @@ def generateCreate(data, difficulty):
     data['params']['questionString'] = questionString
 
     # Places the solution into data
-    #
-    # TODO
-    # Replaced the called method with createStatement() when
-    # that method is completed; i.e. it includes clauses,
-    # primary keys, and foreign keys
-    data['correct_answers']['SQLEditor'] = db.getStaticDDL(relativeFilePath(tableFile))
+    data['correct_answers']['SQLEditor'] = createStatement(table)
 
 # Returns the schema for the current table.
-# Currently DOES NOT include clauses (such as NOT NULL),
-# foreign keys, or primary keys.
 def createStatement(table):
-    # Starts the string with the create table and name
-    schemaString = f"CREATE TABLE {table.name} ("
-
-    # Iterates over columns
-    for key in table.columns:
-
-        # Adds the columns name and data type
-        schemaString += f"\n\t{table.columns[key]['name']} {table.columns[key]['unit']}"
-
-        # If the data type has another component, add it
-        if table.columns[key]['unitOther']:
-            schemaString += f"({table.columns[key]['unitOther']})"
-        
-        # Adds the trailing comma
-        schemaString += ','
-
-    # Removes the trailing comma from the final line and
-    # on a new line add the ');'
-    return f"{schemaString[:-1]}\n\t);"
+    return table.getSchema()
 
 '''
     End create-style question
@@ -631,7 +606,7 @@ def loadSchemas(data, tables):
     # Add their schema to the initialize string
     if tables:
         for table in tables:
-            data['params']['db_initialize'] += f"{createStatement(table)}\n"
+            data['params']['db_initialize'] += f"{table.getSchema()}\n"
 
 # Loads the schema of the current table as well
 # as all referenced tables.
