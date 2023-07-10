@@ -116,7 +116,7 @@ class QuestionTypeStatementsTest(unittest.TestCase):
         ["flight"]
     ])
     def testCreateStatementReturnsStatementWithAllColumns(self,tableFile):
-        table = db.load(tableFile)
+        table = db.Table(tableFile)
         tableName = table.name
 
         result = createStatement(table)
@@ -160,7 +160,7 @@ class QuestionTypeStatementsTest(unittest.TestCase):
     # with conditional
     def testUpdateStatementWithConditional(self):
         tableName = "airport"
-        table = db.load(tableName)
+        table = db.Table(tableName)
         updateCol= "province"
         updateVal = "Alberta"
         conditionalCol = updateCol
@@ -178,7 +178,7 @@ class QuestionTypeStatementsTest(unittest.TestCase):
     # without conditional
     def testUpdateStatementWithoutConditional(self):
         tableName = "airport"
-        table = db.load(tableName)
+        table = db.Table(tableName)
         updateCol = "province"
         updateVal = "Alberta"
 
@@ -195,7 +195,7 @@ class QuestionTypeStatementsTest(unittest.TestCase):
     # with a condition
     def testDeleteStatementWithConditional(self):
         tableName = "airport"
-        table = db.load(tableName)
+        table = db.Table(tableName)
         col = "province"
         condition = "Alberta"
 
@@ -211,7 +211,7 @@ class QuestionTypeStatementsTest(unittest.TestCase):
     # without a condition
     def testDeleteStatementWithoutConditional(self):
         tableName = "airport"
-        table = db.load(tableName)
+        table = db.Table(tableName)
 
         result = deleteStatement(table)
 
@@ -227,7 +227,7 @@ class QuestionTypeStatementsTest(unittest.TestCase):
     # no foreignkeys
     # def testQueryStatementWithoutForeignKeys(self):
     #     tableName = "airport"
-    #     table = db.load(tableName)
+    #     table = db.Table(tableName)
     #     keyMap = {"airport"}
     #     foreignKeyMap = {}
     #     selectedColumns = []
@@ -251,7 +251,7 @@ class HelperFnsTest(unittest.TestCase):
     def testGetReferencedTablesSetGetsAllReferencedDbs(self):
         tableName = "flight"
         referenced = ["airplane","airport","passenger"]
-        table = db.load(tableName)
+        table = db.Table(tableName)
 
         result = getReferencedTablesSet(table)
 
@@ -263,7 +263,7 @@ class HelperFnsTest(unittest.TestCase):
     def testGetReferencedTablesSetGetsAllZeroReferencedDbs(self):
         tableName = "airport"
         referenced = ["airplane","airport","passenger"]
-        table = db.load(tableName)
+        table = db.Table(tableName)
 
         result = getReferencedTablesSet(table)
 
@@ -276,7 +276,7 @@ class HelperFnsTest(unittest.TestCase):
     def testGetReferencedTablesDictionaryGetsAllReferencedDbs(self):
         tableName = "flight"
         referenced = ["airplane","airport","passenger"]
-        table = db.load(tableName)
+        table = db.Table(tableName)
 
         result = getReferencedTableDictionary(table)
 
@@ -288,7 +288,7 @@ class HelperFnsTest(unittest.TestCase):
     def testGetReferencedTablesDictionaryGetsAllZeroReferencedDbs(self):
         tableName = "airport"
         referenced = ["airplane","airport","passenger"]
-        table = db.load(tableName)
+        table = db.Table(tableName)
 
         result = getReferencedTableDictionary(table)
 
@@ -307,11 +307,11 @@ class HelperFnsTest(unittest.TestCase):
                           'db_initialize':db_initialize},
                 'correct_answers':{'SQLEditor': initialAns}}
         tableOne = "airport"
-        tableAirport = db.load(tableOne)
+        tableAirport = db.Table(tableOne)
         tableTwo = "flight"
-        tableFlight = db.load(tableTwo)
+        tableFlight = db.Table(tableTwo)
         tableThree = "airplane"
-        tableAirplane = db.load(tableThree)
+        tableAirplane = db.Table(tableThree)
         tables = [tableAirport,tableAirplane,tableFlight]
 
         self.assertEqual(len(data['params']['db_initialize']),0)
@@ -350,7 +350,7 @@ class HelperFnsTest(unittest.TestCase):
                           'db_initialize':db_initialize},
                 'correct_answers':{'SQLEditor': initialAns}}
         tableOne = "airport"
-        tableAirport = db.load(tableOne)
+        tableAirport = db.Table(tableOne)
 
         self.assertEqual(len(data['params']['db_initialize']),0)
 
@@ -368,7 +368,7 @@ class HelperFnsTest(unittest.TestCase):
                           'db_initialize':db_initialize},
                 'correct_answers':{'SQLEditor': initialAns}}
         tableOne = "flight"
-        tableAirport = db.load(tableOne)
+        tableAirport = db.Table(tableOne)
 
         self.assertEqual(len(data['params']['db_initialize']),0)
 
