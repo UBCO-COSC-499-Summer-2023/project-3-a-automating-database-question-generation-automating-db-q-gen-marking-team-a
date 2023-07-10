@@ -204,32 +204,7 @@ $(document).ready(function () {
         } else {
             button.append(output.getFormulaHtml(false));
         }
-
-        var dropdown = $("<div class='tree-popup'>Columns:</div>")
-        var columns = output.getSchema().getColumns().map( function(col, i) {
-            var li = $("<li></li>")
-            li.attr("key", i);
-//            li.attr("style", "all: unset; list-style-type: circle;");
-            li.append(`${col.toString()}<small> -- ${output.getSchema().getType(i)}</small>`);
-            return li;
-        });
-        console.log(columns)
-        dropdown.append($("<ul class='normal-list'></ul>").append(columns));
-        if (output.hasMetaData('naturalJoinConditions')) {
-            var naturalJoinConditions = output.getMetaData('naturalJoinConditions');
-            var listItems = naturalJoinConditions.map( function(condition) {
-                var li = $("<li></li>");
-                li.append(condition.getFormulaHtml());
-                return li;
-            });
-            dropdown.append("Natural Join Conditions:");
-            dropdown.append(listItems);
-        }
-        if (output.getMetaData('isInlineRelation') === true && n.hasMetaData('inlineRelationDefinition')) {
-            dropdown.append(output.getMetaData('inlineRelationDefinition'))
-            console.log(output.getMetaData('inlineRelationDefinition'))
-        }
-        dropdown.append(`<p>${output.getResultNumRows()} row${output.getResultNumRows() === 1 ? '' : 's'}</p>`)
+        dropdown = createTreeNodeDropdown(output);
         button.append(dropdown)
         // allows each node to return the output at that point of  execution 
         button.on("click", function() { 
@@ -268,6 +243,63 @@ $(document).ready(function () {
         } 
     }
 });
+
+function createTreeNodeDropdown(output) {
+
+    // Creates the submenue element for the table, onclick each member of the table will add itself to the editor
+    var maxColNameLength = 0;
+    var maxColTypeLength = 0;
+    var dropdown = $("<div class='tree-popup'>Columns:</div>")
+    var columns = output.getSchema().getColumns().map( function(col, i) {
+        if (col.toString().length > maxColNameLength) {
+            maxColNameLength = col.toString().length;
+        }
+        if (output.getSchema().getType(i).length > maxColTypeLength) {
+            maxColTypeLength = output.getSchema().getType(i).length+1;
+        }
+
+
+        var div = $(`<div classname='submenu'>`)
+        div.attr("style", "text-align: center; border: 1px solid white; padding: 0.2em; display: flex; justify-content: space-around;");
+        div.attr("classname", "submenu");
+        return div;
+    });
+
+    for (var i = 0; i < columns.length; i++) {
+        let name = `<span style='cursor: pointer; width: ${maxColNameLength}ch; font-size: 16px;'>${output.getSchema().getName(i)}</span>`;
+        let type = `<span style='cursor: pointer; width: ${maxColTypeLength}ch; font-size: 16px;'><small>${output.getSchema().getType(i).toUpperCase()}</small></span>`;
+        columns[i].append(name);
+        columns[i].append(type);
+
+    }
+
+    dropdown.append(columns);
+    // dropdown.append($("<ul></ul>").append(columns));
+    if (output.hasMetaData('naturalJoinConditions')) {
+        var naturalJoinConditions = output.getMetaData('naturalJoinConditions');
+
+        
+        var listItems = naturalJoinConditions.map( function(condition) {
+
+            var div = $(`<div classname='submenu'>`)
+            div.attr("style", "text-align: center; border: 1px solid white; padding: 0.2em; display: flex; justify-content: space-around;");
+            div.attr("classname", "submenu");
+
+            var condSpan = $(`<span style='cursor: pointer; font-size: 16px;'>${condition.getFormulaHtml()}</span>`)
+            div.append(condSpan)
+            return div;
+        }); 
+        dropdown.append("Natural Join Conditions:");
+        dropdown.append(listItems);
+    }
+    if (output.getMetaData('isInlineRelation') === true && n.hasMetaData('inlineRelationDefinition')) {
+        dropdown.append(output.getMetaData('<span>inlineRelationDefinition</span>'))
+    }
+    dropdown.append(`<small>${output.getResultNumRows()} row${output.getResultNumRows() === 1 ? '' : 's'}</small>`)
+    
+
+    return dropdown;
+}
 
 
 /**

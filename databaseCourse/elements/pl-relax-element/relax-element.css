@@ -321,6 +321,16 @@
 	z-index: 1;
 }
 
+.node .tree-popup ul,
+.node .tree-popup li {
+	all: unset;
+	list-style-type: circle;
+}
+.node .tree-popup li::marker {
+	content: "•";
+	color:#000;
+}
+
 .ra-tree .tree li div.node.active:hover .tree-popup,
 .ra-tree .tree li div.node:hover .tree-popup  {
 	display: block;
@@ -331,16 +341,6 @@
 .ra-tree .tree li div.node:hover+ul::before,
 .ra-tree .tree li div.node:hover+ul ul::before {
   border-color: #007bff !important;
-}
-
-.ra-tree .popup-content .normal-list,
-.ra-tree .popup-content .normal-list ul
-.ra-tree .popup-content .normal-list ul li {
-
-}
-
-.normal-list {
-
 }
 
 .ra-tree li .node {
