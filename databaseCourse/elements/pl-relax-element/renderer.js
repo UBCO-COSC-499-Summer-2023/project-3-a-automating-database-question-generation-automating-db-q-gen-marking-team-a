@@ -59,6 +59,8 @@ $(document).ready(function () {
     }
     
     // Execute the RelaX Query
+    var activeNode = null;
+
     function executeEditorContents() {
         //! d1 and d2 cannot be used to replace "S" and "P"
         //? How can we fix the "S" and "P" issue
@@ -66,17 +68,18 @@ $(document).ready(function () {
         var d2 = dataset.at(1)._schema._relAliases.at(0);
 
         try {
+            activeNode = null;
             const PR = executeRelalg(editor.getValue(), { "Customer" : dataset[0], "Product" : dataset[1], "Shipment" : dataset[2], "ShippedProduct" : dataset[3] }); // gets query results
             treeElm.contents().remove(); // clears Tree previous results
             createOutputTable(PR); // creates and renders new output table
             var treeDiv = $('<div class="tree"></div>');
             var ulDiv = $("<ul></ul>");
-            
             ulDiv.append(createRecList(PR)); // creates and renders new tree
             treeDiv.append(ulDiv);
             treeElm.append(treeDiv);
         } catch (err) {
-            createErrorOutput(err.stack); // creates and renders error in event user has incorrect RA query 
+            console.log(err.stack)
+            createErrorOutput(err); // creates and renders error in event user has incorrect RA query 
         }
     }
 0
@@ -179,22 +182,36 @@ $(document).ready(function () {
         return rowElements;
     }
 
+
     //* Recursive function that creates the RelaX output Tree
     function createRecList(output){
         var container = $("<li></li>"); // Creates container holding section of tree
         var button = $("<div></div>"); // creates first node of this secton tree
-
+        
         // fills node attributes
         button.attr("id", "button-"+output._functionName);
-        button.attr("class", "node");
+        if (activeNode == null) {
+            button.attr("class", "node active");
+            activeNode = button;
+        } else {
+            button.attr("class", "node");
+        }
+
         var text = output._functionName
         if (text === '_inlineRelation8') {
             button.append(output._codeInfo.text); 
         } else {
             button.append(output.getFormulaHtml(false));
         }
-        // allows each node to return the output at that point of execution 
-        button.on("click", function() { createOutputTable(output); });
+        dropdown = createTreeNodeDropdown(output);
+        button.append(dropdown)
+        // allows each node to return the output at that point of  execution 
+        button.on("click", function() { 
+            activeNode.attr("class", "node");
+            button.attr("class", "node active");
+            activeNode = button;
+            createOutputTable(output); 
+        });
         
         // Checks to see if there are 2, 1, or no Children
         if ((output._child != null) && (output._child2 != null)) {
@@ -226,40 +243,59 @@ $(document).ready(function () {
     }
 });
 
+function createTreeNodeDropdown(output) {
 
-/**
- * 				<li>
-					<div
-						className={classNames({
-							'node': true,
-							'active': n === activeNode,
-						})}
-						onClick={() => setActiveNode && setActiveNode(n)}
-					>
-						<Popover
-							title={<div>{fromVariableMarker}<div dangerouslySetInnerHTML={{ __html: n.getFormulaHtml(true, false) }}></div></div>}
-							body={popoverBody}
-							placement="right"
-							trigger="hover"
-						>
+    // Creates the submenue element for the table, onclick each member of the table will add itself to the editor
+    var maxColNameLength = 0;
+    var maxColTypeLength = 0;
+    var dropdown = $("<div class='tree-popup'>Columns:</div>")
+    var columns = output.getSchema().getColumns().map( function(col, i) {
+        if (col.toString().length > maxColNameLength) {
+            maxColNameLength = col.toString().length;
+        }
+        if (output.getSchema().getType(i).length > maxColTypeLength) {
+            maxColTypeLength = output.getSchema().getType(i).length+1;
+        }
 
-							<a className="formula">
-								{fromVariableMarker}<span dangerouslySetInnerHTML={{ __html: n.getFormulaHtml(false, false) }} /><br/>
-								<span className="resultCountLabel">{`${n.getResultNumRows()} row${n.getResultNumRows() === 1 ? '' : 's'}`}</span>
-							</a>
 
-						</Popover>
-					</div>
-					{child || child2
-						? (
-							<ul>
-								{child}
-								{child2}
-							</ul>
-						)
-						: null
-					}
-				</li>
-			);
-		};
- */
+        var div = $(`<div classname='submenu'>`)
+        div.attr("style", "text-align: center; border: 1px solid white; padding: 0.2em; display: flex; justify-content: space-around;");
+        div.attr("classname", "submenu");
+        return div;
+    });
+
+    for (var i = 0; i < columns.length; i++) {
+        let name = `<span style='cursor: pointer; width: ${maxColNameLength}ch; font-size: 16px;'>${output.getSchema().getName(i)}</span>`;
+        let type = `<span style='cursor: pointer; width: ${maxColTypeLength}ch; font-size: 16px;'><small>${output.getSchema().getType(i).toUpperCase()}</small></span>`;
+        columns[i].append(name);
+        columns[i].append(type);
+
+    }
+
+    dropdown.append(columns);
+    // dropdown.append($("<ul></ul>").append(columns));
+    if (output.hasMetaData('naturalJoinConditions')) {
+        var naturalJoinConditions = output.getMetaData('naturalJoinConditions');
+
+        
+        var listItems = naturalJoinConditions.map( function(condition) {
+
+            var div = $(`<div classname='submenu'>`)
+            div.attr("style", "text-align: center; border: 1px solid white; padding: 0.2em; display: flex; justify-content: space-around;");
+            div.attr("classname", "submenu");
+
+            var condSpan = $(`<span style='cursor: pointer; font-size: 16px;'>${condition.getFormulaHtml()}</span>`)
+            div.append(condSpan)
+            return div;
+        }); 
+        dropdown.append("Natural Join Conditions:");
+        dropdown.append(listItems);
+    }
+    if (output.getMetaData('isInlineRelation') === true && n.hasMetaData('inlineRelationDefinition')) {
+        dropdown.append(output.getMetaData('<span>inlineRelationDefinition</span>'))
+    }
+    dropdown.append(`<small>${output.getResultNumRows()} row${output.getResultNumRows() === 1 ? '' : 's'}</small>`)
+    
+
+    return dropdown;
+}
