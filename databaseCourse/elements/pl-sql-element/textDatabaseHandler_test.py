@@ -156,13 +156,14 @@ class TableTest(unittest.TestCase):
         # To check if the table was correctly modified, 
         # count the number of foreign keys in the table.
         # We know that if we 'departAirport' from 'flight',
-        # then there will be one foreign key left.
+        # then there will be two foreign key left:
+        # 'arriveAirport' and 'airplaneId'
         fks = 0
         for line in tableSchema:
             if 'FOREIGN KEY' in line:
                 fks += 1
 
-        self.assertEqual(fks, 1)
+        self.assertEqual(fks, 2)
 
 
 
