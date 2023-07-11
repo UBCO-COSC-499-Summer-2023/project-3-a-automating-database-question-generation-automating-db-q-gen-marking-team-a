@@ -153,17 +153,11 @@ class Table:
 
         # Sets the name
         self.name = name
+
+        # Gets the columns used to build a table
+        possibleColumns = self.parseColumnsFromFile('randomColumns')
         
 
-        # Lists all possible columns
-        possibleColumns = [
-            ['id', 'INTEGER'], ['name', 'INTEGER'], [f"{name[0:1].lower()}id", 'INTEGER'], ['inventory', 'INTEGER'], ['quantity', 'INTEGER'],
-            ['price', 'DECIMAL', range(2, 10), range(1, 3)],
-            ['id', 'CHAR', range(3,6)], ['state', 'CHAR', '2'],
-            ['name', 'VARCHAR', range(20, 41, 5)], [f"{name[0:1].lower()}name", 'VARCHAR', range(20, 41, 5)], ['city', 'VARCHAR', range(25, 51, 5)], ['province', 'VARCHAR', range(20, 31, 5)], ['country', 'VARCHAR', range(20, 31, 5)], ['address', 'VARCHAR', range(40, 56, 5)], ['departAirport', 'VARCHAR', range(25, 36, 5)], ['arriveAirport', 'VARCHAR', range(25, 36, 5)], ['firstName', 'VARCHAR', range(25, 36, 5)], ['lastName', 'VARCHAR', range(25, 36, 5)],
-            ['birthdate', 'DATE'], ['manufactureDate', 'DATE'],
-            ['arrivalDate', 'DATETIME'], ['departureDate', 'DATETIME'], ['shipdate', 'DATETIME']
-        ]
 
         # Keeps adding columns until there are enough
         while len(self.columns) < columns:
@@ -197,6 +191,91 @@ class Table:
                     'isOnDeleteSetNull': False
                 }
 
+    # Given a marked-up textfile, return an array
+    # of possible columns for random table generation.
+    # A helper function for loadRandom
+    def parseColumnsFromFile(self, file):
+
+        # Holds all the columns that can be selected
+        possibleColumns = []
+
+        # Reads the text file
+        with open(f"./SQLElementSharedLibrary/{file}.txt") as columnsFile:
+
+            # Iterates over each line
+            for line in columnsFile:
+
+                # Only cares about non-whitespace lines
+                if line and not line.isspace():
+
+                    # Formats the line correctly.
+                    # Removes leading and trailing whitespace from
+                    # each word, as deliminated by ',' in the line
+                    words = [word.strip() for word in line.split(',')]
+
+                    # Grabs the parameters
+                    name = words[0]
+                    unit = words[1]
+                    unitOther = None
+
+
+
+                    # % is used as a placeholder and is replaced
+                    # with the first letter of the respective table's
+                    # name
+                    if '%' in name:
+                        name = name.replace('%', self.name[0:1].lower())
+
+                    # Handles the cases where the unitOther is not none
+                    if 'DECIMAL' == unit or 'CHAR' == unit or 'VARCHAR' == unit:
+                        unitOther = self.parseRange(words[2])
+                        
+                        # Decimal needs two bits of data to
+                        # describe its unitOther; hence length of 4
+                        if unit == 'DECIMAL':
+                            possibleColumns.append([name, unit, unitOther, self.parseRange(words[3])])
+                        # The other columns with uniOther only require 3
+                        else:
+                            possibleColumns.append([name, unit, unitOther])
+                    
+                    # Adds columns without unitOther
+                    else:
+                        possibleColumns.append([name, unit])
+            
+        # Returns the populated array
+        return possibleColumns
+
+    # Given a range in the form of `xx-yy-zz` or
+    # `xx-yy`, returns a range. If there is no `-`,
+    # then return it unchanged as a string.
+    # A helper funciton of parseColumnsFromFile()
+    def parseRange(self, string):
+
+        # Checks if it is a range
+        if '-' in string:
+
+            # Split over '-'
+            split = string.split('-')
+
+            # The format is:
+            #   First item is the start
+            #   Second item is the stop (inclusive!)
+            #   Third item is the step (optional)
+            start = int(split[0])
+            stop = int(split[1]) + 1
+
+            # Obtains the step, if it is included.
+            # otherwise it defualts to 1
+            step = 1
+            if len(split) > 2:
+                step = int(split[2])
+            
+            # Returns the range
+            return range(start, stop, step)
+        
+        # If it is not a range, return as a string
+        else:
+            return f"{string}"
 
 
     # Returns a dictionary with the following mapping:
