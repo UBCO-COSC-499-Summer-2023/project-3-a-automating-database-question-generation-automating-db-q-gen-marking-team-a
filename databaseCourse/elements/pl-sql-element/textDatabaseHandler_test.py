@@ -71,6 +71,14 @@ class TableTest(unittest.TestCase):
 
 
     # Tests random object instantiation
+    # Case: Default parameters
+    def testRandomTableDefaultParameters(self):
+        table = Table()
+
+        self.assertIsNotNone(table)
+        self.assertIsNotNone(table.columns)
+        self.assertIsNotNone(table.getKeyMap())
+
     # Case: Valid columns and valid joins
     def testRandomTableValidColumnsValidJoins(self):
         tableName = 'randomTable'
