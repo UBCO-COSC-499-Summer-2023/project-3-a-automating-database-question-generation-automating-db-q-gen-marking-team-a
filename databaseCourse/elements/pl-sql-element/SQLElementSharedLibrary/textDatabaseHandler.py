@@ -151,55 +151,15 @@ class Table:
     #   - improve selection source for column names
     def loadRandom(self, name, columns, joins, clauses):
 
-        # Current approach for loading a random table is
-        # to create one very large table with all columns
-        # from every table and pop them out randomly until
-        # we have enough tables
-        # 
-        # Some issues with this approach is that columns with
-        # duplicate names over different tables will override
-        # each other. Additionally, it is difficult to specify
-        # how many joins you want, and very difficuly to set
-        # clauses. Finally, it is barely better than the
-        # previous 'random' table generation, where it selects
-        # a random table from a list; the only improvement this
-        # offers it the columns are swapped around a bit.
-
-        # Creates the mega-table
-        '''
-        selectionTable = Table('airport')
-
-        # Gets all possible tables
-        tableFiles = getAllTableFiles('./SQLElementSharedLibrary/randomTables/')
-
-        # Adds ALL columns to the selection table
-        for tableFile in tableFiles:
-            selectionTable.loadFromText(relativeFilePath(tableFile))
-
-        # Adds columns
-        while len(self.columns) < columns:
-            pop = selectionTable.columns.pop(choice(list(selectionTable.columns.keys())))
-            self.columns[pop['name']] = pop
-        '''
-
+        # Sets the name
         self.name = name
-
-        '''
-        possibleColumns = {
-            'INTEGER': ['id', 'name', f"{name[0:1].lower()}id"],
-            'DECIMAL': [['price', 0]],
-            'CHAR': [['id', 5], ['state', 2]],
-            'VARCHAR': [[f"{name[0:1].lower()}name", 30], ['name', 30], ['city', 30]],
-            'DATE': [],
-            'DATETIME': []
-        }
-        '''
+        
 
         # Lists all possible columns
         possibleColumns = [
             ['id', 'INTEGER'], ['name', 'INTEGER'], [f"{name[0:1].lower()}id", 'INTEGER'], ['inventory', 'INTEGER'], ['quantity', 'INTEGER'],
             ['price', 'DECIMAL', range(2, 10), range(1, 3)],
-            ['id', 'CHAR', range(3,6)], ['state', 'CHAR', 2],
+            ['id', 'CHAR', range(3,6)], ['state', 'CHAR', '2'],
             ['name', 'VARCHAR', range(20, 41, 5)], [f"{name[0:1].lower()}name", 'VARCHAR', range(20, 41, 5)], ['city', 'VARCHAR', range(25, 51, 5)], ['province', 'VARCHAR', range(20, 31, 5)], ['country', 'VARCHAR', range(20, 31, 5)], ['address', 'VARCHAR', range(40, 56, 5)], ['departAirport', 'VARCHAR', range(25, 36, 5)], ['arriveAirport', 'VARCHAR', range(25, 36, 5)], ['firstName', 'VARCHAR', range(25, 36, 5)], ['lastName', 'VARCHAR', range(25, 36, 5)],
             ['birthdate', 'DATE'], ['manufactureDate', 'DATE'],
             ['arrivalDate', 'DATETIME'], ['departureDate', 'DATETIME'], ['shipdate', 'DATETIME']
@@ -209,20 +169,22 @@ class Table:
         while len(self.columns) < columns:
 
             # Chooses a random column to add
+            # Pops the column to ensure no duplicates
             addColumn = possibleColumns.pop(choice(range(len(possibleColumns))))
             
-            # Grabs important parameters
+            # Grabs parameters
             columnName = addColumn[0]
             columnUnit = addColumn[1]
 
+            # Grabs the unit specification as necessary
             columnUnitOther = None
-            try:
-                rc = choice(addColumn[2])
-                columnUnitOther = rc
-                print(addColumn[2], rc)
-            except:
-                pass
+            match columnUnit:
+                case 'DECIMAL': columnUnitOther = f"{choice(addColumn[2])},{choice(addColumn[3])}"
+                case 'CHAR': columnUnitOther = f"{choice(addColumn[2])}"
+                case 'VARCHAR': columnUnitOther = f"{choice(addColumn[2])}"
+            
 
+            # Adds the column
             self.columns[columnName] = {
                     'name': columnName,
                     'unit': columnUnit,
