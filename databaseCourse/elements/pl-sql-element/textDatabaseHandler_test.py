@@ -99,6 +99,15 @@ class TableTest(unittest.TestCase):
         table = Table(tableName, columns, joins)
 
         self.assertIsNone(table.columns)
+    
+    # Case: more joins than columns
+    def testRandomTableMoreJoinsThanColumns(self):
+        tableName = 'randomTable'
+        columns = 4
+        joins = 5
+        table = Table(tableName, columns, joins)
+
+        self.assertIsNone(table.columns)
 
 
 
