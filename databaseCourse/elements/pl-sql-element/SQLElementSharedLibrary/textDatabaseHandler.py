@@ -101,12 +101,13 @@ class Table:
             # Handles the case where the line describes a primary key
             elif 'PRIMARY KEY' in line.upper():
                 
-                # Gets the primary key
-                # Removes the parentheses
-                primaryKey = words[2][words[2].find('(') + 1 : words[2].find(')')]
+                # Gets a list of primary keys
+                primaryKeys = line[line.find('(') + 1 : line.find(')')].split(',')
 
                 # Sets the column as a primary key
-                self.columns[primaryKey]['isPrimary'] = True
+                for primaryKey in primaryKeys:
+                    self.columns[primaryKey.strip()]['isPrimary'] = True
+                
 
             # Otherwise add the column
             else:
