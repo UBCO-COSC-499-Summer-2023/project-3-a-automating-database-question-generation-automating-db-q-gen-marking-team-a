@@ -25,6 +25,16 @@ def getAllTableFiles(path):
     except:
         return []
 
+# Returns a list of names for random tables
+def getRandomTableNames():
+    try:
+        with open('./SQLElementSharedLibrary/randomTableNames.txt') as file:
+            # Strips out whitespace and only considers lines
+            # that aren't exclusively whitespace
+            return [line.strip() for line in file.readlines() if not line.isspace()]
+    except:
+       return []
+
 
 # Models a table for easy question generation
 class Table:
@@ -147,8 +157,7 @@ class Table:
 
     # Creates a random table
     # TODO
-    #   - intentional joins
-    #   - clauses
+    #   - clauses; will be completed on an as-needed basis
     def loadRandom(self, name, columns, joins, clauses):
 
         # Checks whether the parameters are legal
@@ -195,6 +204,49 @@ class Table:
                     'isOnUpdateCascade': False,
                     'isOnDeleteSetNull': False
                 }
+            
+
+
+        # This deep copy ensures we don't duplicately
+        # Select a column
+        columnsCopy = list(self.columns.keys())
+
+        # Gets a list of random tables
+        randomTables = getRandomTableNames()
+
+        # Keeps adding joins until there are enough
+        while len(self.getKeyMap()) < joins:
+
+            # Chooses a random column to become foreign
+            foreignColumn = columnsCopy.pop(choice(range(len(columnsCopy))))
+
+            # Selects a random table to reference
+            self.columns[foreignColumn]['references'] = randomTables.pop(choice(range(len(randomTables))))
+
+            # Tries another random name if this table's
+            # name happens to match the random name. 
+            # Note: no need for a while loop; because of the
+            # pop(), it is guaranteed that a second attempt
+            # will provide a unique name.
+            if self.name == self.columns[foreignColumn]['references']:
+                self.columns[foreignColumn]['references'] = randomTables.pop(choice(range(len(randomTables))))
+
+
+            # Alters the column names.
+            # The first letter of the FKs on either side will
+            # be the name fo their respective table. Otherwise,
+            # the column names will be the same.
+
+            # Changes the foreign key's name
+            self.columns[foreignColumn]['foreignKey'] = f"{self.columns[foreignColumn]['references'][0:1].lower()}{foreignColumn}"
+
+            # Changes this table's column name
+            self.columns[foreignColumn]['name'] = f"{self.name[0:1].lower()}{foreignColumn}"
+
+            # Removes the old column while updateting the new
+            self.columns[f"{self.name[0:1].lower()}{foreignColumn}"] = self.columns.pop(foreignColumn)
+
+
 
     # Given a marked-up textfile, return an array
     # of possible columns for random table generation.
@@ -224,12 +276,6 @@ class Table:
                     unitOther = None
 
 
-
-                    # % is used as a placeholder and is replaced
-                    # with the first letter of the respective table's
-                    # name
-                    if '%' in name:
-                        name = name.replace('%', self.name[0:1].lower())
 
                     # Handles the cases where the unitOther is not none
                     if 'DECIMAL' == unit or 'CHAR' == unit or 'VARCHAR' == unit:

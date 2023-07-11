@@ -1,5 +1,4 @@
 id,INTEGER
-%id,INTEGER
 inventory,INTEGER
 quantity,INTEGER
 
@@ -9,7 +8,6 @@ id,CHAR,3-6
 state,CHAR,2
 
 name,VARCHAR,20-40-5
-%name,VARCHAR,20-40-5
 city,VARCHAR,25-50-5
 province,VARCHAR,20-30-5
 country,VARCHAR,20-30-5
