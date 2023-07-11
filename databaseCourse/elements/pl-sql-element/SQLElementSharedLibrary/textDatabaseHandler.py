@@ -148,15 +148,18 @@ class Table:
     # TODO
     #   - intentional joins
     #   - clauses
-    #   - improve selection source for column names
     def loadRandom(self, name, columns, joins, clauses):
+
+        # Checks whether the parameters are legal
+        if columns < 1 or joins < 0 or joins > columns:
+            return None
 
         # Sets the name
         self.name = name
 
         # Gets the columns used to build a table
         possibleColumns = self.parseColumnsFromFile('randomColumns')
-        
+
 
 
         # Keeps adding columns until there are enough

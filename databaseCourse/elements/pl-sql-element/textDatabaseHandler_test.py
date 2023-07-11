@@ -67,17 +67,18 @@ class TableTest(unittest.TestCase):
         tableName = 'randomTable'
         columns = 3
         joins = 1
-        table = load(tableName, columns, joins)
+        table = Table(tableName, columns, joins)
 
         self.assertEqual(len(table.columns), columns)
-        self.assertAlmostEqual(len(table.getKeyMap()), joins)
+        self.assertEqual(len(table.getKeyMap()), joins)
+    '''
 
     # Case: Valid columns and invalid joins
     def testRandomTableValidColumnsInvalidJoins(self):
         tableName = 'randomTable'
         columns = 3
         joins = -1
-        table = load(tableName, columns, joins)
+        table = Table(tableName, columns, joins)
 
         self.assertIsNone(table)
 
@@ -86,7 +87,7 @@ class TableTest(unittest.TestCase):
         tableName = 'randomTable'
         columns = -1
         joins = 1
-        table = load(tableName, columns, joins)
+        table = Table(tableName, columns, joins)
 
         self.assertIsNone(table)
 
@@ -95,10 +96,9 @@ class TableTest(unittest.TestCase):
         tableName = 'randomTable'
         columns = -1
         joins = -1
-        table = load(tableName, columns, joins)
+        table = Table(tableName, columns, joins)
 
         self.assertIsNone(table)
-    '''
 
 
 
