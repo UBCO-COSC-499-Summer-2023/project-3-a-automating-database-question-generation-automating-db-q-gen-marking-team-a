@@ -68,7 +68,8 @@ class TableTest(unittest.TestCase):
 
         self.assertIsNotNone(table)
 
-    ''' ! Functions does not yet exists !
+
+
     # Tests random object instantiation
     # Case: Valid columns and valid joins
     def testRandomTableValidColumnsValidJoins(self):
@@ -79,7 +80,6 @@ class TableTest(unittest.TestCase):
 
         self.assertEqual(len(table.columns), columns)
         self.assertEqual(len(table.getKeyMap()), joins)
-    '''
 
     # Case: Valid columns and invalid joins
     def testRandomTableValidColumnsInvalidJoins(self):
