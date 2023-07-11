@@ -1,0 +1,624 @@
+{
+  "id": "7ee2979e-4080-42e5-9fd3-12f0e6bb7691",
+  "version": "2.0",
+  "name": "pl",
+  "url": "http://localhost:3000/",
+  "tests": [{
+    "id": "97b91bf6-5e92-49b5-a08c-b14616516f37",
+    "name": "sqlEditorExecuteButtonClick",
+    "commands": [{
+      "id": "8565e0c5-420a-415c-bfc9-d7ff439870fa",
+      "comment": "",
+      "command": "open",
+      "target": "http://localhost:3000/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "f5b2d840-ed96-4569-87f5-11488a71e6d9",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1532x816",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "11c4eef8-2b2c-4cac-bb85-cb919c71f059",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Summer 2023",
+      "targets": [
+        ["linkText=Summer 2023", "linkText"],
+        ["css=tr:nth-child(1) .btn", "css:finder"],
+        ["xpath=//a[contains(text(),'Summer 2023')]", "xpath:link"],
+        ["xpath=//div[@id='content']/div[2]/table/tbody/tr/td[2]/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/pl/course_instance/1/instructor')]", "xpath:href"],
+        ["xpath=//td[2]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Summer 2023')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "fd893505-192a-4b33-b6be-4faf48fe7b5b",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Homework For Writing SQL Queries",
+      "targets": [
+        ["linkText=Homework For Writing SQL Queries", "linkText"],
+        ["css=#row-3 > .align-middle:nth-child(2) > a", "css:finder"],
+        ["xpath=//a[contains(text(),'Homework For Writing SQL Queries')]", "xpath:link"],
+        ["xpath=//tr[@id='row-3']/td[2]/a", "xpath:idRelative"],
+        ["xpath=(//a[contains(@href, '/pl/course_instance/1/instructor/assessment/3/')])[2]", "xpath:href"],
+        ["xpath=//tr[5]/td[2]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Homework For Writing SQL Queries')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "1f5779f6-ca24-4c0a-be13-6657dc1afde0",
+      "comment": "",
+      "command": "click",
+      "target": "css=tr:nth-child(2) a",
+      "targets": [
+        ["css=tr:nth-child(2) a", "css:finder"],
+        ["xpath=//a[contains(text(),'1.\n                    \n                    SQL Query 1')]", "xpath:link"],
+        ["xpath=//main[@id='content']/div/div[2]/table/tbody/tr[2]/td/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/pl/course_instance/1/instructor/question/266/')]", "xpath:href"],
+        ["xpath=//td/a", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "8f37d117-c444-482b-9dd4-8bdc514969dd",
+      "comment": "",
+      "command": "click",
+      "target": "id=execute",
+      "targets": [
+        ["id=execute", "id"],
+        ["css=#execute", "css:finder"],
+        ["xpath=//div[@id='execute']", "xpath:attributes"],
+        ["xpath=//div[@id='sql-input']/div[2]", "xpath:idRelative"],
+        ["xpath=//div[5]/div[2]", "xpath:position"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "ded606c5-c40b-4f3a-873d-097a6a039d5c",
+    "name": "sqlEditorDbSchemaClickAddColumn",
+    "commands": [{
+      "id": "431d03a7-7bae-4445-8f9b-55cfb2bed8f1",
+      "comment": "",
+      "command": "open",
+      "target": "http://localhost:3000/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "a64d88fc-b380-4991-af6a-02df23957658",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1532x816",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "88ddaca6-45f3-4d56-97d0-bb4d93f1a796",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Summer 2023",
+      "targets": [
+        ["linkText=Summer 2023", "linkText"],
+        ["css=tr:nth-child(1) .btn", "css:finder"],
+        ["xpath=//a[contains(text(),'Summer 2023')]", "xpath:link"],
+        ["xpath=//div[@id='content']/div[2]/table/tbody/tr/td[2]/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/pl/course_instance/1/instructor')]", "xpath:href"],
+        ["xpath=//td[2]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Summer 2023')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "545326dd-c550-4a3b-91f3-f21716af3b6d",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Homework For Writing SQL Queries",
+      "targets": [
+        ["linkText=Homework For Writing SQL Queries", "linkText"],
+        ["css=#row-3 > .align-middle:nth-child(2) > a", "css:finder"],
+        ["xpath=//a[contains(text(),'Homework For Writing SQL Queries')]", "xpath:link"],
+        ["xpath=//tr[@id='row-3']/td[2]/a", "xpath:idRelative"],
+        ["xpath=(//a[contains(@href, '/pl/course_instance/1/instructor/assessment/3/')])[2]", "xpath:href"],
+        ["xpath=//tr[5]/td[2]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Homework For Writing SQL Queries')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "ae60cc01-2ce3-45cd-bbad-5d86ed550ce5",
+      "comment": "",
+      "command": "click",
+      "target": "css=tr:nth-child(2) a",
+      "targets": [
+        ["css=tr:nth-child(2) a", "css:finder"],
+        ["xpath=//a[contains(text(),'1.\n                    \n                    SQL Query 1')]", "xpath:link"],
+        ["xpath=//main[@id='content']/div/div[2]/table/tbody/tr[2]/td/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/pl/course_instance/1/instructor/question/266/')]", "xpath:href"],
+        ["xpath=//td/a", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "b4287781-6f49-42d6-818e-74fbb7c450f8",
+      "comment": "",
+      "command": "click",
+      "target": "xpath=//span[@onclick=\"addColumnToEditor('customer', 'cid')\"]",
+      "targets": [
+        ["xpath=//span[@onclick=\"addColumnToEditor('customer', 'cid')\"]", "xpath:attributes"],
+        ["xpath=//div[@id='schema-customer']/span", "xpath:idRelative"],
+        ["xpath=//div/div/div/span", "xpath:position"],
+        ["xpath=//span[contains(.,'cid')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "590080f3-e357-467b-9659-993e2d5ae25e",
+    "name": "sqlEditorDbSchemaClickAddTableName",
+    "commands": [{
+      "id": "3ad30c92-eb03-48ce-a11e-36b6300584dc",
+      "comment": "",
+      "command": "open",
+      "target": "http://localhost:3000/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "069baaa6-9fbf-4a87-8ef5-c86a18e3f6a7",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1532x816",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "91b5d164-ee9c-4167-988d-6dd7e8b430d0",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Summer 2023",
+      "targets": [
+        ["linkText=Summer 2023", "linkText"],
+        ["css=tr:nth-child(1) .btn", "css:finder"],
+        ["xpath=//a[contains(text(),'Summer 2023')]", "xpath:link"],
+        ["xpath=//div[@id='content']/div[2]/table/tbody/tr/td[2]/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/pl/course_instance/1/instructor')]", "xpath:href"],
+        ["xpath=//td[2]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Summer 2023')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "049df0b2-6eb5-458d-9dc7-07a769e64090",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Homework For Writing SQL Queries",
+      "targets": [
+        ["linkText=Homework For Writing SQL Queries", "linkText"],
+        ["css=#row-3 > .align-middle:nth-child(2) > a", "css:finder"],
+        ["xpath=//a[contains(text(),'Homework For Writing SQL Queries')]", "xpath:link"],
+        ["xpath=//tr[@id='row-3']/td[2]/a", "xpath:idRelative"],
+        ["xpath=(//a[contains(@href, '/pl/course_instance/1/instructor/assessment/3/')])[2]", "xpath:href"],
+        ["xpath=//tr[5]/td[2]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Homework For Writing SQL Queries')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "5b074eea-0e71-434e-b26e-6f74c90828bc",
+      "comment": "",
+      "command": "click",
+      "target": "css=tr:nth-child(2) a",
+      "targets": [
+        ["css=tr:nth-child(2) a", "css:finder"],
+        ["xpath=//a[contains(text(),'1.\n                    \n                    SQL Query 1')]", "xpath:link"],
+        ["xpath=//main[@id='content']/div/div[2]/table/tbody/tr[2]/td/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/pl/course_instance/1/instructor/question/266/')]", "xpath:href"],
+        ["xpath=//td/a", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "74632efb-e725-4ffd-8042-943772ec98e7",
+      "comment": "",
+      "command": "click",
+      "target": "id=btn-\" + tableName + \"",
+      "targets": [
+        ["id=btn-\" + tableName + \"", "id"],
+        ["css=.schemaTable:nth-child(1) > #btn-\\\"\\ \\+\\ tableName\\ \\+\\ \\\"", "css:finder"],
+        ["xpath=//button[@id='btn-\" + tableName + \"']", "xpath:attributes"],
+        ["xpath=//div[@id='db-schema']/div/button", "xpath:idRelative"],
+        ["xpath=//div[4]/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'customer')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "a2cd6ccd-c8c4-4e56-bd47-73b4ef021a66",
+    "name": "sqlEditorExecuteQuery",
+    "commands": [{
+      "id": "91b450c4-dcec-47fb-b7bd-9fa106e4b157",
+      "comment": "",
+      "command": "open",
+      "target": "http://localhost:3000/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "d06d8a18-d10c-45d9-8cb9-4d537574cf9b",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1532x816",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "dfffa830-de1e-412d-bc5f-302b473302b0",
+      "comment": "",
+      "command": "click",
+      "target": "css=tr:nth-child(1) > td:nth-child(2)",
+      "targets": [
+        ["css=tr:nth-child(1) > td:nth-child(2)", "css:finder"],
+        ["xpath=//div[@id='content']/div[2]/table/tbody/tr/td[2]", "xpath:idRelative"],
+        ["xpath=//td[2]", "xpath:position"],
+        ["xpath=//td[contains(.,'Summer 2023')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "de81148c-fc8e-4dfb-8a05-eae7878e67b8",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Summer 2023",
+      "targets": [
+        ["linkText=Summer 2023", "linkText"],
+        ["css=tr:nth-child(1) .btn", "css:finder"],
+        ["xpath=//a[contains(text(),'Summer 2023')]", "xpath:link"],
+        ["xpath=//div[@id='content']/div[2]/table/tbody/tr/td[2]/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/pl/course_instance/1/instructor')]", "xpath:href"],
+        ["xpath=//td[2]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Summer 2023')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "9676b7e5-0a5f-4397-9b7b-7516653e67bc",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Homework For Writing SQL Queries",
+      "targets": [
+        ["linkText=Homework For Writing SQL Queries", "linkText"],
+        ["css=#row-3 > .align-middle:nth-child(2) > a", "css:finder"],
+        ["xpath=//a[contains(text(),'Homework For Writing SQL Queries')]", "xpath:link"],
+        ["xpath=//tr[@id='row-3']/td[2]/a", "xpath:idRelative"],
+        ["xpath=(//a[contains(@href, '/pl/course_instance/1/instructor/assessment/3/')])[2]", "xpath:href"],
+        ["xpath=//tr[5]/td[2]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Homework For Writing SQL Queries')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "70a1a9fe-14e9-403d-9754-d7e28070767b",
+      "comment": "",
+      "command": "click",
+      "target": "css=tr:nth-child(2) a",
+      "targets": [
+        ["css=tr:nth-child(2) a", "css:finder"],
+        ["xpath=//a[contains(text(),'1.\n                    \n                    SQL Query 1')]", "xpath:link"],
+        ["xpath=//main[@id='content']/div/div[2]/table/tbody/tr[2]/td/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/pl/course_instance/1/instructor/question/266/')]", "xpath:href"],
+        ["xpath=//td/a", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "36628fe5-a179-47ac-a7fe-4c5ff1afa4ca",
+      "comment": "",
+      "command": "runScript",
+      "target": "window.scrollTo(0,358.3999938964844)",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "5c711d67-859d-4e49-97ac-3438ab67c056",
+      "comment": "",
+      "command": "runScript",
+      "target": "window.scrollTo(0,358.3999938964844)",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "184be394-5f0a-48bc-9c22-d1f3cb0c3790",
+      "comment": "",
+      "command": "runScript",
+      "target": "window.scrollTo(0,358.3999938964844)",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "37c25753-7bcb-4474-b5ba-53393783e769",
+      "comment": "",
+      "command": "type",
+      "target": "css=.CodeMirror textarea",
+      "targets": [
+        ["css=.CodeMirror textarea", "css:finder"],
+        ["xpath=//div[@id='sql-input']/div/div/textarea", "xpath:idRelative"],
+        ["xpath=//div[5]/div/div/textarea", "xpath:position"]
+      ],
+      "value": "SELECT * FROM customer"
+    }, {
+      "id": "fbb42872-fc8b-4f2c-b59f-933240d1e9c2",
+      "comment": "",
+      "command": "click",
+      "target": "id=execute",
+      "targets": [
+        ["id=execute", "id"],
+        ["css=#execute", "css:finder"],
+        ["xpath=//div[@id='execute']", "xpath:attributes"],
+        ["xpath=//div[@id='sql-input']/div[2]", "xpath:idRelative"],
+        ["xpath=//div[5]/div[2]", "xpath:position"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "eaab88d1-f333-480a-847c-dc6fe504ab99",
+    "name": "sqlEditorOutputTableColumnSortByClick",
+    "commands": [{
+      "id": "9b4ce969-da5b-44b9-9899-f265b4c4a4dd",
+      "comment": "",
+      "command": "open",
+      "target": "http://localhost:3000/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "329dc413-0510-4edd-8f87-09f1a2a2d101",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1532x816",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "3e89d52c-e289-429f-9ef6-acdb429f526e",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Summer 2023",
+      "targets": [
+        ["linkText=Summer 2023", "linkText"],
+        ["css=tr:nth-child(1) .btn", "css:finder"],
+        ["xpath=//a[contains(text(),'Summer 2023')]", "xpath:link"],
+        ["xpath=//div[@id='content']/div[2]/table/tbody/tr/td[2]/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/pl/course_instance/1/instructor')]", "xpath:href"],
+        ["xpath=//td[2]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Summer 2023')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "5270a288-697e-4fc2-a83f-c5c5e7172768",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Homework For Writing SQL Queries",
+      "targets": [
+        ["linkText=Homework For Writing SQL Queries", "linkText"],
+        ["css=#row-3 > .align-middle:nth-child(2) > a", "css:finder"],
+        ["xpath=//a[contains(text(),'Homework For Writing SQL Queries')]", "xpath:link"],
+        ["xpath=//tr[@id='row-3']/td[2]/a", "xpath:idRelative"],
+        ["xpath=(//a[contains(@href, '/pl/course_instance/1/instructor/assessment/3/')])[2]", "xpath:href"],
+        ["xpath=//tr[5]/td[2]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Homework For Writing SQL Queries')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "12f35323-ef1c-46aa-b0b2-1d63a14cdccb",
+      "comment": "",
+      "command": "click",
+      "target": "css=tr:nth-child(2) a",
+      "targets": [
+        ["css=tr:nth-child(2) a", "css:finder"],
+        ["xpath=//a[contains(text(),'1.\n                    \n                    SQL Query 1')]", "xpath:link"],
+        ["xpath=//main[@id='content']/div/div[2]/table/tbody/tr[2]/td/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/pl/course_instance/1/instructor/question/266/')]", "xpath:href"],
+        ["xpath=//td/a", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "03f0575c-e979-4733-ae1a-8e7438016ff8",
+      "comment": "",
+      "command": "runScript",
+      "target": "window.scrollTo(0,358.3999938964844)",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "b64f7172-506c-4603-8dc0-247866863762",
+      "comment": "",
+      "command": "runScript",
+      "target": "window.scrollTo(0,358.3999938964844)",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "a484962b-40cd-40cd-a143-9c358dcbc6e6",
+      "comment": "",
+      "command": "type",
+      "target": "css=.CodeMirror textarea",
+      "targets": [
+        ["css=.CodeMirror textarea", "css:finder"],
+        ["xpath=//div[@id='sql-input']/div/div/textarea", "xpath:idRelative"],
+        ["xpath=//div[5]/div/div/textarea", "xpath:position"]
+      ],
+      "value": "SELECT * FROM customer"
+    }, {
+      "id": "47a476ed-c153-46dc-952e-769a948e6351",
+      "comment": "",
+      "command": "click",
+      "target": "id=execute",
+      "targets": [
+        ["id=execute", "id"],
+        ["css=#execute", "css:finder"],
+        ["xpath=//div[@id='execute']", "xpath:attributes"],
+        ["xpath=//div[@id='sql-input']/div[2]", "xpath:idRelative"],
+        ["xpath=//div[5]/div[2]", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "e9bc6693-440f-4e05-9edb-443626598e5e",
+      "comment": "",
+      "command": "click",
+      "target": "css=th:nth-child(2)",
+      "targets": [
+        ["css=th:nth-child(2)", "css:finder"],
+        ["xpath=//pre[@id='output']/div/table/thead/tr/th[2]", "xpath:idRelative"],
+        ["xpath=//th[2]", "xpath:position"],
+        ["xpath=//th[contains(.,'cname')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "7ee244f5-b68d-4b67-a132-38dc499b8bd4",
+      "comment": "",
+      "command": "click",
+      "target": "css=th:nth-child(2)",
+      "targets": [
+        ["css=th:nth-child(2)", "css:finder"],
+        ["xpath=//pre[@id='output']/div/table/thead/tr/th[2]", "xpath:idRelative"],
+        ["xpath=//th[2]", "xpath:position"],
+        ["xpath=//th[contains(.,'cname')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "144337ef-8028-4691-9421-ce59b89cf923",
+      "comment": "",
+      "command": "click",
+      "target": "css=th:nth-child(3)",
+      "targets": [
+        ["css=th:nth-child(3)", "css:finder"],
+        ["xpath=//pre[@id='output']/div/table/thead/tr/th[3]", "xpath:idRelative"],
+        ["xpath=//th[3]", "xpath:position"],
+        ["xpath=//th[contains(.,'address')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "d76c2d13-5552-4e0e-a984-640bcc18478e",
+      "comment": "",
+      "command": "click",
+      "target": "css=th:nth-child(3)",
+      "targets": [
+        ["css=th:nth-child(3)", "css:finder"],
+        ["xpath=//pre[@id='output']/div/table/thead/tr/th[3]", "xpath:idRelative"],
+        ["xpath=//th[3]", "xpath:position"],
+        ["xpath=//th[contains(.,'address')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "6e6b080c-2abf-4ebb-adab-88b0bc147b3c",
+      "comment": "",
+      "command": "doubleClick",
+      "target": "css=th:nth-child(3)",
+      "targets": [
+        ["css=th:nth-child(3)", "css:finder"],
+        ["xpath=//pre[@id='output']/div/table/thead/tr/th[3]", "xpath:idRelative"],
+        ["xpath=//th[3]", "xpath:position"],
+        ["xpath=//th[contains(.,'address')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "f88b90d0-88dc-45ef-a2ce-e8e8720308bd",
+      "comment": "",
+      "command": "click",
+      "target": "css=th:nth-child(4)",
+      "targets": [
+        ["css=th:nth-child(4)", "css:finder"],
+        ["xpath=//pre[@id='output']/div/table/thead/tr/th[4]", "xpath:idRelative"],
+        ["xpath=//th[4]", "xpath:position"],
+        ["xpath=//th[contains(.,'city')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "2756fe2f-3ba8-4804-88e8-644dcf5a2b5e",
+      "comment": "",
+      "command": "click",
+      "target": "css=th:nth-child(4)",
+      "targets": [
+        ["css=th:nth-child(4)", "css:finder"],
+        ["xpath=//pre[@id='output']/div/table/thead/tr/th[4]", "xpath:idRelative"],
+        ["xpath=//th[4]", "xpath:position"],
+        ["xpath=//th[contains(.,'city')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "4e7d0850-da5e-4a53-bbec-2acf9dd5a207",
+      "comment": "",
+      "command": "doubleClick",
+      "target": "css=th:nth-child(4)",
+      "targets": [
+        ["css=th:nth-child(4)", "css:finder"],
+        ["xpath=//pre[@id='output']/div/table/thead/tr/th[4]", "xpath:idRelative"],
+        ["xpath=//th[4]", "xpath:position"],
+        ["xpath=//th[contains(.,'city')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "e93e6dcc-8c0c-4ac9-8ce0-6d7c8fa844e9",
+      "comment": "",
+      "command": "click",
+      "target": "css=th:nth-child(5)",
+      "targets": [
+        ["css=th:nth-child(5)", "css:finder"],
+        ["xpath=//pre[@id='output']/div/table/thead/tr/th[5]", "xpath:idRelative"],
+        ["xpath=//th[5]", "xpath:position"],
+        ["xpath=//th[contains(.,'state')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "e92ecb1e-1a83-4ba5-b5c1-c141c53c67ec",
+      "comment": "",
+      "command": "click",
+      "target": "css=th:nth-child(5)",
+      "targets": [
+        ["css=th:nth-child(5)", "css:finder"],
+        ["xpath=//pre[@id='output']/div/table/thead/tr/th[5]", "xpath:idRelative"],
+        ["xpath=//th[5]", "xpath:position"],
+        ["xpath=//th[contains(.,'state')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "eaef439a-ae01-47c8-97cd-f5df8f9d2503",
+      "comment": "",
+      "command": "doubleClick",
+      "target": "css=th:nth-child(5)",
+      "targets": [
+        ["css=th:nth-child(5)", "css:finder"],
+        ["xpath=//pre[@id='output']/div/table/thead/tr/th[5]", "xpath:idRelative"],
+        ["xpath=//th[5]", "xpath:position"],
+        ["xpath=//th[contains(.,'state')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "1cb253f2-4359-42ab-b531-54e6ce19a2cd",
+      "comment": "",
+      "command": "click",
+      "target": "css=th:nth-child(1)",
+      "targets": [
+        ["css=th:nth-child(1)", "css:finder"],
+        ["xpath=//pre[@id='output']/div/table/thead/tr/th", "xpath:idRelative"],
+        ["xpath=//th", "xpath:position"],
+        ["xpath=//th[contains(.,'cid')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "41486528-daaa-4cfc-ac12-497ed5fe4bb2",
+      "comment": "",
+      "command": "click",
+      "target": "css=th:nth-child(1)",
+      "targets": [
+        ["css=th:nth-child(1)", "css:finder"],
+        ["xpath=//pre[@id='output']/div/table/thead/tr/th", "xpath:idRelative"],
+        ["xpath=//th", "xpath:position"],
+        ["xpath=//th[contains(.,'cid')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "c3deefe7-a329-48ed-8fd6-92d6f81b574b",
+      "comment": "",
+      "command": "doubleClick",
+      "target": "css=th:nth-child(1)",
+      "targets": [
+        ["css=th:nth-child(1)", "css:finder"],
+        ["xpath=//pre[@id='output']/div/table/thead/tr/th", "xpath:idRelative"],
+        ["xpath=//th", "xpath:position"],
+        ["xpath=//th[contains(.,'cid')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
+  }],
+  "suites": [{
+    "id": "9f588648-9439-4ed1-8c54-bed1b0f97b58",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": []
+  }],
+  "urls": ["http://localhost:3000/"],
+  "plugins": []
+}
