@@ -4,7 +4,7 @@ quantity,INTEGER
 
 price,DECIMAL,3-9,2
 
-id,CHAR,3-6
+ID,CHAR,3-6
 state,CHAR,2
 
 name,VARCHAR,20-40-5

@@ -41,7 +41,12 @@ class Table:
 
     # A table has a name and some columns
     # File name and table name are equivalent
-    def __init__(self, file, columns=1, joins=0, clauses=[]):
+    #
+    # As a note, columns cannot be less than 3. There
+    # is a weird timeout that occurs and I cannot for
+    # the life of me figure out why. More on that
+    # in loadRandom().
+    def __init__(self, file='', columns=5, joins=1, clauses=[]):
         self.name = file
         self.columns = {}
 
@@ -51,15 +56,16 @@ class Table:
 
     # Loads a table object based on the file.
     # All parameters other than file only matter to
-    # random tables, not static tables; for random tables,
-    # f"{file}" will become the table name"
+    # random tables, not static tables; for random tables.
+    # f"{file}" will become the table name if it is
+    # provided, otherwise a random name will be chosen
     def load(self, file, columns, joins, clauses):
         tableFiles = getAllTableFiles('./SQLElementSharedLibrary/randomTables/')
 
-        if file in tableFiles:
+        if file and file in tableFiles:
             self.loadFromText(relativeFilePath(file))
         else:
-            self.loadRandom(file, columns, joins, clauses)
+            self.loadRandom(self.name, columns, joins, clauses)
 
     # Given the path to a text file, loads its data
     def loadFromText(self, filePath):
@@ -161,12 +167,19 @@ class Table:
     def loadRandom(self, name, columns, joins, clauses):
 
         # Checks whether the parameters are legal
-        if columns < 1 or joins < 0 or joins > columns:
+        #
+        # Columns must be at least three otherwise there is
+        # a high chance of PL throwing a timeout exception.
+        # It's due to the line `self.columns[columnName] = {...}`
+        # BUT HOW!? How does *that* line get a timeout iff the
+        # count of columns is either 1 or 2? It makes no sense!
+        if columns < 3 or joins < 0 or joins > columns:
             self.columns = None
             return
 
-        # Sets the name
-        self.name = name
+        # Selects a random name if none are provided
+        if not name:
+            self.name = choice(getRandomTableNames())
 
         # Gets the columns used to build a table
         possibleColumns = self.parseColumnsFromFile('randomColumns')
@@ -179,7 +192,7 @@ class Table:
             # Chooses a random column to add
             # Pops the column to ensure no duplicates
             addColumn = possibleColumns.pop(choice(range(len(possibleColumns))))
-            
+
             # Grabs parameters
             columnName = addColumn[0]
             columnUnit = addColumn[1]
@@ -190,9 +203,9 @@ class Table:
                 case 'DECIMAL': columnUnitOther = f"{choice(addColumn[2])},{choice(addColumn[3])}"
                 case 'CHAR': columnUnitOther = f"{choice(addColumn[2])}"
                 case 'VARCHAR': columnUnitOther = f"{choice(addColumn[2])}"
-            
 
-            # Adds the column
+            # Adds the column.
+            # (Usually) times-out if columns == 1 or 2
             self.columns[columnName] = {
                     'name': columnName,
                     'unit': columnUnit,
@@ -204,10 +217,10 @@ class Table:
                     'isOnUpdateCascade': False,
                     'isOnDeleteSetNull': False
                 }
-            
 
 
-        # This deep copy ensures we don't duplicately
+
+        # This copy ensures we don't duplicately
         # Select a column
         columnsCopy = list(self.columns.keys())
 
