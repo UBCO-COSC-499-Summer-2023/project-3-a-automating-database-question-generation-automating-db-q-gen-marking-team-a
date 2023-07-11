@@ -689,7 +689,7 @@ def loadTrimmedTable(columnCount, joinCount):
         return None
 
     # Gets all random tables so a random one may be chosen
-    possibleTables = db.getAllTableFiles('./SQLElementSharedLibrary/randomTables/')
+    possibleTables = db.getAllTableFiles()
 
     # Keeps trying random tables until it finds one with enough columns
     # and a enough foreign keys
