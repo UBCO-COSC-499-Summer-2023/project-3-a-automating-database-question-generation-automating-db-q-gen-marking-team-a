@@ -130,18 +130,16 @@ class TableTest(unittest.TestCase):
 
 
 
-    # Tests getDDL()
+    # Tests getSchema()
     # Case: table is unmodified from file DDL
-    ''' ! Function does not yet exists !
     def testGetDDLWhenTableIsUnmodified(self):
         tableName = 'flight'
-        table = load(f"./SQLElementSharedLibrary/randomTables/{tableName}.txt")
-        tableDDL = table.getDDL()
+        table = Table(f"./SQLElementSharedLibrary/randomTables/{tableName}.txt")
+        tableDDL = table.getSchema()
 
-        unmodifiedDDL = getDDL(f"./SQLElementSharedLibrary/randomTables/{tableName}.txt")
+        unmodifiedDDL = getStaticSchema(f"./SQLElementSharedLibrary/randomTables/{tableName}.txt")
 
-        self.assertEqual(tableDDL, unmodifiedDDL)
-    '''
+        self.assertEqual(tableDDL.strip(), unmodifiedDDL.strip())
 
 
     # Case: table is modified from DDL
