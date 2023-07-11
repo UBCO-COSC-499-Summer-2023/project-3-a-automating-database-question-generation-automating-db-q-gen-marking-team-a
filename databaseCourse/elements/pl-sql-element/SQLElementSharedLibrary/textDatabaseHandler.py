@@ -36,21 +36,17 @@ def getRandomTableNames(path='./SQLElementSharedLibrary/randomTableNames.txt'):
        return []
 
 
+
 # Models a table for easy question generation
 class Table:
 
-    # A table has a name and some columns
-    # File name and table name are equivalent
-    #
-    # As a note, columns cannot be less than 3. There
-    # is a weird timeout that occurs and I cannot for
-    # the life of me figure out why. More on that
-    # in loadRandom().
-    def __init__(self, file='', columns=5, joins=1, clauses=[]):
+    # A table has a name and some columns.
+    # File name and table name are equivalent.
+    def __init__(self, file='', columns=5, joins=1, clauses=[], constraints={}):
         self.name = file
         self.columns = {}
 
-        self.load(file, columns, joins, clauses)
+        self.load(file, columns, joins, clauses, constraints)
 
 
 
@@ -59,27 +55,23 @@ class Table:
     # random tables, not static tables; for random tables.
     # f"{file}" will become the table name if it is
     # provided, otherwise a random name will be chosen
-    def load(self, file, columns, joins, clauses):
+    def load(self, file, columns, joins, clauses, constraints):
         tableFiles = getAllTableFiles()
 
         if file and file in tableFiles:
             self.loadFromText(relativeFilePath(file))
         else:
-            self.loadRandom(self.name, columns, joins, clauses)
+            self.loadRandom(self.name, columns, joins, clauses, constraints)
 
     # Given the path to a text file, loads its data
     def loadFromText(self, filePath):
 
-        # Contains all the lines of the file
+        # Only includes lines that aren't exclusively
+        # white text and strips them of trailing/leading
+        # white text
         lines = []
-
-        # Opens the file and iterate over lines
         with open(filePath, 'r') as tableFile:
-            for line in tableFile:
-
-                # Does not add the lines if it is whitespace
-                if not str.isspace(line):
-                    lines.append(line.strip())
+            lines = [line.strip() for line in tableFile if not line.isspace()]
         
 
         # Creates the column and adds it
@@ -164,7 +156,7 @@ class Table:
     # Creates a random table
     # TODO
     #   - clauses; will be completed on an as-needed basis
-    def loadRandom(self, name, columns, joins, clauses):
+    def loadRandom(self, name, columns, joins, clauses, constraints):
 
         # Checks whether the parameters are legal
         #
