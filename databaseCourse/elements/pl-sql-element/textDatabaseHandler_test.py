@@ -52,6 +52,14 @@ class TableHelperFunctionsTest(unittest.TestCase):
 # Tests the table object
 class TableTest(unittest.TestCase):
     
+
+
+    # Tests load()
+    # This one does not need to be tested since it is
+    # integration tested with Table instantiation
+
+
+
     # Tests object instantiation, thus the load() function
     # Case: filepath is correct
     def testStaticTableGeneration(self):
@@ -108,6 +116,55 @@ class TableTest(unittest.TestCase):
         table = Table(tableName, columns, joins)
 
         self.assertIsNone(table.columns)
+
+
+
+    # Tests parseColumnsFromFile()
+    # This one does not need to be tested since it is
+    # integration tested with Table instantiation
+
+
+
+    # Tests parseRange()
+    # Case: a string, not a range, is provided
+    def testParseRangeStringNotRange(self):
+        table = Table('randomTable')
+        
+        string = 'this is not a range'
+        returnedRange = table.parseRange(string)
+
+        self.assertEqual(string, returnedRange)
+
+    # Case: range has two components
+    def testParseRangeTwoComponents(self):
+        table = Table('randomTable')
+        
+        string = '3-5'
+        range = range(3, 6)
+        returnedRange = table.parseRange(string)
+
+        self.assertEqual(range, returnedRange)
+
+    # Case: range has three components
+    def testParseRangeThreeComponents(self):
+        table = Table('randomTable')
+        
+        string = '20-30-5'
+        range = range(20, 31, 5)
+        returnedRange = table.parseRange(string)
+
+        self.assertEqual(range, returnedRange)
+
+    # Case: range has four components
+    # The fourth component should be ignored
+    def testParseRangeThreeComponents(self):
+        table = Table('randomTable')
+        
+        string = '7-10-3-1'
+        range = range(7, 11, 3)
+        returnedRange = table.parseRange(string)
+
+        self.assertEqual(range, returnedRange)
 
 
 
