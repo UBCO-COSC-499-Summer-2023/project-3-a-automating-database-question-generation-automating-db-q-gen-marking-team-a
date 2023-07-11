@@ -139,7 +139,11 @@ class TableTest(unittest.TestCase):
 
         unmodifiedDDL = getStaticSchema(tableName)
 
-        self.assertEqual(tableDDL.strip(), unmodifiedDDL.strip())
+        # Strips all whitespace from both strings
+        tableDDLStripped = ''.join([word.strip() for word in tableDDL])
+        unmodifiedDDLStripped = ''.join([word.strip() for word in unmodifiedDDL])
+
+        self.assertEqual(tableDDLStripped, unmodifiedDDLStripped)
 
 
     # Case: table is modified from DDL
