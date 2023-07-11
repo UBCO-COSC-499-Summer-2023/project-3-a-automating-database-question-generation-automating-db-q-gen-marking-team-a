@@ -29,7 +29,7 @@ class AutogenerateTest(unittest.TestCase):
             ["query","medium","select"],
             ["create","hard","create"],
             ["insert","hard","insert"],
-            # TODO
+            # TODO: needs to be implemented
             # ["update","hard","change"], #not implemented yet
             # ["delete","hard","delete"], #not implemented yet
             ["query","hard","select"]
@@ -47,7 +47,6 @@ class AutogenerateTest(unittest.TestCase):
         actualQuestionType = ''.join(data['params']['questionString']).lower()
         self.assertIn(keyWord,actualQuestionType)
     
-    # TODO
     # generate*QuestionType*() Tests------------------------------------------------------------------------------------------------------------------
 #---# generateCreate() - already tested & covered in AutogenerateTest class
 #---# generateInsert() - already tested & covered in AutogenerateTest class
@@ -89,24 +88,22 @@ class QuestionGenerationTest(unittest.TestCase):
     # TODO
 #---# generateQuery() Test(s)
     # joins == 0, clauses == 0
-    # def testGenerateQueryReturnsEasyQuestion(self):
-    #     testType = "query"
-    #     db_initialize = ""
-    #     initialAns = ""
-    #     difficulty = "medium"
-    #     data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
-    #                       'db_initialize':db_initialize},
-    #             'correct_answers':{'SQLEditor': initialAns}}
+    def testGenerateQueryReturnsEasyQuestion(self):
+        testType = "query"
+        db_initialize = ""
+        initialAns = ""
+        difficulty = "medium"
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
+                          'db_initialize':db_initialize},
+                'correct_answers':{'SQLEditor': initialAns}}
         
-    #     generateQuery(data,difficulty)
-    #     print(data)
+        generateQuery(data,difficulty)
 
-    #     actualQuestionType = ''.join(data['params']['questionString']).lower()
-    #     self.assertIn("where",actualQuestionType)
+        actualQuestionType = ''.join(data['params']['questionString']).lower()
+        self.assertIn("select the columns",actualQuestionType)
     # joins != 0, clauses == 0
     # joins != 0, clauses != 0
 
-    # TODO
     # *questionType*Statement() Tests------------------------------------------------------------------------------------------------------------------
 class QuestionTypeStatementsTest(unittest.TestCase):
 
@@ -125,45 +122,312 @@ class QuestionTypeStatementsTest(unittest.TestCase):
         result = createStatement(database)
         
         self.assertIn("CREATE",result)
+        self.assertNotIn("INSERT",result)
+        self.assertNotIn("UPDATE",result)
+        self.assertNotIn("DELETE",result)
+        self.assertNotIn("SELECT",result)
         self.assertIn(dbName,result)
         for key in database.columns:
             self.assertIn(key,result)
             self.assertIn(database.columns[key]["unit"],result)
 
 #---# insertStatement() Test(s)
-#---# updateStatement() Test(s)
-#---# deleteStatement() Test(s)
-#---# queryStatement() Test(s)
+    # valid input -> valid output
+    def testInsertStatementReturnsCorrectTableNameAndValuesInStatement(self):
+        dbName = "airport"
+        row = [9,8,0]
+        database = db.load(relativeFilePath(dbName))
 
-    # TODO
+        result = insertStatement(database,row)
+
+        self.assertIn(dbName,result)
+        for x in row:
+            self.assertIn(str(x),result)
+        self.assertIn("INSERT",result)
+        self.assertNotIn("CREATE",result)
+        self.assertNotIn("UPDATE",result)
+        self.assertNotIn("DELETE",result)
+        self.assertNotIn("SELECT",result)
+
+#---# updateStatement() Test(s)
+    # with conditional
+    def testUpdateStatementWithConditional(self):
+        dbName = "airport"
+        database = db.load(relativeFilePath(dbName))
+        updateCol= "province"
+        updateVal = "Alberta"
+        conditionalCol = updateCol
+        conditionalVal = "Ontario"
+
+        result = updateStatement(database,updateCol,updateVal,conditionalCol,conditionalVal)
+
+        self.assertIn("UPDATE",result)
+        self.assertIn("WHERE",result)
+        self.assertNotIn("CREATE",result)
+        self.assertNotIn("INSERT",result)
+        self.assertNotIn("DELETE",result)
+        self.assertNotIn("SELECT",result)
+
+    # without conditional
+    def testUpdateStatementWithoutConditional(self):
+        dbName = "airport"
+        database = db.load(relativeFilePath(dbName))
+        updateCol = "province"
+        updateVal = "Alberta"
+
+        result = updateStatement(database,updateCol,updateVal)
+
+        self.assertIn("UPDATE",result)
+        self.assertNotIn("WHERE",result)
+        self.assertNotIn("CREATE",result)
+        self.assertNotIn("INSERT",result)
+        self.assertNotIn("DELETE",result)
+        self.assertNotIn("SELECT",result)
+        
+#---# deleteStatement() Test(s)
+    # with a condition
+    def testDeleteStatementWithConditional(self):
+        dbName = "airport"
+        database = db.load(relativeFilePath(dbName))
+        col = "province"
+        condition = "Alberta"
+
+        result = deleteStatement(database,col,condition)
+
+        self.assertIn("DELETE",result)
+        self.assertIn("WHERE",result)
+        self.assertNotIn("CREATE",result)
+        self.assertNotIn("INSERT",result)
+        self.assertNotIn("UPDATE",result)
+        self.assertNotIn("SELECT",result)
+
+    # without a condition
+    def testDeleteStatementWithoutConditional(self):
+        dbName = "airport"
+        database = db.load(relativeFilePath(dbName))
+
+        result = deleteStatement(database)
+
+        self.assertIn("DELETE",result)
+        self.assertNotIn("WHERE",result)
+        self.assertNotIn("CREATE",result)
+        self.assertNotIn("INSERT",result)
+        self.assertNotIn("UPDATE",result)
+        self.assertNotIn("SELECT",result)
+
+    # TODO: not fully implemented yet
+#---# queryStatement() Test(s)
+    # no foreignkeys
+    # def testQueryStatementWithoutForeignKeys(self):
+    #     dbName = "airport"
+    #     database = db.load(relativeFilePath(dbName))
+    #     keyMap = {"airport"}
+    #     foreignKeyMap = {}
+    #     selectedColumns = []
+    #     clauses = None
+
+    #     result = queryStatement(database,keyMap,foreignKeyMap,selectedColumns,clauses)
+        
     # helper functions Tests------------------------------------------------------------------------------------------------------------------
 class HelperFnsTest(unittest.TestCase):
-    def emptyTest(self):
-        pass
 #---# conditionalStatement() Test(s)
+    def testConditionalStatementReturnsStatementWithWhere(self):
+        column = ""
+        condition = ""
+
+        result = conditionalStatement(column,condition)
+
+        self.assertIn("WHERE",result)
 
 #---# relativeFilePath() Test(s)
+    def testRelativeFilePathReturnsFilePathWithFileName(self):
+        file = "random"
+
+        result = relativeFilePath(file)
+
+        self.assertEqual(f"./SQLElementSharedLibrary/randomDatabases/{file}.txt",result)
 
 #---# getReferencedDatabasesSet() Test(s)
+    # has referenced databases
+    def testGetReferencedDatabasesSetGetsAllReferencedDbs(self):
+        dbName = "flight"
+        referenced = ["airplane","airport","passenger"]
+        database = db.load(relativeFilePath(dbName))
+
+        result = getReferencedDatabasesSet(database)
+
+        self.assertIsInstance(result,set)
+        for x in result:
+            self.assertIn(x.name,referenced)
+
+    # has no referenced databases
+    def testGetReferencedDatabasesSetGetsAllZeroReferencedDbs(self):
+        dbName = "airport"
+        referenced = ["airplane","airport","passenger"]
+        database = db.load(relativeFilePath(dbName))
+
+        result = getReferencedDatabasesSet(database)
+
+        self.assertIsInstance(result,set)
+        for x in result:
+            self.assertNotIn(x.name,referenced)
+
 #---# getReferencedDatabaseDictionary() Test(s)
+    # has referenced databases
+    def testGetReferencedDatabasesDictionaryGetsAllReferencedDbs(self):
+        dbName = "flight"
+        referenced = ["airplane","airport","passenger"]
+        database = db.load(relativeFilePath(dbName))
+
+        result = getReferencedDatabaseDictionary(database)
+
+        self.assertIsInstance(result,dict)
+        for x in result:
+            self.assertIn(x,referenced)
+
+    # has no referenced databases
+    def testGetReferencedDatabasesDictionaryGetsAllZeroReferencedDbs(self):
+        dbName = "airport"
+        referenced = ["airplane","airport","passenger"]
+        database = db.load(relativeFilePath(dbName))
+
+        result = getReferencedDatabaseDictionary(database)
+
+        self.assertIsInstance(result,dict)
+        for x in result:
+            self.assertNotIn(x,referenced)
 
 #---# loadSchemas() Test(s)
+    # all databases are added to db init 
+    def testLoadSchemasAddsDatabasesToDbInit(self):
+        testType = "Update"
+        db_initialize = ""
+        initialAns = ""
+        difficulty = "easy"
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
+                          'db_initialize':db_initialize},
+                'correct_answers':{'SQLEditor': initialAns}}
+        dbOne = "airport"
+        databaseAirport = db.load(relativeFilePath(dbOne))
+        dbTwo = "flight"
+        databaseFlight = db.load(relativeFilePath(dbTwo))
+        dbThree = "airplane"
+        databaseAirplane = db.load(relativeFilePath(dbThree))
+        databases = [databaseAirport,databaseAirplane,databaseFlight]
+
+        self.assertEqual(len(data['params']['db_initialize']),0)
+
+        loadSchemas(data,databases)
+
+        self.assertIn(dbOne,data['params']['db_initialize'])
+        self.assertIn(dbTwo,data['params']['db_initialize'])
+        self.assertIn(dbThree,data['params']['db_initialize'])
+
+    # no databases are added to db init when input is empty
+    def testLoadSchemasAddsNoDatabasesToDbInit(self):
+        testType = "Update"
+        db_initialize = ""
+        initialAns = ""
+        difficulty = "easy"
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
+                          'db_initialize':db_initialize},
+                'correct_answers':{'SQLEditor': initialAns}}
+        databases = []
+
+        self.assertEqual(len(data['params']['db_initialize']),0)
+
+        loadSchemas(data,databases)
+
+        self.assertEqual(len(data['params']['db_initialize']),0)
+
 #---# loadAllSchema() Test(s)
+    # db with no other referenced dbs
+    def testLoadAllSchemaAddsDatabaseWithNoReferencesToDbInit(self):
+        testType = "Update"
+        db_initialize = ""
+        initialAns = ""
+        difficulty = "easy"
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
+                          'db_initialize':db_initialize},
+                'correct_answers':{'SQLEditor': initialAns}}
+        dbOne = "airport"
+        databaseAirport = db.load(relativeFilePath(dbOne))
 
-#---# loadNoisyData() Test(s)
-#---# loadAllNoisyData() Test(s)
+        self.assertEqual(len(data['params']['db_initialize']),0)
+
+        loadAllSchema(data,databaseAirport)
+
+        self.assertIn(dbOne,data['params']['db_initialize'])
+    
+    # db with other referenced dbs
+    def testLoadAllSchemaAddsDatabaseWithReferencesToDbInit(self):
+        testType = "Update"
+        db_initialize = ""
+        initialAns = ""
+        difficulty = "easy"
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
+                          'db_initialize':db_initialize},
+                'correct_answers':{'SQLEditor': initialAns}}
+        dbOne = "flight"
+        databaseAirport = db.load(relativeFilePath(dbOne))
+
+        self.assertEqual(len(data['params']['db_initialize']),0)
+
+        loadAllSchema(data,databaseAirport)
+
+        self.assertIn(dbOne,data['params']['db_initialize'])
+        self.assertIn("airplane",data['params']['db_initialize'])
+        self.assertIn("airport",data['params']['db_initialize'])
+
 #---# loadTrimmedDatabase() Test(s)
+    # returns a database with a number of columns that we know will work
+    def testLoadTrimmedDatabaseReturnsValidDatabaseWhenGivenValidSize(self):
+        columnCount = 3
 
-#---# generateRow() Test(s)
-#---# generateRows() Test(s)
+        result = loadTrimmedDatabase(columnCount, 0)
 
-#---# generateNoisyData() Test(s)
-#---# generateNoisyInteger() Test(s)
-#---# generateNoisyChar() Test(s)
-#---# generateNoisyVarchar() Test(s)
+        self.assertIsNotNone(result)
+    
+    # doesnt return a database because 0 columns isn't possible
+    def testLoadTrimmedDatabaseReturnsNoDatabaseWhenGivenSizeZero(self):
+        columnCount = 0
 
-#---# generateRandomDate() Test(s)
-#---# generateRandomDateTime() Test(s)
+        result = loadTrimmedDatabase(columnCount, 0)
+
+        self.assertIsNone(result)
+    
+    # doesn't return a database if no tables have enough columns
+    def testLoadTrimmedDatabaseReturnsNoDatabaseWhenGivenInvalidSize(self):
+        columnCount = 200
+        
+        result = loadTrimmedDatabase(columnCount, 0)
+
+        self.assertIsNone(result)
+    
+    # returns a database with a number of joins that we know will work
+    def testLoadTrimmedDatabaseReturnsValidDatabaseWhenGivenValidSize(self):
+        joins = 2
+
+        result = loadTrimmedDatabase(1, joins)
+
+        self.assertIsNotNone(result)
+
+    # doesn't return a database if the number of joins is invalid
+    def testLoadTrimmedDatabaseReturnsNoDatabaseWhenGivenJoinsZero(self):
+        joins = -1
+
+        result = loadTrimmedDatabase(1, joins)
+
+        self.assertIsNone(result)
+
+    # doesn't return a database if no tables have enough columns
+    def testLoadTrimmedDatabaseReturnsNoDatabaseWhenGivenInvalidJoins(self):
+        joins = 200
+        
+        result = loadTrimmedDatabase(1, joins)
+
+        self.assertIsNone(result)
+
 
 if __name__ == '__main__':
     runner = unittest.TextTestRunner()
