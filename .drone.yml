@@ -13,7 +13,7 @@ steps:
     image: prairielearn/prairielearn
     commands: 
   #    - pip install -r requirements.txt --quiet
-  #    - cd databaseCourse/elements/pl-sql-element
+      - cd databaseCourse/elements/pl-sql-element
   # just run all test files
       - python -m unittest discover -p "*_test.py"
   # detailed run of one file
