@@ -47,6 +47,16 @@ class TableHelperFunctionsTest(unittest.TestCase):
 
         self.assertFalse(tableList)
 
+    
+
+    # Tests the getRandomTableNames() function
+    # This test isn't really needed since it is implicitly
+    # tested through other test functions
+    def testGetRandomTableNames(self):
+        randomNames = getRandomTableNames()
+
+        self.assertGreater(len(randomNames), 0)
+
 
 
 # Tests the table object
