@@ -132,18 +132,18 @@ class TableTest(unittest.TestCase):
 
     # Tests getSchema()
     # Case: table is unmodified from file DDL
-    def testGetDDLWhenTableIsUnmodified(self):
+    def testGetSchemaWhenTableIsUnmodified(self):
         tableName = 'flight'
         table = Table(tableName)
-        tableDDL = table.getSchema()
+        tableSchema = table.getSchema()
 
-        unmodifiedDDL = getStaticSchema(tableName)
+        unmodifiedSchema = getStaticSchema(tableName)
 
         # Strips all whitespace from both strings
-        tableDDLStripped = ''.join([word.strip() for word in tableDDL])
-        unmodifiedDDLStripped = ''.join([word.strip() for word in unmodifiedDDL])
+        tableSchemaStripped = ''.join([word.strip() for word in tableSchema])
+        unmodifiedSchemaStripped = ''.join([word.strip() for word in unmodifiedSchema])
 
-        self.assertEqual(tableDDLStripped, unmodifiedDDLStripped)
+        self.assertEqual(tableSchemaStripped, unmodifiedSchemaStripped)
 
 
     # Case: table is modified from DDL
