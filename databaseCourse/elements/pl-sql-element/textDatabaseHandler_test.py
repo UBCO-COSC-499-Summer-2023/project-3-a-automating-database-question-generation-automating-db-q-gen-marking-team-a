@@ -134,10 +134,10 @@ class TableTest(unittest.TestCase):
     # Case: table is unmodified from file DDL
     def testGetDDLWhenTableIsUnmodified(self):
         tableName = 'flight'
-        table = Table(f"./SQLElementSharedLibrary/randomTables/{tableName}.txt")
+        table = Table(tableName)
         tableDDL = table.getSchema()
 
-        unmodifiedDDL = getStaticSchema(f"./SQLElementSharedLibrary/randomTables/{tableName}.txt")
+        unmodifiedDDL = getStaticSchema(tableName)
 
         self.assertEqual(tableDDL.strip(), unmodifiedDDL.strip())
 
@@ -146,9 +146,9 @@ class TableTest(unittest.TestCase):
     ''' ! Function does not yet exists !
     def testGetDDLWhenTableIsUnmodified(self):
         tableName = 'flight'
-        table = load(f"./SQLElementSharedLibrary/randomTables/{tableName}.txt")
+        table = Table(tableName)
         table.columns.pop('departAirport')
-        tableDDL = table.getDDL().split('\n')
+        tableSchema = table.getSchema().split('\n')
 
         # To check if the table was correctly modified, 
         # count the number of foreign keys in the table
