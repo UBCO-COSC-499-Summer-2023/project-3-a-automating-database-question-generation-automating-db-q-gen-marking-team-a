@@ -466,17 +466,28 @@ $(document).ready(function () {
         const rows = $tbody.find("tr").toArray();
         const currentDirection = $table.data("sort-direction");
         let direction;
+        let arrow;
 
         if (currentDirection === "asc" && $table.data("sort-column") === column) {
             // First click on the same column, reverse the sort direction
             direction = "desc";
+            arrow = $('<i class="fa fa-angle-down"></i>');
         } else {
             // First click on a column or different column, sort in ascending order
             direction = "asc";
+            arrow = $('<i class="fa fa-angle-up"></i>');
         }
 
         $table.data("sort-direction", direction);
         $table.data("sort-column", column);
+
+        // Remove any existing arrows from all header cells
+        $table.find("th svg, th span").remove();
+
+        // add arrow to the element th in the direction it should be
+        const arrowWithSpace = $('<span>&nbsp;</span>').append(arrow);
+        $(element).closest('th').append(arrowWithSpace);
+
 
         // sorting function
         rows.sort((a, b) => {
