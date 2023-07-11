@@ -15,16 +15,16 @@ class TableHelperFunctionsTest(unittest.TestCase):
 
 
 
-    # Tests getStaticDDL()
+    # Tests getStaticSchema()
     # Case: file is found
-    def testGetStaticDDLFileIsFound(self):
+    def testGetStaticSchemaFileIsFound(self):
         tableName = 'airport'
         schema = getStaticSchema(tableName)
 
         self.assertIsNotNone(schema)
 
     # Case: file is not found
-    def testGetStaticDDLFileIsNotFound(self):
+    def testGetStaticSchemaFileIsNotFound(self):
         tableName = 'noSuchTable'
         schema = getStaticSchema(tableName)
 
@@ -131,7 +131,7 @@ class TableTest(unittest.TestCase):
 
 
     # Tests getSchema()
-    # Case: table is unmodified from file DDL
+    # Case: table is unmodified from file Schema
     def testGetSchemaWhenTableIsUnmodified(self):
         tableName = 'flight'
         table = Table(tableName)
@@ -146,23 +146,23 @@ class TableTest(unittest.TestCase):
         self.assertEqual(tableSchemaStripped, unmodifiedSchemaStripped)
 
 
-    # Case: table is modified from DDL
-    ''' ! Function does not yet exists !
-    def testGetDDLWhenTableIsUnmodified(self):
+    # Case: table is modified from Schema
+    def testGetSchemaWhenTableIsUnmodified(self):
         tableName = 'flight'
         table = Table(tableName)
         table.columns.pop('departAirport')
         tableSchema = table.getSchema().split('\n')
 
         # To check if the table was correctly modified, 
-        # count the number of foreign keys in the table
+        # count the number of foreign keys in the table.
+        # We know that if we 'departAirport' from 'flight',
+        # then there will be one foreign key left.
         fks = 0
-        for line in tableDDL:
+        for line in tableSchema:
             if 'FOREIGN KEY' in line:
                 fks += 1
 
         self.assertEqual(fks, 1)
-    '''
 
 
 
