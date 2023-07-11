@@ -74,13 +74,12 @@ $(document).ready(function () {
             createOutputTable(PR); // creates and renders new output table
             var treeDiv = $('<div class="tree"></div>');
             var ulDiv = $("<ul></ul>");
-            console.log(PR)
             ulDiv.append(createRecList(PR)); // creates and renders new tree
             treeDiv.append(ulDiv);
             treeElm.append(treeDiv);
         } catch (err) {
             console.log(err.stack)
-            createErrorOutput(err.stack); // creates and renders error in event user has incorrect RA query 
+            createErrorOutput(err); // creates and renders error in event user has incorrect RA query 
         }
     }
 0
@@ -300,47 +299,3 @@ function createTreeNodeDropdown(output) {
 
     return dropdown;
 }
-
-
-/**
- * return (
-					<div>
-						columns:
-						<ul>
-							{schema.getColumns().map((col, i) => (
-								<li key={i}>{col.toString()} <small className="muted text-muted">{schema.getType(i)}</small></li>
-							))}
-						</ul>
-
-						{(n.hasMetaData('naturalJoinConditions'))
-							? (
-								<div>natural join conditions:
-									<ul>
-										{n.getMetaData('naturalJoinConditions')!.map(condition => (
-											<li dangerouslySetInnerHTML={{ __html: condition.getFormulaHtml() }}></li>
-										))}
-									</ul>
-								</div>
-							)
-							: null
-						}
-
-						<p>{`${numRows} row${numRows === 1 ? '' : 's'}`}</p>
-
-						{n.getMetaData('isInlineRelation') === true && n.hasMetaData('inlineRelationDefinition')
-							? <pre>{n.getMetaData('inlineRelationDefinition')}</pre>
-							: null
-						}
-						{
-							n._execTime ? <p>{t('calc.result.exec.time')} {n._execTime}ms</p> : <p>{t('calc.result.exec.time')} - ms</p>
-						}
-						
-						
-					</div>
-				);
- * 
- * 
- * 
- * 
- * 
-*/
