@@ -3,7 +3,7 @@ id,INTEGER
 inventory,INTEGER
 quantity,INTEGER
 
-price,DECIMAL,2-10,2
+price,DECIMAL,3-9,2
 
 id,CHAR,3-6
 state,CHAR,2
