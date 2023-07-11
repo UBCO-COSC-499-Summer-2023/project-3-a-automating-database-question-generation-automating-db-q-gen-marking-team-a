@@ -18,7 +18,7 @@ def getStaticSchema(file):
         return None
 
 # Lists all table files in the specified path
-def getAllTableFiles(path):
+def getAllTableFiles(path='./SQLElementSharedLibrary/randomTables/'):
     try:
         # Removes the file extension of all files, if they exist
         return [file[:file.find('.')] for file in listdir(path)]
@@ -26,9 +26,9 @@ def getAllTableFiles(path):
         return []
 
 # Returns a list of names for random tables
-def getRandomTableNames():
+def getRandomTableNames(path='./SQLElementSharedLibrary/randomTableNames.txt'):
     try:
-        with open('./SQLElementSharedLibrary/randomTableNames.txt') as file:
+        with open(path) as file:
             # Strips out whitespace and only considers lines
             # that aren't exclusively whitespace
             return [line.strip() for line in file.readlines() if not line.isspace()]
@@ -60,7 +60,7 @@ class Table:
     # f"{file}" will become the table name if it is
     # provided, otherwise a random name will be chosen
     def load(self, file, columns, joins, clauses):
-        tableFiles = getAllTableFiles('./SQLElementSharedLibrary/randomTables/')
+        tableFiles = getAllTableFiles()
 
         if file and file in tableFiles:
             self.loadFromText(relativeFilePath(file))

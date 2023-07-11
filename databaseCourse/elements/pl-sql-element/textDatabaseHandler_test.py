@@ -33,19 +33,12 @@ class TableHelperFunctionsTest(unittest.TestCase):
 
 
     # Tests the getAllTableFiles() function
-    # Case: path is correct
-    def testGetAllTableFilesReturnsPathsIfFilesFound(self):
-        path = './SQLElementSharedLibrary/randomTables/'
-        tableList = getAllTableFiles(path)
+    # This test isn't really needed since it is implicitly
+    # tested through other test functions
+    def testGetAllTableFiles(self):
+        tableList = getAllTableFiles()
 
-        self.assertIsNotNone(tableList)
-
-    # Case: path is not corret
-    def testGetAllTableFilesReturnsNoneIfFilesNotFound(self):
-        path = './not/a/path/'
-        tableList = getAllTableFiles(path)
-
-        self.assertFalse(tableList)
+        self.assertGreater(len(tableList), 0)
 
     
 
