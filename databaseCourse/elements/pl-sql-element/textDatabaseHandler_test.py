@@ -140,20 +140,20 @@ class TableTest(unittest.TestCase):
         table = Table('randomTable')
         
         string = '3-5'
-        range = range(3, 6)
+        trueRange = range(3, 6)
         returnedRange = table.parseRange(string)
 
-        self.assertEqual(range, returnedRange)
+        self.assertEqual(trueRange, returnedRange)
 
     # Case: range has three components
     def testParseRangeThreeComponents(self):
         table = Table('randomTable')
         
         string = '20-30-5'
-        range = range(20, 31, 5)
+        trueRange = range(20, 31, 5)
         returnedRange = table.parseRange(string)
 
-        self.assertEqual(range, returnedRange)
+        self.assertEqual(trueRange, returnedRange)
 
     # Case: range has four components
     # The fourth component should be ignored
@@ -161,10 +161,10 @@ class TableTest(unittest.TestCase):
         table = Table('randomTable')
         
         string = '7-10-3-1'
-        range = range(7, 11, 3)
+        trueRange = range(7, 11, 3)
         returnedRange = table.parseRange(string)
 
-        self.assertEqual(range, returnedRange)
+        self.assertEqual(trueRange, returnedRange)
 
 
 
