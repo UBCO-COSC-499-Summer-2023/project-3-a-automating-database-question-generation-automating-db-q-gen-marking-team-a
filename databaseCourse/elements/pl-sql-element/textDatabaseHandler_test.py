@@ -80,7 +80,7 @@ class TableTest(unittest.TestCase):
         joins = -1
         table = Table(tableName, columns, joins)
 
-        self.assertIsNone(table)
+        self.assertIsNone(table.columns)
 
     # Case: Invalid columns and valid joins
     def testRandomTableInvalidColumnsValidJoins(self):
@@ -89,7 +89,7 @@ class TableTest(unittest.TestCase):
         joins = 1
         table = Table(tableName, columns, joins)
 
-        self.assertIsNone(table)
+        self.assertIsNone(table.columns)
 
     # Case: Invalid columns and invalid joins
     def testRandomTableInvalidColumnsInvalidJoins(self):
@@ -98,7 +98,7 @@ class TableTest(unittest.TestCase):
         joins = -1
         table = Table(tableName, columns, joins)
 
-        self.assertIsNone(table)
+        self.assertIsNone(table.columns)
 
 
 

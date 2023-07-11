@@ -152,7 +152,8 @@ class Table:
 
         # Checks whether the parameters are legal
         if columns < 1 or joins < 0 or joins > columns:
-            return None
+            self.columns = None
+            return
 
         # Sets the name
         self.name = name
