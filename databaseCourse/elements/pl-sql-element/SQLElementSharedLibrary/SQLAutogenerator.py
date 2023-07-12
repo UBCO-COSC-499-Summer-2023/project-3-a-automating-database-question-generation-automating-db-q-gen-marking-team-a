@@ -46,7 +46,7 @@ def generateCreate(data, difficulty):
 
     # Creates a string to tell the student what they need
     # to do for the qestion
-    questionString = f"Create a table named {database.name} with columns"
+    questionString = f"Create a table named <b>{database.name}</b> with columns"
 
     # Adds a list of columns and units to the question string
     columnList = list(database.columns.keys())
