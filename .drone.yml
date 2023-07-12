@@ -14,9 +14,9 @@ steps:
       - echo "Running Selenium tests"
       # Add your test commands here
 
-services:
-  pl:
+  - name: pl
     image: prairielearn/prairielearn:latest
+    detach: true
     ports:
       - "3000:3000"
     volumes:
@@ -39,6 +39,7 @@ volumes:
   - name: elements
     host:
       path: ./elements
+
 
 
 
