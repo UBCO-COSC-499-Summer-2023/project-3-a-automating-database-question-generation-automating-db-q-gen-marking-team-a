@@ -357,7 +357,7 @@ function createTreeNodeDropdown(output) {
 
 
         if (col.toString().length > maxColNameLength) {
-            maxColNameLength = output.getSchema().getName(i).length + 2;
+            maxColNameLength = output.getSchema().getName(i).length + 3;
         }
         if (output.getSchema().getType(i).length > maxColTypeLength) {
             maxColTypeLength = output.getSchema().getType(i).length + 2;
@@ -394,7 +394,9 @@ function createTreeNodeDropdown(output) {
             div.append(condSpan)
             return div;
         });
-        dropdown.append("Natural Join Conditions:");
+
+        var joinSpan = '<span style="width: 24ch; display: block; margin: auto">Natural Join Conditions:</span>';
+        dropdown.append(joinSpan);
         dropdown.append(listItems);
     }
     if (output.getMetaData('isInlineRelation') === true && n.hasMetaData('inlineRelationDefinition')) {
