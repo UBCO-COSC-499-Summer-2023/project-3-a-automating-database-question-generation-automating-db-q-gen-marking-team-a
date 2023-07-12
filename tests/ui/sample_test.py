@@ -17,6 +17,7 @@ class TestSqlEditor(unittest.TestCase):
     def setUp(self):
         options = Options()
         options.add_argument('--headless')
+        options.add_argument(f'--executable-path=/usr/bin/chromedriver')  # Specify the chromedriver location
         self.driver = webdriver.Chrome(options=options)
 
     # tests that the home page of PL loads properly
