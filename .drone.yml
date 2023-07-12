@@ -1,19 +1,21 @@
 kind: pipeline
 type: docker
-
 name: selenium-tests
 
-platform:
-  os: linux
-  arch: amd64
-
 steps:
-  - name: build-container
-    image: docker
+  - name: run-tests
+    image: selenium/standalone-chrome:latest
+    volumes:
+      - name: course
+        path: /course
+      - name: elements
+        path: /PrairieLearn/elements
     commands:
-      - docker build -t prairielearn/prairielearn:latest .
-  
-  - name: start-container
+      - echo "Running Selenium tests"
+      # Add your test commands here
+
+services:
+  - name: pl
     image: prairielearn/prairielearn:latest
     ports:
       - 3000:3000
@@ -27,22 +29,8 @@ steps:
       - name: jobs-dir
         path: /jobs
     environment:
-      HOST_JOBS_DIR: /jobs
-      NODEMON: "true"
-    commands:
-      - echo "Container started"
-      - sleep 5  # Wait for the container to start up
-
-  - name: run-tests
-    image: selenium/standalone-chrome:latest
-    volumes:
-      - name: course
-        path: /course
-      - name: elements
-        path: /PrairieLearn/elements
-    commands:
-      - echo "Running Selenium tests"
-      # Add your test commands here
+      - HOST_JOBS_DIR=/jobs
+      - NODEMON=true
 
 volumes:
   - name: course
@@ -51,6 +39,7 @@ volumes:
   - name: elements
     host:
       path: ./elements
+
 
 
 # steps:
