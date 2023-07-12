@@ -425,3 +425,9 @@
   background-color: #d9d9d9;
   border-style: none !important;
 }
+
+.expected-output-img{
+	display:block; 
+	max-width:80%; 
+	margin:auto;
+}
