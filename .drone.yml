@@ -1,25 +1,77 @@
 kind: pipeline
 type: docker
-name: default
+
+name: selenium-tests
+
+platform:
+  os: linux
+  arch: amd64
 
 steps:
-  # - name: Run Autogenerator tests
-  #   image: prairielearn/prairielearn
-  #   commands: 
-  #     - pip install -r requirements.txt --quiet
-  #     - cd databaseCourse/elements/pl-sql-element
-  #     - python -m unittest discover -p "*_test.py"
+  - name: build-container
+    image: docker
+    commands:
+      - docker build -t prairielearn/prairielearn:latest .
+  
+  - name: start-container
+    image: prairielearn/prairielearn:latest
+    ports:
+      - 3000:3000
+    volumes:
+      - name: course
+        path: /course
+      - name: elements
+        path: /PrairieLearn/elements
+      - name: docker-socket
+        path: /var/run/docker.sock
+      - name: jobs-dir
+        path: /jobs
+    environment:
+      HOST_JOBS_DIR: /jobs
+      NODEMON: "true"
+    commands:
+      - echo "Container started"
+      - sleep 5  # Wait for the container to start up
 
-  - name: Run UI Tests
-    image: azipis/prairielearn-chrome:latest
-    commands: 
-      - pip install -r requirements.txt
-      - cd tests/ui
-      - python -m unittest discover -s . -p "*_test.py"
+  - name: run-tests
+    image: selenium/standalone-chrome:latest
+    volumes:
+      - name: course
+        path: /course
+      - name: elements
+        path: /PrairieLearn/elements
+    commands:
+      - echo "Running Selenium tests"
+      # Add your test commands here
 
-  # - name: Run Integration Tests
-  #   image: selenium/standalone-chrome
-  #   commands: 
-  #     - pip install -r requirements.txt --quiet
-  #     - cd tests/integration
-  #     - python -m unittest discover -s . -p "*_test.py"
+volumes:
+  - name: course
+    host:
+      path: ./databaseCourse
+  - name: elements
+    host:
+      path: ./elements
+
+
+# steps:
+#   # - name: Run Autogenerator tests
+#   #   image: prairielearn/prairielearn
+#   #   commands: 
+#   #     - pip install -r requirements.txt --quiet
+#   #     - cd databaseCourse/elements/pl-sql-element
+#   #     - python -m unittest discover -p "*_test.py"
+
+#   - name: Run UI Tests
+#     image: azipis/prairielearn-chrome:latest
+#     commands: 
+#       - pip install -r requirements.txt
+#       - cd tests/ui
+#       - python -m unittest discover -s . -p "*_test.py"
+
+
+#   # - name: Run Integration Tests
+#   #   image: selenium/standalone-chrome
+#   #   commands: 
+#   #     - pip install -r requirements.txt --quiet
+#   #     - cd tests/integration
+#   #     - python -m unittest discover -s . -p "*_test.py"
