@@ -10,7 +10,7 @@ steps:
   #     - cd databaseCourse/elements/pl-sql-element
   #     - python -m unittest discover -p "*_test.py"
 
-- name: setup_environment
+  - name: setup_environment
     image: docker/compose:1.29.2
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
