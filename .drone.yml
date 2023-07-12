@@ -18,7 +18,7 @@ steps:
         path: /var/run/docker.sock
       - name: appdir
         path: $DRONE_WORKSPACE
-    working_dir: $DRONE_WORKSPACE
+    working_dir: /drone/src/$DRONE_REPO_NAME
     commands:
       - docker-compose up -d
 
