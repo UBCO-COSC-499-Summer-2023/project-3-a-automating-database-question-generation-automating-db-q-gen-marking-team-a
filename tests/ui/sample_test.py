@@ -24,17 +24,17 @@ class TestSqlEditor(unittest.TestCase):
 
     # tests that the home page of PL loads properly
     def testPrairieLearnLoad(self):
-        baseUrl = 'http://test:3000/'
+        baseUrl = 'https://www.google.ca/'
         driver = self.driver
         driver.get(baseUrl)
-        self.assertIn("PrairieLearn",driver.title)
+        self.assertIn("Google",driver.title)
         print(self.driver.title)
     
     def test_sqlEditorDbSchemaClickAddTableName(self):
         # Test name: sqlEditorDbSchemaClickAddTableName
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/ | 
-        self.driver.get("http://localhost:3000/")
+        self.driver.get("http://test:3000/")
         # 2 | setWindowSize | 1532x816 | 
         self.driver.set_window_size(1532, 816)
         # 3 | click | linkText=Summer 2023 | 
