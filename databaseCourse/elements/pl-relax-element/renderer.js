@@ -8,11 +8,11 @@ $(document).ready(function () {
     const dbValue = dbSchema.getAttribute("value");
     const dbArray = dbValue.split(";");
     const dataset = [dbArray.length];
-    for (var i = 0; i < dbArray.length; i++){   
+    for (var i = 0; i < dbArray.length; i++) {
         dataset[i] = executeRelalg(dbArray.at(i), {});
     }
     // Creating dropbtn (Schema) tables
-    for(var i = 0; i < dataset.length; i++) {
+    for (var i = 0; i < dataset.length; i++) {
 
         dbSchema.innerHTML += createSchemaTables(dataset.at(i)._schema)
     }
@@ -40,7 +40,7 @@ $(document).ready(function () {
     var errorElm = $("#error");
     var execBtn = $("#execute");
     execBtn.on("click", executeEditorContents);
-    
+
 
 
     //* FUNCTION DEFINITIONS
@@ -76,10 +76,10 @@ $(document).ready(function () {
     var italicWords = applyHTMLTagsToWords('i');
     var emphWords = applyHTMLTagsToWords('em');
     var strongWords = applyHTMLTagsToWords('strong');
-    
+
     //* FUNCTIONS - USER ACTIONS
     // adds functionality for onclick
-    function updateCodeMirror(data){
+    function updateCodeMirror(data) {
         var doc = editor.getDoc(); // gets the information of the editor
         doc.replaceRange(data, doc.getCursor()); // adds data at position of cursor
         editor.focus();             // focuses the user on the editor
@@ -89,7 +89,7 @@ $(document).ready(function () {
     window.updateCodeMirror = function (data) {
         updateCodeMirror(data);
     }
-    
+
     // Execute the RelaX Query
     var activeNode = null;
 
@@ -103,7 +103,7 @@ $(document).ready(function () {
 
         try {
             activeNode = null;
-            
+
             const PR = executeRelalg(editor.getValue(), dataStuff); // gets query results
             treeElm.contents().remove(); // clears Tree previous results
             createOutputTable(PR); // creates and renders new output table
@@ -116,8 +116,8 @@ $(document).ready(function () {
             console.log(err.stack)
             createErrorOutput(err); // creates and renders error in event user has incorrect RA query 
         }
-    } 
-0
+    }
+    0
 
     //* FUNCTIONS - RENDERING
     function createSchemaTables(dataSchema) {
@@ -126,7 +126,7 @@ $(document).ready(function () {
             return;
         }
         // Creates the button HTML element for the table; onclick it adds the tablename to Editor, onhover it shows the schema of the table.
-        let schemaView = "<div class='schemaTable'><button type='button' onmouseover='' onClick='updateCodeMirror(\""+dataSchema._relAliases[0]+"\");' class='dropbtn' id='btn-" + dataSchema._relAliases[0] + "'>" + dataSchema._relAliases[0]
+        let schemaView = "<div class='schemaTable'><button type='button' onmouseover='' onClick='updateCodeMirror(\"" + dataSchema._relAliases[0] + "\");' class='dropbtn' id='btn-" + dataSchema._relAliases[0] + "'>" + dataSchema._relAliases[0]
             + "</button> <div class='dropdown-content' id='schema-" + dataSchema._relAliases[0] + "'>"
 
         // get column widths for styling purposes
@@ -175,56 +175,125 @@ $(document).ready(function () {
         errorElm.contents().remove();
 
         var table = $("<table></table>"); // creates new table element to be filled
-        table.append(createTableContent(output.getResult()._schema, output.getResult()._rows)); // creates table headers
-        //table.append(createTableRows(output.getResult()._rows)); // fills table rows
+        table.append(createTableHeader(output.getResult()._schema, output.getResult()._rows)); // creates table headers
+        table.append(createTableRows(output.getResult()._rows)); // fills table rows
         outputElm.append(table);
     }
+    var ifDateChecker = [];
 
     // Function that creates the table header
-    function createTableContent(columnSchema, rows) {
+    function createTableHeader(columnSchema, rows) {
         var header = $("<thead></thead>");
         var headerRow = $("<tr></tr>");
-        var rowElements = [];
-        var ifDateChecker = [];
         // reads each header
         for (var i = 0; i < columnSchema._names.length; i++) {
-            var th = $("<th></th>").text(columnSchema._names[i]);
-            if(columnSchema._types[i] == 'date')
-                ifDateChecker.push(i);
-            headerRow.append(th);
+
+            (function (column) {
+
+                var th = $("<th></th>").text(columnSchema._names[i]);
+
+                th.on("click", function () {
+                    sortTable(this, column);
+                });
+
+                if (columnSchema._types[i] == 'date')
+                    ifDateChecker.push(i);
+
+                headerRow.append(th);
+            })(i);
         }
         header.append(headerRow);
-        rowElements.push(header);
-        // reads each row in rows and adds them to the row element array.
-        rows.forEach(function (row) {
-            var tr = $("<tr></tr>");
-            for (var i = 0; i < row.length; i++) {
-                if(ifDateChecker.includes(i)) {
-                    const date = new Date(row[i]);
-                    const year = date.getFullYear();
-                    const month = String(date.getMonth() + 1).padStart(2, '0');
-                    const day = String(date.getDate()).padStart(2, '0');
+        return header;
+    }
 
-                    var td = $("<td></td>").text(`${year}-${month}-${day}`);
-                } else {
-                    var td = $("<td></td>").text(row[i]);
-                }
+    function createTableRows(rows){
+    var tbody = $("<tbody></tbody>");
+    var rowElements = [];
+    // reads each row in rows and adds them to the row element array.
+    rows.forEach(function (row) {
+        var tr = $("<tr></tr>");
+        for (var i = 0; i < row.length; i++) {
+            if (ifDateChecker.includes(i)) {
+                const date = new Date(row[i]);
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
 
-                tr.append(td);
+                var td = $("<td></td>").text(`${year}-${month}-${day}`);
+            } else {
+                var td = $("<td></td>").text(row[i]);
             }
-            rowElements.push(tr);
+
+            tr.append(td);
+        }
+        rowElements.push(tr);
+    });
+        tbody.append(rowElements);
+        return tbody;
+    }
+
+    // function that sorts output tables when column names are clicked on
+    function sortTable(element, column) {
+
+        const $table = $(element).closest("table");
+        const $tbody = $table.find("tbody");
+        const rows = $tbody.find("tr").toArray();
+        const currentDirection = $table.data("sort-direction");
+        let direction;
+        let arrow;
+
+        if (currentDirection === "asc" && $table.data("sort-column") === column) {
+            // First click on the same column, reverse the sort direction
+            direction = "desc";
+            arrow = $('<i class="fa fa-angle-down"></i>');
+        } else {
+            // First click on a column or different column, sort in ascending order
+            direction = "asc";
+            arrow = $('<i class="fa fa-angle-up"></i>');
+        }
+
+        $table.data("sort-direction", direction);
+        $table.data("sort-column", column);
+
+        // Remove any existing arrows from all header cells
+        $table.find("th svg, th span").remove();
+
+        // add arrow to the element th in the direction it should be
+        const arrowWithSpace = $('<span>&nbsp;</span>').append(arrow);
+        $(element).closest('th').append(arrowWithSpace);
+
+
+        // sorting function
+        rows.sort((a, b) => {
+            const aValue = a.cells.item(column).innerHTML;
+            const bValue = b.cells.item(column).innerHTML;
+
+            const isANumber = !isNaN(parseFloat(aValue)) && isFinite(aValue);
+            const isBNumber = !isNaN(parseFloat(bValue)) && isFinite(bValue);
+
+            if (isANumber && isBNumber) {
+                return direction === "asc" ? parseFloat(aValue) - parseFloat(bValue) : parseFloat(bValue) - parseFloat(aValue);
+            }
+
+            if (!isANumber && !isBNumber) {
+                return direction === "asc" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+            }
+
+            return isANumber ? -1 : 1;
         });
-        return rowElements;
+
+        $tbody.empty();
+        rows.forEach(row => $tbody.append(row));
     }
 
 
     //* Recursive function that creates the RelaX output Tree
-    function createRecList(output){
+    function createRecList(output) {
         var container = $("<li></li>"); // Creates container holding section of tree
         var button = $("<div></div>"); // creates first node of this secton tree
-        
+
         // fills node attributes
-        button.attr("id", "button-"+output._functionName);
+        button.attr("id", "button-" + output._functionName);
         if (activeNode == null) {
             button.attr("class", "node active");
             activeNode = button;
@@ -234,20 +303,20 @@ $(document).ready(function () {
 
         var text = output._functionName
         if (text === '_inlineRelation8') {
-            button.append(output._codeInfo.text); 
+            button.append(output._codeInfo.text);
         } else {
             button.append(output.getFormulaHtml(false));
         }
         dropdown = createTreeNodeDropdown(output);
         button.append(dropdown)
         // allows each node to return the output at that point of  execution 
-        button.on("click", function() { 
+        button.on("click", function () {
             activeNode.attr("class", "node");
             button.attr("class", "node active");
             activeNode = button;
-            createOutputTable(output); 
+            createOutputTable(output);
         });
-        
+
         // Checks to see if there are 2, 1, or no Children
         if ((output._child != null) && (output._child2 != null)) {
             container.append(button); // adds the main node
@@ -262,19 +331,19 @@ $(document).ready(function () {
             newUlDiv.append(newLiDiv);
             container.append(newUlDiv); // appends flex container to above container
             return container;
-        } else if (output._child != null) { 
+        } else if (output._child != null) {
             var newUlDiv = $("<ul></ul>");
             var newLiDiv = $("<li></li>");
-            
+
             container.append(button); // adds the main node.
-            
+
             newLiDiv.append(createRecList(output._child)); // adds the child node
             newUlDiv.append(newLiDiv);
             container.append(newUlDiv);
-            return container; 
+            return container;
         } else {
             return container.append(button); // adds the main node
-        } 
+        }
     }
 });
 
@@ -284,7 +353,7 @@ function createTreeNodeDropdown(output) {
     var maxColNameLength = 0;
     var maxColTypeLength = 0;
     var dropdown = $("<div class='tree-popup'><em>columns:</em></div>")
-    var columns = output.getSchema().getColumns().map( function(col, i) {
+    var columns = output.getSchema().getColumns().map(function (col, i) {
 
 
         if (col.toString().length > maxColNameLength) {
@@ -314,8 +383,8 @@ function createTreeNodeDropdown(output) {
     if (output.hasMetaData('naturalJoinConditions')) {
         var naturalJoinConditions = output.getMetaData('naturalJoinConditions');
 
-        
-        var listItems = naturalJoinConditions.map( function(condition) {
+
+        var listItems = naturalJoinConditions.map(function (condition) {
 
             var div = $(`<div class='submenu'>`)
             div.attr("style", "text-align: center; border: 1px solid white; padding: 0.2em; display: flex; justify-content: space-around;");
@@ -324,7 +393,7 @@ function createTreeNodeDropdown(output) {
             var condSpan = $(`<span style='font-size: 16px;'>${condition.getFormulaHtml()}</span>`)
             div.append(condSpan)
             return div;
-        }); 
+        });
         dropdown.append("Natural Join Conditions:");
         dropdown.append(listItems);
     }
@@ -332,7 +401,7 @@ function createTreeNodeDropdown(output) {
         dropdown.append(output.getMetaData('<span>inlineRelationDefinition</span>'))
     }
     dropdown.append(`<small>${output.getResultNumRows()} row${output.getResultNumRows() === 1 ? '' : 's'}</small>`)
-    
+
 
     return dropdown;
 }
