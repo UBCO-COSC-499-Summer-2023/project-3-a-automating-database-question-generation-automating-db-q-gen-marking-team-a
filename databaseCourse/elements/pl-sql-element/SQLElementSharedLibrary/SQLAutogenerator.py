@@ -58,11 +58,11 @@ def generateCreate(data, difficulty):
             questionString += ' and'
         
         # Adds the column name
-        questionString += f" {columnValues[i]['name']}"
+        questionString += f" <b>{columnValues[i]['name']}</b>"
 
         # Mentions primary key, if necessary
         if columnValues[i]['isPrimary']:
-            questionString += ' that is a primary key'
+            questionString += ' <em>that is a primary key</em>'
 
         # Handles the text for units
         match columnValues[i]['unit']:
@@ -80,11 +80,11 @@ def generateCreate(data, difficulty):
 
             # Handles cascade
             if columnValues[i]['isOnUpdateCascade']:
-                questionString += ' that cascades on an update'
+                questionString += ' <em>that cascades on an update</em>'
             
             # Handles delete set null
             if columnValues[i]['isOnDeleteSetNull']:
-                questionString += ' that is set to null when deleted'
+                questionString += ' <em>that is set to null when deleted</em>'
 
         # Mentions other clauses, if necessary
         if columnValues[i]['isNotNull']:
