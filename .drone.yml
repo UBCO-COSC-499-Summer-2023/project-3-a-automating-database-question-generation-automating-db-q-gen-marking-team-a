@@ -2,6 +2,26 @@ kind: pipeline
 type: docker
 name: default
 
+version: '3.8'
+
+services:
+  pl:
+    build:
+      context: .
+    image: prairielearn/prairielearn:latest
+    ports:
+      - 3000:3000
+    volumes:
+      - ./databaseCourse:/course
+      - ./elements:/PrairieLearn/elements
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${HOME}/pl_ag_jobs:/jobs
+
+    container_name: pl
+    environment:
+      - HOST_JOBS_DIR=${HOME}/pl_ag_jobs
+      - NODEMON=true
+
 steps:
   # - name: Run Autogenerator tests
   #   image: prairielearn/prairielearn
@@ -10,26 +30,12 @@ steps:
   #     - cd databaseCourse/elements/pl-sql-element
   #     - python -m unittest discover -p "*_test.py"
 
-  - name: setup_environment
-    image: docker/cli:20.10
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    commands:
-      - docker-compose up -d
-
   - name: Run UI Tests
     image: prairielearn/prairielearn
     commands: 
       - pip install -r requirements.txt
       - cd tests/ui
       - python -m unittest discover -s . -p "*_test.py"
-
-  - name: teardown_environment
-    image: docker/cli:20.10
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    commands:
-      - docker-compose down
 
   # - name: Run Integration Tests
   #   image: selenium/standalone-chrome
