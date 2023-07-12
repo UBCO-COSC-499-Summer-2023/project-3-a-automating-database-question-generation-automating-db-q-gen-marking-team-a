@@ -2,53 +2,24 @@ kind: pipeline
 type: docker
 name: default
 
-version: '3.8'
-
-services:
-  pl:
-    image: prairielearn/prairielearn:latest
-    ports:
-      - '3000:3000'
-    volumes:
-      - './databaseCourse:/course'
-      - './elements:/PrairieLearn/elements'
-      - '/var/run/docker.sock:/var/run/docker.sock'
-      - '/home/user/pl_ag_jobs:/jobs'
-    container_name: pl
-    environment:
-      - HOST_JOBS_DIR=/home/user/pl_ag_jobs
-      - NODEMON=true
-
 steps:
+  # - name: Run Autogenerator tests
+  #   image: prairielearn/prairielearn
+  #   commands: 
+  #     - pip install -r requirements.txt --quiet
+  #     - cd databaseCourse/elements/pl-sql-element
+  #     - python -m unittest discover -p "*_test.py"
+
   - name: Run UI Tests
-    image: selenium/standalone-chrome
+    image: azipis/prairielearn-chrome:latest
     commands: 
       - pip install -r requirements.txt
       - cd tests/ui
       - python -m unittest discover -s . -p "*_test.py"
 
-
-
-
-
-# steps:
-#   # - name: Run Autogenerator tests
-#   #   image: prairielearn/prairielearn
-#   #   commands: 
-#   #     - pip install -r requirements.txt --quiet
-#   #     - cd databaseCourse/elements/pl-sql-element
-#   #     - python -m unittest discover -p "*_test.py"
-
-#   - name: Run UI Tests
-#     image: selenium/standalone-chrome
-#     commands: 
-#       - pip install -r requirements.txt
-#       - cd tests/ui
-#       - python -m unittest discover -s . -p "*_test.py"
-
-#   # - name: Run Integration Tests
-#   #   image: selenium/standalone-chrome
-#   #   commands: 
-#   #     - pip install -r requirements.txt --quiet
-#   #     - cd tests/integration
-#   #     - python -m unittest discover -s . -p "*_test.py"
+  # - name: Run Integration Tests
+  #   image: selenium/standalone-chrome
+  #   commands: 
+  #     - pip install -r requirements.txt --quiet
+  #     - cd tests/integration
+  #     - python -m unittest discover -s . -p "*_test.py"

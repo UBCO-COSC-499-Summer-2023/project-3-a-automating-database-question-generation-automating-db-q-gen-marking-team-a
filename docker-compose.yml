@@ -3,7 +3,6 @@ services:
   pl:
     build:
       context: .
-      dockerfile: Dockerfile
     image: prairielearn/prairielearn:latest
     ports:
       - 3000:3000
@@ -12,6 +11,7 @@ services:
       - ./elements:/PrairieLearn/elements
       - /var/run/docker.sock:/var/run/docker.sock
       - ${HOME}/pl_ag_jobs:/jobs
+
     container_name: pl
     environment:
       - HOST_JOBS_DIR=${HOME}/pl_ag_jobs
