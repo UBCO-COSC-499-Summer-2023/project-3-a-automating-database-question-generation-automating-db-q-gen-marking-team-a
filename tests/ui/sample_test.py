@@ -24,7 +24,7 @@ class TestSqlEditor(unittest.TestCase):
 
     # tests that the home page of PL loads properly
     def testPrairieLearnLoad(self):
-        baseUrl = 'http://localhost:3000/'
+        baseUrl = 'http://test:3000/'
         driver = self.driver
         driver.get(baseUrl)
         self.assertIn("PrairieLearn",driver.title)

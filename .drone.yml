@@ -10,9 +10,10 @@ steps:
   #     - cd databaseCourse/elements/pl-sql-element
   #     - python -m unittest discover -p "*_test.py"
 
-  - name: Run UI Tests
+  - name: test
     image: azipis/prairielearn-chrome:latest
     commands: 
+      - pip install -r requirements.txt --quiet
       - cd tests/ui
       - python -m unittest discover -s . -p "*_test.py"
 
