@@ -20,6 +20,8 @@ steps:
 services:
   - name: selenium
     image: selenium/standalone-chrome
+    ports:
+      -3000:3000
 
   # - name: Run Integration Tests
   #   image: selenium/standalone-chrome
