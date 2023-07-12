@@ -23,7 +23,7 @@ Text files include all the .txt files one directory level down, so all files in 
 - lab3Databases
 - noisyData
 - randomTables
-- randomTableMetadata `TODO`
+- randomTableMetadata (`TODO`)  
 Such text files are used either to aid in random question generation or to hold DDL for static lab questions. These files are read during `pl-sql-element.py`'s `prepare()` function, either directly or when this library is invoked. The files used to aid random question generation holds lists of example data, where items are randomly chosen to create "clean" looking data.
 
 
