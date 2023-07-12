@@ -4,7 +4,6 @@ name: default
 
 steps:
 
-  steps:
   - name: Verify Docker
     image: azipis/prairielearn-chrome:latest
     commands:
