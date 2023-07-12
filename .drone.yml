@@ -15,10 +15,10 @@ steps:
       # Add your test commands here
 
 services:
-  - name: pl
+  pl:
     image: prairielearn/prairielearn:latest
     ports:
-      - 3000:3000
+      - "3000:3000"
     volumes:
       - name: course
         path: /course
@@ -39,6 +39,7 @@ volumes:
   - name: elements
     host:
       path: ./elements
+
 
 
 
