@@ -25,7 +25,6 @@ class TestSqlEditor(unittest.TestCase):
     # tests that the home page of PL loads properly
     def testPrairieLearnLoad(self):
         baseUrl = 'http://localhost:3000/'
-        baseUrl = 'https://394e-2001-569-fd36-4400-a9d0-2e5a-f850-ee95.ngrok-free.app/'
         driver = self.driver
         driver.get(baseUrl)
         self.assertIn("PrairieLearn",driver.title)
@@ -35,7 +34,7 @@ class TestSqlEditor(unittest.TestCase):
         # Test name: sqlEditorDbSchemaClickAddTableName
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/ | 
-        self.driver.get("https://394e-2001-569-fd36-4400-a9d0-2e5a-f850-ee95.ngrok-free.app/")
+        self.driver.get("http://localhost:3000/")
         # 2 | setWindowSize | 1532x816 | 
         self.driver.set_window_size(1532, 816)
         # 3 | click | linkText=Summer 2023 | 

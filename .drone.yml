@@ -10,11 +10,18 @@ steps:
   #     - cd databaseCourse/elements/pl-sql-element
   #     - python -m unittest discover -p "*_test.py"
 
-  - name: Run UI Tests
-    image: selenium/standalone-chrome
-    commands: 
-      - cd tests/ui
-      - python -m unittest discover -s . -p "*_test.py"
+steps:
+  - name: pl
+    image: docker/compose:1.29.2
+    commands:
+      - docker-compose up -d
+
+
+  # - name: Run UI Tests
+  #   image: azipis/prairielearn-chrome:latest
+  #   commands: 
+  #     - cd tests/ui
+  #     - python -m unittest discover -s . -p "*_test.py"
 
 # services:
 #   - name: selenium
