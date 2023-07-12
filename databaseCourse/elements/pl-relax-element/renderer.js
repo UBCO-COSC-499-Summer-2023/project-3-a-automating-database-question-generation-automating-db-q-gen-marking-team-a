@@ -148,9 +148,9 @@ $(document).ready(function () {
 
         // Creates the submenue element for the table, onclick each member of the table will add itself to the editor
         for (var i = 0; i < dataSchema._names.length; i++) {
-            let field = `<div style="text-align: center; border: 1px solid white; padding: 0.2em; display: flex; justify-content: space-around;" classname='submenu' id='schema-${dataSchema._relAliases[0]}'>`;
+            let field = `<div style="text-align: center; border: 1px solid white; padding: 0.2em; display: flex; justify-content: space-around;" class='submenu' id='schema-${dataSchema._relAliases[0]}'>`;
             let name = `<span onClick='updateCodeMirror("${dataSchema._names[i]}")' style='cursor: pointer; width: ${maxColNameLength}ch;'>${dataSchema._names[i]}</span>`;
-            let type = `<span style='cursor: pointer; width: ${maxColTypeLength}ch;'>${dataSchema._types[i].toUpperCase()}</span>`;
+            let type = `<span style=' width: ${maxColTypeLength}ch;'>${dataSchema._types[i].toUpperCase()}</span>`;
 
             schemaView += field + name + type + '</div>';
         }
@@ -283,25 +283,27 @@ function createTreeNodeDropdown(output) {
     // Creates the submenue element for the table, onclick each member of the table will add itself to the editor
     var maxColNameLength = 0;
     var maxColTypeLength = 0;
-    var dropdown = $("<div class='tree-popup'>Columns:</div>")
+    var dropdown = $("<div class='tree-popup'><em>columns:</em></div>")
     var columns = output.getSchema().getColumns().map( function(col, i) {
+
+
         if (col.toString().length > maxColNameLength) {
-            maxColNameLength = col.toString().length;
+            maxColNameLength = output.getSchema().getName(i).length + 2;
         }
         if (output.getSchema().getType(i).length > maxColTypeLength) {
-            maxColTypeLength = output.getSchema().getType(i).length+1;
+            maxColTypeLength = output.getSchema().getType(i).length + 2;
         }
 
 
-        var div = $(`<div classname='submenu'>`)
+        var div = $(`<div class='submenu'>`)
         div.attr("style", "text-align: center; border: 1px solid white; padding: 0.2em; display: flex; justify-content: space-around;");
-        div.attr("classname", "submenu");
+        div.attr("class", "submenu");
         return div;
     });
 
     for (var i = 0; i < columns.length; i++) {
-        let name = `<span style='cursor: pointer; width: ${maxColNameLength}ch; font-size: 16px;'>${output.getSchema().getName(i)}</span>`;
-        let type = `<span style='cursor: pointer; width: ${maxColTypeLength}ch; font-size: 16px;'><small>${output.getSchema().getType(i).toUpperCase()}</small></span>`;
+        let name = `<span style='width: ${maxColNameLength}ch; font-size: 16px;'>${output.getSchema().getName(i)}</span>`;
+        let type = `<span style='width: ${maxColTypeLength}ch; font-size: 16px;'><small>${output.getSchema().getType(i).toUpperCase()}</small></span>`;
         columns[i].append(name);
         columns[i].append(type);
 
@@ -315,11 +317,11 @@ function createTreeNodeDropdown(output) {
         
         var listItems = naturalJoinConditions.map( function(condition) {
 
-            var div = $(`<div classname='submenu'>`)
+            var div = $(`<div class='submenu'>`)
             div.attr("style", "text-align: center; border: 1px solid white; padding: 0.2em; display: flex; justify-content: space-around;");
-            div.attr("classname", "submenu");
+            div.attr("class", "submenu");
 
-            var condSpan = $(`<span style='cursor: pointer; font-size: 16px;'>${condition.getFormulaHtml()}</span>`)
+            var condSpan = $(`<span style='font-size: 16px;'>${condition.getFormulaHtml()}</span>`)
             div.append(condSpan)
             return div;
         }); 
