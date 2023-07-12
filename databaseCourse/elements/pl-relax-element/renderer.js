@@ -44,6 +44,38 @@ $(document).ready(function () {
 
 
     //* FUNCTION DEFINITIONS
+
+    // Function that renders HTML tags in string nodes found in body
+    function applyHTMLTagsToWords(tagName) {
+
+        // Create a regular expression to match the opening and closing tags
+        // (.*?) matches everything between the tags
+        // g enables global search
+        var regex = new RegExp('<' + tagName + '>(.*?)</' + tagName + '>', 'g');
+
+        // Find all text nodes in the body (not including empty text nodes)
+        var textNodes = $('body').find('*').addBack().contents().filter(function () {
+            return this.nodeType === 3 && this.nodeValue.trim() !== '';
+        });
+
+        // Iterate over the text nodes and apply tags to the matched strings
+        textNodes.each(function () {
+
+            var node = this;
+            var replacedText = node.nodeValue.replace(regex, function (match, capturedText) {
+                return '<' + tagName + '>' + capturedText + '</' + tagName + '>';
+            });
+            $(node).replaceWith(replacedText);
+        });
+
+        return $('body').html();
+    }
+
+    // Apply HTML tags to certain parts of strings
+    var boldedWords = applyHTMLTagsToWords('b');
+    var italicWords = applyHTMLTagsToWords('i');
+    var emphWords = applyHTMLTagsToWords('em');
+    var strongWords = applyHTMLTagsToWords('strong');
     
     //* FUNCTIONS - USER ACTIONS
     // adds functionality for onclick

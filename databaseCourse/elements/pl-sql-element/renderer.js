@@ -62,6 +62,45 @@ $(document).ready(function () {
 
     /*
     //
+    // Functions regarding rendering the Question correctly -------------------------------------------------------------------
+    // 
+    */
+    function applyHTMLTagsToWords(tagName) {
+
+        // Create a regular expression to match the opening and closing tags
+        // (.*?) matches everything between the tags
+        // g enables global search
+        var regex = new RegExp('<' + tagName + '>(.*?)</' + tagName + '>', 'g');
+
+        // Find all text nodes in the body (not including empty text nodes)
+        var textNodes = $('body').find('*').addBack().contents().filter(function () {
+            return this.nodeType === 3 && this.nodeValue.trim() !== '';
+        });
+
+        // Iterate over the text nodes and apply tags to the matched strings
+        textNodes.each(function () {
+
+            var node = this;
+            var replacedText = node.nodeValue.replace(regex, function (match, capturedText) {
+                return '<' + tagName + '>' + capturedText + '</' + tagName + '>';
+            });
+            $(node).replaceWith(replacedText);
+        });
+
+        return $('body').html();
+    }
+
+    // Apply HTML tags to certain parts of strings
+    var boldedWords = applyHTMLTagsToWords('b');
+    var italicWords = applyHTMLTagsToWords('i');
+    var emphWords = applyHTMLTagsToWords('em');
+    var strongWords = applyHTMLTagsToWords('strong');
+    
+    console.log(boldedWords);
+
+
+    /*
+    //
     // Functions regarding the rendering of the Database Schema -------------------------------------------------------------------
     // modeled after the schema & dropdowns visualization found in autoEr
     */
@@ -190,7 +229,7 @@ $(document).ready(function () {
     */
 
     // REFACTORED USING CSS
-    // CAN DELETE IF NOT NEEDED
+    // Temporarily left in for visibility in case code is needed
 
     /*
 
@@ -336,7 +375,7 @@ $(document).ready(function () {
     }
 
     // function that allows you to click the table and add it to editor
-    window.addTableToEditor = function (tableName){
+    window.addTableToEditor = function (tableName) {
         updateCodeMirror(`${tableName}`);
     }
 
