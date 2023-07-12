@@ -60,19 +60,21 @@ def generateCreate(data, difficulty):
         # Adds the column name
         questionString += f" <b>{columnValues[i]['name']}</b>"
 
-        # Mentions primary key, if necessary
-        if columnValues[i]['isPrimary']:
-            questionString += ' <em>that is a primary key</em>'
+
 
         # Handles the text for units
         match columnValues[i]['unit']:
             case 'INTEGER': questionString += ' (an integer)'
             case 'DECIMAL': questionString += f" (a decimal value with a total of {columnValues[i]['unitOther'].split(',')[0]} digits, {columnValues[i]['unitOther'].split(',')[1]} of which are after the decimal point)"
-            case 'CHAR': questionString += f" (a string of exaclty {columnValues[i]['unitOther']} characters)"
+            case 'CHAR': questionString += f" (a string of exactly {columnValues[i]['unitOther']} characters)"
             case 'VARCHAR': questionString += f" (a string up to {columnValues[i]['unitOther']} characters)"
             case 'DATE': questionString += ' (DATE)'
             case 'DATETIME': questionString += ' (DATETIME)'
             case other: questionString += f" ({columnValues[i]['unit']})"
+            
+        # Mentions primary key, if necessary
+        if columnValues[i]['isPrimary']:
+            questionString += ' <em>that is a primary key</em>'
 
         # Mentions foreign key and its clauses, if necessary
         if columnValues[i]['references']:
