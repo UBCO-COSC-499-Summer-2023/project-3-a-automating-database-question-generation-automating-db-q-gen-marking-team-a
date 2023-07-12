@@ -10,12 +10,6 @@ steps:
   #     - cd databaseCourse/elements/pl-sql-element
   #     - python -m unittest discover -p "*_test.py"
 
-  - name: Install chromedriver_binary
-    image: python:3.10
-    commands:
-      - pip install chromedriver-binary
-      - cp -r /usr/local/bin/chromedriver /workspace/chromedriver  # Copy chromedriver to the workspace
-
   - name: Run UI Tests
     image: azipis/prairielearn-chrome:latest
     commands: 
