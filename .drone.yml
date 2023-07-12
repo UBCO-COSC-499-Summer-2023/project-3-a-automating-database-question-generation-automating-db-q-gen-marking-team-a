@@ -10,30 +10,16 @@ steps:
   #     - cd databaseCourse/elements/pl-sql-element
   #     - python -m unittest discover -p "*_test.py"
 
-steps:
-  - name: run-docker-compose
-    image: docker/compose:1.29.2
-    volumes:
-      - name: dockersock
-        path: /var/run/docker.sock
-      - name: appdir
-        path: $DRONE_WORKSPACE
-    working_dir: /drone/src/$DRONE_REPO_NAME
-    commands:
-      - docker-compose up -d
+  - name: Run UI Tests
+    image: azipis/prairielearn-chrome:latest
+    commands: 
+      - cd tests/ui
+      - python -m unittest discover -s . -p "*_test.py"
 
+services:
+  - name: selenium
+    image: selenium/standalone-chrome
 
-  # - name: Run UI Tests
-  #   image: azipis/prairielearn-chrome:latest
-  #   commands: 
-  #     - cd tests/ui
-  #     - python -m unittest discover -s . -p "*_test.py"
-
-# services:
-#   - name: selenium
-#     image: selenium/standalone-chrome
-#     ports:
-#       -3000:3000
 
   # - name: Run Integration Tests
   #   image: selenium/standalone-chrome
