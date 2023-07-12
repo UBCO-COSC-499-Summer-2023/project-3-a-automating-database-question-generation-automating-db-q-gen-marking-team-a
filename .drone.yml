@@ -14,14 +14,10 @@ steps:
       - echo "Running Selenium tests"
       # Add your test commands here
 
-services:
-  cache:
-    image: redis
-
-  pl:
+  - name: pl
     image: prairielearn/prairielearn:latest
     ports:
-      - 3000
+      - 3000:3000
     volumes:
       - name: course
         path: /course
@@ -34,6 +30,12 @@ services:
     environment:
       - HOST_JOBS_DIR=/jobs
       - NODEMON=true
+    depends_on:
+      - cache
+
+  - name: cache
+    image: redis
+    detach: true
 
 volumes:
   - name: course
@@ -42,6 +44,7 @@ volumes:
   - name: elements
     host:
       path: ./elements
+
 
 
 
