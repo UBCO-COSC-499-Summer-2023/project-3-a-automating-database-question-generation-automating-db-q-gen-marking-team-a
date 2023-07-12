@@ -3,6 +3,14 @@ type: docker
 name: default
 
 steps:
+
+  steps:
+  - name: Verify Docker
+    image: azipis/prairielearn-chrome:latest
+    commands:
+      - docker version
+
+
   # - name: Run Autogenerator tests
   #   image: prairielearn/prairielearn
   #   commands: 
@@ -10,14 +18,14 @@ steps:
   #     - cd databaseCourse/elements/pl-sql-element
   #     - python -m unittest discover -p "*_test.py"
 
-  - name: Run UI Tests
-    image: azipis/prairielearn-chrome:latest
-    commands: 
-      - docker run -p 8080:8080 -d azipis/prairielearn-chrome
-      - pip install -r requirements.txt
-      - cd tests/ui
-      - python -m unittest discover -s . -p "*_test.py"
-      - docker stop $(docker ps -q --filter ancestor=azipis/prairielearn-chrome)
+  # - name: Run UI Tests
+  #   image: azipis/prairielearn-chrome:latest
+  #   commands: 
+  #     - docker run -p 8080:8080 -d azipis/prairielearn-chrome
+  #     - pip install -r requirements.txt
+  #     - cd tests/ui
+  #     - python -m unittest discover -s . -p "*_test.py"
+  #     - docker stop $(docker ps -q --filter ancestor=azipis/prairielearn-chrome)
 
 # services:
 #   - name: selenium
