@@ -94,14 +94,17 @@ $(document).ready(function () {
     var activeNode = null;
 
     function executeEditorContents() {
-        //! d1 and d2 cannot be used to replace "S" and "P"
-        //? How can we fix the "S" and "P" issue
-        var d1 = dataset.at(0)._schema._relAliases.at(0);
-        var d2 = dataset.at(1)._schema._relAliases.at(0);
+        // loading datasets into relax
+        var dataStuff = {};
+        for (var i = 0; i < dataset.length; i++) {
+            var key = dataset.at(i)._schema._relAliases.at(0);
+            dataStuff[key] = dataset[i];
+        }
 
         try {
             activeNode = null;
-            const PR = executeRelalg(editor.getValue(), { "Customer" : dataset[0], "Product" : dataset[1], "Shipment" : dataset[2], "ShippedProduct" : dataset[3] }); // gets query results
+            
+            const PR = executeRelalg(editor.getValue(), dataStuff); // gets query results
             treeElm.contents().remove(); // clears Tree previous results
             createOutputTable(PR); // creates and renders new output table
             var treeDiv = $('<div class="tree"></div>');
@@ -113,7 +116,7 @@ $(document).ready(function () {
             console.log(err.stack)
             createErrorOutput(err); // creates and renders error in event user has incorrect RA query 
         }
-    }
+    } 
 0
 
     //* FUNCTIONS - RENDERING
