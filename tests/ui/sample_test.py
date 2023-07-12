@@ -13,13 +13,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 # example uiTestFile to show how you can automate ui tests, configure the ui test classes/files 
 # and tests
-
-
-
 class TestSqlEditor(unittest.TestCase):
     
-    url = 'https://394e-2001-569-fd36-4400-a9d0-2e5a-f850-ee95.ngrok-free.app/'
-
 
     def setUp(self):
         options = Options()
@@ -29,7 +24,8 @@ class TestSqlEditor(unittest.TestCase):
 
     # tests that the home page of PL loads properly
     def testPrairieLearnLoad(self):
-        baseUrl = url
+        baseUrl = 'http://localhost:3000/'
+        baseUrl = 'https://394e-2001-569-fd36-4400-a9d0-2e5a-f850-ee95.ngrok-free.app/'
         driver = self.driver
         driver.get(baseUrl)
         self.assertIn("PrairieLearn",driver.title)
@@ -39,7 +35,7 @@ class TestSqlEditor(unittest.TestCase):
         # Test name: sqlEditorDbSchemaClickAddTableName
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/ | 
-        self.driver.get("http://localhost:3000/")
+        self.driver.get("https://394e-2001-569-fd36-4400-a9d0-2e5a-f850-ee95.ngrok-free.app/")
         # 2 | setWindowSize | 1532x816 | 
         self.driver.set_window_size(1532, 816)
         # 3 | click | linkText=Summer 2023 | 
