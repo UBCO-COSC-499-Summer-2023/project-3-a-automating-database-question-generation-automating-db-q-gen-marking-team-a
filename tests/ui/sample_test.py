@@ -18,6 +18,7 @@ class TestSqlEditor(unittest.TestCase):
     def setUp(self):
         options = Options()
         options.add_argument('--headless')
+        options.add_argument('--no-sandbox')
         self.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
 
     # tests that the home page of PL loads properly
