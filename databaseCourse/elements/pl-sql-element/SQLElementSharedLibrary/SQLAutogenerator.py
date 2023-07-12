@@ -76,7 +76,7 @@ def generateCreate(data, difficulty):
 
         # Mentions foreign key and its clauses, if necessary
         if columnValues[i]['references']:
-            questionString += f" that references {columnValues[i]['references']}\'s {columnValues[i]['foreignKey']}"
+            questionString += f" that references <b>{columnValues[i]['references']}</b>\'s <b>{columnValues[i]['foreignKey']}</b>"
 
             # Handles cascade
             if columnValues[i]['isOnUpdateCascade']:
@@ -88,7 +88,7 @@ def generateCreate(data, difficulty):
 
         # Mentions other clauses, if necessary
         if columnValues[i]['isNotNull']:
-            questionString += ' and cannot be null'
+            questionString += ' <em>and cannot be null</em>'
 
         # Adds a comma at the end of each iteration
         questionString += ', '
@@ -176,7 +176,7 @@ def generateInsert(data, difficulty):
 
 
     # Creates and adds the question string
-    data['params']['questionString'] = f"Insert the following values into the {database.name} table:\n{valuesString}"
+    data['params']['questionString'] = f"Insert the following values into the <b>{database.name}</b> table:\n{valuesString}"
 
     # Adds the database to the schema as well as
     # the schemas of referenced databases
@@ -251,9 +251,9 @@ def generateUpdate(data, difficulty):
     # Generates the question string
     # Changes depending on whether it uses a conditional or not
     if useConditional:
-        data['params']['questionString'] = f"From the table {database.name} and in the column {updateColumn}, change all values to be {updateValue} where {conditionalColumn} is equal to {conditionalValue}."
+        data['params']['questionString'] = f"From the table <b>{database.name}</b> and in the column <b>{updateColumn}</b>, change all values to be <b>{updateValue}</b> where <b>{conditionalColumn}</b> is equal to <b>{conditionalValue}</b>."
     else:
-        data['params']['questionString'] = f"From the table {database.name} and in the column {updateColumn}, change all values to be {updateValue}."
+        data['params']['questionString'] = f"From the table <b>{database.name}</b> and in the column <b>{updateColumn}</b>, change all values to be <b>{updateValue}</b>."
 
     # Loads the schema of all referenced databases
     loadAllSchema(data, database)
@@ -316,7 +316,7 @@ def generateDelete(data, difficulty):
 
 
     # Creates the question string
-    data['params']['questionString'] = f"From the table {database.name}, delete the entry where {randomKey} equals '{deleteValue}'."
+    data['params']['questionString'] = f"From the table <b>{database.name}</b>, delete the entry where <b>{randomKey}</b> equals <b>'{deleteValue}'</b>."
 
     # Loads the schema of all referenced databases
     loadAllSchema(data, database)
@@ -470,7 +470,7 @@ def generateQuery(data, difficulty):
         if keyIndex == len(list(foreignKeyMap)) and joins > 0:
             questionString += ' and'
 
-        questionString += f" {keyMap[key]['references']},"
+        questionString += f" <b>{keyMap[key]['references']}</b>,"
     
     # Removes the trailing comma and add the next bit of text
     questionString = questionString[:-1] + ' select the columns'
@@ -500,7 +500,7 @@ def generateQuery(data, difficulty):
             if columnIndex == len(list(selectedColumns[key])) and keyIndex == len(list(selectedColumns)) and columnCount > 1:
                 questionString += ' and'
             
-            questionString += f" {column},"
+            questionString += f" <b>{column}</b>,"
 
     # Removes the trailing comma
     questionString = questionString[:-1] + '.'
