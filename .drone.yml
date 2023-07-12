@@ -1,8 +1,36 @@
 kind: pipeline
 type: docker
+
 name: selenium-tests
 
+platform:
+  os: linux
+  arch: amd64
+
 steps:
+  - name: setup-docker
+    image: docker
+    commands:
+      - apk add --update docker
+
+  - name: build-container
+    image: docker
+    commands:
+      - docker build -t prairielearn/prairielearn:latest .
+  
+  - name: start-container
+    image: docker
+    commands:
+      - docker run -d --name pl \
+          -p 3000:3000 \
+          -v $(pwd)/databaseCourse:/course \
+          -v $(pwd)/elements:/PrairieLearn/elements \
+          -v /var/run/docker.sock:/var/run/docker.sock \
+          -v ${HOME}/pl_ag_jobs:/jobs \
+          -e HOST_JOBS_DIR=${HOME}/pl_ag_jobs \
+          -e NODEMON=true \
+          prairielearn/prairielearn:latest
+
   - name: run-tests
     image: selenium/standalone-chrome:latest
     volumes:
@@ -14,29 +42,6 @@ steps:
       - echo "Running Selenium tests"
       # Add your test commands here
 
-  - name: pl
-    image: prairielearn/prairielearn:latest
-    ports:
-      - 3000:3000
-    volumes:
-      - name: course
-        path: /course
-      - name: elements
-        path: /PrairieLearn/elements
-      - name: docker-socket
-        path: /var/run/docker.sock
-      - name: jobs-dir
-        path: /jobs
-    environment:
-      - HOST_JOBS_DIR=/jobs
-      - NODEMON=true
-    depends_on:
-      - cache
-
-  - name: cache
-    image: redis
-    detach: true
-
 volumes:
   - name: course
     host:
@@ -44,7 +49,6 @@ volumes:
   - name: elements
     host:
       path: ./elements
-
 
 
 
