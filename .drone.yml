@@ -12,8 +12,8 @@ steps:
 
   - name: setup_environment
     image: docker/compose:1.29.2
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
     commands:
       - docker-compose up -d
 
@@ -26,8 +26,8 @@ steps:
 
   - name: teardown_environment
     image: docker/compose:1.29.2
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
     commands:
       - docker-compose down
 
