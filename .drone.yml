@@ -11,9 +11,9 @@ steps:
   #     - python -m unittest discover -p "*_test.py"
 
   - name: setup_environment
-    image: docker/compose:1.29.2
-    environment:
-      - DOCKER_HOST=unix:///var/run/docker.sock
+    image: docker/cli:20.10
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     commands:
       - docker-compose up -d
 
@@ -25,9 +25,9 @@ steps:
       - python -m unittest discover -s . -p "*_test.py"
 
   - name: teardown_environment
-    image: docker/compose:1.29.2
-    environment:
-      - DOCKER_HOST=unix:///var/run/docker.sock
+    image: docker/cli:20.10
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     commands:
       - docker-compose down
 
