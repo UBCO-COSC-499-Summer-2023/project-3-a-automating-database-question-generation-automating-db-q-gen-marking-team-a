@@ -11,8 +11,12 @@ steps:
   #     - python -m unittest discover -p "*_test.py"
 
 steps:
-  - name: pl
+  - name: run-docker-compose
     image: docker/compose:1.29.2
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - .:/app
+    working_dir: /app
     commands:
       - docker-compose up -d
 
