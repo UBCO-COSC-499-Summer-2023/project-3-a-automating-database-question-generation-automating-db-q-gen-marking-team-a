@@ -67,7 +67,7 @@ class TableTest(unittest.TestCase):
     # Case: filepath is correct
     def testStaticTableGeneration(self):
         tableName = 'flight'
-        table = Table(tableName)
+        table = Table(tableName,random=False)
 
         self.assertIsNotNone(table)
 
@@ -183,7 +183,7 @@ class TableTest(unittest.TestCase):
     # Case: table has no relations
     def testGetKeyMapWhenTableHasNoRelations(self):
         tableName = 'airport'
-        table = Table(tableName)
+        table = Table(tableName, random=False)
 
         keyMap = table.getKeyMap()
         self.assertEqual(len(keyMap), 0)
@@ -191,7 +191,7 @@ class TableTest(unittest.TestCase):
     # Case: table has at least one relation
     def testGetKeyMapWhenTableHasAtleastOneRelation(self):
         tableName = 'flight'
-        table = Table(tableName)
+        table = Table(tableName random=False)
 
         keyMap = table.getKeyMap()
         self.assertGreater(len(keyMap), 0)
@@ -202,7 +202,7 @@ class TableTest(unittest.TestCase):
     # Case: table is unmodified from file Schema
     def testGetSchemaWhenTableIsUnmodified(self):
         tableName = 'flight'
-        table = Table(tableName)
+        table = Table(tableName, random=False)
         tableSchema = table.getSchema()
 
         unmodifiedSchema = getStaticSchema(tableName)
@@ -217,7 +217,7 @@ class TableTest(unittest.TestCase):
     # Case: table is modified from Schema
     def testGetSchemaWhenTableIsModified(self):
         tableName = 'flight'
-        table = Table(tableName)
+        table = Table(tableName, random=False)
         table.columns.pop('departAirport')
         tableSchema = table.getSchema().split('\n')
 
