@@ -194,7 +194,7 @@ class Table:
                     'name': key,
                     'unit': constraints[key]['unit'],
                     'unitOther': constraints[key]['unitOther'],
-                    'isPrimary': False,
+                    'isPrimary': True, # Must be true to prevent SQLite FK constraint error
                     'isNotNull': False,
                     'references': None,
                     'foreignKey': None,

@@ -488,13 +488,13 @@ def generateQuery(data, difficulty):
 
 
     # Loads the schema of all referenced tables
-    loadAllSchema(data, table)
+    loadAllSchema(data, table, referencedTables=referenced)
 
     rows = generateRows(table, len(list(table.columns.keys())) * 3 + random.randint(-3, 3))
 
     # Loads the noisy data into the primary table as
     # well as generating noisy data for referenced tables
-    loadAllNoisyData(data, table, rows)
+    loadAllNoisyData(data, table, rows, referencedTables=referenced)
 
     # Sets the correct answers
     # TODO: clauses (the '[]') is blank; make it not blank
@@ -611,45 +611,50 @@ def getReferencedTables(table, unique=True, static=False):
 
 
 # Adds the schema tables to data
-def loadSchemas(data, tables):
+def loadSchemas(data, table, referencedTables):
 
     # Iterate over tables, if there are any
     # Add their schema to the initialize string
-    if tables:
-        for key in tables:
-            data['params']['db_initialize'] += f"{tables[key].getSchema()}\n"
+    if referencedTables:
+        for key in referencedTables:
+            data['params']['db_initialize'] += f"{referencedTables[key].getSchema()}\n"
+    
+    # Adds the primary table afterwards.
+    # Since the primary table may reference the foreign
+    # tables but NOT vice versa, it is required that the
+    # primary table is loaded after such that foreign
+    # key constrains are satisfied.
+    if table:
+        data['params']['db_initialize'] += f"{table.getSchema()}\n"
 
 # Loads the schema of the current table as well
 # as all referenced tables.
-def loadAllSchema(data, table):
+def loadAllSchema(data, table, referencedTables={}):
 
     # Gets all referenced tables
-    tables = getReferencedTables(table, unique=True)
-
-    # Adds this table to the set of tables
-    tables[table.name] = table
+    if not referencedTables:
+        referencedTables = getReferencedTables(table, unique=True)
 
     # Loads all their schema
-    loadSchemas(data, tables)
+    loadSchemas(data, table, referencedTables)
+
+
 
 # Loads noisy data into the editors
 def loadNoisyData(data, table, rows):
     data['params']['db_initialize'] += ''.join(insertStatement(table, list(row.values())) for row in rows)
-
 
 # Loads the noisy data supplied as well as generating and
 # loading noisy data for the referenced tables.
 #
 # Note: This function respects references so a foreign key
 # reference between two tables will holds the same value.
-def loadAllNoisyData(data, table, rows):
-    
-    # First loads the rows into the actual table
-    loadNoisyData(data, table, rows)
+def loadAllNoisyData(data, table, rows, referencedTables={}):
 
     # Gets a dicitonary of referenced tables.
     # The keys are the name of the table
-    referencedTables = getReferencedTables(table)
+    if not referencedTables:
+        referencedTables = getReferencedTables(table)
 
 
     # Gets a dictionary that maps the column to both
@@ -692,6 +697,13 @@ def loadAllNoisyData(data, table, rows):
     # Loads the data into the actual table
     for key in generatedData:
         loadNoisyData(data, referencedTables[keyMap[key]['references']], generatedData[key])
+    
+    # Finally loads the primary table's data.
+    # Since the primary table may reference the foreign
+    # tables but NOT vice versa, it is required that the
+    # primary table is loaded after such that foreign
+    # key constrains are satisfied.
+    loadNoisyData(data, table, rows)
 
 
 
