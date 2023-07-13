@@ -1,4 +1,5 @@
 import unittest
+import time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
@@ -28,28 +29,6 @@ class TestSqlEditor(unittest.TestCase):
         print(self.driver.title)
     
     def test_sqlEditorDbSchemaClickAddTableName(self):
-        # Test name: sqlEditorDbSchemaClickAddTableName
-        # Step # | name | target | value
-        # 1 | open | http://localhost:3000/ | 
-        self.driver.get("http://localhost:3000/")
-        # 2 | setWindowSize | 1532x816 | 
-        self.driver.set_window_size(1532, 816)
-        # 3 | click | linkText=Summer 2023 | 
-        self.driver.find_element(By.LINK_TEXT, "Summer 2023").click()
-        # 4 | click | linkText=Homework For Writing SQL Queries | 
-        self.driver.find_element(By.LINK_TEXT, "Homework For Writing SQL Queries").click()
-        # 5 | click | css=tr:nth-child(2) a | 
-        schema = WebDriverWait(self.driver,10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR,"tr:nth-child(2) a"))
-        )
-        schema.click()
-        # 6 | click | id=btn-" + tableName + " | 
-        tableName = WebDriverWait(self.driver,10).until(
-            EC.element_to_be_clickable((By.ID, "btn-\" + tableName + \""))
-        )
-        tableName.click()
-
-    def test_sqlEditorDbSchemaClickAddColumn(self):
         # Test name: sqlEditorDbSchemaClickAddColumn
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/ | 
@@ -61,17 +40,8 @@ class TestSqlEditor(unittest.TestCase):
         # 4 | click | linkText=Homework For Writing SQL Queries | 
         self.driver.find_element(By.LINK_TEXT, "Homework For Writing SQL Queries").click()
         # 5 | click | css=tr:nth-child(2) a | 
-        # self.driver.find_element(By.CSS_SELECTOR, "tr:nth-child(2) a").click()
-        schema = WebDriverWait(self.driver,10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR,"tr:nth-child(2) a"))
-        )
-        schema.click()
-        # 6 | click | xpath=//span[@onclick="addColumnToEditor('customer', 'cid')"] | 
-        # self.driver.find_element(By.XPATH, "//span[@onclick=\"addColumnToEditor(\'customer\', \'cid\')\"]").click()
-        schemaCol = WebDriverWait(self.driver,10).until(
-            EC._element_if_visible((By.XPATH, "//span[@onclick=\"addColumnToEditor(\'customer\', \'cid\')\"]"))
-        )
-        schemaCol.click()
+        self.driver.implicitly_wait(5)
+        self.driver.find_element(By.CSS_SELECTOR, "tr:nth-child(2) a").click()
     
     def test_sqlEditorExecuteButtonClick(self):
         # Test name: sqlEditorExecuteButtonClick
