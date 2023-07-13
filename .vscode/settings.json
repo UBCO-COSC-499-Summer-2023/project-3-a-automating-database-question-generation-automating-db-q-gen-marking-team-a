@@ -2,7 +2,7 @@
     "python.testing.unittestArgs": [
         "-v",
         "-s",
-        "./databaseCourse/elements/pl-sql-element",
+        "./tests/ui",
         "-p",
         "*_test.py"
     ],
