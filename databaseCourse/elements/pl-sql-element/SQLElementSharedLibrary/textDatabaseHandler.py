@@ -237,6 +237,7 @@ class Table:
                 self.columns[foreignColumn]['references'] = randomTables.pop(choice(range(len(randomTables))))
 
 
+
             # Alters the column names.
             # The first letter of the FKs on either side will
             # be the name fo their respective table. Otherwise,
@@ -334,6 +335,7 @@ class Table:
             return f"{string}"
 
 
+
     # Returns a dictionary with the following mapping:
     #   column: (if the column is a foreign key)
     #       'references': the table referenced
@@ -407,8 +409,6 @@ class Table:
         return schema
 
 
-
+    # The same as calling Table.getSchema()
     def __str__(self):
-        # The Column __str__() function didn't want to work so
-        # instead here's some gross list comprehension
-        return f"{self.name}: " + str([f"{column['name']}: {column['unit']}" for column in self.columns.values()])
+        return self.getSchema()
