@@ -215,7 +215,7 @@ class TableTest(unittest.TestCase):
 
 
     # Case: table is modified from Schema
-    def testGetSchemaWhenTableIsUnmodified(self):
+    def testGetSchemaWhenTableIsModified(self):
         tableName = 'flight'
         table = Table(tableName)
         table.columns.pop('departAirport')
