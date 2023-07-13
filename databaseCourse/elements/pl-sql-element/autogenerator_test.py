@@ -312,11 +312,11 @@ class HelperFnsTest(unittest.TestCase):
         tableFlight = db.Table(tableTwo)
         tableThree = "airplane"
         tableAirplane = db.Table(tableThree)
-        tables = {tableOne: tableAirport, tableTwo: tableFlight, tableThree: tableAirplane}
+        tables = {tableOne: tableAirport, tableThree: tableAirplane}
 
         self.assertEqual(len(data['params']['db_initialize']),0)
 
-        loadSchemas(data,tables)
+        loadSchemas(data,tableFlight,tables)
 
         self.assertIn(tableOne,data['params']['db_initialize'])
         self.assertIn(tableTwo,data['params']['db_initialize'])
@@ -331,11 +331,12 @@ class HelperFnsTest(unittest.TestCase):
         data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
                           'db_initialize':db_initialize},
                 'correct_answers':{'SQLEditor': initialAns}}
+        table = None
         tables = []
 
         self.assertEqual(len(data['params']['db_initialize']),0)
 
-        loadSchemas(data,tables)
+        loadSchemas(data,table,tables)
 
         self.assertEqual(len(data['params']['db_initialize']),0)
 
