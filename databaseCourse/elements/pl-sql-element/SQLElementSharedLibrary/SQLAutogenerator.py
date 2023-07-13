@@ -729,7 +729,7 @@ def loadTrimmedTable(columnCount, joinCount):
 
         # Pops the current table so there's no repeats
         possibleTable = possibleTables.pop(random.choice(range(len(possibleTables))))
-        table = db.Table(possibleTable)
+        table = db.Table(possibleTable, random=False)
 
     # Removes columns until there is an appropriate amount left
     doomCounter = 10
