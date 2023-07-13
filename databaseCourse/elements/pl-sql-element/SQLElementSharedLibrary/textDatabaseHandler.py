@@ -42,11 +42,13 @@ class Table:
 
     # A table has a name and some columns.
     # File name and table name are equivalent.
-    def __init__(self, file='', columns=5, joins=1, clauses=[], constraints={}):
+    #   File: the name of the text file if it exists OR the name of the random table
+    #   Columns: the number of columns in the table
+    def __init__(self, file='', columns=5, joins=1, clauses=[], constraints={}, random=True):
         self.name = file
         self.columns = {}
 
-        self.load(file, columns, joins, clauses, constraints)
+        self.load(file, columns, joins, clauses, constraints, random)
 
 
 
@@ -55,16 +57,24 @@ class Table:
     # random tables, not static tables; for random tables.
     # f"{file}" will become the table name if it is
     # provided, otherwise a random name will be chosen
-    def load(self, file, columns, joins, clauses, constraints):
-        tableFiles = getAllTableFiles()
+    def load(self, file, columns, joins, clauses, constraints, random):
 
-        if file and file in tableFiles:
-            self.loadFromText(relativeFilePath(file))
+        if not random:
+            self.loadFromText(file)
         else:
             self.loadRandom(self.name, columns, joins, clauses, constraints)
 
     # Given the path to a text file, loads its data
-    def loadFromText(self, filePath):
+    def loadFromText(self, file):
+
+        # If the file is not set but the question uses
+        # a static table, find a static table
+        tableFiles = getAllTableFiles()
+        if not file or file not in tableFiles:
+            file = choice(tableFiles)
+        
+        # Gets the path to that file
+        filePath = relativeFilePath(file)
 
         # Only includes lines that aren't exclusively
         # white text and strips them of trailing/leading
