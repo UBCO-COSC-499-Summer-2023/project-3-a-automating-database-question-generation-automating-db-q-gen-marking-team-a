@@ -569,29 +569,43 @@ def conditionalStatement(column, condition):
 # table to the referenced tables. If the unique parameter is true,
 # this dictionary contains a set of tables: no duplicated. Otherwise,
 # there may be duplicate tables with unique foreign keys.
-def getReferencedTables(table, unique=True):
+def getReferencedTables(table, unique=True, random=True):
     
-    # Uses a dictionary to store the tables
+    # Uses a dictionary to store the tables and a set to keep track
+    # of unique table names
     tables = {}
     tableSet = set()
 
-    # Checks each column for its reference
-    # Adds the referenced item, if it exists
-    for key in table.columns.keys():
-        if table.columns[key]['references'] and table.columns[key]['references'] not in tableSet:
+    # Iterates over the table's foreign keys
+    for key in table.getKeyMap().keys():
+
+        # Checks to see if the table name is already in the set.
+        # Only matters if unique is True.
+        if table.columns[key]['references'] not in tableSet:
 
             columns = random.randint(3, 6)
+
+            # Ensures foreign key consistency across generated tables
+            #   name of the column in the foreign table: {
+            #       'unit': the data type of the column
+            #       'unitOther': the other information related to the data type
+            #   }
             constraints = {
                 table.columns[key]['foreignKey'] : {
                     'unit': table.columns[key]['unit'],
                     'unitOther': table.columns[key]['unitOther']
                 }
             }
-            tables[table.columns[key]['references']] = db.Table(file=table.columns[key]['references'], columns=columns, constraints=constraints)
 
+            # Loads an approrpiate table into the dictionary
+            tables[table.columns[key]['references']] = db.Table(file=table.columns[key]['references'], columns=columns, constraints=constraints, random=random)
+
+            # Adds the table name to the set if unique is True
             if unique:
                 tableSet.add(table.columns[key]['references'])
 
+    # Returns a dictionary of all referenced tables
+    #   table name: respective Table object
     return tables
 
 
