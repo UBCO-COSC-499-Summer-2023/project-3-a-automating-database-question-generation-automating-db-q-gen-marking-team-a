@@ -255,7 +255,7 @@ class HelperFnsTest(unittest.TestCase):
 
         result = getReferencedTables(table, unique=True)
 
-        self.assertIsInstance(result,set)
+        self.assertIsInstance(result,dict)
         for x in result:
             self.assertIn(x.name,referenced)
 
@@ -267,7 +267,7 @@ class HelperFnsTest(unittest.TestCase):
 
         result = getReferencedTables(table, unique=True)
 
-        self.assertIsInstance(result,set)
+        self.assertIsInstance(result,dict)
         for x in result:
             self.assertNotIn(x.name,referenced)
 
@@ -278,7 +278,7 @@ class HelperFnsTest(unittest.TestCase):
         referenced = ["airplane","airport","passenger"]
         table = db.Table(tableName)
 
-        result = getReferencedTables(table, unqiue=False)
+        result = getReferencedTables(table, unique=False)
 
         self.assertIsInstance(result,dict)
         for x in result:
@@ -312,7 +312,7 @@ class HelperFnsTest(unittest.TestCase):
         tableFlight = db.Table(tableTwo)
         tableThree = "airplane"
         tableAirplane = db.Table(tableThree)
-        tables = [tableAirport,tableAirplane,tableFlight]
+        tables = {tableOne: tableAirport, tableTwo: tableFlight, tableThree: tableAirplane}
 
         self.assertEqual(len(data['params']['db_initialize']),0)
 
