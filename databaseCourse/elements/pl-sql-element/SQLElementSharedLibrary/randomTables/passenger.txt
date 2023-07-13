@@ -1,7 +1,7 @@
 CREATE TABLE passenger (
         id INTEGER,
-        first_name VARCHAR(30),
-        last_name VARCHAR(30),
+        firstName VARCHAR(30),
+        lastName VARCHAR(30),
         birthdate DATE,
         street VARCHAR(50),
         city VARCHAR(40),

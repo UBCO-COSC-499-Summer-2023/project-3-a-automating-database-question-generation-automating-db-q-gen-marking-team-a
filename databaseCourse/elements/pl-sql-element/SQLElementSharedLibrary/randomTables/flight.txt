@@ -1,14 +1,14 @@
 CREATE TABLE flight (
     number CHAR(5),
-    departure_date DATETIME, 
+    departureDate DATETIME, 
     departAirport VARCHAR(30), 
     arriveAirport VARCHAR(30), 
-    arrival_date DATETIME, 
-    actual_departure_date DATETIME, 
-    actual_arrival_date DATETIME,
-    airplane_id VARCHAR(10), 
-    PRIMARY KEY (number, departure_date), 
+    arrivalDate DATETIME, 
+    actualDepartureDate DATETIME, 
+    actualArrivalDate DATETIME,
+    airplaneId VARCHAR(10), 
+    PRIMARY KEY (number, departureDate), 
     FOREIGN KEY (departAirport) REFERENCES airport (name) ON DELETE SET NULL ON UPDATE CASCADE, 
     FOREIGN KEY (arriveAirport) REFERENCES airport (name) ON DELETE SET NULL ON UPDATE CASCADE, 
-    FOREIGN KEY (airplane_id) REFERENCES airplane (id) ON DELETE SET NULL ON UPDATE CASCADE
+    FOREIGN KEY (airplaneId) REFERENCES airplane (id) ON DELETE SET NULL ON UPDATE CASCADE
     );

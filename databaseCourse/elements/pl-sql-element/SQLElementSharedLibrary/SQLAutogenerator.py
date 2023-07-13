@@ -1,6 +1,7 @@
 import SQLElementSharedLibrary.textDatabaseHandler as db
 import random
-from string import ascii_uppercase
+import SQLElementSharedLibrary.SQLNoisyData as nd
+
 
 # Automatically generates an SQL question based on the question's parameters
 def autogenerate(data):
@@ -32,25 +33,25 @@ def autogenerate(data):
 # Generates a 'create' style SQL question
 def generateCreate(data, difficulty):
 
-    # Chooses a database to load based on quesiton difficulty
+    # Chooses a table to load based on quesiton difficulty
     # Randomly selects from the list at the given difficulty
-    databaseFile = ''
+    tableFile = ''
     match difficulty:
-        case 'easy': databaseFile = random.choice(['airport', 'airplane', 'product', 'customer'])
-        case 'medium': databaseFile = random.choice(['passenger', 'shipment'])
-        case 'hard': databaseFile = random.choice(['flight', 'shippedproduct'])
+        case 'easy': tableFile = random.choice(['airport', 'airplane', 'product', 'customer'])
+        case 'medium': tableFile = random.choice(['passenger', 'shipment'])
+        case 'hard': tableFile = random.choice(['flight', 'shippedproduct'])
     
-    # Loads the selected database
-    database = db.load(relativeFilePath(databaseFile))
+    # Loads the selected table
+    table = db.Table(tableFile)
 
 
     # Creates a string to tell the student what they need
     # to do for the qestion
-    questionString = f"Create a table named <b>{database.name}</b> with columns"
+    questionString = f"Create a table named <b>{table.name}</b> with columns"
 
     # Adds a list of columns and units to the question string
-    columnList = list(database.columns.keys())
-    columnValues = list(database.columns.values())
+    columnList = list(table.columns.keys())
+    columnValues = list(table.columns.values())
     for i in range(len(columnList)):
 
         # Adds an 'and' at the start of the last iteration
@@ -102,43 +103,17 @@ def generateCreate(data, difficulty):
 
 
     # Loads any tables this one references into the schema
-    # First gets a set of all referenced databases
-    loadSchemas(data, getReferencedDatabasesSet(database))
+    loadAllSchema(data, table)
 
     # Places the question string into data
     data['params']['questionString'] = questionString
 
     # Places the solution into data
-    #
-    # TODO
-    # Replaced the called method with createStatement() when
-    # that method is completed; i.e. it includes clauses,
-    # primary keys, and foreign keys
-    data['correct_answers']['SQLEditor'] = db.getDDL(relativeFilePath(databaseFile))
+    data['correct_answers']['SQLEditor'] = createStatement(table)
 
-# Returns the schema for the current database.
-# Currently DOES NOT include clauses (such as NOT NULL),
-# foreign keys, or primary keys.
-def createStatement(database):
-    # Starts the string with the create table and name
-    schemaString = f"CREATE TABLE {database.name} ("
-
-    # Iterates over columns
-    for key in database.columns:
-
-        # Adds the columns name and data type
-        schemaString += f"\n\t{database.columns[key]['name']} {database.columns[key]['unit']}"
-
-        # If the data type has another component, add it
-        if database.columns[key]['unitOther']:
-            schemaString += f"({database.columns[key]['unitOther']})"
-        
-        # Adds the trailing comma
-        schemaString += ','
-
-    # Removes the trailing comma from the final line and
-    # on a new line add the ');'
-    return f"{schemaString[:-1]}\n\t);"
+# Returns the schema for the current table.
+def createStatement(table):
+    return table.getSchema()
 
 '''
     End create-style question
@@ -160,8 +135,8 @@ def generateInsert(data, difficulty):
         case 'medium': columnCount = random.randint(4, 6)
         case 'hard': columnCount = random.randint(5, 8)
 
-    # Gets a database with the specified number of columns
-    database = loadTrimmedDatabase(columnCount, 0)
+    # Gets a table with the specified number of columns
+    table = loadTrimmedTable(columnCount, 0)
 
 
 
@@ -169,7 +144,7 @@ def generateInsert(data, difficulty):
 
     # Generates the data to be inserted.
     # Converts the dictionary row to a list
-    row = list(generateRow(database).values())
+    row = list(generateRow(table).values())
     
     # Adds the data to the question string, replacing the '[]'
     # with '()'
@@ -178,18 +153,18 @@ def generateInsert(data, difficulty):
 
 
     # Creates and adds the question string
-    data['params']['questionString'] = f"Insert the following values into the <b>{database.name}</b> table:\n{valuesString}"
+    data['params']['questionString'] = f"Insert the following values into the <b>{table.name}</b> table:\n{valuesString}"
 
-    # Adds the database to the schema as well as
-    # the schemas of referenced databases
-    loadAllSchema(data, database)
+    # Adds the table to the schema as well as
+    # the schemas of referenced tables
+    loadAllSchema(data, table)
 
     # Creates the answer string
-    data['correct_answers']['SQLEditor'] = insertStatement(database, row)
+    data['correct_answers']['SQLEditor'] = insertStatement(table, row)
 
 # Generates an insert statement based on the data
-def insertStatement(database, row):
-    return f"INSERT INTO {database.name} VALUES ({str(row)[1:-1]});\n"
+def insertStatement(table, row):
+    return f"INSERT INTO {table.name} VALUES ({str(row)[1:-1]});\n"
 
 '''
     End insert-style question
@@ -203,7 +178,7 @@ def insertStatement(database, row):
 
 def generateUpdate(data, difficulty):
     
-    # Chooses a database to load based on quesiton difficulty
+    # Chooses a table to load based on quesiton difficulty
     # Randomly selects from the list at the given difficulty
     columnCount = None
     useConditional = None
@@ -219,19 +194,19 @@ def generateUpdate(data, difficulty):
         case 'hard': 
             return None # Not yet implemented; first requires quesryStatement() to be completed
 
-    # Gets a database with the specified number of columns
-    database = loadTrimmedDatabase(columnCount, 0)
+    # Gets a table with the specified number of columns
+    table = loadTrimmedTable(columnCount, 0)
 
 
 
     # Generates a bunch of bogus rows
-    rows = generateRows(database, columnCount * 3 + random.randint(-3, 3))
+    rows = generateRows(table, columnCount * 3 + random.randint(-3, 3))
 
     # Selects a random column to affect
-    updateColumn = random.choice(list(database.columns.keys()))
+    updateColumn = random.choice(list(table.columns.keys()))
 
     # Generates the updated valued
-    updateValue = generateNoisyData(database, updateColumn)
+    updateValue = nd.generateNoisyData(table, updateColumn)
 
 
     # If the quesiton should use a condition, set parameters
@@ -240,7 +215,7 @@ def generateUpdate(data, difficulty):
     if useConditional:
 
         # Selects a random column to affect
-        conditionalColumn = random.choice(list(database.columns.keys()))
+        conditionalColumn = random.choice(list(table.columns.keys()))
 
         # Chooses a random value from the generated data to be updated
         randomValueIndex = random.choice(range(len(rows)))
@@ -253,30 +228,30 @@ def generateUpdate(data, difficulty):
     # Generates the question string
     # Changes depending on whether it uses a conditional or not
     if useConditional:
-        data['params']['questionString'] = f"From the table <b>{database.name}</b> and in the column <b>{updateColumn}</b>, change all values to be <b>{updateValue}</b> where <b>{conditionalColumn}</b> is equal to <b>{conditionalValue}</b>."
+        data['params']['questionString'] = f"From the table <b>{table.name}</b> and in the column <b>{updateColumn}</b>, change all values to be <b>{updateValue}</b> where <b>{conditionalColumn}</b> is equal to <b>{conditionalValue}</b>."
     else:
-        data['params']['questionString'] = f"From the table <b>{database.name}</b> and in the column <b>{updateColumn}</b>, change all values to be <b>{updateValue}</b>."
+        data['params']['questionString'] = f"From the table <b>{table.name}</b> and in the column <b>{updateColumn}</b>, change all values to be <b>{updateValue}</b>."
 
-    # Loads the schema of all referenced databases
-    loadAllSchema(data, database)
+    # Loads the schema of all referenced tables
+    loadAllSchema(data, table)
 
-    # Loads the noisy data into the primary database as
-    # well as generating noisy data for referenced databases
-    loadAllNoisyData(data, database, rows)
+    # Loads the noisy data into the primary table as
+    # well as generating noisy data for referenced tables
+    loadAllNoisyData(data, table, rows)
 
     # Loads the correct answer
-    data['correct_answers']['SQLEditor'] = updateStatement(database, updateColumn, updateValue, conditionalColumn, conditionalValue)
+    data['correct_answers']['SQLEditor'] = updateStatement(table, updateColumn, updateValue, conditionalColumn, conditionalValue)
 
 # Creates an update statement
-def updateStatement(database, updateColumn, updateValue, conditionalColumn = None, conditionalValue = None):
+def updateStatement(table, updateColumn, updateValue, conditionalColumn = None, conditionalValue = None):
 
     # Includes the conditional if they exist
     if conditionalColumn and conditionalValue:
-        return f"UPDATE {database.name} SET {updateColumn} = '{updateValue}' {conditionalStatement(conditionalColumn, conditionalValue)};\n"
+        return f"UPDATE {table.name} SET {updateColumn} = '{updateValue}' {conditionalStatement(conditionalColumn, conditionalValue)};\n"
 
     # This else isn't required but is included for clarity
     else:
-        return f"UPDATE {database.name} SET {updateColumn} = '{updateValue}';\n"
+        return f"UPDATE {table.name} SET {updateColumn} = '{updateValue}';\n"
 
 '''
     End updatestyle question
@@ -289,7 +264,7 @@ def updateStatement(database, updateColumn, updateValue, conditionalColumn = Non
 
 def generateDelete(data, difficulty):
         
-    # Chooses a database to load based on quesiton difficulty
+    # Chooses a table to load based on quesiton difficulty
     # Randomly selects from the list at the given difficulty
     columnCount = None
     match difficulty:
@@ -297,17 +272,17 @@ def generateDelete(data, difficulty):
         case 'medium': columnCount = random.randint(4, 6)
         case 'hard': return None # Not yet implemented; first requires quesryStatement() to be completed
 
-    # Gets a database with the specified number of columns
-    database = loadTrimmedDatabase(columnCount, 0)
+    # Gets a table with the specified number of columns
+    table = loadTrimmedTable(columnCount, 0)
 
     # Generates a bunch of bogus rows
-    rows = generateRows(database, columnCount * 3 + random.randint(-3, 3))
+    rows = generateRows(table, columnCount * 3 + random.randint(-3, 3))
 
     # Selects a random column to affect
     # Won't select a foreign key if the difficulty is easy
     randomKey = None
-    while not randomKey or (database.columns[randomKey]['references'] and difficulty == 'easy'):
-        randomKey = random.choice(list(database.columns.keys()))
+    while not randomKey or (table.columns[randomKey]['references'] and difficulty == 'easy'):
+        randomKey = random.choice(list(table.columns.keys()))
 
     # Chooses a random value from the generated data to be deleted
     randomValueIndex = random.choice(range(len(rows)))
@@ -318,22 +293,22 @@ def generateDelete(data, difficulty):
 
 
     # Creates the question string
-    data['params']['questionString'] = f"From the table <b>{database.name}</b>, delete the entry where <b>{randomKey}</b> equals <b>'{deleteValue}'</b>."
+    data['params']['questionString'] = f"From the table <b>{table.name}</b>, delete the entry where <b>{randomKey}</b> equals <b>'{deleteValue}'</b>."
 
-    # Loads the schema of all referenced databases
-    loadAllSchema(data, database)
+    # Loads the schema of all referenced tables
+    loadAllSchema(data, table)
 
-    # Loads the noisy data into the primary database as
-    # well as generating noisy data for referenced databases
-    loadAllNoisyData(data, database, rows)
+    # Loads the noisy data into the primary table as
+    # well as generating noisy data for referenced tables
+    loadAllNoisyData(data, table, rows)
 
     # Sets the correct answer
-    data['correct_answers']['SQLEditor'] = deleteStatement(database, randomKey, deleteValue)
+    data['correct_answers']['SQLEditor'] = deleteStatement(table, randomKey, deleteValue)
 
 
 # Creates a delete statement
-def deleteStatement(database, column = None, condition = None):
-    ans = f"DELETE FROM {database.name}"
+def deleteStatement(table, column = None, condition = None):
+    ans = f"DELETE FROM {table.name}"
     if(column and condition):
         ans += f"{conditionalStatement(column, condition)};\n"
     return ans
@@ -378,33 +353,33 @@ def generateQuery(data, difficulty):
 
 
 
-    # Selects a database based on the difficulty
+    # Selects a table based on the difficulty
 
-    # Keeps trying random databases until it finds one that
+    # Keeps trying random tables until it finds one that
     # fulfills the conditions set by the difficulty
-    database = loadTrimmedDatabase(columnCount, joins)
+    table = loadTrimmedTable(columnCount, joins)
 
-    # Gets the referenced databases
-    referenced = getReferencedDatabaseDictionary(database)
+    # Gets the referenced tables
+    referenced = getReferencedTables(table)
 
 
 
-    # keyMap maps the primary database's FKs to the other tables
+    # keyMap maps the primary table's FKs to the other tables
     # keyMap = {
     #   $foreignKey: {
-    #       'references': $foreignDatabaseName
+    #       'references': $foreignTableName
     #       'foreignKey': $columnReferenced
     #   }
     # }
-    keyMap = database.getKeyMap()
+    keyMap = table.getKeyMap()
 
-    # Maps the foreign keys to databases
+    # Maps the foreign keys to tables
     # foreignKeyMap = {
-    #   $columnName: database
+    #   $columnName: table
     # }
-    foreignKeyMap = {database.name: database}
+    foreignKeyMap = {table.name: table}
 
-    # Randomly chooses which databases are joined together
+    # Randomly chooses which tables are joined together
     for join in range(joins):
 
         # Chooses the foreign key randomly from the list
@@ -421,8 +396,8 @@ def generateQuery(data, difficulty):
     # }
     selectedColumns = {}
 
-    # Chooses one column randomly from each joined database.
-    # Ensures that at least one column per database joined is
+    # Chooses one column randomly from each joined table.
+    # Ensures that at least one column per table joined is
     # in the query
     for key in foreignKeyMap:
         selectedColumns[key] = [random.choice(list(foreignKeyMap[key].columns.keys()))]
@@ -446,10 +421,10 @@ def generateQuery(data, difficulty):
 
     # Generate a new keyMap since the last one was modified
     # through pop()
-    keyMap = database.getKeyMap()
+    keyMap = table.getKeyMap()
 
-    # Adds the current database to the keyMap (for ease)
-    keyMap[database.name] = {'references': database.name, 'foreignKey': None}
+    # Adds the current table to the keyMap (for ease)
+    keyMap[table.name] = {'references': table.name, 'foreignKey': None}
 
 
 
@@ -512,24 +487,24 @@ def generateQuery(data, difficulty):
 
 
 
-    # Loads the schema of all referenced databases
-    loadAllSchema(data, database)
+    # Loads the schema of all referenced tables
+    loadAllSchema(data, table, referencedTables=referenced)
 
-    rows = generateRows(database, len(list(database.columns.keys())) * 3 + random.randint(-3, 3))
+    rows = generateRows(table, len(list(table.columns.keys())) * 3 + random.randint(-3, 3))
 
-    # Loads the noisy data into the primary database as
-    # well as generating noisy data for referenced databases
-    loadAllNoisyData(data, database, rows)
+    # Loads the noisy data into the primary table as
+    # well as generating noisy data for referenced tables
+    loadAllNoisyData(data, table, rows, referencedTables=referenced)
 
     # Sets the correct answers
     # TODO: clauses (the '[]') is blank; make it not blank
-    data['correct_answers']['SQLEditor'] = queryStatement(database, keyMap, foreignKeyMap, selectedColumns, [])
+    data['correct_answers']['SQLEditor'] = queryStatement(table, keyMap, foreignKeyMap, selectedColumns, [])
 
 # Creates a delete statement
 # TODO
 #   Conditionals
 #   Clauses
-def queryStatement(database, keyMap, foreignKeyMap, selectedColumns, clauses):
+def queryStatement(table, keyMap, foreignKeyMap, selectedColumns, clauses):
     
     # Begins the query string
     queryString = 'SELECT'
@@ -554,13 +529,13 @@ def queryStatement(database, keyMap, foreignKeyMap, selectedColumns, clauses):
 
     # Specifies how the tables are joined together
 
-    # Removes the primary database, since it is the holder of all
+    # Removes the primary table, since it is the holder of all
     # the foreign keys so we don't want to say "join table to self"
-    foreignKeyMap.pop(database.name)
+    foreignKeyMap.pop(table.name)
 
     if foreignKeyMap:
         for key in foreignKeyMap:
-            queryString += f" {database.name[0:1].upper()}.{key} = {keyMap[key]['references'][0:1].upper()}.{keyMap[key]['foreignKey']} AND"
+            queryString += f" {table.name[0:1].upper()}.{key} = {keyMap[key]['references'][0:1].upper()}.{keyMap[key]['foreignKey']} AND"
 
         # Removes the final 'AND'
         queryString = queryString[:-4]
@@ -588,89 +563,103 @@ def queryStatement(database, keyMap, foreignKeyMap, selectedColumns, clauses):
 def conditionalStatement(column, condition):
     return f"WHERE {column} = '{condition}'"
 
-# Returns the file path to the database file
-def relativeFilePath(filePath):
-    return f"./SQLElementSharedLibrary/randomDatabases/{filePath}.txt"
 
-# Gets the filepaths to all databases referenced by this one
-# Returns a set to ensure no duplicate databases
-def getReferencedDatabasesSet(database):
-
-    # Uses a set in case a database is referenced more than once
-    # Tracks name, since it is easily hashable
-    databases = set()
-
-    # Checks each column for its reference
-    # Adds the referenced item, if it exists
-    for key in database.columns:
-        if database.columns[key]['references']:
-            databases.add(database.columns[key]['references'])
-
-    # Doesn't return the database names, returns the database objects
-    return set(db.load(relativeFilePath(referenced)) for referenced in databases)
 
 # Returns a dictionary that maps the foreign key of the supplied
-# database to the referenced databases.
-# May contain multiple of the same database, referenced by
-# different foreign keys
-def getReferencedDatabaseDictionary(database):
+# table to the referenced tables. If the unique parameter is true,
+# this dictionary contains a set of tables: no duplicated. Otherwise,
+# there may be duplicate tables with unique foreign keys.
+def getReferencedTables(table, unique=True, static=False):
     
-    # Uses a dictionary to store the databases
-    databases = {}
+    # Uses a dictionary to store the tables and a set to keep track
+    # of unique table names
+    tables = {}
+    tableSet = set()
 
-    # Checks each column for its reference
-    # Adds the referenced item, if it exists
-    for key in database.columns.keys():
-        if database.columns[key]['references']:
-            databases[database.columns[key]['references']] = db.load(relativeFilePath(database.columns[key]['references']))
+    # Iterates over the table's foreign keys
+    for key in table.getKeyMap().keys():
 
-    return databases
+        # Checks to see if the table name is already in the set.
+        # Only matters if unique is True.
+        if table.columns[key]['references'] not in tableSet:
 
-# Adds the schema databases to data
-def loadSchemas(data, databases):
+            columns = random.randint(3, 6)
 
-    # Iterate over databases, if there are any
+            # Ensures foreign key consistency across generated tables
+            #   name of the column in the foreign table: {
+            #       'unit': the data type of the column
+            #       'unitOther': the other information related to the data type
+            #   }
+            constraints = {
+                table.columns[key]['foreignKey'] : {
+                    'unit': table.columns[key]['unit'],
+                    'unitOther': table.columns[key]['unitOther']
+                }
+            }
+
+            # Loads an approrpiate table into the dictionary
+            tables[table.columns[key]['references']] = db.Table(file=table.columns[key]['references'], columns=columns, constraints=constraints, random=not static)
+
+            # Adds the table name to the set if unique is True
+            if unique:
+                tableSet.add(table.columns[key]['references'])
+
+    # Returns a dictionary of all referenced tables
+    #   table name: respective Table object
+    return tables
+
+
+
+# Adds the schema tables to data
+def loadSchemas(data, table, referencedTables):
+
+    # Iterate over tables, if there are any
     # Add their schema to the initialize string
-    if databases:
-        for database in databases:
-            data['params']['db_initialize'] += f"{createStatement(database)}\n"
+    if referencedTables:
+        for key in referencedTables:
+            data['params']['db_initialize'] += f"{referencedTables[key].getSchema()}\n"
+    
+    # Adds the primary table afterwards.
+    # Since the primary table may reference the foreign
+    # tables but NOT vice versa, it is required that the
+    # primary table is loaded after such that foreign
+    # key constrains are satisfied.
+    if table:
+        data['params']['db_initialize'] += f"{table.getSchema()}\n"
 
-# Loads the schema of the current database as well
-# as all referenced databases.
-def loadAllSchema(data, database):
+# Loads the schema of the current table as well
+# as all referenced tables.
+def loadAllSchema(data, table, referencedTables={}):
 
-    # Gets all referenced databases
-    databases = getReferencedDatabasesSet(database)
-
-    # Adds this database to the set
-    databases.add(database)
+    # Gets all referenced tables
+    if not referencedTables:
+        referencedTables = getReferencedTables(table, unique=True)
 
     # Loads all their schema
-    loadSchemas(data, databases)
+    loadSchemas(data, table, referencedTables)
+
+
 
 # Loads noisy data into the editors
-def loadNoisyData(data, database, rows):
-    data['params']['db_initialize'] += ''.join(insertStatement(database, list(row.values())) for row in rows)
-
+def loadNoisyData(data, table, rows):
+    data['params']['db_initialize'] += ''.join(insertStatement(table, list(row.values())) for row in rows)
 
 # Loads the noisy data supplied as well as generating and
-# loading noisy data for the referenced databases.
+# loading noisy data for the referenced tables.
 #
 # Note: This function respects references so a foreign key
 # reference between two tables will holds the same value.
-def loadAllNoisyData(data, database, rows):
-    
-    # First loads the rows into the actual database
-    loadNoisyData(data, database, rows)
+def loadAllNoisyData(data, table, rows, referencedTables={}):
 
-    # Gets a dicitonary of referenced databases.
-    # The keys are the name of the database
-    referencedDatabases = getReferencedDatabaseDictionary(database)
+    # Gets a dicitonary of referenced tables.
+    # The keys are the name of the table
+    if not referencedTables:
+        referencedTables = getReferencedTables(table)
 
 
     # Gets a dictionary that maps the column to both
-    # the referenced database name and foreign key
-    keyMap = database.getKeyMap()
+    # the referenced table name and foreign key
+    keyMap = table.getKeyMap()
 
     # All table of data
     generatedData = {}
@@ -678,8 +667,8 @@ def loadAllNoisyData(data, database, rows):
     # Iterates over foreign keys
     for key in keyMap.keys():
 
-        # Grabs the referenced database
-        referenced = referencedDatabases[keyMap[key]['references']]
+        # Grabs the referenced table
+        referenced = referencedTables[keyMap[key]['references']]
 
         # A table of data
         generatedData[key] = []
@@ -690,155 +679,89 @@ def loadAllNoisyData(data, database, rows):
             # A row of data
             noisyRow = {}
 
-            # Iterates over the referenced database's columns
+            # Iterates over the referenced table's columns
             for column in referenced.columns:
                 
                 # If this column is referenced by the original
-                # database, map the data over
+                # table, map the data over
                 if column == keyMap[key]['foreignKey']:
                     noisyRow[column] = row[key]
 
                 # Otherwise generate new data
                 else:
-                    noisyRow[column] = generateNoisyData(referenced, column)
+                    noisyRow[column] = nd.generateNoisyData(referenced, column)
                 
             # Adds the row of data to the appropriate table
             generatedData[key].append(noisyRow)
 
-    # Loads the data into the actual database
+    # Loads the data into the actual table
     for key in generatedData:
-        loadNoisyData(data, referencedDatabases[keyMap[key]['references']], generatedData[key])
+        loadNoisyData(data, referencedTables[keyMap[key]['references']], generatedData[key])
+    
+    # Finally loads the primary table's data.
+    # Since the primary table may reference the foreign
+    # tables but NOT vice versa, it is required that the
+    # primary table is loaded after such that foreign
+    # key constrains are satisfied.
+    loadNoisyData(data, table, rows)
 
 
 
-# Returns a database with a specified number of columns
-def loadTrimmedDatabase(columnCount, joinCount):
+# Returns a table with a specified number of columns
+def loadTrimmedTable(columnCount, joinCount):
 
     # Checks to see if the column count is valid
     if(columnCount <= 0 or joinCount < 0):
         return None
 
-    # Gets all random databases so a random one may be chosen
-    possibleDatabases = db.getAllDatabaseFiles('./SQLElementSharedLibrary/randomDatabases/')
+    # Gets all random tables so a random one may be chosen
+    possibleTables = db.getAllTableFiles()
 
-    # Keeps trying random databases until it finds one with enough columns
+    # Keeps trying random tables until it finds one with enough columns
     # and a enough foreign keys
-    database = None
-    while not database or len(database.columns) < columnCount or len(database.getKeyMap()) < joinCount:
+    table = None
+    while not table or len(table.columns) < columnCount or len(table.getKeyMap()) < joinCount:
 
-        # Checks to see if there are no possible databases left.
+        # Checks to see if there are no possible tables left.
         # This will only occur if there are no tables with enough
         # columns to satisfy the requirements.
-        if len(possibleDatabases) == 0:
+        if len(possibleTables) == 0:
             return None
 
-        # Pops the current database so there's no repeats
-        possibleDatabase = possibleDatabases.pop(random.choice(range(len(possibleDatabases))))
-        database = db.load(relativeFilePath(possibleDatabase))
+        # Pops the current table so there's no repeats
+        possibleTable = possibleTables.pop(random.choice(range(len(possibleTables))))
+        table = db.Table(possibleTable, random=False)
 
     # Removes columns until there is an appropriate amount left
     doomCounter = 10
-    while len(database.columns) > columnCount:
+    while len(table.columns) > columnCount:
 
         # If the doom counter reaches 0, it means that we are unable to remove
         # enough columns because they are PKs or necessary FKs. In that case,
-        # just return the database, even if it has too many columns
+        # just return the table, even if it has too many columns
         if doomCounter == 0:
-            return database
+            return table
 
         # We have to convert keys to a list because of subscriptables
-        tryPop = random.choice(list(database.columns.keys()))
+        tryPop = random.choice(list(table.columns.keys()))
 
         # Don't remove...
         # primary keys, or
         # foreign keys if it would cause there to be not enough joins
-        if not database.columns[tryPop]['isPrimary'] and (not database.columns[tryPop]['references'] or len(database.getKeyMap()) > joinCount):
-            database.columns.pop(tryPop)
+        if not table.columns[tryPop]['isPrimary'] and (not table.columns[tryPop]['references'] or len(table.getKeyMap()) > joinCount):
+            table.columns.pop(tryPop)
         else:
             doomCounter -= 1
     
-    return database
+    return table
 
 
 
 # Generates one row's worth of noisy data
 def generateRow(database):
-    return {key: generateNoisyData(database, key) for key in database.columns}
+    return {key: nd.generateNoisyData(database, key) for key in database.columns}
 
 # Generates qty's worth of rows of noisy data
-def generateRows(database, qty):
-    return [generateRow(database) for i in range(qty)]
+def generateRows(table, qty):
+    return [generateRow(table) for i in range(qty)]
 
-
-
-# Generates random data based on the unit type
-def generateNoisyData(database, key):
-    
-    # Grabs the important information
-    unit = database.columns[key]['unit']
-    unitOther = database.columns[key]['unitOther']
-
-    # Matches on the unit type
-    match unit:
-        # Integers
-        case 'INTEGER': return generateNoisyInteger()
-
-        # CHARs require the number of characters
-        case 'CHAR': return generateNoisyChar(int(unitOther))
-
-        # VARCHARs are capped at a length of 8 to prevent
-        # a string of 50 random characters
-        case 'VARCHAR': return generateNoisyVarchar(min(int(unitOther), 8))
-
-        # DATE and DATETIME
-        case 'DATE': return generateRandomDate()
-        case 'DATETIME': return generateRandomDateTime()
-
-        # Crash if the datatype is not correct
-        case other: return None
-
-# Generates a random integer in the range 0 to 1000
-def generateNoisyInteger():
-    return random.randint(1, 1000)
-
-# Generates a random string of length unitOther
-def generateNoisyChar(unitOther):
-
-    # Chooses unitOther amount of random uppcercase and
-    # letter characters
-    return ''.join(random.choice(ascii_uppercase + '1234567890') for i in range(unitOther))
-
-# Generates a random string up to length unitOther
-def generateNoisyVarchar(unitOther):
-
-    return generateNoisyChar(random.randint(1, unitOther))
-
-# Generates a random date between 1955 and 2023
-def generateRandomDate():
-
-    # Generates a random month
-    month = random.randint(1, 12)
-    
-    # Ensures the day is valid.
-    # And no, I'm not doing the legwork to check
-    # whether or not it's a leapyear and thus
-    # allow a 29th day in February
-    day = -1
-    if month % 2 == 1:
-        day = random.randint(1, 31)
-    elif month == 2:
-        day = random.randint(1, 28)
-    else:
-        day = random.randint(1, 30)
-
-    # the ':02' formatting ensures that the length of the
-    # string is a minimum of 2, padded left with zeroes
-    return f"{random.randint(1955, 2023)}-{month:02}-{day:02}"
-
-# Generates a random date time between 1955 and now
-def generateRandomDateTime():
-
-    # The minutes portion can be any increment of 5 minutes.
-    # the ':02' formatting ensures that the length of the
-    # string is a minimum of 2, padded left with zeroes
-    return f"{generateRandomDate()} {random.randint(0, 23):02}:{random.randint(0, 11) * 5:02}:00"
