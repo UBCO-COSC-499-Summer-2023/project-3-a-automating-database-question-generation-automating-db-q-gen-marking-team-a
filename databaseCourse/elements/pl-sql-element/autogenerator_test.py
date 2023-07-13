@@ -253,7 +253,7 @@ class HelperFnsTest(unittest.TestCase):
         referenced = ["airplane","airport","passenger"]
         table = db.Table(tableName)
 
-        result = getReferencedTablesSet(table)
+        result = getReferencedTables(table, unique=True)
 
         self.assertIsInstance(result,set)
         for x in result:
@@ -265,7 +265,7 @@ class HelperFnsTest(unittest.TestCase):
         referenced = ["airplane","airport","passenger"]
         table = db.Table(tableName)
 
-        result = getReferencedTablesSet(table)
+        result = getReferencedTables(table, unique=True)
 
         self.assertIsInstance(result,set)
         for x in result:
@@ -278,7 +278,7 @@ class HelperFnsTest(unittest.TestCase):
         referenced = ["airplane","airport","passenger"]
         table = db.Table(tableName)
 
-        result = getReferencedTableDictionary(table)
+        result = getReferencedTables(table, unqiue=False)
 
         self.assertIsInstance(result,dict)
         for x in result:
@@ -290,7 +290,7 @@ class HelperFnsTest(unittest.TestCase):
         referenced = ["airplane","airport","passenger"]
         table = db.Table(tableName)
 
-        result = getReferencedTableDictionary(table)
+        result = getReferencedTables(table, unique=False)
 
         self.assertIsInstance(result,dict)
         for x in result:

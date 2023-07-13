@@ -103,8 +103,7 @@ def generateCreate(data, difficulty):
 
 
     # Loads any tables this one references into the schema
-    # First gets a set of all referenced tables
-    loadSchemas(data, getReferencedTablesSet(table))
+    loadAllSchema(data, table)
 
     # Places the question string into data
     data['params']['questionString'] = questionString
@@ -361,7 +360,7 @@ def generateQuery(data, difficulty):
     table = loadTrimmedTable(columnCount, joins)
 
     # Gets the referenced tables
-    referenced = getReferencedTableDictionary(table)
+    referenced = getReferencedTables(table)
 
 
 
@@ -564,51 +563,22 @@ def queryStatement(table, keyMap, foreignKeyMap, selectedColumns, clauses):
 def conditionalStatement(column, condition):
     return f"WHERE {column} = '{condition}'"
 
-# Gets the filepaths to all tables referenced by this one
-# Returns a set to ensure no duplicate tables
-def getReferencedTablesSet(table):
 
-    # Uses a set in case a table is referenced more than once
-    # Tracks name, since it is easily hashable
-    tables = set()
-
-    # Checks each column for its reference
-    # Adds the referenced item, if it exists
-    for key in table.columns:
-        if table.columns[key]['references']:
-            tables.add(table.columns[key]['references'])
-
-    # Doesn't return the table names, returns the table objects
-    referencedTables = set()
-    for referenced in tables:
-        for key in table.columns.keys():
-            if table.columns[key]['references'] == referenced:
-
-                columns = random.randint(3, 6)
-                constraints = {
-                    table.columns[key]['foreignKey'] : {
-                        'unit': table.columns[key]['unit'],
-                        'unitOther': table.columns[key]['unitOther']
-                    }
-                }
-
-                referencedTables.add(db.Table(file=referenced, columns=columns, constraints=constraints))
-
-    return referencedTables
 
 # Returns a dictionary that maps the foreign key of the supplied
-# table to the referenced tables.
-# May contain multiple of the same table, referenced by
-# different foreign keys
-def getReferencedTableDictionary(table):
+# table to the referenced tables. If the unique parameter is true,
+# this dictionary contains a set of tables: no duplicated. Otherwise,
+# there may be duplicate tables with unique foreign keys.
+def getReferencedTables(table, unique=True):
     
     # Uses a dictionary to store the tables
     tables = {}
+    tableSet = set()
 
     # Checks each column for its reference
     # Adds the referenced item, if it exists
     for key in table.columns.keys():
-        if table.columns[key]['references']:
+        if table.columns[key]['references'] and table.columns[key]['references'] not in tableSet:
 
             columns = random.randint(3, 6)
             constraints = {
@@ -619,7 +589,12 @@ def getReferencedTableDictionary(table):
             }
             tables[table.columns[key]['references']] = db.Table(file=table.columns[key]['references'], columns=columns, constraints=constraints)
 
+            if unique:
+                tableSet.add(table.columns[key]['references'])
+
     return tables
+
+
 
 # Adds the schema tables to data
 def loadSchemas(data, tables):
@@ -627,18 +602,18 @@ def loadSchemas(data, tables):
     # Iterate over tables, if there are any
     # Add their schema to the initialize string
     if tables:
-        for table in tables:
-            data['params']['db_initialize'] += f"{table.getSchema()}\n"
+        for key in tables:
+            data['params']['db_initialize'] += f"{tables[key].getSchema()}\n"
 
 # Loads the schema of the current table as well
 # as all referenced tables.
 def loadAllSchema(data, table):
 
     # Gets all referenced tables
-    tables = getReferencedTablesSet(table)
+    tables = getReferencedTables(table, unique=True)
 
-    # Adds this table to the set
-    tables.add(table)
+    # Adds this table to the set of tables
+    tables[table.name] = table
 
     # Loads all their schema
     loadSchemas(data, tables)
@@ -660,7 +635,7 @@ def loadAllNoisyData(data, table, rows):
 
     # Gets a dicitonary of referenced tables.
     # The keys are the name of the table
-    referencedTables = getReferencedTableDictionary(table)
+    referencedTables = getReferencedTables(table)
 
 
     # Gets a dictionary that maps the column to both
