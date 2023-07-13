@@ -16,12 +16,13 @@ class TestRelaxEditorQ1(unittest.TestCase):
         options = Options()
         options.add_argument('--headless')
         self.driver = webdriver.Chrome(options=options)
+        self.baseUrl = "http://localhost:3000/pl/course_instance/1/instructor/question/31/preview"
 
     def test_relaxClickOperationProjection(self):
         # Test name: relaxClickOperationProjection
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_i4m1hevx8hm > span | 
@@ -31,7 +32,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickAddTableName
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | id=btn-Customer | 
@@ -41,7 +42,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxExecuteButton
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | id=execute | 
@@ -51,7 +52,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxExecuteQuery
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_i4m1hevx8hm > span | 
@@ -85,7 +86,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickTreeLeaves
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_i4m1hevx8hm > span | 
@@ -117,7 +118,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxSortOutputTableByColumn
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_i4m1hevx8hm > span | 
@@ -163,7 +164,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickOperation_And
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_lv4upm1exe > span | 
@@ -173,7 +174,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickOperation_AntiJoin
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_ntphproh2gh > span | 
@@ -183,7 +184,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickOperation_Assignment
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_aq5dkivxzhk > span | 
@@ -193,7 +194,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickOperation_CrossJoin
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_bcy1hzhtzbq > span | 
@@ -203,7 +204,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickOperation_Division
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_ytckmx1p4tk > span | 
@@ -213,7 +214,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickOperation_Union
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_o60hh3goasp > span | 
@@ -223,7 +224,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickOperation_Subtraction
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_2131akj8rbn > span | 
@@ -233,7 +234,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickOperation_SlComment
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_r2u4dj6ind > span | 
@@ -243,7 +244,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickOperation_SemiRightJoin
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_h8t7el4tebi > span | 
@@ -253,7 +254,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickOperation_SemiLeftJoin
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_7lmq0e5lt2k > span | 
@@ -263,7 +264,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickOperation_Selection
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_zk54ccpfgr9 > span | 
@@ -273,7 +274,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickOperation_RightArrow
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_r4e8qivo9x > span | 
@@ -283,7 +284,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickOperation_OuterRightJoin
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_wrwiiwklzc > span | 
@@ -293,7 +294,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickOperation_RenameRelationColumns
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_opmskf8udx > span | 
@@ -303,7 +304,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickOperation_OuterLeftJoin
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_99cz04sajcd > span | 
@@ -313,7 +314,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickOperation_OuterFullJoin
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_xzmnvtls6zk > span | 
@@ -323,7 +324,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickOperation_OrderBy
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_rm8nadc63ta > span | 
@@ -333,7 +334,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickOperation_Or
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_wihrg7pw86c > span | 
@@ -343,7 +344,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickOperation_NotEqual
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_qfox1fuq55 > span | 
@@ -353,7 +354,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickOperation_Not
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_mx0q4np8lms > span | 
@@ -363,7 +364,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickOperation_NaturalJoin
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_jgzn81np8i > span | 
@@ -373,7 +374,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickOperation_MlComment
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_2znla6h967q > span | 
@@ -383,7 +384,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickOperation_LessThanOrEqual
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_tc2rsc59fbq > span | 
@@ -393,7 +394,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickOperation_LeftArrow
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_vqmsrbz4lhh > span | 
@@ -403,7 +404,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickOperation_Intersection
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_q8ve1atlpu > span | 
@@ -413,7 +414,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickOperation_InsertDate
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=.fa-calendar-alt > path | 
@@ -423,7 +424,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickOperation_InlineRelation
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_2aod06t35hu > span | 
@@ -433,7 +434,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickOperation_GroupBy
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_yelfh6roevh > span | 
@@ -443,7 +444,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickOperation_GreaterThanOrEqual
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_3ixqdjahm8v > span | 
@@ -453,7 +454,7 @@ class TestRelaxEditorQ1(unittest.TestCase):
         # Test name: relaxClickOperation_Equal
         # Step # | name | target | value
         # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get("http://localhost:3000/pl/course_instance/1/instructor/question/31/preview")
+        self.driver.get(self.baseUrl)
         # 2 | setWindowSize | 1536x816 | 
         self.driver.set_window_size(1536, 816)
         # 3 | click | css=#popWrapper_iwcqg10p7gn > span | 
