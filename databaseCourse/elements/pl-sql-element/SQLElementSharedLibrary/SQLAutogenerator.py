@@ -579,7 +579,22 @@ def getReferencedTablesSet(table):
             tables.add(table.columns[key]['references'])
 
     # Doesn't return the table names, returns the table objects
-    return set(db.Table(referenced) for referenced in tables)
+    referencedTables = set()
+    for referenced in tables:
+        for key in table.columns.keys():
+            if table.columns[key]['references'] == referenced:
+
+                columns = random.randint(3, 6)
+                constraints = {
+                    table.columns[key]['foreignKey'] : {
+                        'unit': table.columns[key]['unit'],
+                        'unitOther': table.columns[key]['unitOther']
+                    }
+                }
+
+                referencedTables.add(db.Table(file=referenced, columns=columns, constraints=constraints))
+
+    return referencedTables
 
 # Returns a dictionary that maps the foreign key of the supplied
 # table to the referenced tables.
@@ -594,7 +609,15 @@ def getReferencedTableDictionary(table):
     # Adds the referenced item, if it exists
     for key in table.columns.keys():
         if table.columns[key]['references']:
-            tables[table.columns[key]['references']] = db.Table(table.columns[key]['references'])
+
+            columns = random.randint(3, 6)
+            constraints = {
+                table.columns[key]['foreignKey'] : {
+                    'unit': table.columns[key]['unit'],
+                    'unitOther': table.columns[key]['unitOther']
+                }
+            }
+            tables[table.columns[key]['references']] = db.Table(file=table.columns[key]['references'], columns=columns, constraints=constraints)
 
     return tables
 

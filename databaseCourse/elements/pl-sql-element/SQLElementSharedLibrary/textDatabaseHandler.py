@@ -187,6 +187,21 @@ class Table:
         possibleColumns = self.parseColumnsFromFile('randomColumns')
 
 
+        # Adds foreign key constraints
+        if constraints:
+            for key in constraints.keys():
+                self.columns[key] = {
+                    'name': key,
+                    'unit': constraints[key]['unit'],
+                    'unitOther': constraints[key]['unitOther'],
+                    'isPrimary': False,
+                    'isNotNull': False,
+                    'references': None,
+                    'foreignKey': None,
+                    'isOnUpdateCascade': False,
+                    'isOnDeleteSetNull': False
+                }
+
 
         # Keeps adding columns until there are enough
         while len(self.columns) < columns:
