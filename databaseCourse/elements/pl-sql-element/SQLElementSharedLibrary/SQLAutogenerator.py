@@ -569,7 +569,7 @@ def conditionalStatement(column, condition):
 # table to the referenced tables. If the unique parameter is true,
 # this dictionary contains a set of tables: no duplicated. Otherwise,
 # there may be duplicate tables with unique foreign keys.
-def getReferencedTables(table, unique=True, random=True):
+def getReferencedTables(table, unique=True, static=True):
     
     # Uses a dictionary to store the tables and a set to keep track
     # of unique table names
@@ -598,7 +598,7 @@ def getReferencedTables(table, unique=True, random=True):
             }
 
             # Loads an approrpiate table into the dictionary
-            tables[table.columns[key]['references']] = db.Table(file=table.columns[key]['references'], columns=columns, constraints=constraints, random=random)
+            tables[table.columns[key]['references']] = db.Table(file=table.columns[key]['references'], columns=columns, constraints=constraints, random=not static)
 
             # Adds the table name to the set if unique is True
             if unique:
