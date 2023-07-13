@@ -47,7 +47,7 @@ def generateCreate(data, difficulty):
 
     # Creates a string to tell the student what they need
     # to do for the qestion
-    questionString = f"Create a table named {table.name} with columns"
+    questionString = f"Create a table named <b>{table.name}</b> with columns"
 
     # Adds a list of columns and units to the question string
     columnList = list(table.columns.keys())
@@ -59,37 +59,39 @@ def generateCreate(data, difficulty):
             questionString += ' and'
         
         # Adds the column name
-        questionString += f" {columnValues[i]['name']}"
+        questionString += f" <b>{columnValues[i]['name']}</b>"
 
-        # Mentions primary key, if necessary
-        if columnValues[i]['isPrimary']:
-            questionString += ' that is a primary key'
+
 
         # Handles the text for units
         match columnValues[i]['unit']:
             case 'INTEGER': questionString += ' (an integer)'
             case 'DECIMAL': questionString += f" (a decimal value with a total of {columnValues[i]['unitOther'].split(',')[0]} digits, {columnValues[i]['unitOther'].split(',')[1]} of which are after the decimal point)"
-            case 'CHAR': questionString += f" (a string of exaclty {columnValues[i]['unitOther']} characters)"
+            case 'CHAR': questionString += f" (a string of exactly {columnValues[i]['unitOther']} characters)"
             case 'VARCHAR': questionString += f" (a string up to {columnValues[i]['unitOther']} characters)"
             case 'DATE': questionString += ' (DATE)'
             case 'DATETIME': questionString += ' (DATETIME)'
             case other: questionString += f" ({columnValues[i]['unit']})"
+            
+        # Mentions primary key, if necessary
+        if columnValues[i]['isPrimary']:
+            questionString += ' <em>that is a primary key</em>'
 
         # Mentions foreign key and its clauses, if necessary
         if columnValues[i]['references']:
-            questionString += f" that references {columnValues[i]['references']}\'s {columnValues[i]['foreignKey']}"
+            questionString += f" that references <b>{columnValues[i]['references']}</b>\'s <b>{columnValues[i]['foreignKey']}</b>"
 
             # Handles cascade
             if columnValues[i]['isOnUpdateCascade']:
-                questionString += ' that cascades on an update'
+                questionString += ' <em>that cascades on an update</em>'
             
             # Handles delete set null
             if columnValues[i]['isOnDeleteSetNull']:
-                questionString += ' that is set to null when deleted'
+                questionString += ' <em>that is set to null when deleted</em>'
 
         # Mentions other clauses, if necessary
         if columnValues[i]['isNotNull']:
-            questionString += ' and cannot be null'
+            questionString += ' <em>and cannot be null</em>'
 
         # Adds a comma at the end of each iteration
         questionString += ', '
@@ -152,7 +154,7 @@ def generateInsert(data, difficulty):
 
 
     # Creates and adds the question string
-    data['params']['questionString'] = f"Insert the following values into the {table.name} table:\n{valuesString}"
+    data['params']['questionString'] = f"Insert the following values into the <b>{table.name}</b> table:\n{valuesString}"
 
     # Adds the table to the schema as well as
     # the schemas of referenced tables
@@ -227,9 +229,9 @@ def generateUpdate(data, difficulty):
     # Generates the question string
     # Changes depending on whether it uses a conditional or not
     if useConditional:
-        data['params']['questionString'] = f"From the table {table.name} and in the column {updateColumn}, change all values to be {updateValue} where {conditionalColumn} is equal to {conditionalValue}."
+        data['params']['questionString'] = f"From the table <b>{table.name}</b> and in the column <b>{updateColumn}</b>, change all values to be <b>{updateValue}</b> where <b>{conditionalColumn}</b> is equal to <b>{conditionalValue}</b>."
     else:
-        data['params']['questionString'] = f"From the table {table.name} and in the column {updateColumn}, change all values to be {updateValue}."
+        data['params']['questionString'] = f"From the table <b>{table.name}</b> and in the column <b>{updateColumn}</b>, change all values to be <b>{updateValue}</b>."
 
     # Loads the schema of all referenced tables
     loadAllSchema(data, table)
@@ -292,7 +294,7 @@ def generateDelete(data, difficulty):
 
 
     # Creates the question string
-    data['params']['questionString'] = f"From the table {table.name}, delete the entry where {randomKey} equals '{deleteValue}'."
+    data['params']['questionString'] = f"From the table <b>{table.name}</b>, delete the entry where <b>{randomKey}</b> equals <b>'{deleteValue}'</b>."
 
     # Loads the schema of all referenced tables
     loadAllSchema(data, table)
@@ -446,7 +448,7 @@ def generateQuery(data, difficulty):
         if keyIndex == len(list(foreignKeyMap)) and joins > 0:
             questionString += ' and'
 
-        questionString += f" {keyMap[key]['references']},"
+        questionString += f" <b>{keyMap[key]['references']}</b>,"
     
     # Removes the trailing comma and add the next bit of text
     questionString = questionString[:-1] + ' select the columns'
@@ -476,7 +478,7 @@ def generateQuery(data, difficulty):
             if columnIndex == len(list(selectedColumns[key])) and keyIndex == len(list(selectedColumns)) and columnCount > 1:
                 questionString += ' and'
             
-            questionString += f" {column},"
+            questionString += f" <b>{column}</b>,"
 
     # Removes the trailing comma
     questionString = questionString[:-1] + '.'
