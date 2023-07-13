@@ -18,16 +18,6 @@ class TestRelaxEditorQ1(unittest.TestCase):
         self.driver = webdriver.Chrome(options=options)
         self.baseUrl = "http://localhost:3000/pl/course_instance/1/instructor/question/31/preview"
 
-    def test_relaxClickOperationProjection(self):
-        # Test name: relaxClickOperationProjection
-        # Step # | name | target | value
-        # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
-        self.driver.get(self.baseUrl)
-        # 2 | setWindowSize | 1536x816 | 
-        self.driver.set_window_size(1536, 816)
-        # 3 | click | css=#popWrapper_i4m1hevx8hm > span | 
-        self.driver.find_element(By.CSS_SELECTOR, "#popWrapper_i4m1hevx8hm > span").click()
-
     def test_relaxClickAddTableName(self):
         # Test name: relaxClickAddTableName
         # Step # | name | target | value
@@ -160,6 +150,16 @@ class TestRelaxEditorQ1(unittest.TestCase):
         actions = ActionChains(self.driver)
         actions.double_click(element).perform()
     
+    def test_relaxClickOperationProjection(self):
+        # Test name: relaxClickOperationProjection
+        # Step # | name | target | value
+        # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/31/preview | 
+        self.driver.get(self.baseUrl)
+        # 2 | setWindowSize | 1536x816 | 
+        self.driver.set_window_size(1536, 816)
+        # 3 | click | css=#popWrapper_i4m1hevx8hm > span | 
+        self.driver.find_element(By.CSS_SELECTOR, "#popWrapper_i4m1hevx8hm > span").click()
+
     def test_relaxClickOperationAnd(self):
         # Test name: relaxClickOperation_And
         # Step # | name | target | value
