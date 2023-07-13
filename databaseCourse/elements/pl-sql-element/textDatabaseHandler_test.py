@@ -191,7 +191,7 @@ class TableTest(unittest.TestCase):
     # Case: table has at least one relation
     def testGetKeyMapWhenTableHasAtleastOneRelation(self):
         tableName = 'flight'
-        table = Table(tableName random=False)
+        table = Table(tableName, random=False)
 
         keyMap = table.getKeyMap()
         self.assertGreater(len(keyMap), 0)
