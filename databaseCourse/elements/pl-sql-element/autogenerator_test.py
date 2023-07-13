@@ -368,7 +368,7 @@ class HelperFnsTest(unittest.TestCase):
                           'db_initialize':db_initialize},
                 'correct_answers':{'SQLEditor': initialAns}}
         tableOne = "flight"
-        tableAirport = db.Table(tableOne)
+        tableAirport = db.Table(tableOne, random=False)
 
         self.assertEqual(len(data['params']['db_initialize']),0)
 
