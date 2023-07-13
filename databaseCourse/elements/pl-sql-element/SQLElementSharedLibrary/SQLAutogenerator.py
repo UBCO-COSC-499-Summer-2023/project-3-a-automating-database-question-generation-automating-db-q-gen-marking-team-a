@@ -569,7 +569,7 @@ def conditionalStatement(column, condition):
 # table to the referenced tables. If the unique parameter is true,
 # this dictionary contains a set of tables: no duplicated. Otherwise,
 # there may be duplicate tables with unique foreign keys.
-def getReferencedTables(table, unique=True, static=True):
+def getReferencedTables(table, unique=True, static=False):
     
     # Uses a dictionary to store the tables and a set to keep track
     # of unique table names
