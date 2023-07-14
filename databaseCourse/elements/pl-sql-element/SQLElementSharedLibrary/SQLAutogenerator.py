@@ -629,7 +629,7 @@ def loadSchemas(data, table, referencedTables):
     # Add their schema to the initialize string
     if referencedTables:
         for key in referencedTables:
-            data['params']['db_initialize'] += f"{referencedTables[key].getSchema()}\n"
+            data['params']['db_initialize_create'] += f"{referencedTables[key].getSchema()}\n"
     
     # Adds the primary table afterwards.
     # Since the primary table may reference the foreign
@@ -637,7 +637,7 @@ def loadSchemas(data, table, referencedTables):
     # primary table is loaded after such that foreign
     # key constrains are satisfied.
     if table:
-        data['params']['db_initialize'] += f"{table.getSchema()}\n"
+        data['params']['db_initialize_create'] += f"{table.getSchema()}\n"
 
 # Loads the schema of the current table as well
 # as all referenced tables.
@@ -654,7 +654,9 @@ def loadAllSchema(data, table, referencedTables={}):
 
 # Loads noisy data into the editors
 def loadNoisyData(data, table, rows):
-    data['params']['db_initialize'] += ''.join(insertStatement(table, list(row.values())) for row in rows)
+    data['params']['db_initialize_insert_frontend'] += ''.join(insertStatement(table, list(row.values())) for row in rows)
+    
+    data['params']['db_initialize_insert_backend'] += ''.join(insertStatement(table, list(row.values())) for row in rows)
 
 # Loads the noisy data supplied as well as generating and
 # loading noisy data for the referenced tables.
