@@ -103,7 +103,7 @@ def generateCreate(data, difficulty):
 
 
     # Loads any tables this one references into the schema
-    loadAllSchema(data, table)
+    loadSchemas(data, None, getReferencedTables(table, unique=True))
 
     # Places the question string into data
     data['params']['questionString'] = questionString
@@ -155,9 +155,13 @@ def generateInsert(data, difficulty):
     # Creates and adds the question string
     data['params']['questionString'] = f"Insert the following values into the <b>{table.name}</b> table:\n{valuesString}"
 
+
+    # Gets referenced tables
+    referenced = getReferencedTables(table)
+
     # Adds the table to the schema as well as
     # the schemas of referenced tables
-    loadAllSchema(data, table)
+    loadAllSchema(data, table, referenced)
 
     # Creates the answer string
     data['correct_answers']['SQLEditor'] = insertStatement(table, row)
@@ -232,12 +236,16 @@ def generateUpdate(data, difficulty):
     else:
         data['params']['questionString'] = f"From the table <b>{table.name}</b> and in the column <b>{updateColumn}</b>, change all values to be <b>{updateValue}</b>."
 
+
+    # Loads referenced tables
+    referenced = getReferencedTables(table)
+
     # Loads the schema of all referenced tables
-    loadAllSchema(data, table)
+    loadAllSchema(data, table, referenced)
 
     # Loads the noisy data into the primary table as
     # well as generating noisy data for referenced tables
-    loadAllNoisyData(data, table, rows)
+    loadAllNoisyData(data, table, rows, referenced)
 
     # Loads the correct answer
     data['correct_answers']['SQLEditor'] = updateStatement(table, updateColumn, updateValue, conditionalColumn, conditionalValue)
@@ -254,7 +262,7 @@ def updateStatement(table, updateColumn, updateValue, conditionalColumn = None, 
         return f"UPDATE {table.name} SET {updateColumn} = '{updateValue}';\n"
 
 '''
-    End updatestyle question
+    End update-style question
 '''
 
 
@@ -295,12 +303,16 @@ def generateDelete(data, difficulty):
     # Creates the question string
     data['params']['questionString'] = f"From the table <b>{table.name}</b>, delete the entry where <b>{randomKey}</b> equals <b>'{deleteValue}'</b>."
 
+
+    # Gets referenced tables
+    referenced = getReferencedTables(table)
+
     # Loads the schema of all referenced tables
-    loadAllSchema(data, table)
+    loadAllSchema(data, table, referenced)
 
     # Loads the noisy data into the primary table as
     # well as generating noisy data for referenced tables
-    loadAllNoisyData(data, table, rows)
+    loadAllNoisyData(data, table, rows, referenced)
 
     # Sets the correct answer
     data['correct_answers']['SQLEditor'] = deleteStatement(table, randomKey, deleteValue)
@@ -310,7 +322,7 @@ def generateDelete(data, difficulty):
 def deleteStatement(table, column = None, condition = None):
     ans = f"DELETE FROM {table.name}"
     if(column and condition):
-        ans += f"{conditionalStatement(column, condition)};\n"
+        ans += f" {conditionalStatement(column, condition)};\n"
     return ans
 
 '''

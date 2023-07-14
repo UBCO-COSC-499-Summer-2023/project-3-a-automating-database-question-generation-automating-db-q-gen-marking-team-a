@@ -210,6 +210,14 @@ class Table:
             # Pops the column to ensure no duplicates
             addColumn = possibleColumns.pop(choice(range(len(possibleColumns))))
 
+            # Checks if the column would override an existing 
+            # column. This could only occur due to foreign key
+            # constraints adding a column then the pop() function
+            # giving the same column. Requires at most one more
+            # pop() to fix
+            if addColumn[0] in self.columns.keys():
+                addColumn = possibleColumns.pop(choice(range(len(possibleColumns))))
+
             # Grabs parameters
             columnName = addColumn[0]
             columnUnit = addColumn[1]
