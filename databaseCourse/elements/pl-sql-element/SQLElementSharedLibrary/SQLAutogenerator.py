@@ -155,9 +155,13 @@ def generateInsert(data, difficulty):
     # Creates and adds the question string
     data['params']['questionString'] = f"Insert the following values into the <b>{table.name}</b> table:\n{valuesString}"
 
+
+    # Gets referenced tables
+    referenced = getReferencedTables(table)
+
     # Adds the table to the schema as well as
     # the schemas of referenced tables
-    loadAllSchema(data, table)
+    loadAllSchema(data, table, referenced)
 
     # Creates the answer string
     data['correct_answers']['SQLEditor'] = insertStatement(table, row)
