@@ -103,7 +103,7 @@ def generateCreate(data, difficulty):
 
 
     # Loads any tables this one references into the schema
-    loadAllSchema(data, table)
+    loadSchemas(data, None, getReferencedTables(table, unique=True))
 
     # Places the question string into data
     data['params']['questionString'] = questionString
