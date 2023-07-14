@@ -107,10 +107,14 @@ def gradeQueryQuestion(data,correctAnswer,submittedAnswer):
     print((expectedTotal - colrowGrade)/expectedTotal)
 
 def gradeCreateQuestion(data,correctAnswer,submittedAnswer):
+    print(correctAnswer,submittedAnswer)
     return 1
 def gradeInsertQuestion(data,correctAnswer,submittedAnswer):
+    print(correctAnswer,submittedAnswer)
     return 1
 def gradeUpdateQuestion(data,correctAnswer,submittedAnswer):
+    print(correctAnswer,submittedAnswer)
     return 1
 def gradeDeleteQuestion(data,correctAnswer,submittedAnswer):
+    print(correctAnswer,submittedAnswer)
     return 1
