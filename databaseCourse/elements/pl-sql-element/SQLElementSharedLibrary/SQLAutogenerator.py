@@ -232,12 +232,16 @@ def generateUpdate(data, difficulty):
     else:
         data['params']['questionString'] = f"From the table <b>{table.name}</b> and in the column <b>{updateColumn}</b>, change all values to be <b>{updateValue}</b>."
 
+
+    # Loads referenced tables
+    referenced = getReferencedTables(table)
+
     # Loads the schema of all referenced tables
-    loadAllSchema(data, table)
+    loadAllSchema(data, table, referenced)
 
     # Loads the noisy data into the primary table as
     # well as generating noisy data for referenced tables
-    loadAllNoisyData(data, table, rows)
+    loadAllNoisyData(data, table, rows, referenced)
 
     # Loads the correct answer
     data['correct_answers']['SQLEditor'] = updateStatement(table, updateColumn, updateValue, conditionalColumn, conditionalValue)
@@ -254,7 +258,7 @@ def updateStatement(table, updateColumn, updateValue, conditionalColumn = None, 
         return f"UPDATE {table.name} SET {updateColumn} = '{updateValue}';\n"
 
 '''
-    End updatestyle question
+    End update-style question
 '''
 
 
