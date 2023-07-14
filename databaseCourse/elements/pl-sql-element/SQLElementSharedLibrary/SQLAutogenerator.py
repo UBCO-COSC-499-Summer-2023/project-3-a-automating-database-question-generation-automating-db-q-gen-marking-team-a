@@ -303,12 +303,16 @@ def generateDelete(data, difficulty):
     # Creates the question string
     data['params']['questionString'] = f"From the table <b>{table.name}</b>, delete the entry where <b>{randomKey}</b> equals <b>'{deleteValue}'</b>."
 
+
+    # Gets referenced tables
+    referenced = getReferencedTables(table)
+
     # Loads the schema of all referenced tables
-    loadAllSchema(data, table)
+    loadAllSchema(data, table, referenced)
 
     # Loads the noisy data into the primary table as
     # well as generating noisy data for referenced tables
-    loadAllNoisyData(data, table, rows)
+    loadAllNoisyData(data, table, rows, referenced)
 
     # Sets the correct answer
     data['correct_answers']['SQLEditor'] = deleteStatement(table, randomKey, deleteValue)
