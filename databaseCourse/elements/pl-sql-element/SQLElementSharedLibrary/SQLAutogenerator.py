@@ -318,7 +318,7 @@ def generateDelete(data, difficulty):
 def deleteStatement(table, column = None, condition = None):
     ans = f"DELETE FROM {table.name}"
     if(column and condition):
-        ans += f"{conditionalStatement(column, condition)};\n"
+        ans += f" {conditionalStatement(column, condition)};\n"
     return ans
 
 '''
