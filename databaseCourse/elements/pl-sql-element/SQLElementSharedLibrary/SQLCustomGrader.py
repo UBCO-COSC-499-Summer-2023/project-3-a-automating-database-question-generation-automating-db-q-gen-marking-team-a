@@ -22,25 +22,30 @@ def customGrader(data):
 
     questionType = data["params"]["html_params"]["questionType"]
 
+    outputScore = 0
+
+    if os.path.exists("ans.db"):
+        os.remove("ans.db")
+
     # partial grading for lab 2 - Create Questions
     if(questionType == "create"):
-        gradeCreateQuestion(data,correctAnswer,submittedAnswer)
+        outputScore += gradeCreateQuestion(data,correctAnswer,submittedAnswer)
     
     # partial grading for lab 2 - Insert Questions
     if(questionType == "insert"):
-        gradeInsertQuestion(data,correctAnswer,submittedAnswer)
+        outputScore += gradeInsertQuestion(data,correctAnswer,submittedAnswer)
 
     # partial grading for lab 2 - Update Questions
     if(questionType == "update"):
-        gradeUpdateQuestion(data,correctAnswer,submittedAnswer)
+        outputScore += gradeUpdateQuestion(data,correctAnswer,submittedAnswer)
 
     # partial grading for lab 2 - Delete Questions
     if(questionType == "delete"):
-        gradeDeleteQuestion(data,correctAnswer,submittedAnswer)
+        outputScore += gradeDeleteQuestion(data,correctAnswer,submittedAnswer)
 
     # partial grading for lab 2 - Create Questions
     if(questionType == "query"):
-        gradeQueryQuestion(data,correctAnswer,submittedAnswer)
+        outputScore += gradeQueryQuestion(data,correctAnswer,submittedAnswer)
     
     # Uses the sequence checker to check similatiry between
     # the submission and answer. It returns a number between
@@ -72,10 +77,29 @@ def similar(a, b):
     return SequenceMatcher(None, a, b).ratio()
 
 def gradeQueryQuestion(data,correctAnswer,submittedAnswer):
-    expectedTotal = 0
-    actualTotal = 0
-    if os.path.exists("ans.db"):
-        os.remove("ans.db")
+    rowColWeight = 0.3
+    valueMatchWeight = 0.7
+
+    arr = getExpectedAndActualQueryResults(data,correctAnswer,submittedAnswer)
+
+    expectedAns = arr[0]
+    actualAns = arr[1]
+
+    # row + column matching---------------------------------------------
+    rowColScore = rowColMatch(expectedAns,actualAns)
+
+    # value matching-----------------------------------------------------
+    valueMatchScore = valueMatch(expectedAns,actualAns)
+
+    # order matching-----------------------------------------------------
+
+    score = (rowColWeight*rowColScore) + (valueMatchWeight*valueMatchScore)
+    score = round(score,2)
+
+    print("total",score)
+    return score
+
+def getExpectedAndActualQueryResults(data,correctAnswer,submittedAnswer):
     con = sqlite3.connect("ans.db")
     cur  = con.cursor()
     # print(data['params']['db_initialize'])
@@ -91,30 +115,53 @@ def gradeQueryQuestion(data,correctAnswer,submittedAnswer):
     studentCode = submittedAnswer.replace('\n', ' ').replace('\t', ' ')
     actualAns = cur.execute(studentCode).fetchall()
     # print("submitted",actualAns)
+    return (expectedAns,actualAns)
 
+
+def rowColMatch(expectedAns,actualAns):
+    expectedTotal = 0
+    actualTotal = 0
     expectedRowCount = len(expectedAns)
     expectedColumnCount = len((expectedAns[0]))
     expectedTotal += expectedRowCount + expectedColumnCount
-    print(expectedTotal,expectedColumnCount,expectedRowCount)
+    # print(expectedTotal,expectedColumnCount,expectedRowCount)
+
+    if not (actualAns or expectedAns): return 1
+    if not actualAns: return 0
 
     actualRowCount = len(actualAns)
     actualColumnCount = len((actualAns[0]))
     actualTotal += actualRowCount + actualColumnCount
-    print(actualTotal,actualColumnCount,actualRowCount)
+    # print(actualTotal,actualColumnCount,actualRowCount)
 
     colrowGrade = abs(expectedTotal - actualTotal)
+    rowColScore = (expectedTotal - colrowGrade)/expectedTotal
+    return rowColScore
 
-    print((expectedTotal - colrowGrade)/expectedTotal)
+def valueMatch(expectedAns,actualAns):
+    valueMatchExpectedTotal = len(expectedAns)
+    valueMatchActualTotal = 0
+    # value matching-----------------------------------------------------
+    for x in actualAns:
+        if x in expectedAns:
+            valueMatchActualTotal += 1
+
+    matchScore = valueMatchActualTotal / valueMatchExpectedTotal
+    return matchScore
 
 def gradeCreateQuestion(data,correctAnswer,submittedAnswer):
     print(correctAnswer,submittedAnswer)
     return 1
+
+# all or nothing
 def gradeInsertQuestion(data,correctAnswer,submittedAnswer):
     print(correctAnswer,submittedAnswer)
     return 1
+
 def gradeUpdateQuestion(data,correctAnswer,submittedAnswer):
     print(correctAnswer,submittedAnswer)
     return 1
+
 def gradeDeleteQuestion(data,correctAnswer,submittedAnswer):
     print(correctAnswer,submittedAnswer)
     return 1
