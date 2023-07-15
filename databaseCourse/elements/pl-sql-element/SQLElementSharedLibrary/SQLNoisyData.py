@@ -262,8 +262,11 @@ def relativeFilePath(filePath):
 
 # Reads all lines from a specified file
 def readLines(fileName):
-    with open(relativeFilePath(fileName)) as file:
-        return [line.strip() for line in file.readlines() if not line.isspace()]
+    try:
+        with open(relativeFilePath(fileName)) as file:
+            return [line.strip() for line in file.readlines() if not line.isspace()]
+    except:
+        return None
 
 
 

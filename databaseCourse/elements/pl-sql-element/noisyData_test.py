@@ -256,6 +256,9 @@ class NoisyDataGenerationTests(unittest.TestCase):
 
 
 
+# Tests the helper functions
+class NoisyDataHelperTests(unittest.TestCase):
+
     # Tests generateColumns()
     # Case: number of rows are specified
     def testGenerateColumnsSpecifiedQuantity(self):
@@ -277,3 +280,18 @@ class NoisyDataGenerationTests(unittest.TestCase):
 
         self.assertEqual(len(list(data.values())), cols)
         self.assertEqual(len(list(data.values())[0]), 1)
+
+    
+
+    # Tests getColumnToFileMap()
+    # Case: default path
+    def testGetColumnToFileMapDefaultPath(self):
+        mapping = getColumnToFileMap()
+
+        self.assertIsNotNone(mapping)
+
+    # Case: incorrect path
+    def testGetColumnToFileMapDefaultPath(self):
+        mapping = getColumnToFileMap('a/bad/path/')
+
+        self.assertIsNone(mapping)
