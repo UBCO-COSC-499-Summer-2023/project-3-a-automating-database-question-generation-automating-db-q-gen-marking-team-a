@@ -23,18 +23,23 @@ class NoisyDataGenerationTests(unittest.TestCase):
 
         data = generateNoisyData(table, key, qty)
 
-        # Checks data type
-        self.assertTrue(isinstance(data[0], int))
-
-        # Checks range
-        self.assertGreater(data[0], 0)
-        self.assertLessEqual(data[0], 1000)
-
         # Checks quantity
         self.assertEqual(len(data), qty)
 
-        # Checks whether each element is unique
-        dataSet = (datum for datum in data)
+        # Checks each entry
+        dataSet = set()
+        for datum in data:
+
+            # Checks data type
+            self.assertTrue(isinstance(datum, int))
+
+            # Checks range
+            self.assertGreater(datum, 0)
+            self.assertLessEqual(datum, 1000)
+
+            set.add(datum)
+
+        # Checks if each element is unique
         self.assertEqual(len(dataSet), len(data))
 
     # Case: key is a decimal
@@ -53,19 +58,24 @@ class NoisyDataGenerationTests(unittest.TestCase):
 
         data = generateNoisyData(table, key, qty)
 
-        # Checks data type
-        self.assertTrue(isinstance(data[0], float))
-
-        # Checks range
-        self.assertLessEqual(len(str(data[0])), totalDigits + 1)
-        self.assertLessEqual(len(str(int(data[0]))), totalDigits - decimalDigits)
-        self.assertLessEqual(len(str(data[0])[str(data[0]).find('.') + 1:]), decimalDigits)
-
         # Checks quantity
         self.assertEqual(len(data), qty)
 
-        # Checks whether each element is unique
-        dataSet = (datum for datum in data)
+        # Checks each entry
+        dataSet = set()
+        for datum in data:
+
+            # Checks data type
+            self.assertTrue(isinstance(datum, float))
+
+            # Checks range
+            self.assertLessEqual(len(str(datum)), totalDigits + 1)
+            self.assertLessEqual(len(str(int(datum))), totalDigits - decimalDigits)
+            self.assertLessEqual(len(str(datum)[str(datum).find('.') + 1:]), decimalDigits)
+
+            set.add(datum)
+
+        # Checks if each element is unique
         self.assertEqual(len(dataSet), len(data))
 
     # Case: key is a char
@@ -83,17 +93,22 @@ class NoisyDataGenerationTests(unittest.TestCase):
 
         data = generateNoisyData(table, key, qty)
 
-        # Checks data type
-        self.assertTrue(isinstance(data[0], str))
-
-        # Checks range
-        self.assertEqual(len(data[0]), 5)
-
         # Checks quantity
         self.assertEqual(len(data), qty)
 
-        # Checks whether each element is unique
-        dataSet = (datum for datum in data)
+        # Checks each entry
+        dataSet = set()
+        for datum in data:
+
+            # Checks data type
+            self.assertTrue(isinstance(datum, str))
+
+            # Checks range
+            self.assertEqual(len(datum), 5)
+
+            set.add(datum)
+
+        # Checks if each element is unique
         self.assertEqual(len(dataSet), len(data))
 
     # Case: key is a varchar
@@ -111,18 +126,22 @@ class NoisyDataGenerationTests(unittest.TestCase):
 
         data = generateNoisyData(table, key, qty)
 
-        # Checks data type
-        self.assertTrue(isinstance(data[0], str))
-
-        # Checks range
-        self.assertLessEqual(len(data[0]), 5)
-        self.assertGreater(len(data[0]), 0)
-
         # Checks quantity
         self.assertEqual(len(data), qty)
 
-        # Checks whether each element is unique
-        dataSet = (datum for datum in data)
+        # Checks each entry
+        dataSet = set()
+        for datum in data:
+
+            # Checks data type
+            self.assertTrue(isinstance(datum, str))
+
+            # Checks range
+            self.assertLessEqual(len(datum), 5)
+
+            set.add(datum)
+
+        # Checks if each element is unique
         self.assertEqual(len(dataSet), len(data))
 
     # Case: key is a date
@@ -139,14 +158,19 @@ class NoisyDataGenerationTests(unittest.TestCase):
 
         data = generateNoisyData(table, key, qty)
 
-        # Checks data type
-        self.assertTrue(isinstance(data[0], str))
-
         # Checks quantity
         self.assertEqual(len(data), qty)
 
-        # Checks whether each element is unique
-        dataSet = (datum for datum in data)
+        # Checks each entry
+        dataSet = set()
+        for datum in data:
+
+            # Checks data type
+            self.assertTrue(isinstance(datum, str))
+
+            set.add(datum)
+
+        # Checks if each element is unique
         self.assertEqual(len(dataSet), len(data))
 
     # Case: key is a datetime
@@ -163,14 +187,19 @@ class NoisyDataGenerationTests(unittest.TestCase):
 
         data = generateNoisyData(table, key, qty)
 
-        # Checks data type
-        self.assertTrue(isinstance(data[0], str))
-
         # Checks quantity
         self.assertEqual(len(data), qty)
 
-        # Checks whether each element is unique
-        dataSet = (datum for datum in data)
+        # Checks each entry
+        dataSet = set()
+        for datum in data:
+
+            # Checks data type
+            self.assertTrue(isinstance(datum, str))
+
+            set.add(datum)
+
+        # Checks if each element is unique
         self.assertEqual(len(dataSet), len(data))
 
 
