@@ -359,7 +359,7 @@ class NoisyDataHelperTests(unittest.TestCase):
     
 
 
-    # Tests popRandom()
+    # Tests selectRandom()
     def testSelectRandom(self):
         numberOfValues = 100
         originalValues = list(range(numberOfValues))
