@@ -143,8 +143,8 @@ def generateInsert(data, difficulty):
     # Creates the values ands add them to the question string
 
     # Generates the data to be inserted.
-    # Converts the dictionary row to a list
-    row = list(nd.generateColumns(table).values())
+    # Converts the dictionary row to a list and removes arrays
+    row = [value[0] for value in list(nd.generateColumns(table).values())]
     
     # Adds the data to the question string, replacing the '[]'
     # with '()'
@@ -210,7 +210,7 @@ def generateUpdate(data, difficulty):
     updateColumn = random.choice(list(table.columns.keys()))
 
     # Generates the updated valued
-    updateValue = nd.generateNoisyData(table, updateColumn)
+    updateValue = nd.generateNoisyData(table, updateColumn)[0]
 
 
     # If the quesiton should use a condition, set parameters
@@ -225,7 +225,7 @@ def generateUpdate(data, difficulty):
         randomValueIndex = random.choice(range(len(rows)))
 
         # Grabs the randomly selected values
-        conditionalValue = rows[randomValueIndex][conditionalColumn]
+        conditionalValue = rows[conditionalColumn][randomValueIndex]
 
 
 
@@ -296,7 +296,7 @@ def generateDelete(data, difficulty):
     randomValueIndex = random.choice(range(len(rows)))
 
     # Grabs the randomly selected values
-    deleteValue = rows[randomValueIndex][randomKey]
+    deleteValue = rows[randomKey][randomValueIndex]
 
 
 
@@ -678,7 +678,7 @@ def loadAllNoisyData(data, table, rows, referencedTables={}):
     # Gets a dicitonary of referenced tables.
     # The keys are the name of the table
     if not referencedTables:
-        referencedTables = getReferencedTables(table, unique=False, random=False)
+        referencedTables = getReferencedTables(table, unique=False)
 
     # Gets a dictionary that maps the column to both
     # the referenced table name and foreign key
