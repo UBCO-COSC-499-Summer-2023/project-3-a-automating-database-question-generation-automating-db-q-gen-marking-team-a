@@ -20,7 +20,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
                 'unitOther': None
             }
         }
-        table = Table('', columns=cols, constraints=constraint)
+        table = Table('', constraints=constraint)
 
         data = generateNoisyData(table, key, qty)
 
@@ -51,7 +51,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
                 'unitOther': f"{totalDigits},{decimalDigits}"
             }
         }
-        table = Table('', columns=cols, constraints=constraint)
+        table = Table('', constraints=constraint)
 
         data = generateNoisyData(table, key, qty)
 
@@ -72,7 +72,6 @@ class NoisyDataGenerationTests(unittest.TestCase):
 
     # Case: key is a char
     def testGenerateNoisyDataKeyIsChar(self):
-        cols=5
         key = 'colName'
         qty = 25
         length = 5
@@ -82,7 +81,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
                 'unitOther': length
             }
         }
-        table = Table('', columns=cols, constraints=constraint)
+        table = Table('', constraints=constraint)
 
         data = generateNoisyData(table, key, qty)
 
@@ -111,7 +110,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
                 'unitOther': length
             }
         }
-        table = Table('', columns=cols, constraints=constraint)
+        table = Table('', constraints=constraint)
 
         data = generateNoisyData(table, key, qty)
 
@@ -140,7 +139,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
                 'unitOther': None
             }
         }
-        table = Table('', columns=cols, constraints=constraint)
+        table = Table('', constraints=constraint)
 
         data = generateNoisyData(table, key, qty)
 
@@ -165,7 +164,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
                 'unitOther': None
             }
         }
-        table = Table('', columns=cols, constraints=constraint)
+        table = Table('', constraints=constraint)
 
         data = generateNoisyData(table, key, qty)
 
