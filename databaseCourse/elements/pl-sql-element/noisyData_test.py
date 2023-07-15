@@ -1,7 +1,7 @@
 import unittest
 #from parameterized import parameterized
 from SQLElementSharedLibrary.SQLNoisyData import *
-from SQLElementSharedLibrary.tetDatabaseHandler import Table
+from SQLElementSharedLibrary.textDatabaseHandler import Table
 
 class NoisyDataGenerationTests(unittest.TestCase):
     
