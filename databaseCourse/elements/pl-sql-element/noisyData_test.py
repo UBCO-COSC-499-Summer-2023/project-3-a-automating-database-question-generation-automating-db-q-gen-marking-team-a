@@ -338,3 +338,38 @@ class NoisyDataHelperTests(unittest.TestCase):
         unique = isUnique(table, key)
 
         self.assertFalse(unique)
+    
+
+
+    # Tests popRandom()
+    def testPopRandom(self):
+        numberOfValues = 100
+        originalValues = range(numberOfValues)
+
+        poppedValues = []
+        for i in range(numberOfValues):
+            value = popRandom(originalValues)
+
+            self.assertIsNotNone(value)
+            self.assertNotIn(value, poppedValues)
+
+            poppedValues.append(value)
+        
+        self.assertEqual(len(poppedValues), numberOfValues)
+    
+
+
+    # Tests popRandom()
+    def testSelectRandom(self):
+        numberOfValues = 100
+        originalValues = range(numberOfValues)
+
+        selectedValues = []
+        for i in range(numberOfValues):
+            value = popRandom(originalValues)
+
+            self.assertIsNotNone(value)
+
+            selectedValues.append(value)
+        
+        self.assertEqual(len(selectedValues), numberOfValues)
