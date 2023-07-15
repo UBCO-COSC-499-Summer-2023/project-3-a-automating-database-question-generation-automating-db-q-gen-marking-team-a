@@ -1,7 +1,7 @@
 import unittest
 #from parameterized import parameterized
 from SQLElementSharedLibrary.SQLNoisyData import *
-from SQLElementSharedLibrary.textDatabaseHandler import Table
+from SQLElementSharedLibrary.tetDatabaseHandler import Table
 
 class NoisyDataGenerationTests(unittest.TestCase):
     
@@ -27,7 +27,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
         self.assertEqual(len(data), qty)
 
         # Checks each entry
-        dataSet = set()
+        dataSet = []
         for datum in data:
 
             # Checks data type
@@ -37,7 +37,9 @@ class NoisyDataGenerationTests(unittest.TestCase):
             self.assertGreater(datum, 0)
             self.assertLessEqual(datum, 1000)
 
-            set.add(datum)
+            # Checks uniqueness
+            self.assertNotIn(datum, dataSet)
+            dataSet.add(datum)
 
         # Checks if each element is unique
         self.assertEqual(len(dataSet), len(data))
@@ -62,7 +64,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
         self.assertEqual(len(data), qty)
 
         # Checks each entry
-        dataSet = set()
+        dataSet = []
         for datum in data:
 
             # Checks data type
@@ -73,7 +75,9 @@ class NoisyDataGenerationTests(unittest.TestCase):
             self.assertLessEqual(len(str(int(datum))), totalDigits - decimalDigits)
             self.assertLessEqual(len(str(datum)[str(datum).find('.') + 1:]), decimalDigits)
 
-            set.add(datum)
+            # Checks uniqueness
+            self.assertNotIn(datum, dataSet)
+            dataSet.add(datum)
 
         # Checks if each element is unique
         self.assertEqual(len(dataSet), len(data))
@@ -97,7 +101,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
         self.assertEqual(len(data), qty)
 
         # Checks each entry
-        dataSet = set()
+        dataSet = []
         for datum in data:
 
             # Checks data type
@@ -106,7 +110,9 @@ class NoisyDataGenerationTests(unittest.TestCase):
             # Checks range
             self.assertEqual(len(datum), 5)
 
-            set.add(datum)
+            # Checks uniqueness
+            self.assertNotIn(datum, dataSet)
+            dataSet.add(datum)
 
         # Checks if each element is unique
         self.assertEqual(len(dataSet), len(data))
@@ -130,7 +136,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
         self.assertEqual(len(data), qty)
 
         # Checks each entry
-        dataSet = set()
+        dataSet = []
         for datum in data:
 
             # Checks data type
@@ -139,7 +145,9 @@ class NoisyDataGenerationTests(unittest.TestCase):
             # Checks range
             self.assertLessEqual(len(datum), 5)
 
-            set.add(datum)
+            # Checks uniqueness
+            self.assertNotIn(datum, dataSet)
+            dataSet.add(datum)
 
         # Checks if each element is unique
         self.assertEqual(len(dataSet), len(data))
@@ -162,13 +170,15 @@ class NoisyDataGenerationTests(unittest.TestCase):
         self.assertEqual(len(data), qty)
 
         # Checks each entry
-        dataSet = set()
+        dataSet = []
         for datum in data:
 
             # Checks data type
             self.assertTrue(isinstance(datum, str))
 
-            set.add(datum)
+            # Checks uniqueness
+            self.assertNotIn(datum, dataSet)
+            dataSet.add(datum)
 
         # Checks if each element is unique
         self.assertEqual(len(dataSet), len(data))
@@ -191,13 +201,15 @@ class NoisyDataGenerationTests(unittest.TestCase):
         self.assertEqual(len(data), qty)
 
         # Checks each entry
-        dataSet = set()
+        dataSet = []
         for datum in data:
 
             # Checks data type
             self.assertTrue(isinstance(datum, str))
 
-            set.add(datum)
+            # Checks uniqueness
+            self.assertNotIn(datum, dataSet)
+            dataSet.add(datum)
 
         # Checks if each element is unique
         self.assertEqual(len(dataSet), len(data))
