@@ -317,3 +317,24 @@ class NoisyDataHelperTests(unittest.TestCase):
         lines = readLines('badFileName')
 
         self.assertIsNone(lines)
+
+
+
+    # Tests isUnique()
+    # Case: key in table is unique
+    def testIsUniqueIsUnique(self):
+        table = Table('flight', random=False)
+        key = 'number'
+
+        unique = isUnique(table, key)
+
+        self.assertTrue(unique)
+
+    # Case: key in table is not unique
+    def testIsUniqueIsNotUnique(self):
+        table = Table('flight', random=False)
+        key = 'arrivalDate'
+
+        unique = isUnique(table, key)
+
+        self.assertFalse(unique)
