@@ -39,7 +39,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
 
             # Checks uniqueness
             self.assertNotIn(datum, dataSet)
-            dataSet.add(datum)
+            dataSet.append(datum)
 
         # Checks if each element is unique
         self.assertEqual(len(dataSet), len(data))
@@ -77,7 +77,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
 
             # Checks uniqueness
             self.assertNotIn(datum, dataSet)
-            dataSet.add(datum)
+            dataSet.append(datum)
 
         # Checks if each element is unique
         self.assertEqual(len(dataSet), len(data))
@@ -112,7 +112,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
 
             # Checks uniqueness
             self.assertNotIn(datum, dataSet)
-            dataSet.add(datum)
+            dataSet.append(datum)
 
         # Checks if each element is unique
         self.assertEqual(len(dataSet), len(data))
@@ -147,7 +147,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
 
             # Checks uniqueness
             self.assertNotIn(datum, dataSet)
-            dataSet.add(datum)
+            dataSet.append(datum)
 
         # Checks if each element is unique
         self.assertEqual(len(dataSet), len(data))
@@ -178,7 +178,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
 
             # Checks uniqueness
             self.assertNotIn(datum, dataSet)
-            dataSet.add(datum)
+            dataSet.append(datum)
 
         # Checks if each element is unique
         self.assertEqual(len(dataSet), len(data))
@@ -209,7 +209,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
 
             # Checks uniqueness
             self.assertNotIn(datum, dataSet)
-            dataSet.add(datum)
+            dataSet.append(datum)
 
         # Checks if each element is unique
         self.assertEqual(len(dataSet), len(data))
