@@ -289,9 +289,31 @@ class NoisyDataHelperTests(unittest.TestCase):
         mapping = getColumnToFileMap()
 
         self.assertIsNotNone(mapping)
+        self.assertGreater(len(mapping), 0)
 
     # Case: incorrect path
     def testGetColumnToFileMapDefaultPath(self):
         mapping = getColumnToFileMap('a/bad/path/')
 
         self.assertIsNone(mapping)
+
+
+    
+    # Does not test getRelativeFilePath().
+    # It is already integration tested.
+
+
+
+    # Tests readLines()
+    # Case: file is found
+    def testReadLinesFileIsFound(self):
+        lines = readLines('firstNames')
+
+        self.assertIsNotNone(lines)
+        self.assertGreater(len(lines), 0)
+
+    # Case: file is not found
+    def testReadLinesFileIsFound(self):
+        lines = readLines('badFileName')
+
+        self.assertIsNone(lines)
