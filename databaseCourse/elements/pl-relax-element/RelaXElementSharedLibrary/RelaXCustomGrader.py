@@ -1,9 +1,23 @@
 from difflib import SequenceMatcher
+import execjs
+import js2py
+
+
+#from relalg_bundle import relalg_bundle
 
 # Uses Python's SequenceMatcher library to check the
 # similarity between the correct answer and the student's
 # submitted answer.
 def customGrader(data):
+    
+    query = "π cid Customer"
+    db = data['params']['database']
+    dbArray = db.split(";")
+    dataset = []
+    
+    print(dbArray)
+    print(dataset)
+    
     # Grabs the student answer from data
     submittedAnswer = data['submitted_answers']['RelaXEditor']
 
