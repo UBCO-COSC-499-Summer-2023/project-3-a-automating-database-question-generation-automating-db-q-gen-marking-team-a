@@ -11,7 +11,6 @@ class NoisyDataGenerationTests(unittest.TestCase):
     # the form `generateNoisy{Type}()`.
     # Case: key is an integer
     def testGenerateNoisyDataKeyIsInteger(self):
-        cols=1
         key = 'colName'
         qty = 25
         constraint = {
@@ -40,7 +39,6 @@ class NoisyDataGenerationTests(unittest.TestCase):
 
     # Case: key is a decimal
     def testGenerateNoisyDataKeyIsDecimal(self):
-        cols=1
         key = 'colName'
         qty = 25
         totalDigits = 9
@@ -100,7 +98,6 @@ class NoisyDataGenerationTests(unittest.TestCase):
 
     # Case: key is a varchar
     def testGenerateNoisyDataKeyIsVarchar(self):
-        cols=1
         key = 'colName'
         qty = 25
         length = 5
@@ -130,7 +127,6 @@ class NoisyDataGenerationTests(unittest.TestCase):
 
     # Case: key is a date
     def testGenerateNoisyDataKeyIsDate(self):
-        cols=1
         key = 'colName'
         qty = 25
         constraint = {
@@ -155,7 +151,6 @@ class NoisyDataGenerationTests(unittest.TestCase):
 
     # Case: key is a datetime
     def testGenerateNoisyDataKeyIsDatetime(self):
-        cols=1
         key = 'colName'
         qty = 25
         constraint = {
