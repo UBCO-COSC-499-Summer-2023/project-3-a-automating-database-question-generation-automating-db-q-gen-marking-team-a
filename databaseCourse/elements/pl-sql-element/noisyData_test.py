@@ -344,7 +344,7 @@ class NoisyDataHelperTests(unittest.TestCase):
     # Tests popRandom()
     def testPopRandom(self):
         numberOfValues = 100
-        originalValues = range(numberOfValues)
+        originalValues = list(range(numberOfValues))
 
         poppedValues = []
         for i in range(numberOfValues):
@@ -362,7 +362,7 @@ class NoisyDataHelperTests(unittest.TestCase):
     # Tests popRandom()
     def testSelectRandom(self):
         numberOfValues = 100
-        originalValues = range(numberOfValues)
+        originalValues = list(range(numberOfValues))
 
         selectedValues = []
         for i in range(numberOfValues):
