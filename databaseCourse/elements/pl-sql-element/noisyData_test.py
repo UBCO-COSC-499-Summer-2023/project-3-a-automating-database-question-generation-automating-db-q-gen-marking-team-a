@@ -86,7 +86,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
         data = generateNoisyData(table, key, qty)
 
         # Checks data type
-        self.assertTrue(isinstance(data[0], int))
+        self.assertTrue(isinstance(data[0], str))
 
         # Checks range
         self.assertEqual(len(data[0]), 5)
@@ -115,7 +115,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
         data = generateNoisyData(table, key, qty)
 
         # Checks data type
-        self.assertTrue(isinstance(data[0], int))
+        self.assertTrue(isinstance(data[0], str))
 
         # Checks range
         self.assertLessEqual(len(data[0]), 5)
@@ -144,7 +144,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
         data = generateNoisyData(table, key, qty)
 
         # Checks data type
-        self.assertTrue(isinstance(data[0], int))
+        self.assertTrue(isinstance(data[0], str))
 
         # Checks quantity
         self.assertEqual(len(data), qty)
@@ -169,7 +169,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
         data = generateNoisyData(table, key, qty)
 
         # Checks data type
-        self.assertTrue(isinstance(data[0], int))
+        self.assertTrue(isinstance(data[0], str))
 
         # Checks quantity
         self.assertEqual(len(data), qty)

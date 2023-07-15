@@ -127,7 +127,7 @@ def generateRandomDecimal(unique, qty, unitOther):
         # Ensures no duplicated, if necessary
         tryValue = float(f"{randomWhole}.{randomDecimal}")
         if not (unique and tryValue in values):
-            values.append(float(f"{randomWhole}.{randomDecimal}"))
+            values.append(tryValue)
 
     return values
 
