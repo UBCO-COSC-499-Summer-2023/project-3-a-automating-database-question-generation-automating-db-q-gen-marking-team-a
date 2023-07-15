@@ -72,7 +72,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
 
     # Case: key is a char
     def testGenerateNoisyDataKeyIsChar(self):
-        cols=1
+        cols=5
         key = 'colName'
         qty = 25
         length = 5
