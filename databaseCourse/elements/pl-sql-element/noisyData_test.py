@@ -3,6 +3,7 @@ import unittest
 from SQLElementSharedLibrary.SQLNoisyData import *
 from SQLElementSharedLibrary.textDatabaseHandler import Table
 
+# Tests the primary functions
 class NoisyDataGenerationTests(unittest.TestCase):
     
 
@@ -37,7 +38,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
             self.assertGreater(datum, 0)
             self.assertLessEqual(datum, 1000)
 
-            # Checks uniqueness
+            # Prepares uniqueness check
             self.assertNotIn(datum, dataSet)
             dataSet.append(datum)
 
@@ -75,7 +76,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
             self.assertLessEqual(len(str(int(datum))), totalDigits - decimalDigits)
             self.assertLessEqual(len(str(datum)[str(datum).find('.') + 1:]), decimalDigits)
 
-            # Checks uniqueness
+            # Prepares uniqueness check
             self.assertNotIn(datum, dataSet)
             dataSet.append(datum)
 
@@ -108,9 +109,9 @@ class NoisyDataGenerationTests(unittest.TestCase):
             self.assertTrue(isinstance(datum, str))
 
             # Checks range
-            self.assertEqual(len(datum), 5)
+            self.assertEqual(len(datum), length)
 
-            # Checks uniqueness
+            # Prepares uniqueness check
             self.assertNotIn(datum, dataSet)
             dataSet.append(datum)
 
@@ -143,9 +144,9 @@ class NoisyDataGenerationTests(unittest.TestCase):
             self.assertTrue(isinstance(datum, str))
 
             # Checks range
-            self.assertLessEqual(len(datum), 5)
+            self.assertLessEqual(len(datum), length)
 
-            # Checks uniqueness
+            # Prepares uniqueness check
             self.assertNotIn(datum, dataSet)
             dataSet.append(datum)
 
@@ -176,7 +177,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
             # Checks data type
             self.assertTrue(isinstance(datum, str))
 
-            # Checks uniqueness
+            # Prepares uniqueness check
             self.assertNotIn(datum, dataSet)
             dataSet.append(datum)
 
@@ -207,7 +208,46 @@ class NoisyDataGenerationTests(unittest.TestCase):
             # Checks data type
             self.assertTrue(isinstance(datum, str))
 
-            # Checks uniqueness
+            # Prepares uniqueness check
+            self.assertNotIn(datum, dataSet)
+            dataSet.append(datum)
+
+        # Checks if each element is unique
+        self.assertEqual(len(dataSet), len(data))
+    
+    # Case: key is mapped to a file
+    def testGenerateNoisyDataKeyIsMappedToFile(self):
+        key = 'firstName'
+        qty = 25
+        length = 35
+        constraint = {
+            key: {
+                'unit': 'VARCHAR',
+                'unitOther': length
+            }
+        }
+        table = Table('', constraints=constraint)
+
+        data = generateNoisyData(table, key, qty)
+        firstNames = readLines('firstNames')
+
+        # Checks quantity
+        self.assertEqual(len(data), qty)
+
+        # Checks each entry
+        dataSet = []
+        for datum in data:
+
+            # Checks data type
+            self.assertTrue(isinstance(datum, str))
+
+            # Checks range
+            self.assertLessEqual(len(datum), length)
+
+            # Checks if item was loaded from a file
+            self.assertIn(datum, firstNames)
+
+            # Prepares uniqueness check
             self.assertNotIn(datum, dataSet)
             dataSet.append(datum)
 
