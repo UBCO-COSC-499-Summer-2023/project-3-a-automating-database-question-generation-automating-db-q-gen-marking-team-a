@@ -44,7 +44,7 @@ class Table:
     # File name and table name are equivalent.
     #   File: the name of the text file if it exists OR the name of the random table
     #   Columns: the number of columns in the table
-    def __init__(self, file='', columns=5, joins=0, clauses=[], constraints={}, random=True):
+    def __init__(self, file='', columns=5, joins=0, clauses={}, constraints={}, random=True):
         self.name = file
         self.columns = {}
 
@@ -168,8 +168,6 @@ class Table:
 
 
     # Creates a random table
-    # TODO
-    #   - clauses; will be completed on an as-needed basis
     def loadRandom(self, name, columns, joins, clauses, constraints):
 
         # Checks whether the parameters are legal
@@ -290,6 +288,74 @@ class Table:
 
             # Removes the old column while updateting the new
             self.columns[f"{self.name[0:1].lower()}{foreignColumn}"] = self.columns.pop(foreignColumn)
+
+    
+
+        # Adds clauses
+        for clause in clauses:
+
+            # All clauses are of the form...
+            #   clause: INTEGER
+            # ...so iterate over the integer until a sufficient
+            # number of columns have been selected.
+            for i in range(clauses[clause]):
+
+                match clause:
+
+                    # Selects primary keys
+                    case 'primaryKeys':
+
+                        # Keeps choosing columns until one is valid
+                        column = None
+                        while not column or self.columns[column]['references'] or self.columns[column]['isPrimary']:
+                            column = choice(list(self.columns.keys()))
+                            #print(column, self.columns[column]['references'], self.columns[column]['isPrimary'])
+
+                        self.columns[column]['isPrimary'] = True
+
+                    # NOT NULL constraint
+                    case 'isNotNull':
+                        
+                        # Keeps choosing columns until one is valid
+                        column = None
+                        while not column or self.columns[column]['references'] or self.columns[column]['isPrimary']:
+                            column = choice(list(self.columns.keys()))
+
+                        self.columns[column]['isNotNull'] = True
+
+                    # UNIQUE constraint
+                    case 'isUnique':
+
+                        # Keeps choosing columns until one is valid
+                        column = None
+                        while not column or self.columns[column]['references'] or self.columns[column]['isPrimary']:
+                            column = choice(list(self.columns.keys()))
+
+                        self.columns[column]['isUnique'] = True
+
+                    # CASCADE ON UPDATE clause
+                    case 'isOnUpdateCascade':
+                        
+                        # Keeps choosing columns until one is valid
+                        column = None
+                        while not column or not self.columns[column]['references'] or self.columns[column]['isOnUpdateCascade']:
+                            column = choice(list(self.columns.keys()))
+
+                        self.columns[column]['isOnUpdateCascade'] = True
+
+                    # SET NULL ON DELETE clause
+                    case 'isOnDeleteSetNull':
+
+                        # Keeps choosing columns until one is valid
+                        column = None
+                        while not column or not self.columns[column]['references'] or self.columns[column]['isOnDeleteSetNull']:
+                            column = choice(list(self.columns.keys()))
+
+                        self.columns[column]['isOnDeleteSetNull'] = True
+
+                    # Crashes if the clause is not valid
+                    case _:
+                        assert False, f"Clause {clause} is invalid"
 
 
 

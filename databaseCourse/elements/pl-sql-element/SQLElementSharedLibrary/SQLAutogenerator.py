@@ -15,7 +15,7 @@ def autogenerate(data):
 
 
     # Checks if the difficulty are valid
-    if difficulty not in ['easy', 'medium', 'hard']:
+    if difficulty not in ['easy', 'medium', 'hard', None]:
         return None
 
     # Generates the appropriate question
@@ -33,24 +33,24 @@ def autogenerate(data):
 # Generates a 'create' style SQL question
 def generateCreate(data, difficulty):
 
-    # Parameters
-    #   number of columns
-    #   number of PKs
-    #   number of joins
-    #   number of is unique
-    #   number of cascade on updates
-    #   number of on delete set null
+    # Obtains question specific parameters
+    numberOfColumns = data['params']['html_params']['columns']
+    numberOfJoins = data['params']['html_params']['joins']
 
-    # Chooses a table to load based on quesiton difficulty
-    # Randomly selects from the list at the given difficulty
-    tableFile = ''
+    # Constructs table clauses
+    clauses = {}
+    for clause in data['params']['html_table_clauses']:
+        if data['params']['html_table_clauses'][clause]:
+            clauses[clause] = data['params']['html_table_clauses'][clause]
+
+
+    # Creates an appropriate table
+    table = None
     match difficulty:
-        case 'easy': tableFile = random.choice(['airport', 'airplane', 'product', 'customer'])
-        case 'medium': tableFile = random.choice(['passenger', 'shipment'])
-        case 'hard': tableFile = random.choice(['flight', 'shippedproduct'])
-    
-    # Loads the selected table
-    table = db.Table(tableFile)
+        case 'easy': table = db.Table(random.choice(['airport', 'airplane', 'product', 'customer']), random=False)
+        case 'medium': table = db.Table(random.choice(['passenger', 'shipment']), random=False)
+        case 'hard': table = db.Table(random.choice(['flight', 'shippedproduct']), random=False)
+        case _: table = db.Table(columns=numberOfColumns, joins=numberOfJoins, clauses=clauses)
 
 
     # Creates a string to tell the student what they need
