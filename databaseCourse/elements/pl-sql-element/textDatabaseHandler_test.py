@@ -79,7 +79,7 @@ class TableTest(unittest.TestCase):
         table = Table()
 
         self.assertIsNotNone(table)
-        self.assertIsNotNone(table.columns)
+        self.assertGreater(len(list(table.columns)))
         self.assertIsNotNone(table.getKeyMap())
 
     # Case: Valid columns and valid joins
@@ -99,7 +99,7 @@ class TableTest(unittest.TestCase):
         joins = -1
         table = Table(tableName, columns, joins)
 
-        self.assertIsNone(table.columns)
+        self.assertEqual(len(list(table.columns)), 0)
 
     # Case: Invalid columns and valid joins
     def testRandomTableInvalidColumnsValidJoins(self):
@@ -108,7 +108,7 @@ class TableTest(unittest.TestCase):
         joins = 1
         table = Table(tableName, columns, joins)
 
-        self.assertIsNone(table.columns)
+        self.assertEqual(len(list(table.columns)), 0)
 
     # Case: Invalid columns and invalid joins
     def testRandomTableInvalidColumnsInvalidJoins(self):
@@ -117,7 +117,7 @@ class TableTest(unittest.TestCase):
         joins = -1
         table = Table(tableName, columns, joins)
 
-        self.assertIsNone(table.columns)
+        self.assertEqual(len(list(table.columns)), 0)
     
     # Case: more joins than columns
     def testRandomTableMoreJoinsThanColumns(self):
@@ -126,7 +126,7 @@ class TableTest(unittest.TestCase):
         joins = 5
         table = Table(tableName, columns, joins)
 
-        self.assertIsNone(table.columns)
+        self.assertEqual(len(list(table.columns)), 0)
 
 
 
