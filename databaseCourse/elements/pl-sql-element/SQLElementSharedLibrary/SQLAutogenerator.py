@@ -99,7 +99,10 @@ def generateCreate(data, difficulty):
 
         # Mentions other clauses, if necessary
         if columnValues[i]['isNotNull']:
-            questionString += ' <em>and cannot be null</em>'
+            questionString += ' <em>that cannot be null</em>'
+        
+        if columnValues[i]['isUnique']:
+            questionString += ' <em>where all values are unqiue</em>'
 
         # Adds a comma at the end of each iteration
         questionString += ', '
