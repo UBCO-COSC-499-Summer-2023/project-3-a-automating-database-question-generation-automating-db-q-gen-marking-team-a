@@ -33,6 +33,14 @@ def autogenerate(data):
 # Generates a 'create' style SQL question
 def generateCreate(data, difficulty):
 
+    # Parameters
+    #   number of columns
+    #   number of PKs
+    #   number of joins
+    #   number of is unique
+    #   number of cascade on updates
+    #   number of on delete set null
+
     # Chooses a table to load based on quesiton difficulty
     # Randomly selects from the list at the given difficulty
     tableFile = ''

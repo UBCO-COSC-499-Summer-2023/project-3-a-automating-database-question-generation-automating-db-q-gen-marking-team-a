@@ -200,6 +200,7 @@ class Table:
                     'unitOther': constraints[key]['unitOther'],
                     'isPrimary': True, # Must be true to prevent SQLite FK constraint error
                     'isNotNull': False,
+                    'isUnique': False,
                     'references': None,
                     'foreignKey': None,
                     'isOnUpdateCascade': False,
@@ -241,6 +242,7 @@ class Table:
                     'unitOther': columnUnitOther,
                     'isPrimary': False,
                     'isNotNull': False,
+                    'isUnique': False,
                     'references': None,
                     'foreignKey': None,
                     'isOnUpdateCascade': False,
