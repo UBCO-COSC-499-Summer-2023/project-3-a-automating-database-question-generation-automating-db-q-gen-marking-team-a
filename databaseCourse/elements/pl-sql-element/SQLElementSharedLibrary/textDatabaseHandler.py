@@ -148,6 +148,9 @@ class Table:
                 # Checks if the line has a NOT NULL clause
                 isNotNull = 'NOT NULL' in line.upper()
 
+                # Checks if the line has the UNIQUE clause
+                isUnique = 'UNIQUE' in line.upper()
+
                 # Adds the column
                 self.columns[name] = {
                     'name': name,
@@ -155,6 +158,7 @@ class Table:
                     'unitOther': unitOther,
                     'isPrimary': False,
                     'isNotNull': isNotNull,
+                    'isUnique': isUnique,
                     'references': None,
                     'foreignKey': None,
                     'isOnUpdateCascade': False,
@@ -392,9 +396,13 @@ class Table:
             if self.columns[column]['unitOther']:
                 schema += f"({self.columns[column]['unitOther']})"
             
-            # Includes the not null clause if necessary
+            # Includes the NOT NULL clause if necessary
             if self.columns[column]['isNotNull']:
                 schema += ' NOT NULL'
+
+            # Includes the UNIQUE clause if necessary
+            if self.columns[column]['isUnique']:
+                schema += ' UNIQUE'
 
             # Adds a comma at the end
             schema += ',\n'

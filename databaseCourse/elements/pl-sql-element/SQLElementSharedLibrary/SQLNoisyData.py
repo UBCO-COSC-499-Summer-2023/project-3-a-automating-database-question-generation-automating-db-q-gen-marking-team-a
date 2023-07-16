@@ -273,7 +273,7 @@ def readLines(fileName):
 # Checks if this column disallows duplicate values.
 # SQLite requires that PKs and FKs are unique
 def isUnique(table, key):
-    return table.columns[key]['isPrimary'] or table.columns[key]['references']
+    return table.columns[key]['isPrimary'] or table.columns[key]['references'] or table.columns[key]['isUnique']
 
 
 
