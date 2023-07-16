@@ -178,13 +178,16 @@ class Table:
         # BUT HOW!? How does *that* line get a timeout iff the
         # count of columns is either 1 or 2? It makes no sense!
         if columns < 3:
-            assert False, f"Table requires at least 4 columns (was supplied with {columns} columns)"
+            print(f"Table requires at least 4 columns (was supplied with {columns} columns)")
+            return None
         
         if joins < 0:
-            assert False, f"Table cannot have negative amount of foreign keys (was supplied with {joins} foreign keys)"
+            print(f"Table cannot have negative amount of foreign keys (was supplied with {joins} foreign keys)")
+            return None
         
         if joins > columns:
-            assert False, f"Table cannot have more foreign keys than columns (was supplied with {columns} columns and {joins} foreign keys)"
+            print(f"Table cannot have more foreign keys than columns (was supplied with {columns} columns and {joins} foreign keys)")
+            return None
 
         # Tests if the clauses are valid
         primaryKeys = 0
@@ -195,26 +198,32 @@ class Table:
 
             # Checks if any clause has a negative amount
             if value < 0:
-                assert False, f"Table cannot have negative amount of a clause (was supplied with {value} '{clause}')"
+                print(f"Table cannot have negative amount of a clause (was supplied with {value} '{clause}')")
+                return None
 
             # Checks if given clause has too many
             match clause:
                 case 'primaryKeys':
                     if value > columns - joins:
-                        assert False, f"Table cannot have more primary keys than columns and foreign keys (was supplied with {value} primary keys, {columns} columns, and {joins} foreign keys)"
+                        print(f"Table cannot have more primary keys than columns and foreign keys (was supplied with {value} primary keys, {columns} columns, and {joins} foreign keys)")
+                        return None
                     primaryKeys = value
                 case 'isNotNull':
                     if value > columns - joins - primaryKeys:
-                        assert False, f"Table cannot have more NO NULL clauses than columns, primary keys, and foreign keys (was supplied with {value} clauses, {columns}, columns, {primaryKeys} primary keys, and {joins} foreign keys)"
+                        print(f"Table cannot have more NO NULL clauses than columns, primary keys, and foreign keys (was supplied with {value} clauses, {columns}, columns, {primaryKeys} primary keys, and {joins} foreign keys)")
+                        return None
                 case 'isUnique':
                     if value > columns - joins - primaryKeys:
-                        assert False, f"Table cannot have more UNIQUE clauses than columns, primary keys, and foreign keys (was supplied with {value} clauses, {columns}, columns, {primaryKeys} primary keys, and {joins} foreign keys)"
+                        print(f"Table cannot have more UNIQUE clauses than columns, primary keys, and foreign keys (was supplied with {value} clauses, {columns}, columns, {primaryKeys} primary keys, and {joins} foreign keys)")
+                        return None
                 case 'isOnUpdateCascade':
                     if value > joins:
-                        assert False, f"Table cannot have more ON UPDATE CASCADE clauses than foreign keys (was supplied with {value} clauses and {joins} foreign keys)"
+                        print(f"Table cannot have more ON UPDATE CASCADE clauses than foreign keys (was supplied with {value} clauses and {joins} foreign keys)")
+                        return None
                 case 'isOnDeleteSetNull':
                     if value > joins:
-                        assert False, f"Table cannot have more ON DELETE SET NULL clauses than foreign keys (was supplied with {value} clauses and {joins} foreign keys)"
+                        print(f"Table cannot have more ON DELETE SET NULL clauses than foreign keys (was supplied with {value} clauses and {joins} foreign keys)")
+                        return None
 
         # Selects a random name if none are provided
         if not name:
