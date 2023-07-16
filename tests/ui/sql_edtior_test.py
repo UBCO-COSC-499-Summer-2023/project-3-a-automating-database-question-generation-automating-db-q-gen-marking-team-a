@@ -13,12 +13,13 @@ import chromedriver_binary
 
 # example uiTestFile to show how you can automate ui tests, configure the ui test classes/files 
 # and tests
-class TestSqlEditor(unittest.TestCase):
+class TestSqlEditorQueryQ1(unittest.TestCase):
 
     def setUp(self):
         options = Options()
         options.add_argument('--headless')
         self.driver = webdriver.Chrome(options=options)
+        self.baseUrl = "http://localhost:3000/pl/course_instance/1/instructor/question/36/preview"
 
     # tests that the home page of PL loads properly
     def testPrairieLearnLoad(self):
@@ -27,124 +28,54 @@ class TestSqlEditor(unittest.TestCase):
         driver.get(baseUrl)
         self.assertIn("PrairieLearn",driver.title)
         print(self.driver.title)
-    
-    def test_sqlEditorDbSchemaClickAddTableName(self):
-        # Test name: sqlEditorDbSchemaClickAddColumn
+  
+    def test_sqlExecuteButtonClick(self):
+        # Test name: sqlExecuteButtonClick
         # Step # | name | target | value
-        # 1 | open | http://localhost:3000/ | 
-        self.driver.get("http://localhost:3000/")
-        # 2 | setWindowSize | 1532x816 | 
-        self.driver.set_window_size(1532, 816)
-        # 3 | click | linkText=Summer 2023 | 
-        self.driver.find_element(By.LINK_TEXT, "Summer 2023").click()
-        # 4 | click | linkText=Homework For Writing SQL Queries | 
-        self.driver.find_element(By.LINK_TEXT, "Homework For Writing SQL Queries").click()
-        # 5 | click | css=tr:nth-child(2) a | 
-        self.driver.implicitly_wait(5)
-        self.driver.find_element(By.CSS_SELECTOR, "tr:nth-child(2) a").click()
+        # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/36/preview | 
+        self.driver.get(self.baseUrl)
+        # 2 | setWindowSize | 1536x824 | 
+        self.driver.set_window_size(1536, 824)
+        # 3 | click | id=execute | 
+        self.driver.find_element(By.ID, "execute").click()
     
-    def test_sqlEditorExecuteButtonClick(self):
-        # Test name: sqlEditorExecuteButtonClick
+    def test_sqlExecuteQuery(self):
+        # Test name: sqlExecuteQuery
         # Step # | name | target | value
-        # 1 | open | http://localhost:3000/ | 
-        self.driver.get("http://localhost:3000/")
-        # 2 | setWindowSize | 1532x816 | 
-        self.driver.set_window_size(1532, 816)
-        # 3 | click | linkText=Summer 2023 | 
-        self.driver.find_element(By.LINK_TEXT, "Summer 2023").click()
-        # 4 | click | linkText=Homework For Writing SQL Queries | 
-        self.driver.find_element(By.LINK_TEXT, "Homework For Writing SQL Queries").click()
-        # 5 | click | css=tr:nth-child(2) a | 
-        self.driver.find_element(By.CSS_SELECTOR, "tr:nth-child(2) a").click()
+        # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/36/preview | 
+        self.driver.get(self.baseUrl)
+        # 2 | setWindowSize | 1536x824 | 
+        self.driver.set_window_size(1536, 824)
+        # 3 | runScript | window.scrollTo(0,354.3999938964844) | 
+        self.driver.execute_script("window.scrollTo(0,354.3999938964844)")
+        # 4 | runScript | window.scrollTo(0,354.3999938964844) | 
+        self.driver.execute_script("window.scrollTo(0,354.3999938964844)")
+        # 5 | type | css=.CodeMirror textarea | SELECT * FROM customer
+        self.driver.find_element(By.CSS_SELECTOR, ".CodeMirror textarea").send_keys("SELECT * FROM customer")
         # 6 | click | id=execute | 
         self.driver.find_element(By.ID, "execute").click()
     
-    def test_sqlEditorExecuteQuery(self):
-        # Test name: sqlEditorExecuteQuery
+    def test_sqlOutputTableColumnSortByClick(self):
+        # Test name: sqlOutputTableColumnSortByClick
         # Step # | name | target | value
-        # 1 | open | http://localhost:3000/ | 
-        self.driver.get("http://localhost:3000/")
-        # 2 | setWindowSize | 1532x816 | 
-        self.driver.set_window_size(1532, 816)
-        # 3 | click | css=tr:nth-child(1) > td:nth-child(2) | 
-        self.driver.find_element(By.CSS_SELECTOR, "tr:nth-child(1) > td:nth-child(2)").click()
-        # 4 | click | linkText=Summer 2023 | 
-        self.driver.find_element(By.LINK_TEXT, "Summer 2023").click()
-        # 5 | click | linkText=Homework For Writing SQL Queries | 
-        self.driver.find_element(By.LINK_TEXT, "Homework For Writing SQL Queries").click()
-        # 6 | click | css=tr:nth-child(2) a | 
-        self.driver.find_element(By.CSS_SELECTOR, "tr:nth-child(2) a").click()
-        # 7 | runScript | window.scrollTo(0,358.3999938964844) | 
-        self.driver.execute_script("window.scrollTo(0,358.3999938964844)")
-        # 8 | runScript | window.scrollTo(0,358.3999938964844) | 
-        self.driver.execute_script("window.scrollTo(0,358.3999938964844)")
-        # 9 | runScript | window.scrollTo(0,358.3999938964844) | 
-        self.driver.execute_script("window.scrollTo(0,358.3999938964844)")
-        # 10 | type | css=.CodeMirror textarea | SELECT * FROM customer
+        # 1 | open | http://localhost:3000/pl/course_instance/1/instructor/question/36/preview | 
+        self.driver.get(self.baseUrl)
+        # 2 | setWindowSize | 1536x824 | 
+        self.driver.set_window_size(1536, 824)
+        # 3 | runScript | window.scrollTo(0,354.3999938964844) | 
+        self.driver.execute_script("window.scrollTo(0,354.3999938964844)")
+        # 4 | runScript | window.scrollTo(0,354.3999938964844) | 
+        self.driver.execute_script("window.scrollTo(0,354.3999938964844)")
+        # 5 | runScript | window.scrollTo(0,354.3999938964844) | 
+        self.driver.execute_script("window.scrollTo(0,354.3999938964844)")
+        # 6 | type | css=.CodeMirror textarea | SELECT * FROM customer
         self.driver.find_element(By.CSS_SELECTOR, ".CodeMirror textarea").send_keys("SELECT * FROM customer")
-        # 11 | click | id=execute | 
+        # 7 | click | id=execute | 
         self.driver.find_element(By.ID, "execute").click()
-    
-    def test_sqlEditorOutputTableColumnSortByClick(self):
-        # Test name: sqlEditorOutputTableColumnSortByClick
-        # Step # | name | target | value
-        # 1 | open | http://localhost:3000/ | 
-        self.driver.get("http://localhost:3000/")
-        # 2 | setWindowSize | 1532x816 | 
-        self.driver.set_window_size(1532, 816)
-        # 3 | click | linkText=Summer 2023 | 
-        self.driver.find_element(By.LINK_TEXT, "Summer 2023").click()
-        # 4 | click | linkText=Homework For Writing SQL Queries | 
-        self.driver.find_element(By.LINK_TEXT, "Homework For Writing SQL Queries").click()
-        # 5 | click | css=tr:nth-child(2) a | 
-        self.driver.find_element(By.CSS_SELECTOR, "tr:nth-child(2) a").click()
-        # 6 | runScript | window.scrollTo(0,358.3999938964844) | 
-        self.driver.execute_script("window.scrollTo(0,358.3999938964844)")
-        # 7 | runScript | window.scrollTo(0,358.3999938964844) | 
-        self.driver.execute_script("window.scrollTo(0,358.3999938964844)")
-        # 8 | type | css=.CodeMirror textarea | SELECT * FROM customer
-        self.driver.find_element(By.CSS_SELECTOR, ".CodeMirror textarea").send_keys("SELECT * FROM customer")
-        # 9 | click | id=execute | 
-        self.driver.find_element(By.ID, "execute").click()
-        # 10 | click | css=th:nth-child(2) | 
+        # 8 | click | css=th:nth-child(2) | 
         self.driver.find_element(By.CSS_SELECTOR, "th:nth-child(2)").click()
-        # 11 | click | css=th:nth-child(2) | 
-        self.driver.find_element(By.CSS_SELECTOR, "th:nth-child(2)").click()
-        # 12 | click | css=th:nth-child(3) | 
+        # 9 | click | css=th:nth-child(3) | 
         self.driver.find_element(By.CSS_SELECTOR, "th:nth-child(3)").click()
-        # 13 | click | css=th:nth-child(3) | 
-        self.driver.find_element(By.CSS_SELECTOR, "th:nth-child(3)").click()
-        # 14 | doubleClick | css=th:nth-child(3) | 
-        element = self.driver.find_element(By.CSS_SELECTOR, "th:nth-child(3)")
-        actions = ActionChains(self.driver)
-        actions.double_click(element).perform()
-        # 15 | click | css=th:nth-child(4) | 
-        self.driver.find_element(By.CSS_SELECTOR, "th:nth-child(4)").click()
-        # 16 | click | css=th:nth-child(4) | 
-        self.driver.find_element(By.CSS_SELECTOR, "th:nth-child(4)").click()
-        # 17 | doubleClick | css=th:nth-child(4) | 
-        element = self.driver.find_element(By.CSS_SELECTOR, "th:nth-child(4)")
-        actions = ActionChains(self.driver)
-        actions.double_click(element).perform()
-        # 18 | click | css=th:nth-child(5) | 
-        self.driver.find_element(By.CSS_SELECTOR, "th:nth-child(5)").click()
-        # 19 | click | css=th:nth-child(5) | 
-        self.driver.find_element(By.CSS_SELECTOR, "th:nth-child(5)").click()
-        # 20 | doubleClick | css=th:nth-child(5) | 
-        element = self.driver.find_element(By.CSS_SELECTOR, "th:nth-child(5)")
-        actions = ActionChains(self.driver)
-        actions.double_click(element).perform()
-        # 21 | click | css=th:nth-child(1) | 
-        self.driver.find_element(By.CSS_SELECTOR, "th:nth-child(1)").click()
-        # 22 | click | css=th:nth-child(1) | 
-        self.driver.find_element(By.CSS_SELECTOR, "th:nth-child(1)").click()
-        # 23 | doubleClick | css=th:nth-child(1) | 
-        element = self.driver.find_element(By.CSS_SELECTOR, "th:nth-child(1)")
-        actions = ActionChains(self.driver)
-        actions.double_click(element).perform()
-    
-    def tearDown(self):
-        self.driver.quit()
 
 if __name__ == '__main__':
     unittest.main()
