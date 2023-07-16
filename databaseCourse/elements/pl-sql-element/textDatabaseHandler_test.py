@@ -79,7 +79,7 @@ class TableTest(unittest.TestCase):
         table = Table()
 
         self.assertIsNotNone(table)
-        self.assertGreater(len(list(table.columns)))
+        self.assertGreater(len(list(table.columns)), 0)
         self.assertIsNotNone(table.getKeyMap())
 
     # Case: Valid columns and valid joins
