@@ -7,15 +7,12 @@ class AutogenerateTest(unittest.TestCase):
     # DONE
 #---# autogenerate() Tests------------------------------------------------------------------------------------------------------------------
     # case1 : enter an invalid difficulty
-    '''
     def testAutogenerateInvalidDifficultyReturnsNone(self):
-        data = {'params':{'html_params':{'random':{},'questionType':{},'difficulty':{}}}}
+        data = {'params':{'html_params':{'random':{},'questionType':{},'difficulty':'not valid difficulty'}}}
 
         result = autogenerate(data)
 
         self.assertIsNone(result)
-    '''
-    # TEST CASE REMOVES: difficulty not needed for question parameterization
 
     # case 2: valid inputs return correct questions - testing each type with each difficulty here
     @parameterized.expand([
