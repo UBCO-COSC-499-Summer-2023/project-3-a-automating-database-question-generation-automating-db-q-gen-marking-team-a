@@ -104,8 +104,12 @@ class TableTest(unittest.TestCase):
         try:
             table = Table(tableName, columns, joins)
             self.assertFalse(True)
-        except:
+        except AssertionError:
             self.assertTrue(True)
+        
+        # In case this leads to an unexpected error
+        except:
+            self.assertFalse(True)
 
     # Case: Invalid columns and valid joins
     def testRandomTableInvalidColumnsValidJoins(self):
@@ -119,8 +123,12 @@ class TableTest(unittest.TestCase):
         try:
             table = Table(tableName, columns, joins)
             self.assertFalse(True)
-        except:
+        except AssertionError:
             self.assertTrue(True)
+        
+        # In case this leads to an unexpected error
+        except:
+            self.assertFalse(True)
 
     # Case: Invalid columns and invalid joins
     def testRandomTableInvalidColumnsInvalidJoins(self):
@@ -133,8 +141,12 @@ class TableTest(unittest.TestCase):
         try:
             table = Table(tableName, columns, joins)
             self.assertFalse(True)
-        except:
+        except AssertionError:
             self.assertTrue(True)
+        
+        # In case this leads to an unexpected error
+        except:
+            self.assertFalse(True)
     
     # Case: more joins than columns
     def testRandomTableMoreJoinsThanColumns(self):
@@ -148,8 +160,12 @@ class TableTest(unittest.TestCase):
         try:
             table = Table(tableName, columns, joins)
             self.assertFalse(True)
-        except:
+        except AssertionError:
             self.assertTrue(True)
+        
+        # In case this leads to an unexpected error
+        except:
+            self.assertFalse(True)
 
 
 
