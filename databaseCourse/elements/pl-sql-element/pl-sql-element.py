@@ -65,8 +65,8 @@ def prepare(element_html, data):
     questionMaxGrade = pl.get_float_attrib(element, 'maxgrade', 1)
     questionMarkerFeedback = pl.get_boolean_attrib(element, 'markerfeedback', False)
 
-    questionColumns = pl.get_float_attrib(element, 'columns', 5)
-    questionJoins = pl.get_float_attrib(element, 'joins', 0)
+    questionColumns = pl.get_integer_attrib(element, 'columns', 5)
+    questionJoins = pl.get_integer_attrib(element, 'joins', 0)
 
     questionPrimaryKeys = pl.get_integer_attrib(element, 'primarykeys', None)
     questionIsNotNull = pl.get_integer_attrib(element, 'isnotnull', None)
