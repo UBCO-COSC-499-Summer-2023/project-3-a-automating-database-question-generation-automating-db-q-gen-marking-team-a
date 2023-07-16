@@ -224,6 +224,8 @@ class Table:
                     if value > joins:
                         print(f"Table cannot have more ON DELETE SET NULL clauses than foreign keys (was supplied with {value} clauses and {joins} foreign keys)")
                         return None
+                    
+
 
         # Selects a random name if none are provided
         if not name:
