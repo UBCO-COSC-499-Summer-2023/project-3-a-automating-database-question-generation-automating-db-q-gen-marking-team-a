@@ -177,9 +177,44 @@ class Table:
         # It's due to the line `self.columns[columnName] = {...}`
         # BUT HOW!? How does *that* line get a timeout iff the
         # count of columns is either 1 or 2? It makes no sense!
-        if columns < 3 or joins < 0 or joins > columns:
-            self.columns = None
-            return
+        if columns < 3:
+            assert False, f"Table requires at least 4 columns (was supplied with {columns} columns)"
+        
+        if joins < 0:
+            assert False, f"Table cannot have negative amount of foreign keys (was supplied with {joins} foreign keys)"
+        
+        if joins > columns:
+            assert False, f"Table cannot have more foreign keys than columns (was supplied with {columns} columns and {joins} foreign keys)"
+
+        # Tests if the clauses are valid
+        primaryKeys = 0
+        for clause in clauses:
+
+            # Grabs the value of the clause
+            value = clauses[clause]
+
+            # Checks if any clause has a negative amount
+            if value < 0:
+                assert False, f"Table cannot have negative amount of a clause (was supplied with {value} '{clause}')"
+
+            # Checks if given clause has too many
+            match clause:
+                case 'primaryKeys':
+                    if value > columns - joins:
+                        assert False, f"Table cannot have more primary keys than columns and foreign keys (was supplied with {value} primary keys, {columns} columns, and {joins} foreign keys)"
+                    primaryKeys = value
+                case 'isNotNull':
+                    if value > columns - joins - primaryKeys:
+                        assert False, f"Table cannot have more NO NULL clauses than columns, primary keys, and foreign keys (was supplied with {value} clauses, {columns}, columns, {primaryKeys} primary keys, and {joins} foreign keys)"
+                case 'isUnique':
+                    if value > columns - joins - primaryKeys:
+                        assert False, f"Table cannot have more UNIQUE clauses than columns, primary keys, and foreign keys (was supplied with {value} clauses, {columns}, columns, {primaryKeys} primary keys, and {joins} foreign keys)"
+                case 'isOnUpdateCascade':
+                    if value > joins:
+                        assert False, f"Table cannot have more ON UPDATE CASCADE clauses than foreign keys (was supplied with {value} clauses and {joins} foreign keys)"
+                case 'isOnDeleteSetNull':
+                    if value > joins:
+                        assert False, f"Table cannot have more ON DELETE SET NULL clauses than foreign keys (was supplied with {value} clauses and {joins} foreign keys)"
 
         # Selects a random name if none are provided
         if not name:
@@ -289,7 +324,7 @@ class Table:
             # Removes the old column while updateting the new
             self.columns[f"{self.name[0:1].lower()}{foreignColumn}"] = self.columns.pop(foreignColumn)
 
-    
+
 
         # Adds clauses
         for clause in clauses:
