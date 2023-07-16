@@ -92,7 +92,6 @@ def gradeQueryQuestion(data,correctAnswer,submittedAnswer):
     valueMatchScore = valueMatch(expectedAns,actualAns)
 
     # order matching-----------------------------------------------------
-
     score = (rowColWeight*rowColScore) + (valueMatchWeight*valueMatchScore)
     score = round(score,2)
 
@@ -119,15 +118,15 @@ def getExpectedAndActualQueryResults(data,correctAnswer,submittedAnswer):
 
 
 def rowColMatch(expectedAns,actualAns):
+    if not actualAns[0] and not expectedAns[0]: return 1
+    if not actualAns[0]: return 0
+
     expectedTotal = 0
     actualTotal = 0
     expectedRowCount = len(expectedAns)
     expectedColumnCount = len((expectedAns[0]))
     expectedTotal += expectedRowCount + expectedColumnCount
     # print(expectedTotal,expectedColumnCount,expectedRowCount)
-
-    if not (actualAns or expectedAns): return 1
-    if not actualAns: return 0
 
     actualRowCount = len(actualAns)
     actualColumnCount = len((actualAns[0]))
@@ -139,6 +138,9 @@ def rowColMatch(expectedAns,actualAns):
     return rowColScore
 
 def valueMatch(expectedAns,actualAns):
+    if not actualAns[0] and not expectedAns[0]: return 1
+    if not actualAns[0]: return 0
+    
     valueMatchExpectedTotal = len(expectedAns)
     valueMatchActualTotal = 0
     # value matching-----------------------------------------------------
