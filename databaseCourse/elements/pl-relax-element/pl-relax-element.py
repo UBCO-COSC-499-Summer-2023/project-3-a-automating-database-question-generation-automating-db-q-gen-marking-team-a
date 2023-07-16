@@ -4,7 +4,7 @@ import lxml.html
 import html
 import prairielearn as pl
 import RelaXElementSharedLibrary.RelaXCustomGrader as grader
-
+import RelaXElementSharedLibrary.RelaXAutogenerator as autogen
 
 def generate(element_html, data):
     pass
@@ -31,7 +31,10 @@ def render(element_html, data):
     if databaseFilePath:
         with open(databaseFilePath,"r") as databaseFile:
            database += databaseFile.read()
-
+    else:
+        table1 = autogen.Table()
+        print(table1.toString())
+        database+=table1.toString()
     # This renders the question into PL
     if data['panel'] == 'question':
         # setting the paramaters
@@ -46,7 +49,6 @@ def render(element_html, data):
     elif data['panel'] == 'submission':
   
         html_params = {
-            
             'submission': True,
             'submissionAnswer': submittedAnswer,
         }
