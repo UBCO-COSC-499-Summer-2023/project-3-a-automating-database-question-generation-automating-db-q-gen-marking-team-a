@@ -17,9 +17,20 @@
 - Made dashboard for June 16th - June 20th night
 
 ## Wednesday , June 21:
+- Worked on Drone setup this morning since it’s working now - running into issues with setting up ui tests
+- Met with TA and updated him on progress
+- Looked more into drone and what exactly to do, was confused
+- Helped Matthew with grading of RelaX lab questions - have it working, doesn’t display correct and inputted answers but does carry out grading
+- Met with professor Lawrence ; honestly feels like there’s a bit of scope creep happening and might be due to us being ahead of schedule. Not sure how I feel about what we discussed in that meeting because there was a lot of information that felt like it was newly presented to us. We'll see how it all goes though.
 
 ## Thursday , June 22:
+- Drone setup is done
+- Messing around with setting up ui testing to work in drone but some issues keep persisting so gonna put that off and do it separately
 
 ## Friday , June 23:
+- dashboard + peer evals
+- met with team to go over next steps again and break down more tasks and action items for mvp
+- gonna be working on testing for renderer.js, element.py, as well as autograding, making the mvp presentation, and a small ui bug fix
 
 ## Saturday , June 24:
+- off day

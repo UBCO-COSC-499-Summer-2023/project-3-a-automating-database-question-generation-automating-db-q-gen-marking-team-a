@@ -3,7 +3,7 @@ import chevron
 import lxml.html
 import html
 import prairielearn as pl
-import RASQLCustomGrader as grader
+import RelaXElementSharedLibrary.RelaXCustomGrader as grader
 
 
 def generate(element_html, data):
@@ -15,7 +15,7 @@ def prepare(element_html, data):
     data['params']['grader'] = 'RelaXEditor'
     element = lxml.html.fragment_fromstring(element_html)
     
-    correctAnswer = lxml.html.fromstring(pl.inner_html(element[2])).text_content()
+    correctAnswer = lxml.html.fromstring(pl.inner_html(element[1])).text_content()
     data['correct_answers']['RelaXEditor'] = correctAnswer
 
 def render(element_html, data):
@@ -23,8 +23,8 @@ def render(element_html, data):
     element = lxml.html.fragment_fromstring(element_html)
     # # Gets each element from the questionHTML
         
-    questionText = lxml.html.fromstring(pl.inner_html(element[0])).text_content()
-    database = lxml.html.fromstring(pl.inner_html(element[1])).text_content()
+    # questionText = lxml.html.fromstring(pl.inner_html(element[0])).text_content()
+    database = lxml.html.fromstring(pl.inner_html(element[0])).text_content()
 
     submittedAnswer = data['submitted_answers'].get('RelaXEditor','')
     correctAnswer = data['correct_answers'].get('RelaXEditor', '')
@@ -33,7 +33,7 @@ def render(element_html, data):
     if data['panel'] == 'question':
         # setting the paramaters
         html_params = {
-            'questionText' : questionText,
+            #'questionText' : questionText,
             'database' : database,
         }
             # Opens and renders mustache file into the question html
@@ -73,8 +73,7 @@ def parse(element_html, data):
 
 def grade(element_html, data):
     # Grades the student's submission
-    grader.customGrader(data)
-    studentScore = data["score"]
+    studentScore = grader.customGrader(data)
     # Places the student's score and other feedback into data.
     # Score cannot be directly modified in the element folder,
     # rather it must be placed within partial scores.

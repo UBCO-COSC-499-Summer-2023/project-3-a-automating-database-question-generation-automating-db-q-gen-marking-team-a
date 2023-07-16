@@ -1,7 +1,12 @@
+<pl-question-panel>
+  Return a list of <b>customer ids and names</b> where the customer has <b>no shipments or has a shipment with a shipped product with a price greater than \$40</b>.
+  <br>
+  <br>
+  Expected output:
+  <br>
+  <img src="{{options.client_files_question_url}}/ra_q5.png" alt="The columns are Customer.id, Customer.cname, Customer.address, and Customer.state" class="expected-output-img">
+</pl-question-panel>
 <pl-relax-element random="False" max-grade = "10">
-  
-  <relax-question>Return a list of customer ids and names where the customer has no shipments or has a shipment with a shipped product with a price greater than $40.
-  </relax-question>
 
   <relax-db>{
     Customer.cid:number, 	Customer.cname:string, 		Customer.address:string, 		Customer.city:string, 		Customer.state:string
@@ -54,6 +59,6 @@
     12, 		4, 		10
   }</relax-db>
 
-  <relax-answer>π pname,inventory,amount,price (σ amount ≥ inventory ∧ price < 5 ∨ price ≥ 50 (Product⨝ShippedProduct))</relax-answer>
+  <relax-answer>π cid,cname(σ sid=null ∨ price>40 (Customer⟕Shipment⟕ShippedProduct⟕Product))</relax-answer>
 
 </pl-relax-element>
