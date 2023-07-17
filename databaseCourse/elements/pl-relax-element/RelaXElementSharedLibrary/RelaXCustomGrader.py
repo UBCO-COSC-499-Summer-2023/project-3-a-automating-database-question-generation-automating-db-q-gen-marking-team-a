@@ -1,22 +1,39 @@
 from difflib import SequenceMatcher
-import execjs
-import js2py
+import relational_algebra as ra
 
+#print(dir(ra))
+#print(help(ra.Selection))
 
-#from relalg_bundle import relalg_bundle
 
 # Uses Python's SequenceMatcher library to check the
 # similarity between the correct answer and the student's
 # submitted answer.
 def customGrader(data):
     
-    query = "π cid Customer"
+    query = "π a R"
     db = data['params']['database']
     dbArray = db.split(";")
     dataset = []
     
-    print(dbArray)
-    print(dataset)
+    relation = ra.Relation(name="R")
+    relation.add_attributes(["a", "b", "c"])
+    relation.add_rows([
+	    [1, 2, 3],
+	    [4, 5, 6],
+	    [7, 8, 9],
+    ])
+    
+    b = ra.Relation(name="S")
+    b.add_attributes(["d", "b", "c"])
+    b.add_rows([
+	    [1, 2, 3],
+	    [4, 5, 6],
+	    [7, 8, 9],
+    ])
+    
+    answer = ra.evaluate(query)
+    
+    print(answer)
     
     # Grabs the student answer from data
     submittedAnswer = data['submitted_answers']['RelaXEditor']
