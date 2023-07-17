@@ -2,7 +2,7 @@
     "python.testing.unittestArgs": [
         "-v",
         "-s",
-        "./tests/ui/relaxQuestions",
+        "./tests/ui/ddlQuestions",
         "-p",
         "*_test.py"
     ],
