@@ -240,8 +240,68 @@ def gradeUpdateQuestion(data,correctAnswer,submittedAnswer):
 
 # DELETE------------------------------------------------------------------------------------------------------------------------
 def gradeDeleteQuestion(data,correctAnswer,submittedAnswer):
-    print(correctAnswer,submittedAnswer)
-    return 0
+    arr = getExpectedAndActualDeleteResults(data,correctAnswer,submittedAnswer)
+
+    expectedAns = arr[0]
+    actualAns = arr[1]
+    originalDb = arr[2]
+
+    # value matching
+    deleteMatchScore = deleteMatch(expectedAns,actualAns,originalDb)
+
+    score = deleteMatchScore
+    score = round(score,2)
+    return score
+
+def deleteMatch(dbAfterSolution,dbAfterSubmission,originalDb):
+    rowMatchWeight = 0.5
+    valMatchWeight = 0.5
+    expectedDeletedRows = [row for row in originalDb if row not in dbAfterSolution]
+    actualDeletedRows = [row for row in originalDb if row not in dbAfterSubmission]
+    rowMatchScore = rowMatch(expectedDeletedRows,actualDeletedRows)
+    valMatchScore = valueMatch(expectedDeletedRows,actualDeletedRows)
+    score = (rowMatchScore*rowMatchWeight) + (valMatchScore*valMatchWeight)
+    return score
+
+def getExpectedAndActualDeleteResults(data,correctAnswer,submittedAnswer):
+    con = sqlite3.connect("ans.db")
+    cur  = con.cursor()
+    # print(data['params']['db_initialize'])
+    commands = data['params']['db_initialize_create'].replace('\n', '').replace('\t', '')
+    # print(commands)
+
+    cur.executescript(commands)
+    con.commit()
+
+    tables = cur.execute("SELECT name FROM sqlite_master WHERE type='table';").fetchall()
+    tablesCleaned = [item[0] for item in tables]
+    originalDb = []
+    for table in tablesCleaned:
+        originalDb += cur.execute("SELECT * FROM " + table).fetchall()
+
+    print(originalDb)
+
+    expectedCode = correctAnswer.replace('\n', ' ').replace('\t', ' ')
+    # print("formatted correct ans",expectedCode)
+    # print("correctans",correctAnswer)
+    cur.executescript(expectedCode)
+    expectedAns = []
+    for table in tablesCleaned:
+        expectedAns += cur.execute("SELECT * FROM " + table).fetchall()
+    print("solution:",expectedAns)
+
+    cur.executescript(commands)
+    con.commit()
+    studentCode = submittedAnswer.replace('\n', ' ').replace('\t', ' ')
+    cur.executescript(studentCode)
+    con.commit()
+    tables = cur.execute("SELECT name FROM sqlite_master WHERE type='table';").fetchall()
+    tablesCleaned = [item[0] for item in tables]
+    actualAns = []
+    for table in tablesCleaned:
+        actualAns += cur.execute("SELECT * FROM " + table).fetchall()
+    print("submitted",actualAns)
+    return (expectedAns,actualAns,originalDb)
 
 # HELPERS ----------------------------------------------------------------------------------------------------------------------
 def rowMatch(expectedAns,actualAns):
