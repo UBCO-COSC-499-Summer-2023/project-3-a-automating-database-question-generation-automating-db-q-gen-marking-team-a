@@ -31,9 +31,15 @@ def customGrader(data):
 	    [7, 8, 9],
     ])
     
-    answer = ra.evaluate(query)
+    result = ra.Projection(relation, ["a", "b", "c"])
     
-    print(answer)
+    print(result.attributes)
+    print(result)
+    
+    
+    #print(relation.attributes)
+    #print(relation.rows)
+    #result = ra.Selection()
     
     # Grabs the student answer from data
     submittedAnswer = data['submitted_answers']['RelaXEditor']
