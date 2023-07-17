@@ -29,6 +29,8 @@ def customGrader(data):
 
     if os.path.exists("ans.db"):
         os.remove("ans.db")
+    if os.path.exists("ans2.db"):
+        os.remove("ans2.db")
 
     # partial grading for lab 2 - Create Questions
     if(questionType == "create"):
@@ -135,56 +137,54 @@ def getExpectedAndActualQueryResults(data,correctAnswer,submittedAnswer):
     # print("submitted",actualAns)
     return (expectedAns,actualAns)
 
-def rowMatch(expectedAns,actualAns):
-    expectedTotal = 0
-    actualTotal = 0
-    expectedRowCount = len(expectedAns)
-    expectedTotal += expectedRowCount
-    # print(expectedTotal,expectedColumnCount,expectedRowCount)
-
-    if not (actualAns or expectedAns): return 1
-    if not actualAns: return 0
-
-    actualRowCount = len(actualAns)
-    actualTotal += actualRowCount
-    # print(actualTotal,actualColumnCount,actualRowCount)
-
-    rowGrade = abs(expectedTotal - actualTotal)
-    rowScore = (expectedTotal - rowGrade)/expectedTotal
-    return rowScore
-
-def colMatch(expectedAns,actualAns):
-    expectedTotal = 0
-    actualTotal = 0
-    expectedColumnCount = len((expectedAns[0]))
-    expectedTotal += expectedColumnCount
-    # print(expectedTotal,expectedColumnCount,expectedRowCount)
-
-    if not (actualAns or expectedAns): return 1
-    if not actualAns: return 0
-
-    actualColumnCount = len((actualAns[0]))
-    actualTotal += actualColumnCount
-    # print(actualTotal,actualColumnCount,actualRowCount)
-
-    colGrade = abs(expectedTotal - actualTotal)
-    colScore = (expectedTotal - colGrade)/expectedTotal
-    return colScore
-
-def valueMatch(expectedAns,actualAns):
-    valueMatchExpectedTotal = len(expectedAns)
-    valueMatchActualTotal = 0
-    for x in actualAns:
-        if x in expectedAns:
-            valueMatchActualTotal += 1
-
-    matchScore = valueMatchActualTotal / valueMatchExpectedTotal
-    return matchScore
-
 # CREATE------------------------------------------------------------------------------------------------------------------------
 def gradeCreateQuestion(data,correctAnswer,submittedAnswer):
-    print(correctAnswer,submittedAnswer)
-    return 0
+    arr = getExpectedAndActualCreateResults(data,correctAnswer,submittedAnswer)
+    print(arr[0])
+    print(arr[1])
+
+    expectedAns = arr[0]
+    actualAns = arr[1]
+
+    # value matching
+    valueMatchScore = valueMatch(expectedAns,actualAns)
+
+    score = valueMatchScore
+    score = round(score,2)
+    return score
+
+def getExpectedAndActualCreateResults(data,correctAnswer,submittedAnswer):
+    con = sqlite3.connect("ans.db")
+    cur  = con.cursor()
+
+    expectedCode = correctAnswer.replace('\n', ' ').replace('\t', ' ')
+    cur.executescript(expectedCode)
+    con.commit()
+
+    tables = cur.execute("SELECT name FROM sqlite_master WHERE type='table';").fetchall()
+    tablesCleaned = [item[0] for item in tables]
+
+    expectedAns = []
+    for table in tablesCleaned:
+        expectedAns += cur.execute("PRAGMA table_info(" + table + ")").fetchall()
+        expectedAns += cur.execute("PRAGMA foreign_key_list(" + table + ")").fetchall()
+    # -----------------------
+    conTwo = sqlite3.connect("ans2.db")
+    curTwo  = conTwo.cursor()
+
+    studentCode = submittedAnswer.replace('\n', ' ').replace('\t', ' ')
+    curTwo.executescript(studentCode)
+    conTwo.commit()
+
+    tables = curTwo.execute("SELECT name FROM sqlite_master WHERE type='table';").fetchall()
+    tablesCleaned = [item[0] for item in tables]
+
+    actualAns = []
+    for table in tablesCleaned:
+        actualAns += curTwo.execute("PRAGMA table_info(" + table + ")").fetchall()
+        actualAns += curTwo.execute("PRAGMA foreign_key_list(" + table + ")").fetchall()
+
+    return (expectedAns,actualAns)
 
 # INSERT------------------------------------------------------------------------------------------------------------------------
 # all or nothing
@@ -242,3 +242,50 @@ def gradeUpdateQuestion(data,correctAnswer,submittedAnswer):
 def gradeDeleteQuestion(data,correctAnswer,submittedAnswer):
     print(correctAnswer,submittedAnswer)
     return 0
+
+# HELPERS ----------------------------------------------------------------------------------------------------------------------
+def rowMatch(expectedAns,actualAns):
+    expectedTotal = 0
+    actualTotal = 0
+    expectedRowCount = len(expectedAns)
+    expectedTotal += expectedRowCount
+    # print(expectedTotal,expectedColumnCount,expectedRowCount)
+
+    if not (actualAns or expectedAns): return 1
+    if not actualAns: return 0
+
+    actualRowCount = len(actualAns)
+    actualTotal += actualRowCount
+    # print(actualTotal,actualColumnCount,actualRowCount)
+
+    rowGrade = abs(expectedTotal - actualTotal)
+    rowScore = (expectedTotal - rowGrade)/expectedTotal
+    return rowScore
+
+def colMatch(expectedAns,actualAns):
+    expectedTotal = 0
+    actualTotal = 0
+    expectedColumnCount = len((expectedAns[0]))
+    expectedTotal += expectedColumnCount
+    # print(expectedTotal,expectedColumnCount,expectedRowCount)
+
+    if not (actualAns or expectedAns): return 1
+    if not actualAns: return 0
+
+    actualColumnCount = len((actualAns[0]))
+    actualTotal += actualColumnCount
+    # print(actualTotal,actualColumnCount,actualRowCount)
+
+    colGrade = abs(expectedTotal - actualTotal)
+    colScore = (expectedTotal - colGrade)/expectedTotal
+    return colScore
+
+def valueMatch(expectedAns,actualAns):
+    valueMatchExpectedTotal = len(expectedAns)
+    valueMatchActualTotal = 0
+    for x in actualAns:
+        if x in expectedAns:
+            valueMatchActualTotal += 1
+
+    matchScore = valueMatchActualTotal / valueMatchExpectedTotal
+    return matchScore
