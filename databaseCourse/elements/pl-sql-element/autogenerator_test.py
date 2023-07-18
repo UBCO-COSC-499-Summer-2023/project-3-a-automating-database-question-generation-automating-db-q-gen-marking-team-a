@@ -59,7 +59,7 @@ class QuestionGenerationTest(unittest.TestCase):
         db_initialize = ""
         initialAns = ""
         difficulty = "easy"
-        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty, 'columns': 5, 'joins': 0},
                           'db_initialize':db_initialize},
                 'correct_answers':{'SQLEditor': initialAns}}
         
@@ -74,7 +74,7 @@ class QuestionGenerationTest(unittest.TestCase):
         db_initialize = ""
         initialAns = ""
         difficulty = "medium"
-        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty, 'columns': 5, 'joins': 0},
                           'db_initialize':db_initialize},
                 'correct_answers':{'SQLEditor': initialAns}}
         
