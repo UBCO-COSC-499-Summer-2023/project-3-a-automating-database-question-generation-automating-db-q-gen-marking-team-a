@@ -20,6 +20,8 @@ def customGrader(data):
     wordsSA = sorted(stripSA.split())
     wordsCA = sorted(stripCA.split())
 
+    if not wordsSA: return 0
+
     questionType = data["params"]["html_params"]["questionType"]
 
     outputScore = 0
@@ -235,35 +237,54 @@ def getExpectedAndActualInsertResults(data,correctAnswer,submittedAnswer):
 
 # UPDATE------------------------------------------------------------------------------------------------------------------------
 def gradeUpdateQuestion(data,correctAnswer,submittedAnswer):
-    print(correctAnswer,submittedAnswer)
-    return 0
-
-# DELETE------------------------------------------------------------------------------------------------------------------------
-def gradeDeleteQuestion(data,correctAnswer,submittedAnswer):
-    arr = getExpectedAndActualDeleteResults(data,correctAnswer,submittedAnswer)
+    arr = getExpectedAndActualDeleteOrUpdateResults(data,correctAnswer,submittedAnswer)
 
     expectedAns = arr[0]
     actualAns = arr[1]
     originalDb = arr[2]
 
     # value matching
-    deleteMatchScore = deleteMatch(expectedAns,actualAns,originalDb)
+    deleteMatchScore = deleteorUpdateMatch(expectedAns,actualAns,originalDb)
 
     score = deleteMatchScore
     score = round(score,2)
     return score
 
-def deleteMatch(dbAfterSolution,dbAfterSubmission,originalDb):
-    rowMatchWeight = 0.5
-    valMatchWeight = 0.5
+# DELETE------------------------------------------------------------------------------------------------------------------------
+def gradeDeleteQuestion(data,correctAnswer,submittedAnswer):
+    arr = getExpectedAndActualDeleteOrUpdateResults(data,correctAnswer,submittedAnswer)
+
+    expectedAns = arr[0]
+    actualAns = arr[1]
+    originalDb = arr[2]
+
+    # value matching
+    deleteMatchScore = deleteorUpdateMatch(expectedAns,actualAns,originalDb)
+
+    score = deleteMatchScore
+    score = round(score,2)
+    return score
+
+def deleteorUpdateMatch(dbAfterSolution,dbAfterSubmission,originalDb):
+    rowMatchWeight = 1
+    valMatchWeight = 0
+
     expectedDeletedRows = [row for row in originalDb if row not in dbAfterSolution]
     actualDeletedRows = [row for row in originalDb if row not in dbAfterSubmission]
+    print("EXPECTED",expectedDeletedRows)
+    print("ACTUAL",actualDeletedRows)
     rowMatchScore = rowMatch(expectedDeletedRows,actualDeletedRows)
-    valMatchScore = valueMatch(expectedDeletedRows,actualDeletedRows)
+    valMatchScore = 0
+
+    if(len(expectedDeletedRows) != 0):
+        rowMatchWeight = 0.5
+        valMatchWeight = 0.5
+        valMatchScore = similar(expectedDeletedRows,actualDeletedRows)
+
     score = (rowMatchScore*rowMatchWeight) + (valMatchScore*valMatchWeight)
     return score
 
-def getExpectedAndActualDeleteResults(data,correctAnswer,submittedAnswer):
+def getExpectedAndActualDeleteOrUpdateResults(data,correctAnswer,submittedAnswer):
     con = sqlite3.connect("ans.db")
     cur  = con.cursor()
     # print(data['params']['db_initialize'])
@@ -284,7 +305,9 @@ def getExpectedAndActualDeleteResults(data,correctAnswer,submittedAnswer):
     expectedCode = correctAnswer.replace('\n', ' ').replace('\t', ' ')
     # print("formatted correct ans",expectedCode)
     # print("correctans",correctAnswer)
+    print(expectedCode)
     cur.executescript(expectedCode)
+    con.commit()
     expectedAns = []
     for table in tablesCleaned:
         expectedAns += cur.execute("SELECT * FROM " + table).fetchall()
