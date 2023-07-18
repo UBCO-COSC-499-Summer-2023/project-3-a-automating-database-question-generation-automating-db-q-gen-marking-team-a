@@ -791,7 +791,7 @@ def loadAllNoisyData(data, table, rows, referencedTables={}):
 
 
 # Returns a table with a specified number of columns
-def loadTrimmedTable(columnCount, joinCount):
+def loadTrimmedTable(columnCount, joinCount=0):
 
     # Checks to see if the column count is valid
     if(columnCount <= 0 or joinCount < 0):
