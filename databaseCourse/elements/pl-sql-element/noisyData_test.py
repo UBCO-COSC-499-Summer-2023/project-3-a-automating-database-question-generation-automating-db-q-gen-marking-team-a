@@ -16,6 +16,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
         qty = 25
         constraint = {
             key: {
+                'name': key,
                 'unit': 'INTEGER',
                 'unitOther': None
             }
@@ -53,6 +54,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
         decimalDigits = 2
         constraint = {
             key: {
+                'name': key,
                 'unit': 'DECIMAL',
                 'unitOther': f"{totalDigits},{decimalDigits}"
             }
@@ -90,6 +92,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
         length = 5
         constraint = {
             key: {
+                'name': key,
                 'unit': 'CHAR',
                 'unitOther': length
             }
@@ -125,6 +128,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
         length = 5
         constraint = {
             key: {
+                'name': key,
                 'unit': 'VARCHAR',
                 'unitOther': length
             }
@@ -159,6 +163,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
         qty = 25
         constraint = {
             key: {
+                'name': key,
                 'unit': 'DATE',
                 'unitOther': None
             }
@@ -190,6 +195,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
         qty = 25
         constraint = {
             key: {
+                'name': key,
                 'unit': 'DATETIME',
                 'unitOther': None
             }
@@ -222,6 +228,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
         length = 35
         constraint = {
             key: {
+                'name': key,
                 'unit': 'VARCHAR',
                 'unitOther': length
             }

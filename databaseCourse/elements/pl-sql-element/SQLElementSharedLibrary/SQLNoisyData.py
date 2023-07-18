@@ -31,9 +31,14 @@ def generateNoisyData(table, key, qty=1):
         choose = selectRandom
 
     # If the column passed has a clean data
-    # file, then choose items from said file
+    # file, then choose items from said file.
     if key in getColumnToFileMap().keys():
         return generateFromFile(qty, readLines(getColumnToFileMap()[key]), choose)
+
+    # Also checks but removing the first letter
+    # due to table aliasing
+    if  key[1:] in getColumnToFileMap().keys():
+        return generateFromFile(qty, readLines(getColumnToFileMap()[key[1:]]), choose)
 
 
     # Otherwise match on the unit type
@@ -273,7 +278,7 @@ def readLines(fileName):
 # Checks if this column disallows duplicate values.
 # SQLite requires that PKs and FKs are unique
 def isUnique(table, key):
-    return table.columns[key]['isPrimary'] or table.columns[key]['references']
+    return table.columns[key]['isPrimary'] or table.columns[key]['references'] or table.columns[key]['isUnique']
 
 
 
