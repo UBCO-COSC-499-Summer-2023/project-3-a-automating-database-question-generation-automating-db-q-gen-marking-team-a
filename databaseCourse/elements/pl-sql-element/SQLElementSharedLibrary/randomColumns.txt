@@ -1,6 +1,7 @@
 id,INTEGER
 inventory,INTEGER
 quantity,INTEGER
+num,INTEGER
 
 price,DECIMAL,3-9,2
 

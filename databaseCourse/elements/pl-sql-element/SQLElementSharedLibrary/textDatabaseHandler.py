@@ -44,7 +44,7 @@ class Table:
     # File name and table name are equivalent.
     #   File: the name of the text file if it exists OR the name of the random table
     #   Columns: the number of columns in the table
-    def __init__(self, file='', columns=5, joins=0, clauses={'primaryKeys': 1}, constraints={}, random=True):
+    def __init__(self, file='', columns=5, joins=0, clauses={}, constraints={'': {'name': '', 'unit': 'INTEGER', 'unitOther': None}}, random=True):
         self.name = file
         self.columns = {}
 
@@ -238,8 +238,14 @@ class Table:
         # Adds foreign key constraints
         if constraints:
             for key in constraints.keys():
-                self.columns[key] = {
-                    'name': key,
+
+                # If the default contraint, then choose
+                # an applicable name for an INTEGER
+                if not key:
+                    constraints[key]['name'] = choice(['num', 'id', f"{self.name[:1].lower()}id"])
+
+                self.columns[constraints[key]['name']] = {
+                    'name': constraints[key]['name'],
                     'unit': constraints[key]['unit'],
                     'unitOther': constraints[key]['unitOther'],
                     'isPrimary': True, # Must be true to prevent SQLite FK constraint error
@@ -337,6 +343,12 @@ class Table:
 
 
 
+        # Accounts for existing PKs due to table defaults
+        try:
+            clauses['primaryKeys'] -= len(self.getPrimaryKeys())
+        except:
+            pass
+
         # Adds clauses
         for clause in clauses:
 
@@ -355,7 +367,6 @@ class Table:
                         column = None
                         while not column or self.columns[column]['references'] or self.columns[column]['isPrimary']:
                             column = choice(list(self.columns.keys()))
-                            #print(column, self.columns[column]['references'], self.columns[column]['isPrimary'])
 
                         self.columns[column]['isPrimary'] = True
 
@@ -493,6 +504,10 @@ class Table:
     #       'foreignKey': the column in the referenced table
     def getKeyMap(self):
         return {key: {'references': self.columns[key]['references'], 'foreignKey': self.columns[key]['foreignKey']} for key in self.columns.keys() if self.columns[key]['references']}
+    
+    # Returns all primary key columns
+    def getPrimaryKeys(self):
+        return {key: self.columns[key] for key in self.columns.keys() if self.columns[key]['isPrimary']}
 
 
 
