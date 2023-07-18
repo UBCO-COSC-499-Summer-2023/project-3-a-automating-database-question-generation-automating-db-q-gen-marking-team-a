@@ -284,6 +284,7 @@ def generateUpdate(data, difficulty):
         data['params']['questionString'] = f"From the table <b>{table.name}</b> and in the column <b>{updateColumn}</b>, change all values to be <b>{updateValue}</b>."
 
 
+
     # Loads referenced tables
     referenced = getReferencedTables(table)
 
