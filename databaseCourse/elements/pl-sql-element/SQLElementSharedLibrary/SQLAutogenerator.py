@@ -629,8 +629,14 @@ def conditionalStatement(column, condition):
 # Grabs the question's required parameters
 def getQuestionParameters(data):
 
-    numberOfColumns = data['params']['html_params']['columns']
-    numberOfJoins = data['params']['html_params']['joins']
+    numberOfColumns = None
+    numberOfJoins = None
+    try:
+        numberOfColumns = data['params']['html_params']['columns']
+        numberOfJoins = data['params']['html_params']['joins']
+    except:
+        numberOfColumns = 5
+        numberOfJoins = 1
 
     # Constructs table clauses.
     # Parameters:
@@ -640,18 +646,24 @@ def getQuestionParameters(data):
     #   - isOnUpdateCascade
     #   - isOnDeleteSetNull
     tableClauses = {}
-    for clause in data['params']['html_table_clauses']:
-        if data['params']['html_table_clauses'][clause]:
-            tableClauses[clause] = data['params']['html_table_clauses'][clause]
+    try:
+        for clause in data['params']['html_table_clauses']:
+            if data['params']['html_table_clauses'][clause]:
+                tableClauses[clause] = data['params']['html_table_clauses'][clause]
+    except:
+        pass
 
     # Constructs query clauses.
     # Parameters:
     #   - useConditional
     #   - useSubquery
     queryClauses = {}
-    for clause in data['params']['html_query_clauses']:
-        if data['params']['html_query_clauses'][clause]:
-            queryClauses[clause] = data['params']['html_query_clauses'][clause]
+    try:
+        for clause in data['params']['html_query_clauses']:
+            if data['params']['html_query_clauses'][clause]:
+                queryClauses[clause] = data['params']['html_query_clauses'][clause]
+    except:
+        pass
     
     return numberOfColumns, numberOfJoins, tableClauses, queryClauses
 
