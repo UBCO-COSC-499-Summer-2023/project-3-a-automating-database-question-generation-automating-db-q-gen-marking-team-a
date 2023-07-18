@@ -668,6 +668,7 @@ def getQuestionParameters(data):
     return numberOfColumns, numberOfJoins, tableClauses, queryClauses
 
 
+
 # Returns a dictionary that maps the foreign key of the supplied
 # table to the referenced tables. If the unique parameter is true,
 # this dictionary contains a set of tables: no duplicated. Otherwise,
