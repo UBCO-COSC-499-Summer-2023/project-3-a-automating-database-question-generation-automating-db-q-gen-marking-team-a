@@ -44,7 +44,7 @@ class Table:
     # File name and table name are equivalent.
     #   File: the name of the text file if it exists OR the name of the random table
     #   Columns: the number of columns in the table
-    def __init__(self, file='', columns=5, joins=0, clauses={}, constraints={}, random=True):
+    def __init__(self, file='', columns=5, joins=0, clauses={'primaryKeys': 1}, constraints={}, random=True):
         self.name = file
         self.columns = {}
 
