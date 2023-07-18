@@ -718,7 +718,11 @@ def getQuestionParameters(data):
         for clause in data['params']['html_query_clauses']:
             queryClauses[clause] = data['params']['html_query_clauses'][clause]
     except:
-        pass
+        queryClauses = {
+            'useConditional': 1,
+            'useSubquery': False,
+            'useAndInsteadOfOr': False
+        }
     
     return numberOfColumns, numberOfJoins, tableClauses, queryClauses
 
