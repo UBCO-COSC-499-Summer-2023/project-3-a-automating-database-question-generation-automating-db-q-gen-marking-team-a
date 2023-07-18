@@ -178,7 +178,7 @@ class Table:
         # BUT HOW!? How does *that* line get a timeout iff the
         # count of columns is either 1 or 2? It makes no sense!
         if columns < 3:
-            print(f"Table requires at least 4 columns (was supplied with {columns} columns)")
+            print(f"Table requires at least 3 columns (was supplied with {columns} columns)")
             return None
         
         if joins < 0:

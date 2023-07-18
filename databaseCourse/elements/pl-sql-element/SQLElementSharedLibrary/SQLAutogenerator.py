@@ -247,10 +247,13 @@ def generateUpdate(data, difficulty):
         case _:
             table = db.Table(columns=columns, joins=joins, clauses=tableClauses)
 
-
+    # Checks if the parameters are valid
+    nonCascadingForeignKeys = len([key for key in table.columns.keys() if table.columns[key]['references'] and not table.columns[key]['isOnUpdateCascade']])
+    if columns - nonCascadingForeignKeys < queryClauses['useConditional']:
+        print(f"UPDATE question cannot have more conditional clauses than foreign keys that do not cascade on update (was supplied with {queryClauses['useConditional']} conditionals and {nonCascadingForeignKeys} non-cascading foreign keys)")
 
     # Generates a bunch of bogus rows
-    columnData = nd.generateColumns(table, random.randint(3, 7))
+    columnData = nd.generateColumns(table, random.randint(6, 10))
 
     # Selects a random column to affect
     updateColumn = random.choice(list(table.columns.keys()))
@@ -261,29 +264,58 @@ def generateUpdate(data, difficulty):
 
 
     # If the quesiton should use a condition, set parameters
-    conditionalColumn = None
-    conditionalValue = None
-    if queryClauses['useConditional']:
+    conditionalValues = {}
+    columnList = list(table.columns.keys())
+    indexList = [i for i in range(len(list(columnData.values())[0]))]
+    for i in range(queryClauses['useConditional']):
 
-        # Selects a random column to affect
-        conditionalColumn = random.choice(list(table.columns.keys()))
+        # Selects a random column to affect.
+        # Cannot select a column that is both foreign and does not
+        # update on cascade
+        conditionalColumn = None
+        while not conditionalColumn or table.columns[conditionalColumn]['references'] and not table.columns[conditionalColumn]['isOnUpdateCascade']:
+            conditionalColumn = nd.popRandom(columnList)
 
         # Chooses a random value from the generated data to be updated
-        randomValueIndex = random.choice(range(len(list(columnData.values())[0])))
+        randomValueIndex = nd.popRandom(indexList)
 
         # Grabs the randomly selected values
-        conditionalValue = columnData[conditionalColumn][randomValueIndex]
-
+        conditionalValues[conditionalColumn] = columnData[conditionalColumn][randomValueIndex]
 
 
     # Generates the question string
-    # Changes depending on whether it uses a conditional or not
+    questionString = f"From the table <b>{table.name}</b> and in the column <b>{updateColumn}</b>, change all values to be <b>{updateValue}</b>"
+
+    # Adds the 'where' if necessary
+    if queryClauses['useConditional'] or queryClauses['useSubquery']:
+        questionString += ' where'
+
+    # Adds conditionals to question string
     if queryClauses['useConditional']:
-        data['params']['questionString'] = f"From the table <b>{table.name}</b> and in the column <b>{updateColumn}</b>, change all values to be <b>{updateValue}</b> where <b>{conditionalColumn}</b> is equal to <b>{conditionalValue}</b>."
-    else:
-        data['params']['questionString'] = f"From the table <b>{table.name}</b> and in the column <b>{updateColumn}</b>, change all values to be <b>{updateValue}</b>."
 
+        for key in conditionalValues.keys():
+            questionString += f" <b>{key}</b> equals <b>{conditionalValues[key]}</b>"
+        
+            # And the logical operator
+            if queryClauses['useAndInsteadOfOr']:
+                questionString += ' and'
+            else:
+                questionString += ' or'
 
+    # Adds subquery to question string
+    # TODO: this
+    if queryClauses['useSubquery']:
+        questionString += f""
+
+    # Removes trailing 'or' if necessary
+    if queryClauses['useConditional'] or queryClauses['useSubquery']:
+        if queryClauses['useAndInsteadOfOr']:
+            questionString = questionString[:-4]
+        else:
+            questionString = questionString[:-3]
+    
+    # Finishes the sentence
+    questionString += "."
 
     # Loads referenced tables
     referenced = getReferencedTables(table)
@@ -295,19 +327,43 @@ def generateUpdate(data, difficulty):
     # well as generating noisy data for referenced tables
     loadAllNoisyData(data, table, columnData, referenced)
 
+    # Sets the question string
+    data['params']['questionString'] = questionString
+
     # Loads the correct answer
-    data['correct_answers']['SQLEditor'] = updateStatement(table, updateColumn, updateValue, conditionalColumn, conditionalValue)
+    data['correct_answers']['SQLEditor'] = updateStatement(table, updateColumn, updateValue, conditionalValues, queryClauses['useAndInsteadOfOr'])
 
 # Creates an update statement
-def updateStatement(table, updateColumn, updateValue, conditionalColumn = None, conditionalValue = None):
+def updateStatement(table, updateColumn, updateValue, conditionalValues = None, useAnd = False, subquery = None):
+
+    # Sets up the statement
+    statement = f"UPDATE {table.name} SET {updateColumn} = '{updateValue}'"
+
+    # Adds where if necessary
+    if conditionalValues or subquery:
+        statement += ' WHERE'
 
     # Includes the conditional if they exist
-    if conditionalColumn and conditionalValue:
-        return f"UPDATE {table.name} SET {updateColumn} = '{updateValue}' {conditionalStatement(conditionalColumn, conditionalValue)};\n"
+    if conditionalValues:
+        for key in conditionalValues:
+            statement += f" {key} = '{conditionalValues[key]}'"
+        
+            # And the logical operator
+            if useAnd:
+                statement += ' AND'
+            else:
+                statement += ' OR'
 
-    # This else isn't required but is included for clarity
-    else:
-        return f"UPDATE {table.name} SET {updateColumn} = '{updateValue}';\n"
+    # Removes trailing 'OR' if necessary
+    if conditionalValues or subquery:
+        if useAnd:
+            statement = statement[:-4]
+        else:
+            statement = statement[:-3]
+    
+    # Add finishing touches and returns
+    statement += ';\n'
+    return statement
 
 '''
     End update-style question
@@ -660,8 +716,7 @@ def getQuestionParameters(data):
     queryClauses = {}
     try:
         for clause in data['params']['html_query_clauses']:
-            if data['params']['html_query_clauses'][clause]:
-                queryClauses[clause] = data['params']['html_query_clauses'][clause]
+            queryClauses[clause] = data['params']['html_query_clauses'][clause]
     except:
         pass
     

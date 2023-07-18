@@ -74,8 +74,9 @@ def prepare(element_html, data):
     questionIsOnUpdateCascade = pl.get_integer_attrib(element, 'isonupdatecascade', None)
     questionIsOnDeleteSetNull = pl.get_integer_attrib(element, 'isondeletesetnull', None)
 
-    questionUseConditional = pl.get_boolean_attrib(element, 'useconditional', False)
+    questionUseConditional = pl.get_integer_attrib(element, 'useconditional', 0)
     questionUseSubquery = pl.get_boolean_attrib(element, 'usesubquery', False)
+    questionUseAndInsteadOfOr = pl.get_boolean_attrib(element, 'useandinsteadofor', False)
 
     data['params']['html_params'] = {
         'random': questionRandom,
@@ -97,7 +98,8 @@ def prepare(element_html, data):
 
     data['params']['html_query_clauses'] = {
         'useConditional': questionUseConditional,
-        'useSubquery': questionUseSubquery
+        'useSubquery': questionUseSubquery,
+        'useAndInsteadOfOr': questionUseAndInsteadOfOr
     }
 
     # If if is a randomised question, generate the question
