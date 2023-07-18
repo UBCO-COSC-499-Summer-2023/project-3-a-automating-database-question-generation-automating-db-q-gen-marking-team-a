@@ -37,11 +37,17 @@ def generateCreate(data, difficulty):
     numberOfColumns = data['params']['html_params']['columns']
     numberOfJoins = data['params']['html_params']['joins']
 
-    # Constructs table clauses
-    clauses = {}
+    # Constructs table clauses.
+    # Parameters:
+    #   - primaryKeys
+    #   - isNotNull
+    #   - isUnique
+    #   - isOnUpdateCascade
+    #   - isOnDeleteSetNull
+    table_clauses = {}
     for clause in data['params']['html_table_clauses']:
         if data['params']['html_table_clauses'][clause]:
-            clauses[clause] = data['params']['html_table_clauses'][clause]
+            table_clauses[clause] = data['params']['html_table_clauses'][clause]
 
 
     # Creates an appropriate table
@@ -50,7 +56,7 @@ def generateCreate(data, difficulty):
         case 'easy': table = db.Table(random.choice(['airport', 'airplane', 'product', 'customer']), random=False)
         case 'medium': table = db.Table(random.choice(['passenger', 'shipment']), random=False)
         case 'hard': table = db.Table(random.choice(['flight', 'shippedproduct']), random=False)
-        case _: table = db.Table(columns=numberOfColumns, joins=numberOfJoins, clauses=clauses)
+        case _: table = db.Table(columns=numberOfColumns, joins=numberOfJoins, clauses=table_clauses)
 
 
     # Creates a string to tell the student what they need
@@ -139,15 +145,24 @@ def createStatement(table):
 # Generates a 'insert' style SQL question
 def generateInsert(data, difficulty):
 
-    # Based on the difficulty, choose a random amount of columns
-    columnCount = None
-    match difficulty:
-        case 'easy': columnCount = random.randint(3, 4)
-        case 'medium': columnCount = random.randint(4, 6)
-        case 'hard': columnCount = random.randint(5, 8)
+    # Obtains question specific parameters
+    numberOfColumns = data['params']['html_params']['columns']
+    numberOfJoins = data['params']['html_params']['joins']
 
-    # Gets a table with the specified number of columns
-    table = loadTrimmedTable(columnCount, 0)
+    # Constructs table clauses
+    table_clauses = {}
+    for clause in data['params']['html_table_clauses']:
+        if data['params']['html_table_clauses'][clause]:
+            table_clauses[clause] = data['params']['html_table_clauses'][clause]
+
+    # Based on the difficulty, choose a random amount of columns
+    # If no difficulty is specified, uses question parameters instead
+    table = None
+    match difficulty:
+        case 'easy': table = loadTrimmedTable(random.randint(3, 4), 0)
+        case 'medium': table = loadTrimmedTable(random.randint(4, 6), 0)
+        case 'hard': table = loadTrimmedTable(random.randint(5, 8), 0)
+        case _: table = db.Table(columns=numberOfColumns, joins=numberOfJoins, clauses=table_clauses)
 
 
 
@@ -155,27 +170,61 @@ def generateInsert(data, difficulty):
 
     # Generates the data to be inserted.
     # Converts the dictionary row to a list and removes arrays
-    row = [value[0] for value in list(nd.generateColumns(table).values())]
+    columnData = nd.generateColumns(table, random.randint(6, 16))
+    columnDatum = [value[0] for value in list(columnData.values())]
     
+
+
     # Adds the data to the question string, replacing the '[]'
     # with '()'
-    valuesString = f"({str(row)[1:-1]})"
-
-
+    valuesString = f"({str(columnDatum)[1:-1]})"
 
     # Creates and adds the question string
     data['params']['questionString'] = f"Insert the following values into the <b>{table.name}</b> table:\n{valuesString}"
 
 
+
     # Gets referenced tables
-    referenced = getReferencedTables(table)
+    referencedTables = getReferencedTables(table)
 
     # Adds the table to the schema as well as
     # the schemas of referenced tables
-    loadAllSchema(data, table, referenced)
+    loadAllSchema(data, table, referencedTables)
+
+
+
+    # Loads noisy data
+    # Doesn't call loadAllNoisyData() since we want
+    # to load the referenced row into the foreign
+    # table, but we don't want to load the row the
+    # student is supposed to insert themselves
+
+    # Gets a key map for easy reference later
+    keyMap = table.getKeyMap()
+
+    # Generates the noisy data. At this point, there
+    # is NOT consistency across foreign keys.
+    generatedData = {key: nd.generateColumns(referencedTables[keyMap[key]['references']], len(list(columnData.values())[0])) for key in keyMap}
+
+    # Overrides the generated data to be the same as
+    # the primary table's data. This IS now consistent
+    # across foreign keys.
+    for key in keyMap:
+        generatedData[key][keyMap[key]['foreignKey']] = columnData[key]
+    
+    # Loads the data into the actual table
+    for key in keyMap:
+        loadNoisyData(data, referencedTables[keyMap[key]['references']], generatedData[key])
+
+    # Loads the primary table's data, aside from
+    # the row that needs to be inserted
+    columnData = {key: columnData[key][1:] for key in columnData}
+    loadNoisyData(data, table, columnData)
+
+
 
     # Creates the answer string
-    data['correct_answers']['SQLEditor'] = insertStatement(table, row)
+    data['correct_answers']['SQLEditor'] = insertStatement(table, columnDatum)
 
 # Generates an insert statement based on the data
 def insertStatement(table, row):
