@@ -31,9 +31,14 @@ def generateNoisyData(table, key, qty=1):
         choose = selectRandom
 
     # If the column passed has a clean data
-    # file, then choose items from said file
+    # file, then choose items from said file.
     if key in getColumnToFileMap().keys():
         return generateFromFile(qty, readLines(getColumnToFileMap()[key]), choose)
+
+    # Also checks but removing the first letter
+    # due to table aliasing
+    if  key[1:] in getColumnToFileMap().keys():
+        return generateFromFile(qty, readLines(getColumnToFileMap()[key[1:]]), choose)
 
 
     # Otherwise match on the unit type
