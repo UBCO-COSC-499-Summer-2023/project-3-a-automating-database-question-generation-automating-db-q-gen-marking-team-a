@@ -34,21 +34,7 @@ def autogenerate(data):
 def generateCreate(data, difficulty):
 
     # Obtains question specific parameters
-    numberOfColumns = data['params']['html_params']['columns']
-    numberOfJoins = data['params']['html_params']['joins']
-
-    # Constructs table clauses.
-    # Parameters:
-    #   - primaryKeys
-    #   - isNotNull
-    #   - isUnique
-    #   - isOnUpdateCascade
-    #   - isOnDeleteSetNull
-    table_clauses = {}
-    for clause in data['params']['html_table_clauses']:
-        if data['params']['html_table_clauses'][clause]:
-            table_clauses[clause] = data['params']['html_table_clauses'][clause]
-
+    columns, joins, tableClauses = getQuestionParameters(data)
 
     # Creates an appropriate table
     table = None
@@ -56,7 +42,7 @@ def generateCreate(data, difficulty):
         case 'easy': table = db.Table(random.choice(['airport', 'airplane', 'product', 'customer']), random=False)
         case 'medium': table = db.Table(random.choice(['passenger', 'shipment']), random=False)
         case 'hard': table = db.Table(random.choice(['flight', 'shippedproduct']), random=False)
-        case _: table = db.Table(columns=numberOfColumns, joins=numberOfJoins, clauses=table_clauses)
+        case _: table = db.Table(columns=columns, joins=joins, clauses=tableClauses)
 
 
     # Creates a string to tell the student what they need
@@ -146,14 +132,7 @@ def createStatement(table):
 def generateInsert(data, difficulty):
 
     # Obtains question specific parameters
-    numberOfColumns = data['params']['html_params']['columns']
-    numberOfJoins = data['params']['html_params']['joins']
-
-    # Constructs table clauses
-    table_clauses = {}
-    for clause in data['params']['html_table_clauses']:
-        if data['params']['html_table_clauses'][clause]:
-            table_clauses[clause] = data['params']['html_table_clauses'][clause]
+    columns, joins, tableClauses = getQuestionParameters(data)
 
     # Based on the difficulty, choose a random amount of columns
     # If no difficulty is specified, uses question parameters instead
@@ -162,7 +141,7 @@ def generateInsert(data, difficulty):
         case 'easy': table = loadTrimmedTable(random.randint(3, 4), 0)
         case 'medium': table = loadTrimmedTable(random.randint(4, 6), 0)
         case 'hard': table = loadTrimmedTable(random.randint(5, 8), 0)
-        case _: table = db.Table(columns=numberOfColumns, joins=numberOfJoins, clauses=table_clauses)
+        case _: table = db.Table(columns=columns, joins=joins, clauses=tableClauses)
 
 
 
@@ -170,7 +149,7 @@ def generateInsert(data, difficulty):
 
     # Generates the data to be inserted.
     # Converts the dictionary row to a list and removes arrays
-    columnData = nd.generateColumns(table, random.randint(6, 16))
+    columnData = nd.generateColumns(table, random.randint(3, 7))
     columnDatum = [value[0] for value in list(columnData.values())]
     
 
@@ -636,6 +615,27 @@ def queryStatement(table, keyMap, foreignKeyMap, selectedColumns, clauses):
 def conditionalStatement(column, condition):
     return f"WHERE {column} = '{condition}'"
 
+
+
+# Grabs the question's required parameters
+def getQuestionParameters(data):
+
+    numberOfColumns = data['params']['html_params']['columns']
+    numberOfJoins = data['params']['html_params']['joins']
+
+    # Constructs table clauses.
+    # Parameters:
+    #   - primaryKeys
+    #   - isNotNull
+    #   - isUnique
+    #   - isOnUpdateCascade
+    #   - isOnDeleteSetNull
+    tableClauses = {}
+    for clause in data['params']['html_table_clauses']:
+        if data['params']['html_table_clauses'][clause]:
+            tableClauses[clause] = data['params']['html_table_clauses'][clause]
+    
+    return numberOfColumns, numberOfJoins, tableClauses
 
 
 # Returns a dictionary that maps the foreign key of the supplied
