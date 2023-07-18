@@ -23,10 +23,7 @@
         {
             "title": "Random Create Tables",
             "questions": [
-                {"id": "DDL_Questions/createTables/randomParameterized",          "points": 1},
-                {"id": "DDL_Questions/createTables/randomEasy1",          "points": 1},
-                {"id": "DDL_Questions/createTables/randomMedium1",          "points": 1},
-                {"id": "DDL_Questions/createTables/randomHard1",          "points": 1}
+                {"id": "DDL_Questions/createTables/randomParameterized",          "points": 1}
             ]
         },
         {
@@ -38,10 +35,7 @@
         {
             "title": "Random Insert",
             "questions": [
-                {"id": "DDL_Questions/insertTables/randomParameterized",          "points": 1},
-                {"id": "DDL_Questions/insertTables/randomEasy1",          "points": 1},
-                {"id": "DDL_Questions/insertTables/randomMedium1",          "points": 1},
-                {"id": "DDL_Questions/insertTables/randomHard1",          "points": 1}
+                {"id": "DDL_Questions/insertTables/randomParameterized",          "points": 1}
             ]
         },
         {
@@ -54,10 +48,7 @@
         {
             "title": "Random Update",
             "questions": [
-                {"id": "DDL_Questions/updateTables/randomParameterized",          "points": 1},
-                {"id": "DDL_Questions/updateTables/randomEasy1",          "points": 1},
-                {"id": "DDL_Questions/updateTables/randomMedium1",          "points": 1},
-                {"id": "DDL_Questions/updateTables/randomHard1",          "points": 1}
+                {"id": "DDL_Questions/updateTables/randomParameterized",          "points": 1}
             ]
         },
         {
