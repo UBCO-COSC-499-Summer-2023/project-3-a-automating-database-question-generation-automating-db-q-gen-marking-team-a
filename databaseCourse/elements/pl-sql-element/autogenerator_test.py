@@ -165,8 +165,9 @@ class QuestionTypeStatementsTest(unittest.TestCase):
         updateVal = "Alberta"
         conditionalCol = updateCol
         conditionalVal = "Ontario"
+        conditionalValues = {conditionalCol: conditionalVal}
 
-        result = updateStatement(table,updateCol,updateVal,conditionalCol,conditionalVal)
+        result = updateStatement(table,updateCol,updateVal,conditionalValues)
 
         self.assertIn("UPDATE",result)
         self.assertIn("WHERE",result)
