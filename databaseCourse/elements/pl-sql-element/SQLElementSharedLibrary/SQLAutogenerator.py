@@ -143,8 +143,8 @@ def generateInsert(data, difficulty):
     # Creates the values ands add them to the question string
 
     # Generates the data to be inserted.
-    # Converts the dictionary row to a list
-    row = list(generateRow(table).values())
+    # Converts the dictionary row to a list and removes arrays
+    row = [value[0] for value in list(nd.generateColumns(table).values())]
     
     # Adds the data to the question string, replacing the '[]'
     # with '()'
@@ -204,13 +204,13 @@ def generateUpdate(data, difficulty):
 
 
     # Generates a bunch of bogus rows
-    rows = generateRows(table, columnCount * 3 + random.randint(-3, 3))
+    rows = nd.generateColumns(table, columnCount * 3 + random.randint(-3, 3))
 
     # Selects a random column to affect
     updateColumn = random.choice(list(table.columns.keys()))
 
     # Generates the updated valued
-    updateValue = nd.generateNoisyData(table, updateColumn)
+    updateValue = nd.generateNoisyData(table, updateColumn)[0]
 
 
     # If the quesiton should use a condition, set parameters
@@ -225,7 +225,7 @@ def generateUpdate(data, difficulty):
         randomValueIndex = random.choice(range(len(rows)))
 
         # Grabs the randomly selected values
-        conditionalValue = rows[randomValueIndex][conditionalColumn]
+        conditionalValue = rows[conditionalColumn][randomValueIndex]
 
 
 
@@ -284,7 +284,7 @@ def generateDelete(data, difficulty):
     table = loadTrimmedTable(columnCount, 0)
 
     # Generates a bunch of bogus rows
-    rows = generateRows(table, columnCount * 3 + random.randint(-3, 3))
+    rows = nd.generateColumns(table, columnCount * 3 + random.randint(-3, 3))
 
     # Selects a random column to affect
     # Won't select a foreign key if the difficulty is easy
@@ -296,7 +296,7 @@ def generateDelete(data, difficulty):
     randomValueIndex = random.choice(range(len(rows)))
 
     # Grabs the randomly selected values
-    deleteValue = rows[randomValueIndex][randomKey]
+    deleteValue = rows[randomKey][randomValueIndex]
 
 
 
@@ -502,7 +502,8 @@ def generateQuery(data, difficulty):
     # Loads the schema of all referenced tables
     loadAllSchema(data, table, referencedTables=referenced)
 
-    rows = generateRows(table, len(list(table.columns.keys())) * 3 + random.randint(-3, 3))
+    # Generates random data to populate the table
+    rows = nd.generateColumns(table, len(list(table.columns.keys())) * 3 + random.randint(-3, 3))
 
     # Loads the noisy data into the primary table as
     # well as generating noisy data for referenced tables
@@ -654,60 +655,51 @@ def loadAllSchema(data, table, referencedTables={}):
 
 # Loads noisy data into the editors
 def loadNoisyData(data, table, rows):
-    data['params']['db_initialize'] += ''.join(insertStatement(table, list(row.values())) for row in rows)
+
+    # For each column, select the i-th item and create
+    # a create an INSERT statemetn. Do so for all i items
+    data['params']['db_initialize'] += ''.join(insertStatement(table, [rows[key][i] for key in rows]) for i in range(len(list(rows.values())[0])))
 
 # Loads the noisy data supplied as well as generating and
 # loading noisy data for the referenced tables.
 #
 # Note: This function respects references so a foreign key
 # reference between two tables will holds the same value.
+#
+# Note: this CAN throw a "UNIQUE constraint failed" IF the
+# primary table has two references to the same table (such
+# as the static `flight` table) AND there exists a duplicate
+# value between the different tables. THIS CAN NEVER HAPPEN
+# ON RANDOM TABLES since a random primary table will never
+# hold more than one reference to a given secondary random
+# table. In other words, no worries.
 def loadAllNoisyData(data, table, rows, referencedTables={}):
 
     # Gets a dicitonary of referenced tables.
     # The keys are the name of the table
     if not referencedTables:
-        referencedTables = getReferencedTables(table)
-
+        referencedTables = getReferencedTables(table, unique=False)
 
     # Gets a dictionary that maps the column to both
     # the referenced table name and foreign key
     keyMap = table.getKeyMap()
 
-    # All table of data
-    generatedData = {}
 
-    # Iterates over foreign keys
-    for key in keyMap.keys():
 
-        # Grabs the referenced table
-        referenced = referencedTables[keyMap[key]['references']]
+    # Generates the noisy data. At this point, there
+    # is NOT consistency across foreign keys.
+    generatedData = {key: nd.generateColumns(referencedTables[keyMap[key]['references']], len(list(rows.values())[0])) for key in keyMap}
 
-        # A table of data
-        generatedData[key] = []
+    # Overrides the generated data to be the same as
+    # the primary table's data. This IS now consistent
+    # across foreign keys.
+    for key in keyMap:
+        generatedData[key][keyMap[key]['foreignKey']] = rows[key]
+    
 
-        # Iterates over the provided data
-        for row in rows:
-
-            # A row of data
-            noisyRow = {}
-
-            # Iterates over the referenced table's columns
-            for column in referenced.columns:
-                
-                # If this column is referenced by the original
-                # table, map the data over
-                if column == keyMap[key]['foreignKey']:
-                    noisyRow[column] = row[key]
-
-                # Otherwise generate new data
-                else:
-                    noisyRow[column] = nd.generateNoisyData(referenced, column)
-                
-            # Adds the row of data to the appropriate table
-            generatedData[key].append(noisyRow)
 
     # Loads the data into the actual table
-    for key in generatedData:
+    for key in keyMap:
         loadNoisyData(data, referencedTables[keyMap[key]['references']], generatedData[key])
     
     # Finally loads the primary table's data.
@@ -766,14 +758,3 @@ def loadTrimmedTable(columnCount, joinCount):
             doomCounter -= 1
     
     return table
-
-
-
-# Generates one row's worth of noisy data
-def generateRow(database):
-    return {key: nd.generateNoisyData(database, key) for key in database.columns}
-
-# Generates qty's worth of rows of noisy data
-def generateRows(table, qty):
-    return [generateRow(table) for i in range(qty)]
-
