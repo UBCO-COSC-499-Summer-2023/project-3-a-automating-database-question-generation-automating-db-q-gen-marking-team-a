@@ -406,13 +406,6 @@ def generateDelete(data, difficulty):
     # Generates a bunch of bogus rows
     columnData = nd.generateColumns(table, columns * 3 + random.randint(-3, 3))
 
-    # Selects a random column to affect
-    # Won't select a foreign key if the difficulty is easy or it is set
-    # to null on delete
-    deleteColumn = None
-    while not deleteColumn or (table.columns[deleteColumn]['references'] and (difficulty == 'easy' or table.columns[deleteColumn]['isOnDeleteSetNull'])):
-        deleteColumn = random.choice(list(table.columns.keys()))
-
 
     
     # If the quesiton should use a condition, set parameters
@@ -486,7 +479,7 @@ def generateDelete(data, difficulty):
     data['params']['questionString'] = questionString
 
     # Sets the correct answer
-    data['correct_answers']['SQLEditor'] = deleteStatement(table, deleteColumn, conditionalValues, queryClauses['useAndInsteadOfOr'], queryClauses['useSubquery'])
+    data['correct_answers']['SQLEditor'] = deleteStatement(table, conditionalValues, queryClauses['useAndInsteadOfOr'], queryClauses['useSubquery'])
 
 # Creates a delete statement
 def deleteStatement(table, conditionalValues = None, useAnd = False, subquery = None):
