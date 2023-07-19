@@ -1,6 +1,7 @@
 from os import listdir, path, curdir
 from random import choice
 
+
 # Used for modelling a tables during question generation
 # and loading table data from text files
 
