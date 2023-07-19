@@ -1,4 +1,5 @@
 from difflib import SequenceMatcher
+import requests
 from relational_algebra import Relation, Selection, Projection, CrossProduct, ThetaJoin
 from relational_algebra.formulas.Formula import Formula
 
@@ -7,8 +8,16 @@ from relational_algebra.formulas.Formula import Formula
 # similarity between the correct answer and the student's
 # submitted answer.
 def customGrader(data):
+    
+    host_ip = "142.231.78.234"
+    url = f"http://{host_ip}:4000/index"
+    data = {"Car": "BMW", "Testing": "API"}
+
+    request = requests.post(url,data=data)
+    print(request.status_code)
+    print(request.text)
   
-    execQuery()
+    #execQuery()
     
     # Grabs the student answer from data
     submittedAnswer = data['submitted_answers']['RelaXEditor']
