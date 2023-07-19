@@ -34,8 +34,7 @@ def getStaticSchema(file):
         return None
 
 # Lists all table files in the specified path
-def getAllTableFiles(path='./SQLElementSharedLibrary/randomTables/'):
-    path = f"{absoluteDirectoryPath()}/randomTables"
+def getAllTableFiles(path=f"{absoluteDirectoryPath()}/randomTables"):
     try:
         # Removes the file extension of all files, if they exist
         return [file[:file.find('.')] for file in listdir(path)]
@@ -43,8 +42,7 @@ def getAllTableFiles(path='./SQLElementSharedLibrary/randomTables/'):
         return []
 
 # Returns a list of names for random tables
-def getRandomTableNames(path='./SQLElementSharedLibrary/randomTableNames.txt'):
-    path = relativeTableDataFilePath('randomTableNames')
+def getRandomTableNames(path=relativeTableDataFilePath('randomTableNames')):
     try:
         with open(path) as file:
             # Strips out whitespace and only considers lines

@@ -244,24 +244,6 @@ def generateColumns(table, qty=1):
 
 
 
-# Returns the mapping between column name and
-# the file which contains its clean data
-def getColumnToFileMap(path='./SQLElementSharedLibrary/columnToFile.txt'):
-    path = f"{absoluteDirectoryPath()}/randomTableData/columnToFile.txt"
-    try:
-        # Reads the file
-        with open(path) as file:
-            lines = [line.strip() for line in file.readlines() if not line.isspace()]
-
-        # Splits over the colon, such that 
-        # the dictionary has the form...
-        #   column name: file name
-        return {line[0: line.find(':')]: line[line.find(':') + 1:] for line in lines}
-    except:
-        return None
-
-
-
 # Returns the filepath to a specific noisy data file
 def relativeFilePath(file):
     return f"{absoluteDirectoryPath()}/noisyData/{file}.txt"
@@ -274,12 +256,29 @@ def absoluteDirectoryPath():
     else:
         courseFile = currentDirectory[:currentDirectory.find('/elements')]
         return f"{courseFile}/serverFilesCourse/RASQLib"
-
+    
 # Reads all lines from a specified file
 def readLines(fileName):
     try:
         with open(relativeFilePath(fileName)) as file:
             return [line.strip() for line in file.readlines() if not line.isspace()]
+    except:
+        return None
+
+
+
+# Returns the mapping between column name and
+# the file which contains its clean data
+def getColumnToFileMap(path=f"{absoluteDirectoryPath()}/randomTableData/columnToFile.txt"):
+    try:
+        # Reads the file
+        with open(path) as file:
+            lines = [line.strip() for line in file.readlines() if not line.isspace()]
+
+        # Splits over the colon, such that 
+        # the dictionary has the form...
+        #   column name: file name
+        return {line[0: line.find(':')]: line[line.find(':') + 1:] for line in lines}
     except:
         return None
 
