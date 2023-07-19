@@ -1,53 +1,14 @@
 from difflib import SequenceMatcher
-
-import subprocess
-import json
-import os
-
-
+from relational_algebra import Relation, Selection, Projection, CrossProduct, ThetaJoin
+from relational_algebra.formulas.Formula import Formula
 
 
 # Uses Python's SequenceMatcher library to check the
 # similarity between the correct answer and the student's
 # submitted answer.
 def customGrader(data):
-    # JavaScript code to set the environment and execute exec_relalg_bundle.js
-    js_code = """
-    const fs = require('fs');
-    
-    // Read relalg_bundle.js content as a string
-    const relalgBundleCode = fs.readFileSync('relalg_bundle.js', 'utf8');
-
-    // Execute relalg_bundle.js code
-    eval(relalgBundleCode);
-
-    // Import the necessary functions and objects from relalg_bundle
-    const executeRelalg = relalg_bundle.executeRelalg;
-    const Relation = relalg_bundle.Relation;
-
-    // Read exec_relalg_bundle.js content as a string
-    const execRelalgCode = fs.readFileSync('exec_relalg_bundle.js', 'utf8');
-
-    // Execute exec_relalg_bundle.js code
-    eval(execRelalgCode);
-    """
-
-    # Call node with the inline JavaScript code
-    command = ['node', '-e', js_code]
-    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = process.communicate()
-
-    if process.returncode != 0:
-        raise Exception(stderr.decode())
-    
-    print("Process: ", process)
-    print("Stdout : " , stdout.decode())
-    print("Stderr : " , stderr.decode())
-
-    # Continue with the rest of your customGrader function if needed
-    #for i, result in enumerate(results):
-    #    print(f"Result {i+1}: {result}")
-    
+  
+    execQuery()
     
     # Grabs the student answer from data
     submittedAnswer = data['submitted_answers']['RelaXEditor']
@@ -91,3 +52,32 @@ def customGrader(data):
 # 0 means the strings are entirely different.
 def similar(a, b):
     return SequenceMatcher(None, a, b).ratio()
+
+def evaluate_ra_query(query, sql_con=None):
+    pass
+
+# Example usage:
+def execQuery():
+    # Create relations R and S (same as previous example)
+    relation_R = Relation(name="R")
+    relation_R.add_attributes(["a", "b", "c"])
+    relation_R.add_rows([
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9],
+    ])
+
+    relation_S = Relation(name="S")
+    relation_S.add_attributes(["b", "c", "d"])
+    relation_S.add_rows([
+        [2, 3, 4],
+        [5, 6, 7],
+        [8, 9, 10],
+    ])
+
+    # Evaluate the query
+    #result = evaluate_ra_query(query, sql_con=None)
+
+    # Display the result
+    print("Attributes:", relation_R.attributes)
+    print("Rows:", relation_R.rows)
