@@ -121,27 +121,24 @@ def gradeQueryQuestion(data,correctAnswer,submittedAnswer):
 def getExpectedAndActualQueryResults(data,correctAnswer,submittedAnswer):
     con = sqlite3.connect("ans.db")
     cur  = con.cursor()
-    # print(data['params']['db_initialize'])
+    
     commands = data['params']['db_initialize_create'].replace('\n', '').replace('\t', '')
     commands += data['params']['db_initialize_insert_backend'].replace('\n', '').replace('\t', '')
-    # print(commands)
+    
     cur.executescript(commands)
     con.commit()
     expectedCode = correctAnswer.replace('\n', ' ').replace('\t', ' ')
-    # print("formatted correct ans",expectedCode)
-    # print("correctans",correctAnswer)
+
     expectedAns = cur.execute(expectedCode).fetchall()
-    # print("solution:",expectedAns)
+    
     studentCode = submittedAnswer.replace('\n', ' ').replace('\t', ' ')
     actualAns = cur.execute(studentCode).fetchall()
-    # print("submitted",actualAns)
+    
     return (expectedAns,actualAns)
 
 # CREATE------------------------------------------------------------------------------------------------------------------------
 def gradeCreateQuestion(data,correctAnswer,submittedAnswer):
     arr = getExpectedAndActualCreateResults(data,correctAnswer,submittedAnswer)
-    print(arr[0])
-    print(arr[1])
 
     expectedAns = arr[0]
     actualAns = arr[1]
@@ -204,10 +201,9 @@ def gradeInsertQuestion(data,correctAnswer,submittedAnswer):
 def getExpectedAndActualInsertResults(data,correctAnswer,submittedAnswer):
     con = sqlite3.connect("ans.db")
     cur  = con.cursor()
-    # print(data['params']['db_initialize'])
+    
     commands = data['params']['db_initialize_create'].replace('\n', '').replace('\t', '')
-    # print(commands)
-
+    
     cur.executescript(commands)
     con.commit()
 
@@ -215,13 +211,11 @@ def getExpectedAndActualInsertResults(data,correctAnswer,submittedAnswer):
     tablesCleaned = [item[0] for item in tables]
 
     expectedCode = correctAnswer.replace('\n', ' ').replace('\t', ' ')
-    # print("formatted correct ans",expectedCode)
-    # print("correctans",correctAnswer)
+    
     cur.executescript(expectedCode)
     expectedAns = []
     for table in tablesCleaned:
         expectedAns += cur.execute("SELECT * FROM " + table).fetchall()
-    print("solution:",expectedAns)
 
     cur.executescript(commands)
     con.commit()
@@ -230,13 +224,66 @@ def getExpectedAndActualInsertResults(data,correctAnswer,submittedAnswer):
     actualAns = []
     for table in tablesCleaned:
         actualAns += cur.execute("SELECT * FROM " + table).fetchall()
-    print("submitted",actualAns)
+        
     return (expectedAns,actualAns)
 
 # UPDATE------------------------------------------------------------------------------------------------------------------------
 def gradeUpdateQuestion(data,correctAnswer,submittedAnswer):
-    print(correctAnswer,submittedAnswer)
-    return 0
+    arr = getExpectedAndActualUpdateResults(data,correctAnswer,submittedAnswer)
+    expectedAns = arr[0]
+    actualAns = arr[1]
+    originalDb = arr[2]
+
+    updateMatchVal = updateMatch(expectedAns,actualAns,originalDb)
+
+    return updateMatchVal
+
+def updateMatch(expectedAns,actualAns,originalDb):
+    expectedDeletedRows = [row for row in expectedAns if row not in originalDb]
+    actualDeletedRows = [row for row in actualAns if row not in originalDb]
+    rowMatchWeight = 0.5
+    valMatchWeight = 0.5
+    rowMatchScore = rowMatch(expectedDeletedRows,actualDeletedRows)
+    valMatchScore = valueMatch(expectedDeletedRows,actualDeletedRows)
+    score = (rowMatchScore*rowMatchWeight) + (valMatchScore*valMatchWeight)
+    return score
+
+
+def getExpectedAndActualUpdateResults(data,correctAnswer,submittedAnswer):
+    con = sqlite3.connect("ans.db")
+    cur  = con.cursor()
+    
+    commands = data['params']['db_initialize_create'].replace('\n', '').replace('\t', '')
+
+    cur.executescript(commands)
+    con.commit()
+
+    tables = cur.execute("SELECT name FROM sqlite_master WHERE type='table';").fetchall()
+    tablesCleaned = [item[0] for item in tables]
+
+    originalDb = []
+    for table in tablesCleaned:
+        originalDb += cur.execute("SELECT * FROM " + table).fetchall()
+
+    expectedCode = correctAnswer.replace('\n', ' ').replace('\t', ' ')
+    
+    cur.executescript(expectedCode)
+    expectedAns = []
+    for table in tablesCleaned:
+        expectedAns += cur.execute("SELECT * FROM " + table).fetchall()
+
+    cur.executescript(commands)
+    con.commit()
+
+    studentCode = submittedAnswer.replace('\n', ' ').replace('\t', ' ')
+    
+    cur.executescript(studentCode)
+    con.commit()
+    actualAns = []
+    for table in tablesCleaned:
+        actualAns += cur.execute("SELECT * FROM " + table).fetchall()
+        
+    return (expectedAns,actualAns,originalDb)
 
 # DELETE------------------------------------------------------------------------------------------------------------------------
 def gradeDeleteQuestion(data,correctAnswer,submittedAnswer):
@@ -266,9 +313,8 @@ def deleteMatch(dbAfterSolution,dbAfterSubmission,originalDb):
 def getExpectedAndActualDeleteResults(data,correctAnswer,submittedAnswer):
     con = sqlite3.connect("ans.db")
     cur  = con.cursor()
-    # print(data['params']['db_initialize'])
+    
     commands = data['params']['db_initialize_create'].replace('\n', '').replace('\t', '')
-    # print(commands)
 
     cur.executescript(commands)
     con.commit()
@@ -279,16 +325,12 @@ def getExpectedAndActualDeleteResults(data,correctAnswer,submittedAnswer):
     for table in tablesCleaned:
         originalDb += cur.execute("SELECT * FROM " + table).fetchall()
 
-    print(originalDb)
-
     expectedCode = correctAnswer.replace('\n', ' ').replace('\t', ' ')
-    # print("formatted correct ans",expectedCode)
-    # print("correctans",correctAnswer)
+    
     cur.executescript(expectedCode)
     expectedAns = []
     for table in tablesCleaned:
         expectedAns += cur.execute("SELECT * FROM " + table).fetchall()
-    print("solution:",expectedAns)
 
     cur.executescript(commands)
     con.commit()
@@ -300,7 +342,6 @@ def getExpectedAndActualDeleteResults(data,correctAnswer,submittedAnswer):
     actualAns = []
     for table in tablesCleaned:
         actualAns += cur.execute("SELECT * FROM " + table).fetchall()
-    print("submitted",actualAns)
     return (expectedAns,actualAns,originalDb)
 
 # HELPERS ----------------------------------------------------------------------------------------------------------------------
@@ -309,14 +350,12 @@ def rowMatch(expectedAns,actualAns):
     actualTotal = 0
     expectedRowCount = len(expectedAns)
     expectedTotal += expectedRowCount
-    # print(expectedTotal,expectedColumnCount,expectedRowCount)
 
     if not (actualAns or expectedAns): return 1
     if not actualAns: return 0
 
     actualRowCount = len(actualAns)
     actualTotal += actualRowCount
-    # print(actualTotal,actualColumnCount,actualRowCount)
 
     rowGrade = abs(expectedTotal - actualTotal)
     rowScore = (expectedTotal - rowGrade)/expectedTotal
@@ -327,14 +366,12 @@ def colMatch(expectedAns,actualAns):
     actualTotal = 0
     expectedColumnCount = len((expectedAns[0]))
     expectedTotal += expectedColumnCount
-    # print(expectedTotal,expectedColumnCount,expectedRowCount)
 
     if not (actualAns or expectedAns): return 1
     if not actualAns: return 0
 
     actualColumnCount = len((actualAns[0]))
     actualTotal += actualColumnCount
-    # print(actualTotal,actualColumnCount,actualRowCount)
 
     colGrade = abs(expectedTotal - actualTotal)
     colScore = (expectedTotal - colGrade)/expectedTotal
