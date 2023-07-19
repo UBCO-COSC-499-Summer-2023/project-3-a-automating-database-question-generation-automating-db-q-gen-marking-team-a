@@ -489,7 +489,7 @@ def generateDelete(data, difficulty):
     data['correct_answers']['SQLEditor'] = deleteStatement(table, deleteColumn, conditionalValues, queryClauses['useAndInsteadOfOr'], queryClauses['useSubquery'])
 
 # Creates a delete statement
-def deleteStatement(table, deleteColumn, conditionalValues = None, useAnd = False, subquery = None):
+def deleteStatement(table, conditionalValues = None, useAnd = False, subquery = None):
 
     # Sets up the statement
     statement = f"DELETE FROM {table.name}"
