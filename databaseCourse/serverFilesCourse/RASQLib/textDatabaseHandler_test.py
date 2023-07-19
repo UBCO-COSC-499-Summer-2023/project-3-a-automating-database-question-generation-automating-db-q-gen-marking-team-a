@@ -10,8 +10,9 @@ class TableHelperFunctionsTest(unittest.TestCase):
         file = "random"
 
         result = relativeTableFilePath(file)
+        absolutePath = absoluteDirectoryPath()
 
-        self.assertEqual(f"./SQLElementSharedLibrary/randomTables/{file}.txt",result)
+        self.assertEqual(f"{absolutePath}/randomTables/{file}.txt",result)
 
 
 
