@@ -8,7 +8,7 @@ steps:
     image: prairielearn/prairielearn
     commands: 
       - pip install -r requirements.txt --quiet
-      - cd databaseCourse/serverFilesCourse/RASQLib/Tests
+      - cd databaseCourse/serverFilesCourse/RASQLib
   # just run all test files
       - python -m unittest discover -p "*_test.py"
   # detailed run of one file
