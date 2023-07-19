@@ -1,6 +1,6 @@
 import unittest
 from parameterized import parameterized
-from SQLAutogenerator import *
+from SQLElementSharedLibrary.SQLAutogenerator import *
 
 class AutogenerateTest(unittest.TestCase):
 
