@@ -92,6 +92,7 @@ class Table:
         # If the file is not set but the question uses
         # a static table, find a static table
         tableFiles = getAllTableFiles()
+        print("!!!", listdir(os.curdir), os.path.abspath(os.curdir))
         if not file or file not in tableFiles:
             file = choice(tableFiles)
         
