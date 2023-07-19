@@ -28,13 +28,18 @@ def render(element_html, data):
 
     # If there is a database file, read and loads its contents
     database = ''
+    tableSet = {}
     if databaseFilePath:
         with open(databaseFilePath,"r") as databaseFile:
            database += databaseFile.read()
     else:
-        table1 = autogen.Table()
-        print(table1.toString())
-        database+=table1.toString()
+        tableSet = autogen.generateDataset()
+        for i in range(len(tableSet)):
+            if i == len(tableSet) - 1:
+                database+=tableSet[i].toString()
+            else:
+                database+=tableSet[i].toString()+";"
+
     # This renders the question into PL
     if data['panel'] == 'question':
         # setting the paramaters
@@ -60,8 +65,6 @@ def render(element_html, data):
     # This will not be displayed on the student page unless a showCorrectAnswer: True 
     # is specified in the info.json file.
     elif data['panel'] == 'answer':
-        
-        #print("correctAnswer:", correctAnswer)
         html_params = {
             'answer': True,
             'correctAnswer': correctAnswer

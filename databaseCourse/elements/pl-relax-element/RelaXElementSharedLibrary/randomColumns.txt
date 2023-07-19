@@ -4,7 +4,6 @@ quantity,NUMBER
 
 price,NUMBER,3-9,2
 
-identifier,STRING,3-6
 state,STRING,2
 
 name,STRING,20-40-5
