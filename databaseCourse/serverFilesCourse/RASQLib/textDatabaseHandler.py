@@ -1,4 +1,4 @@
-from os import listdir
+from os import listdir, path, curdir
 from random import choice
 
 # Used for modelling a tables during question generation
@@ -6,7 +6,9 @@ from random import choice
 
 # Returns the file path to the table file
 def relativeFilePath(file):
-    return f"./SQLElementSharedLibrary/randomTables/{file}.txt"
+    dir = 'randomTables'
+    return f"{path.abspath(dir)}/{file}.txt"
+    #return f"./SQLElementSharedLibrary/randomTables/{file}.txt"
 
 # Returns the create table statement from the
 # text file
@@ -19,6 +21,8 @@ def getStaticSchema(file):
 
 # Lists all table files in the specified path
 def getAllTableFiles(path='./SQLElementSharedLibrary/randomTables/'):
+    dir = 'randomTables'
+    path = f"{path.abspath(dir)}/"
     try:
         # Removes the file extension of all files, if they exist
         return [file[:file.find('.')] for file in listdir(path)]
@@ -27,6 +31,8 @@ def getAllTableFiles(path='./SQLElementSharedLibrary/randomTables/'):
 
 # Returns a list of names for random tables
 def getRandomTableNames(path='./SQLElementSharedLibrary/randomTableNames.txt'):
+    dir = 'randomTableNames'
+    path = f"{path.abspath(dir)}/randomTableNames.txt"
     try:
         with open(path) as file:
             # Strips out whitespace and only considers lines
