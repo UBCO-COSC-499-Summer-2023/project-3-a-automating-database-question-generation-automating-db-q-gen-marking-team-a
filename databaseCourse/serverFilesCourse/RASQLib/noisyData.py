@@ -3,7 +3,7 @@
 
 import random
 from string import ascii_uppercase
-from os import listdir
+import os
 
 # Generates random data based on the unit type
 def generateNoisyData(table, key, qty=1):
@@ -262,7 +262,8 @@ def getColumnToFileMap(path='./SQLElementSharedLibrary/columnToFile.txt'):
 
 
 # Returns the filepath to a specific noisy data file
-def relativeFilePath(filePath):
+def relativeFilePath(file):
+    return f"{os.path.abspath(os.curdir)}/noisyData/{file}.txt"
     return f"./SQLElementSharedLibrary/noisyData/{filePath}.txt"
 
 # Reads all lines from a specified file
