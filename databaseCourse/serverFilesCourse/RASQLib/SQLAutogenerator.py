@@ -1,6 +1,6 @@
 import random
-from RASQLib import textDatabaseHandler as db
-from RASQLib import noisyData as nd
+import textDatabaseHandler as db
+import noisyData as nd
 
 
 # Automatically generates an SQL question based on the question's parameters
