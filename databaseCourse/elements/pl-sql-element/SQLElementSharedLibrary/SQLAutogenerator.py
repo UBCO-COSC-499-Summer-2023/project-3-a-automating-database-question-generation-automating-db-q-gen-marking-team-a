@@ -1,4 +1,9 @@
 import random
+
+import sys
+path = '/drone/src/databaseCourse/serverFilesCourse/RASQLib/'
+sys.path.append(path)
+
 from RASQLib import textDatabaseHandler as db
 from RASQLib import noisyData as nd
 
