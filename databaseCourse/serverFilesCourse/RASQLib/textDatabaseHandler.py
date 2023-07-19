@@ -17,12 +17,15 @@ def relativeTableDataFilePath(file):
 
 def absoluteDirectoryPath():
     currentDirectory = os.path.abspath(os.curdir)
-    courseFile = currentDirectory[:currentDirectory.find('/elements')]
 
-    print('curdir', currentDirectory)
-    print('courseFile', courseFile)
+    #print('curdir', currentDirectory)
+    #print('courseFile', courseFile)
 
-    return f"{courseFile}/serverFilesCourse/RASQLib"
+    if 'RASQLib' in currentDirectory:
+        return currentDirectory
+    else:
+        courseFile = currentDirectory[:currentDirectory.find('/elements')]
+        return f"{courseFile}/serverFilesCourse/RASQLib"
 
 # Returns the create table statement from the
 # text file

@@ -268,8 +268,12 @@ def relativeFilePath(file):
 
 def absoluteDirectoryPath():
     currentDirectory = os.path.abspath(os.curdir)
-    courseFile = currentDirectory[:currentDirectory.find('/elements')]
-    return f"{courseFile}/serverFilesCourse/RASQLib"
+
+    if 'RASQLib' in currentDirectory:
+        return currentDirectory
+    else:
+        courseFile = currentDirectory[:currentDirectory.find('/elements')]
+        return f"{courseFile}/serverFilesCourse/RASQLib"
 
 # Reads all lines from a specified file
 def readLines(fileName):

@@ -1,5 +1,6 @@
 import random
 
+# This allows DroneCI to see the RASQLib module
 import sys
 path = '/drone/src/databaseCourse/serverFilesCourse/'
 sys.path.append(path)
