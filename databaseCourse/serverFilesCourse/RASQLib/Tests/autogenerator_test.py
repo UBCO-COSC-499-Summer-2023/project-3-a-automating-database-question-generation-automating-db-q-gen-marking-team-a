@@ -3,7 +3,7 @@ from parameterized import parameterized
 
 import sys
 
-path = './SQLElementSharedLibrary/'
+path = '/drone/src/databaseCourse/elements/pl-sql-element/SQLElementSharedLibrary/'
 sys.path.append(path)
 
 from SQLAutogenerator import *
