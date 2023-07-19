@@ -1,6 +1,11 @@
 import unittest
 from parameterized import parameterized
-from SQLElementSharedLibrary.SQLCustomGrader import *
+
+import sys
+path = '/drone/src/databaseCourse/elements/pl-sql-element/SQLElementSharedLibrary/'
+sys.path.append(path)
+
+from SQLCustomGrader import *
 
 class CustomGraderTest(unittest.TestCase):
     # 0 similarity

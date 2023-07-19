@@ -1,7 +1,7 @@
 import random
 
 import sys
-path = '/drone/src/databaseCourse/serverFilesCourse/RASQLib/'
+path = '/drone/src/databaseCourse/serverFilesCourse/'
 sys.path.append(path)
 
 from RASQLib import textDatabaseHandler as db
