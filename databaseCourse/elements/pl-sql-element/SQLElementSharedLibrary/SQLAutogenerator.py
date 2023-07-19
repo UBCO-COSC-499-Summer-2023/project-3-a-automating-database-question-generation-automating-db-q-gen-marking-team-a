@@ -3,6 +3,7 @@ import random
 import SQLElementSharedLibrary.SQLNoisyData as nd
 
 
+
 # Automatically generates an SQL question based on the question's parameters
 def autogenerate(data):
     
@@ -375,37 +376,100 @@ def updateStatement(table, updateColumn, updateValue, conditionalValues = None, 
 '''
 
 def generateDelete(data, difficulty):
-        
+    
+    # Obtains question specific parameters
+    columns, joins, tableClauses, queryClauses = getQuestionParameters(data)
+
     # Chooses a table to load based on quesiton difficulty
     # Randomly selects from the list at the given difficulty
-    columnCount = None
+    table = None
     match difficulty:
-        case 'easy': columnCount = random.randint(3, 4)
-        case 'medium': columnCount = random.randint(4, 6)
-        case 'hard': return None # Not yet implemented; first requires quesryStatement() to be completed
+        case 'easy': 
+            table = loadTrimmedTable(random.randint(3, 4))
+            queryClauses['useConditional'] = False
+            queryClauses['useSubquery'] = False
 
-    # Gets a table with the specified number of columns
-    table = loadTrimmedTable(columnCount, 0)
+        case 'medium': 
+            table = loadTrimmedTable(random.randint(4, 6))
+            queryClauses['useConditional'] = True
+            queryClauses['useSubquery'] = False
+
+        case 'hard': 
+            table = loadTrimmedTable(random.randint(5, 8))
+            queryClauses['useConditional'] = False
+            queryClauses['useSubquery'] = True
+            return None # Not yet implemented; first requires quesryStatement() to be completed
+        
+        case _:
+            table = db.Table(columns=columns, joins=joins, clauses=tableClauses)
 
     # Generates a bunch of bogus rows
-    rows = nd.generateColumns(table, columnCount * 3 + random.randint(-3, 3))
+    columnData = nd.generateColumns(table, columns * 3 + random.randint(-3, 3))
 
     # Selects a random column to affect
-    # Won't select a foreign key if the difficulty is easy
-    randomKey = None
-    while not randomKey or (table.columns[randomKey]['references'] and difficulty == 'easy'):
-        randomKey = random.choice(list(table.columns.keys()))
-
-    # Chooses a random value from the generated data to be deleted
-    randomValueIndex = random.choice(range(len(rows)))
-
-    # Grabs the randomly selected values
-    deleteValue = rows[randomKey][randomValueIndex]
+    # Won't select a foreign key if the difficulty is easy or it is set
+    # to null on delete
+    deleteColumn = None
+    while not deleteColumn or (table.columns[deleteColumn]['references'] and (difficulty == 'easy' or table.columns[deleteColumn]['isOnDeleteSetNull'])):
+        deleteColumn = random.choice(list(table.columns.keys()))
 
 
+    
+    # If the quesiton should use a condition, set parameters
+    conditionalValues = {}
+    columnList = list(table.columns.keys())
+    indexList = [i for i in range(len(list(columnData.values())[0]))]
+    for i in range(queryClauses['useConditional']):
 
-    # Creates the question string
-    data['params']['questionString'] = f"From the table <b>{table.name}</b>, delete the entry where <b>{randomKey}</b> equals <b>'{deleteValue}'</b>."
+        # Selects a random column to affect.
+        # Cannot select a column that is both foreign and is
+        # not set to null on delete
+        conditionalColumn = None
+        while not conditionalColumn or table.columns[conditionalColumn]['references'] and not table.columns[conditionalColumn]['isOnDeleteSetNull']:
+            conditionalColumn = nd.popRandom(columnList)
+
+        # Chooses a random value from the generated data to be updated
+        randomValueIndex = nd.popRandom(indexList)
+
+        # Grabs the randomly selected values
+        conditionalValues[conditionalColumn] = columnData[conditionalColumn][randomValueIndex]
+
+
+
+    # Generates the question string
+    questionString = f"From the table <b>{table.name}</b>, delete all values"
+
+    # Adds the 'where' if necessary
+    if queryClauses['useConditional'] or queryClauses['useSubquery']:
+        questionString += ' where'
+
+    # Adds conditionals to question string
+    if queryClauses['useConditional']:
+
+        for key in conditionalValues.keys():
+            questionString += f" <b>{key}</b> equals <b>{conditionalValues[key]}</b>"
+        
+            # And the logical operator
+            if queryClauses['useAndInsteadOfOr']:
+                questionString += ' and'
+            else:
+                questionString += ' or'
+
+    # Adds subquery to question string
+    # TODO: this
+    if queryClauses['useSubquery']:
+        questionString += f""
+
+    # Removes trailing 'or' if necessary
+    if queryClauses['useConditional'] or queryClauses['useSubquery']:
+        if queryClauses['useAndInsteadOfOr']:
+            questionString = questionString[:-4]
+        else:
+            questionString = questionString[:-3]
+    
+    # Finishes the sentence
+    questionString += "."
+
 
 
     # Gets referenced tables
@@ -416,18 +480,45 @@ def generateDelete(data, difficulty):
 
     # Loads the noisy data into the primary table as
     # well as generating noisy data for referenced tables
-    loadAllNoisyData(data, table, rows, referenced)
+    loadAllNoisyData(data, table, columnData, referenced)
+
+    # Sets the question string
+    data['params']['questionString'] = questionString
 
     # Sets the correct answer
-    data['correct_answers']['SQLEditor'] = deleteStatement(table, randomKey, deleteValue)
-
+    data['correct_answers']['SQLEditor'] = deleteStatement(table, deleteColumn, conditionalValues, queryClauses['useAndInsteadOfOr'], queryClauses['useSubquery'])
 
 # Creates a delete statement
-def deleteStatement(table, column = None, condition = None):
-    ans = f"DELETE FROM {table.name}"
-    if(column and condition):
-        ans += f" {conditionalStatement(column, condition)};\n"
-    return ans
+def deleteStatement(table, deleteColumn, conditionalValues = None, useAnd = False, subquery = None):
+
+    # Sets up the statement
+    statement = f"DELETE FROM {table.name}"
+
+    # Adds where if necessary
+    if conditionalValues or subquery:
+        statement += ' WHERE'
+
+    # Includes the conditional if they exist
+    if conditionalValues:
+        for key in conditionalValues:
+            statement += f" {key} = '{conditionalValues[key]}'"
+        
+            # And the logical operator
+            if useAnd:
+                statement += ' AND'
+            else:
+                statement += ' OR'
+
+    # Removes trailing 'OR' if necessary
+    if conditionalValues or subquery:
+        if useAnd:
+            statement = statement[:-4]
+        else:
+            statement = statement[:-3]
+    
+    # Add finishing touches and returns
+    statement += ';\n'
+    return statement
 
 '''
     End delete-style question
