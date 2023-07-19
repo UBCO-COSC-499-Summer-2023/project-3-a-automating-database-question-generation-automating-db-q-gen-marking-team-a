@@ -247,6 +247,7 @@ def generateColumns(table, qty=1):
 # Returns the mapping between column name and
 # the file which contains its clean data
 def getColumnToFileMap(path='./SQLElementSharedLibrary/columnToFile.txt'):
+    path = f"{absoluteDirectoryPath()}/randomTableData/columnToFile.txt"
     try:
         # Reads the file
         with open(path) as file:
@@ -263,8 +264,12 @@ def getColumnToFileMap(path='./SQLElementSharedLibrary/columnToFile.txt'):
 
 # Returns the filepath to a specific noisy data file
 def relativeFilePath(file):
-    return f"{os.path.abspath(os.curdir)}/noisyData/{file}.txt"
-    return f"./SQLElementSharedLibrary/noisyData/{filePath}.txt"
+    return f"{absoluteDirectoryPath()}/noisyData/{file}.txt"
+
+def absoluteDirectoryPath():
+    currentDirectory = os.path.abspath(os.curdir)
+    courseFile = currentDirectory[:currentDirectory.find('/elements')]
+    return f"{courseFile}/serverFilesCourse/RASQLib"
 
 # Reads all lines from a specified file
 def readLines(fileName):

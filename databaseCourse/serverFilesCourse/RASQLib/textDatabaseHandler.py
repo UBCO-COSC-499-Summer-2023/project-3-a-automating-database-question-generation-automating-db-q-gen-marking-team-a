@@ -1,42 +1,60 @@
+from os import listdir
 import os
 from random import choice
-
 
 # Used for modelling a tables during question generation
 # and loading table data from text files
 
 # Returns the file path to the table file
-def relativeFilePath(file):
-    return f"{os.path.abspath(os.curdir)}/randomTables/{file}.txt"
-    #return f"./SQLElementSharedLibrary/randomTables/{file}.txt"
+#def relativeFilePath(file):
+#    return f"./SQLElementSharedLibrary/randomTables/{file}.txt"
+
+def relativeTableFilePath(file):
+    return f"{absoluteDirectoryPath()}/randomTables/{file}.txt"
+
+def relativeTableDataFilePath(file):
+    return f"{absoluteDirectoryPath()}/randomTableData/{file}.txt"
+
+def absoluteDirectoryPath():
+    currentDirectory = os.path.abspath(os.curdir)
+    courseFile = currentDirectory[:currentDirectory.find('/elements')]
+    return f"{courseFile}/serverFilesCourse/RASQLib"
 
 # Returns the create table statement from the
 # text file
 def getStaticSchema(file):
     try:
-        with open(relativeFilePath(file)) as file:
+        with open(relativeTableFilePath(file)) as file:
             return file.read()
     except:
         return None
 
 # Lists all table files in the specified path
 def getAllTableFiles(path='./SQLElementSharedLibrary/randomTables/'):
-    path = f"{os.path.abspath(os.curdir)}/randomTables/"
+    path = f"{absoluteDirectoryPath()}/randomTables"
     try:
         # Removes the file extension of all files, if they exist
-        return [file[:file.find('.')] for file in os.listdir(path)]
+        return [file[:file.find('.')] for file in listdir(path)]
     except:
         return []
 
 # Returns a list of names for random tables
 def getRandomTableNames(path='./SQLElementSharedLibrary/randomTableNames.txt'):
-    path = f"{os.path.abspath(os.curdir)}/randomTableData/randomTableNames.txt"
+    '''
+    currentDirectory = os.path.abspath(os.curdir)
+    path = f"{currentDirectory[:currentDirectory[1:].find('/') + 1]}"
+    ext = 'serverFilesCourse/RASQLib/randomTableData/randomTableNames.txt'
+    print("Path:", path, currentDirectory)
+    print(listdir(f"{path}/serverFilesCourse"))
+    '''
+    path = relativeTableDataFilePath('randomTableNames')
     try:
         with open(path) as file:
             # Strips out whitespace and only considers lines
             # that aren't exclusively whitespace
             return [line.strip() for line in file.readlines() if not line.isspace()]
     except:
+       print(f"Uh oh, could not find the file at the following path: {path}")
        return []
 
 
@@ -78,7 +96,7 @@ class Table:
             file = choice(tableFiles)
         
         # Gets the path to that file
-        filePath = relativeFilePath(file)
+        filePath = relativeTableFilePath(file)
 
         # Only includes lines that aren't exclusively
         # white text and strips them of trailing/leading
@@ -429,7 +447,7 @@ class Table:
         possibleColumns = []
 
         # Reads the text file
-        with open(f"./SQLElementSharedLibrary/{file}.txt") as columnsFile:
+        with open(relativeTableDataFilePath(file)) as columnsFile:
 
             # Iterates over each line
             for line in columnsFile:

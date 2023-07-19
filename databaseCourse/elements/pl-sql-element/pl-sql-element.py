@@ -3,8 +3,8 @@ import chevron
 import lxml.html
 import prairielearn as pl
 
-import SQLElementSharedLibrary.SQLCustomGrader as grader
-import SQLElementSharedLibrary.SQLAutogenerator as autogen
+import RASQLib.SQLCustomGrader as grader
+import RASQLib.SQLAutogenerator as autogen
 
 # Note to devs:
 # It seems you cannot modify params or correct answers from generate().
