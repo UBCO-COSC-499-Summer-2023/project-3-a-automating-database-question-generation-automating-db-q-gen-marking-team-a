@@ -248,6 +248,7 @@ def generateColumns(table, qty=1):
 def relativeFilePath(file):
     return f"{absoluteDirectoryPath()}/noisyData/{file}.txt"
 
+# Returns the absolute directory of RASQLib
 def absoluteDirectoryPath():
     currentDirectory = os.path.abspath(os.curdir)
 

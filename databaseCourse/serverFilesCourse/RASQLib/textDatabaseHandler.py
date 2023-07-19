@@ -5,54 +5,6 @@ from random import choice
 # Used for modelling a tables during question generation
 # and loading table data from text files
 
-# Returns the file path to the table file
-#def relativeFilePath(file):
-#    return f"./SQLElementSharedLibrary/randomTables/{file}.txt"
-
-def relativeTableFilePath(file):
-    return f"{absoluteDirectoryPath()}/randomTables/{file}.txt"
-
-def relativeTableDataFilePath(file):
-    return f"{absoluteDirectoryPath()}/randomTableData/{file}.txt"
-
-def absoluteDirectoryPath():
-    currentDirectory = os.path.abspath(os.curdir)
-
-    if 'RASQLib' in currentDirectory:
-        return currentDirectory
-    else:
-        courseFile = currentDirectory[:currentDirectory.find('/elements')]
-        return f"{courseFile}/serverFilesCourse/RASQLib"
-
-# Returns the create table statement from the
-# text file
-def getStaticSchema(file):
-    try:
-        with open(relativeTableFilePath(file)) as file:
-            return file.read()
-    except:
-        return None
-
-# Lists all table files in the specified path
-def getAllTableFiles(path=f"{absoluteDirectoryPath()}/randomTables"):
-    try:
-        # Removes the file extension of all files, if they exist
-        return [file[:file.find('.')] for file in listdir(path)]
-    except:
-        return []
-
-# Returns a list of names for random tables
-def getRandomTableNames(path=relativeTableDataFilePath('randomTableNames')):
-    try:
-        with open(path) as file:
-            # Strips out whitespace and only considers lines
-            # that aren't exclusively whitespace
-            return [line.strip() for line in file.readlines() if not line.isspace()]
-    except:
-       return []
-
-
-
 # Models a table for easy question generation
 class Table:
 
@@ -598,3 +550,52 @@ class Table:
     # The same as calling Table.getSchema()
     def __str__(self):
         return self.getSchema()
+
+
+
+# Helper functions
+
+# Returns the file path to the table file
+def relativeTableFilePath(file):
+    return f"{absoluteDirectoryPath()}/randomTables/{file}.txt"
+
+# Returns the file path to the table metadata file
+def relativeTableDataFilePath(file):
+    return f"{absoluteDirectoryPath()}/randomTableData/{file}.txt"
+
+# Returns the absolute directory of RASQLib
+def absoluteDirectoryPath():
+    currentDirectory = os.path.abspath(os.curdir)
+
+    if 'RASQLib' in currentDirectory:
+        return currentDirectory
+    else:
+        courseFile = currentDirectory[:currentDirectory.find('/elements')]
+        return f"{courseFile}/serverFilesCourse/RASQLib"
+
+# Returns the create table statement from the
+# text file
+def getStaticSchema(file):
+    try:
+        with open(relativeTableFilePath(file)) as file:
+            return file.read()
+    except:
+        return None
+
+# Lists all table files in the specified path
+def getAllTableFiles(path=f"{absoluteDirectoryPath()}/randomTables"):
+    try:
+        # Removes the file extension of all files, if they exist
+        return [file[:file.find('.')] for file in listdir(path)]
+    except:
+        return []
+
+# Returns a list of names for random tables
+def getRandomTableNames(path=relativeTableDataFilePath('randomTableNames')):
+    try:
+        with open(path) as file:
+            # Strips out whitespace and only considers lines
+            # that aren't exclusively whitespace
+            return [line.strip() for line in file.readlines() if not line.isspace()]
+    except:
+       return []

@@ -2,8 +2,7 @@ import random
 
 # This allows DroneCI to see the RASQLib module
 import sys
-path = '/drone/src/databaseCourse/serverFilesCourse/'
-sys.path.append(path)
+sys.path.append('/drone/src/databaseCourse/serverFilesCourse/')
 
 from RASQLib import textDatabaseHandler as db
 from RASQLib import noisyData as nd
