@@ -18,9 +18,6 @@ def relativeTableDataFilePath(file):
 def absoluteDirectoryPath():
     currentDirectory = os.path.abspath(os.curdir)
 
-    #print('curdir', currentDirectory)
-    #print('courseFile', courseFile)
-
     if 'RASQLib' in currentDirectory:
         return currentDirectory
     else:
@@ -47,13 +44,6 @@ def getAllTableFiles(path='./SQLElementSharedLibrary/randomTables/'):
 
 # Returns a list of names for random tables
 def getRandomTableNames(path='./SQLElementSharedLibrary/randomTableNames.txt'):
-    '''
-    currentDirectory = os.path.abspath(os.curdir)
-    path = f"{currentDirectory[:currentDirectory[1:].find('/') + 1]}"
-    ext = 'serverFilesCourse/RASQLib/randomTableData/randomTableNames.txt'
-    print("Path:", path, currentDirectory)
-    print(listdir(f"{path}/serverFilesCourse"))
-    '''
     path = relativeTableDataFilePath('randomTableNames')
     try:
         with open(path) as file:
@@ -61,7 +51,6 @@ def getRandomTableNames(path='./SQLElementSharedLibrary/randomTableNames.txt'):
             # that aren't exclusively whitespace
             return [line.strip() for line in file.readlines() if not line.isspace()]
     except:
-       print(f"Uh oh, could not find the file at the following path: {path}")
        return []
 
 
@@ -99,8 +88,6 @@ class Table:
         # If the file is not set but the question uses
         # a static table, find a static table
         tableFiles = getAllTableFiles()
-        print("!!!", listdir(os.curdir), os.path.abspath(os.curdir))
-        print('???', absoluteDirectoryPath())
         if not file or file not in tableFiles:
             file = choice(tableFiles)
         
