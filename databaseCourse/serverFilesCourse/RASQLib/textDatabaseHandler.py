@@ -1,9 +1,39 @@
-from os import listdir
 import os
 from random import choice
+from random import randint
+from RASQLib import noisyData as nd
 
-# Used for modelling a tables during question generation
-# and loading table data from text files
+# Used for modelling a database and tables during question 
+# generation and loading table data from text files
+
+# Models a group of tables
+class Database:
+    def __init__(self, isSQL = True, file='', columns=5, joins=0, clauses={}, constraints={'': {'name': '', 'unit': 'INTEGER', 'unitOther': None}}, rows=0, random=True):
+        self.primaryTable = Table(file, columns, joins, clauses, constraints, random)
+        self.referencedTables = self.primaryTable.getReferencedTables()
+        self.isSQL = isSQL
+    
+    # Adds the tables' schema to data
+    def loadSchemas(self, data):
+
+        # Iterate over tables, if there are any
+        # Add their schema to the initialize string
+        if self.referencedTables:
+            for key in self.referencedTables:
+                data['params']['db_initialize'] += f"{self.referencedTables[key].getSchema()}\n"
+        
+        # Adds the primary table afterwards.
+        # Since the primary table may reference the foreign
+        # tables but NOT vice versa, it is required that the
+        # primary table is loaded after such that foreign
+        # key constrains are satisfied.
+        data['params']['db_initialize'] += f"{self.table.getSchema()}\n"
+    
+    # Prints the schema of all tables in the database
+    def __str__(self):
+        return f"{self.primaryTable.getSchema()}{''.join([self.referencedTables[referencedTable].getSchema() for referencedTable in self.referencedTables])}"
+
+
 
 # Models a table for easy question generation
 class Table:
@@ -12,11 +42,16 @@ class Table:
     # File name and table name are equivalent.
     #   File: the name of the text file if it exists OR the name of the random table
     #   Columns: the number of columns in the table
-    def __init__(self, file='', columns=5, joins=0, clauses={}, constraints={'': {'name': '', 'unit': 'INTEGER', 'unitOther': None}}, random=True):
+    def __init__(self, file='', columns=5, joins=0, clauses={}, constraints={'': {'name': '', 'unit': 'INTEGER', 'unitOther': None}}, rows=0, random=True):
         self.name = file
         self.columns = {}
+        self.data = {}
 
+        # Adds columns
         self.load(file, columns, joins, clauses, constraints, random)
+
+        # Adds data
+        self.addData(rows)
 
 
 
@@ -466,6 +501,52 @@ class Table:
 
 
 
+    # Returns a dictionary that maps the foreign key of the supplied
+    # table to the referenced tables. If the unique parameter is true,
+    # this dictionary contains a set of tables: no duplicated. Otherwise,
+    # there may be duplicate tables with unique foreign keys.
+    def getReferencedTables(self, unique=True, static=False):
+        
+        # Uses a dictionary to store the tables and a set to keep track
+        # of unique table names
+        tables = {}
+        tableSet = set()
+
+        # Iterates over the table's foreign keys
+        for key in self.getKeyMap().keys():
+
+            # Checks to see if the table name is already in the set.
+            # Only matters if unique is True.
+            if self.columns[key]['references'] not in tableSet:
+
+                columns = randint(3, 6)
+
+                # Ensures foreign key consistency across generated tables
+                #   name of the column in the foreign table: {
+                #       'unit': the data type of the column
+                #       'unitOther': the other information related to the data type
+                #   }
+                constraints = {
+                    self.columns[key]['foreignKey']: {
+                        'name': self.columns[key]['foreignKey'],
+                        'unit': self.columns[key]['unit'],
+                        'unitOther': self.columns[key]['unitOther']
+                    }
+                }
+
+                # Loads an approrpiate table into the dictionary
+                tables[self.columns[key]['references']] = Table(file=self.columns[key]['references'], columns=columns, constraints=constraints, random=not static)
+
+                # Adds the table name to the set if unique is True
+                if unique:
+                    tableSet.add(self.columns[key]['references'])
+
+        # Returns a dictionary of all referenced tables
+        #   table name: respective Table object
+        return tables
+
+
+
     # Returns a dictionary with the following mapping:
     #   column: (if the column is a foreign key)
     #       'references': the table referenced
@@ -476,6 +557,13 @@ class Table:
     # Returns all primary key columns
     def getPrimaryKeys(self):
         return {key: self.columns[key] for key in self.columns.keys() if self.columns[key]['isPrimary']}
+    
+
+
+    # Adds data to the table
+    def addData(self, rows):
+        if rows:
+            self.data = nd.generateColumns(self, rows)
 
 
 
@@ -542,7 +630,7 @@ class Table:
                 schema += ",\n"
         
         # Removes the comma at the end; closes schema
-        schema = schema[0:-2] + "\n);"
+        schema = schema[0:-2] + "\n);\n"
 
         return schema
 
@@ -586,7 +674,7 @@ def getStaticSchema(file):
 def getAllTableFiles(path=f"{absoluteDirectoryPath()}/randomTables"):
     try:
         # Removes the file extension of all files, if they exist
-        return [file[:file.find('.')] for file in listdir(path)]
+        return [file[:file.find('.')] for file in os.listdir(path)]
     except:
         return []
 

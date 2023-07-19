@@ -42,12 +42,16 @@ def generateCreate(data, difficulty):
     columns, joins, tableClauses, queryClauses = getQuestionParameters(data)
 
     # Creates an appropriate table
-    table = None
+    database = None
     match difficulty:
-        case 'easy': table = db.Table(random.choice(['airport', 'airplane', 'product', 'customer']), random=False)
-        case 'medium': table = db.Table(random.choice(['passenger', 'shipment']), random=False)
-        case 'hard': table = db.Table(random.choice(['flight', 'shippedproduct']), random=False)
-        case _: table = db.Table(columns=columns, joins=joins, clauses=tableClauses)
+        case 'easy': database = db.Database(file=random.choice(['airport', 'airplane', 'product', 'customer']), random=False)
+        case 'medium': database = db.Database(file=random.choice(['passenger', 'shipment']), random=False)
+        case 'hard': database = db.Database(file=random.choice(['flight', 'shippedproduct']), random=False)
+        case _: database = db.Database(columns=columns, joins=joins, clauses=tableClauses)
+
+    # Grabs the primary table for easy referencing
+    table = database.primaryTable
+
 
 
     # Creates a string to tell the student what they need
@@ -110,8 +114,12 @@ def generateCreate(data, difficulty):
 
 
 
-    # Loads any tables this one references into the schema
-    loadSchemas(data, None, getReferencedTables(table, unique=True))
+    # Loads any tables this one references into the schema.
+    # This DOES NOT load the primary table into data,
+    # since that would give students the answer
+    if database.referencedTables:
+        for referencedTable in database.referencedTables:
+            data['params']['db_initialize'] += f"{database.referencedTables[referencedTable].getSchema()}\n"
 
     # Places the question string into data
     data['params']['questionString'] = questionString
@@ -730,82 +738,6 @@ def getQuestionParameters(data):
         }
     
     return numberOfColumns, numberOfJoins, tableClauses, queryClauses
-
-
-
-# Returns a dictionary that maps the foreign key of the supplied
-# table to the referenced tables. If the unique parameter is true,
-# this dictionary contains a set of tables: no duplicated. Otherwise,
-# there may be duplicate tables with unique foreign keys.
-def getReferencedTables(table, unique=True, static=False):
-    
-    # Uses a dictionary to store the tables and a set to keep track
-    # of unique table names
-    tables = {}
-    tableSet = set()
-
-    # Iterates over the table's foreign keys
-    for key in table.getKeyMap().keys():
-
-        # Checks to see if the table name is already in the set.
-        # Only matters if unique is True.
-        if table.columns[key]['references'] not in tableSet:
-
-            columns = random.randint(3, 6)
-
-            # Ensures foreign key consistency across generated tables
-            #   name of the column in the foreign table: {
-            #       'unit': the data type of the column
-            #       'unitOther': the other information related to the data type
-            #   }
-            constraints = {
-                table.columns[key]['foreignKey']: {
-                    'name': table.columns[key]['foreignKey'],
-                    'unit': table.columns[key]['unit'],
-                    'unitOther': table.columns[key]['unitOther']
-                }
-            }
-
-            # Loads an approrpiate table into the dictionary
-            tables[table.columns[key]['references']] = db.Table(file=table.columns[key]['references'], columns=columns, constraints=constraints, random=not static)
-
-            # Adds the table name to the set if unique is True
-            if unique:
-                tableSet.add(table.columns[key]['references'])
-
-    # Returns a dictionary of all referenced tables
-    #   table name: respective Table object
-    return tables
-
-
-
-# Adds the schema tables to data
-def loadSchemas(data, table, referencedTables):
-
-    # Iterate over tables, if there are any
-    # Add their schema to the initialize string
-    if referencedTables:
-        for key in referencedTables:
-            data['params']['db_initialize'] += f"{referencedTables[key].getSchema()}\n"
-    
-    # Adds the primary table afterwards.
-    # Since the primary table may reference the foreign
-    # tables but NOT vice versa, it is required that the
-    # primary table is loaded after such that foreign
-    # key constrains are satisfied.
-    if table:
-        data['params']['db_initialize'] += f"{table.getSchema()}\n"
-
-# Loads the schema of the current table as well
-# as all referenced tables.
-def loadAllSchema(data, table, referencedTables={}):
-
-    # Gets all referenced tables
-    if not referencedTables:
-        referencedTables = getReferencedTables(table, unique=True)
-
-    # Loads all their schema
-    loadSchemas(data, table, referencedTables)
 
 
 
