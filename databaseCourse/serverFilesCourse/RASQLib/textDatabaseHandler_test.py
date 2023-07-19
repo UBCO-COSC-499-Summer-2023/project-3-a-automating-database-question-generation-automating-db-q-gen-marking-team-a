@@ -9,7 +9,7 @@ class TableHelperFunctionsTest(unittest.TestCase):
     def testRelativeFilePathReturnsFilePathWithFileName(self):
         file = "random"
 
-        result = relativeFilePath(file)
+        result = relativeTableFilePath(file)
 
         self.assertEqual(f"./SQLElementSharedLibrary/randomTables/{file}.txt",result)
 
