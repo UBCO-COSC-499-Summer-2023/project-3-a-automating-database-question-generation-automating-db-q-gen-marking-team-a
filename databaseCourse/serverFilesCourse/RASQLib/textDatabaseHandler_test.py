@@ -1,6 +1,6 @@
 import unittest
 #from parameterized import parameterized
-from SQLElementSharedLibrary.textDatabaseHandler import *
+from textDatabaseHandler import *
 
 # Tests the helper functions
 class TableHelperFunctionsTest(unittest.TestCase):

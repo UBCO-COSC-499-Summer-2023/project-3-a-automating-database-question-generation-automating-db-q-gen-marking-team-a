@@ -1,6 +1,6 @@
-import SQLElementSharedLibrary.textDatabaseHandler as db
 import random
-import SQLElementSharedLibrary.SQLNoisyData as nd
+from RASQLib import textDatabaseHandler as db
+from RASQLib import noisyData as nd
 
 
 # Automatically generates an SQL question based on the question's parameters
