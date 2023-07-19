@@ -5,7 +5,7 @@
             "relax-element.css", "codemirror.css"
         ],
         "elementScripts": [
-            "renderer.js","relalg_bundle.js", "codemirror.js"
+            "renderer.js","relalg_bundle.js", "codemirror.js", "exec_relalg_bundle.js"
         ]
     }
 }

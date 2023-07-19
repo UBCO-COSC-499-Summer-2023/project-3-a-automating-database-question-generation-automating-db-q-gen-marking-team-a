@@ -1,8 +1,14 @@
 from difflib import SequenceMatcher
-import relational_algebra as ra
 
-#print(dir(ra))
-#print(help(ra.Selection))
+import subprocess
+
+def run_nodejs_script(script_path):
+    command = ['node', script_path]
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = process.communicate()
+    if process.returncode != 0:
+        raise Exception(stderr.decode())
+    return stdout.decode()
 
 
 # Uses Python's SequenceMatcher library to check the
@@ -10,36 +16,17 @@ import relational_algebra as ra
 # submitted answer.
 def customGrader(data):
     
+    result = run_nodejs_script('exec_relalg_bundle.js')
+    print(result)
+
+    
     query = "π a R"
     db = data['params']['database']
     dbArray = db.split(";")
-    dataset = []
-    
-    relation = ra.Relation(name="R")
-    relation.add_attributes(["a", "b", "c"])
-    relation.add_rows([
-	    [1, 2, 3],
-	    [4, 5, 6],
-	    [7, 8, 9],
-    ])
-    
-    b = ra.Relation(name="S")
-    b.add_attributes(["d", "b", "c"])
-    b.add_rows([
-	    [1, 2, 3],
-	    [4, 5, 6],
-	    [7, 8, 9],
-    ])
-    
-    result = ra.Projection(relation, ["a", "b", "c"])
-    
-    print(result.attributes)
-    print(result)
+    # create empty array of size dbArray length
+    dataset = [0 for i in range(len(dbArray))]
     
     
-    #print(relation.attributes)
-    #print(relation.rows)
-    #result = ra.Selection()
     
     # Grabs the student answer from data
     submittedAnswer = data['submitted_answers']['RelaXEditor']
