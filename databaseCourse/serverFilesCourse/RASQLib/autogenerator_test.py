@@ -1,12 +1,6 @@
 import unittest
 from parameterized import parameterized
 
-import os
-x = 1
-if x == 1:
-    assert False, f"Looks here!!! {os.path.abspath(os.curdir)}"
-
-
 import sys
 path = '/drone/src/databaseCourse/elements/pl-sql-element/SQLElementSharedLibrary/'
 sys.path.append(path)

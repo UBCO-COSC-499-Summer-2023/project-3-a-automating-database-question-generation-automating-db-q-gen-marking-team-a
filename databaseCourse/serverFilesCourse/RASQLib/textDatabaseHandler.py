@@ -6,7 +6,7 @@ from random import choice
 
 # Returns the file path to the table file
 def relativeFilePath(file):
-    dir = 'randomTables'
+    dir = './SQLElementSharedLibrary/randomTables'
     return f"{path.abspath(dir)}/{file}.txt"
     #return f"./SQLElementSharedLibrary/randomTables/{file}.txt"
 
@@ -21,7 +21,7 @@ def getStaticSchema(file):
 
 # Lists all table files in the specified path
 def getAllTableFiles(path='./SQLElementSharedLibrary/randomTables/'):
-    dir = 'randomTables'
+    dir = './SQLElementSharedLibrary/randomTables'
     path = f"{path.abspath(dir)}/"
     try:
         # Removes the file extension of all files, if they exist
@@ -31,7 +31,7 @@ def getAllTableFiles(path='./SQLElementSharedLibrary/randomTables/'):
 
 # Returns a list of names for random tables
 def getRandomTableNames(path='./SQLElementSharedLibrary/randomTableNames.txt'):
-    dir = 'randomTableNames'
+    dir = './SQLElementSharedLibrary/randomTables'
     path = f"{path.abspath(dir)}/randomTableNames.txt"
     try:
         with open(path) as file:
