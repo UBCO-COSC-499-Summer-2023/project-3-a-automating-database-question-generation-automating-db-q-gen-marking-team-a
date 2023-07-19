@@ -513,6 +513,7 @@ def deleteStatement(table, conditionalValues = None, useAnd = False, subquery = 
     statement += ';\n'
     return statement
 
+
 '''
     End delete-style question
 '''
