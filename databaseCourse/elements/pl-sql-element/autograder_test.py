@@ -1,6 +1,6 @@
 import unittest
 from parameterized import parameterized
-from SQLCustomGrader import *
+from SQLElementSharedLibrary.SQLCustomGrader import *
 
 class CustomGraderTest(unittest.TestCase):
     # 0 similarity
