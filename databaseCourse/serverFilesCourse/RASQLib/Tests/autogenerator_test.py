@@ -1,6 +1,12 @@
 import unittest
 from parameterized import parameterized
-from SQLElementSharedLibrary.SQLAutogenerator import *
+
+import sys
+
+path = './SQLElementSharedLibrary/'
+sys.path.append(path)
+
+from SQLAutogenerator import *
 
 class AutogenerateTest(unittest.TestCase):
 
