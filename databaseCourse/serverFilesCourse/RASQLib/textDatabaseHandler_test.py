@@ -1,5 +1,4 @@
 import unittest
-#from parameterized import parameterized
 from textDatabaseHandler import *
 
 # Test database methods
