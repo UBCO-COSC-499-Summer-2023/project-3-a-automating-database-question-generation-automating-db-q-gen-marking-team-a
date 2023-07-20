@@ -352,7 +352,7 @@ def rowMatch(expectedAns,actualAns):
     expectedTotal += expectedRowCount
 
     if not (actualAns or expectedAns): return 1
-    if not actualAns: return 0
+    if not actualAns or not actualAns[0]: return 0
 
     actualRowCount = len(actualAns)
     actualTotal += actualRowCount
@@ -368,7 +368,7 @@ def colMatch(expectedAns,actualAns):
     expectedTotal += expectedColumnCount
 
     if not (actualAns or expectedAns): return 1
-    if not actualAns: return 0
+    if not (actualAns or actualAns[0]): return 0
 
     actualColumnCount = len((actualAns[0]))
     actualTotal += actualColumnCount
