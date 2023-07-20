@@ -556,6 +556,7 @@ def generateQuery(data, difficulty):
         foreignKeyMap[foreignKey] = referenced[keyMap.pop(foreignKey)['references']]
 
 
+
     # The columns that will be selected by the query
     # selectedColumns {
     #   $foreignKey: $column
