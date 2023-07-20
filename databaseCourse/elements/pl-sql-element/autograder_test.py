@@ -31,7 +31,7 @@ class CustomGraderTest(unittest.TestCase):
     
         result = customGrader(data)
 
-        self.assertEqual(1,result)
+        self.assertEqual(0.15,result)
     
     # 50% similarity
     def testAutograderReturnsDecimalWhenBelowThresholdMatch(self):
@@ -45,6 +45,30 @@ class CustomGraderTest(unittest.TestCase):
         self.assertGreaterEqual(result,0)
         self.assertLessEqual(result,1)
     
-    # more cases for matching depending on threshold changes in the futre as well as more detailed grading
+    # valueMatch
+    # 0 - no matches
+    def testValueMatchReturnsZeroWhenNoValuesMatch(self):
+        expectedAns = [(7,8,9),(1,4,2)]
+        actualAns = [(1,2,3),(4,5,6)]
 
-    # exact same
+        res = valueMatch(expectedAns,actualAns)
+
+        self.assertEqual(res,0)
+    # 0 - empty
+    # def testValueMatchReturnsZeroWhenEmpty(self):
+    # # 0.5
+    # def testValueMatchReturnsHalfWhenHalfValuesMatch(self):
+    # # 1
+    # def testValueMatchReturnsOneWhenAllValuesMatch(self):
+
+    # colMatch
+    # same
+    # 1 over
+    # 1 less
+    # 0
+
+    # rowMatch
+    # same
+    # 1 over
+    # 1 less
+    # 0
