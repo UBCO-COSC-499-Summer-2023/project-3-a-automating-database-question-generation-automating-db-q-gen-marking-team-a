@@ -714,7 +714,6 @@ class Table:
 
         # For each column, select the i-th item and create
         # a create an INSERT statemetn. Do so for all i items
-        '''
         statements = ''
         for row in range(len(list(self.rows.values())[0])):
             vals = []
@@ -722,8 +721,7 @@ class Table:
                 vals.append(self.rows[key][row])
             statements += f"INSERT INTO {self.name} VALUES ({str(vals)[1:-1]});\n"
         return statements
-        '''
-        return ''.join([f"INSERT INTO {self.name} VALUES ({str([self.rows[key][i] for key in self.rows])[1:-1]});\n" for i in range(len(list(self.rows.values())[0]))])
+        #return ''.join([f"INSERT INTO {self.name} VALUES ({str([self.rows[key][i] for key in self.rows])[1:-1]});\n" for i in range(len(list(self.rows.values())[0]))])
         
 
 
