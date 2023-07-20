@@ -504,14 +504,18 @@ def generateQuery(data, difficulty):
     match difficulty:
         case 'easy': 
             database = db.Database(file=loadTrimmedTable(random.randint(3, 4)), columns=0, joins=0, random=False)
+            joins = 0
             clauses = {}
 
         case 'medium': 
-            database = db.Database(file=loadTrimmedTable(random.randint(4, 6)), columns=0, joins=random.randint(1, 2), random=False)
+            joins=random.randint(1, 2)
+            database = db.Database(file=loadTrimmedTable(random.randint(4, 6)), columns=0, joins=joins, random=False)
+
             clauses = {}
 
         case 'hard': 
-            database = db.Database(file=loadTrimmedTable(random.randint(5, 8)), columns=0, joins=random.randint(1, 2), random=False)
+            joins=random.randint(1, 2)
+            database = db.Database(file=loadTrimmedTable(random.randint(5, 8)), columns=0, joins=joins, random=False)
             clauses = {}
             clauses = random.randint(1, 3)
             return None # Not yet implemented; first requires queryStatement() to be completed
