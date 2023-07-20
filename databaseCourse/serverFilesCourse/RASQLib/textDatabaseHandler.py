@@ -723,8 +723,7 @@ class Table:
             statements += f"INSERT INTO {self.name} VALUES ({str(vals)[1:-1]});\n"
         return statements
         '''
-        if self.rows:
-            return ''.join([f"INSERT INTO {self.name} VALUES ({str([self.rows[key][i] for key in self.rows])[1:-1]});\n" for i in range(len(list(self.rows.values())[0]))])
+        return ''.join([f"INSERT INTO {self.name} VALUES ({str([self.rows[key][i] for key in self.rows])[1:-1]});\n" for i in range(len(list(self.rows.values())[0]))]) if self.rows else ''
         
 
 
