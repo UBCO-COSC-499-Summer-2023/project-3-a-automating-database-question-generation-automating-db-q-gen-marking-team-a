@@ -2,6 +2,103 @@ import unittest
 #from parameterized import parameterized
 from textDatabaseHandler import *
 
+# Test database methods
+class DatabaseTest(unittest.TestCase):
+
+    #---# loadSchemas() Test(s)
+    # all tables are added to db init 
+    def testLoadSchemasAddsTablesToDbInit(self):
+        testType = "Update"
+        db_initialize = ""
+        initialAns = ""
+        difficulty = "easy"
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
+                          'db_initialize':db_initialize},
+                'correct_answers':{'SQLEditor': initialAns}}
+        
+        tableOne = "airport"
+        database = Database(file=tableOne, random=False)
+
+        
+        #tableAirport = db.Table(tableOne)
+        tableTwo = "flight"
+        #tableFlight = db.Table(tableTwo)
+        tableThree = "airplane"
+        #tableAirplane = db.Table(tableThree)
+        #tables = {tableOne: tableAirport, tableThree: tableAirplane}
+
+        self.assertEqual(len(data['params']['db_initialize']),0)
+
+        database.loadDatabase(data)
+
+        self.assertIn(tableOne,data['params']['db_initialize'])
+        self.assertIn(tableTwo,data['params']['db_initialize'])
+        self.assertIn(tableThree,data['params']['db_initialize'])
+
+    # no tables are added to db init when input is empty
+    ''' This test was removed since there cannot exist a
+        database without any tables. As such, we cannot
+        call .loadDatabase() on type None
+    def testLoadSchemasAddsNoTablesToDbInit(self):
+        testType = "Update"
+        db_initialize = ""
+        initialAns = ""
+        difficulty = "easy"
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
+                          'db_initialize':db_initialize},
+                'correct_answers':{'SQLEditor': initialAns}}
+        table = None
+        tables = []
+
+        self.assertEqual(len(data['params']['db_initialize']),0)
+
+        loadSchemas(data,table,tables)
+
+        self.assertEqual(len(data['params']['db_initialize']),0)
+    '''
+
+#---# loadAllSchema() Test(s)
+    # table with no other referenced tables
+    def testLoadAllSchemaAddsTableWithNoReferencesToDbInit(self):
+        testType = "Update"
+        db_initialize = ""
+        initialAns = ""
+        difficulty = "easy"
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
+                          'db_initialize':db_initialize},
+                'correct_answers':{'SQLEditor': initialAns}}
+        
+        tableOne = "airport"
+        database = Database(file=tableOne, random=False)
+
+        self.assertEqual(len(data['params']['db_initialize']),0)
+
+        database.loadDatabase(data)
+
+        self.assertIn(tableOne,data['params']['db_initialize'])
+    
+    # table with other referenced tables
+    def testLoadAllSchemaAddsTableWithReferencesToDbInit(self):
+        testType = "Update"
+        db_initialize = ""
+        initialAns = ""
+        difficulty = "easy"
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
+                          'db_initialize':db_initialize},
+                'correct_answers':{'SQLEditor': initialAns}}
+        
+        tableOne = "flight"
+        database = Database(tableOne, random=False)
+
+        self.assertEqual(len(data['params']['db_initialize']),0)
+
+        database.loadDatabase(data)
+
+        self.assertIn(tableOne,data['params']['db_initialize'])
+        self.assertIn("airplane",data['params']['db_initialize'])
+        self.assertIn("airport",data['params']['db_initialize'])
+
+
 # Tests the helper functions
 class TableHelperFunctionsTest(unittest.TestCase):
     

@@ -149,74 +149,38 @@ def generateInsert(data, difficulty):
 
     # Based on the difficulty, choose a random amount of columns
     # If no difficulty is specified, uses question parameters instead
-    table = None
+    database = None
     match difficulty:
-        case 'easy': table = loadTrimmedTable(random.randint(3, 4), 0)
-        case 'medium': table = loadTrimmedTable(random.randint(4, 6), 0)
-        case 'hard': table = loadTrimmedTable(random.randint(5, 8), 0)
-        case _: table = db.Table(columns=columns, joins=joins, clauses=tableClauses)
+        case 'easy': database = db.Database(file=loadTrimmedTable(random.randint(3, 4), 0), columns=0)
+        case 'medium': database = db.Database(file=loadTrimmedTable(random.randint(4, 6), 0), columns=0)
+        case 'hard': database = db.Database(file=loadTrimmedTable(random.randint(5, 8), 0), columns=0)
+        case _: database = db.Database(columns=columns, joins=joins, clauses=tableClauses)
+
+    # Grabs the primary table for easy referencing
+    table = database.primaryTable
+
+    # Generates some data
+    database.generateRows(random.randint(3, 7))
 
 
 
-    # Creates the values ands add them to the question string
-
-    # Generates the data to be inserted.
-    # Converts the dictionary row to a list and removes arrays
-    columnData = nd.generateColumns(table, random.randint(3, 7))
-    columnDatum = [value[0] for value in list(columnData.values())]
+    # Obtains the row to be inserted by removed it
+    # from the primary table's rows    
+    row = [table.rows[key].pop() for key in table.columns.keys()]
     
 
 
-    # Adds the data to the question string, replacing the '[]'
-    # with '()'
-    valuesString = f"({str(columnDatum)[1:-1]})"
+    # Creates the question string
+    questionString = f"Insert the following values into the <b>{table.name}</b> table:\n({str(row)[1:-1]})"
 
-    # Creates and adds the question string
-    data['params']['questionString'] = f"Insert the following values into the <b>{table.name}</b> table:\n{valuesString}"
+    # Loads the database
+    database.loadDatabase(data)
 
-
-
-    # Gets referenced tables
-    referencedTables = getReferencedTables(table)
-
-    # Adds the table to the schema as well as
-    # the schemas of referenced tables
-    loadAllSchema(data, table, referencedTables)
-
-
-
-    # Loads noisy data
-    # Doesn't call loadAllNoisyData() since we want
-    # to load the referenced row into the foreign
-    # table, but we don't want to load the row the
-    # student is supposed to insert themselves
-
-    # Gets a key map for easy reference later
-    keyMap = table.getKeyMap()
-
-    # Generates the noisy data. At this point, there
-    # is NOT consistency across foreign keys.
-    generatedData = {key: nd.generateColumns(referencedTables[keyMap[key]['references']], len(list(columnData.values())[0])) for key in keyMap}
-
-    # Overrides the generated data to be the same as
-    # the primary table's data. This IS now consistent
-    # across foreign keys.
-    for key in keyMap:
-        generatedData[key][keyMap[key]['foreignKey']] = columnData[key]
-    
-    # Loads the data into the actual table
-    for key in keyMap:
-        loadNoisyData(data, referencedTables[keyMap[key]['references']], generatedData[key])
-
-    # Loads the primary table's data, aside from
-    # the row that needs to be inserted
-    columnData = {key: columnData[key][1:] for key in columnData}
-    loadNoisyData(data, table, columnData)
-
-
+    # Adds the question string
+    data['params']['questionString'] = questionString
 
     # Creates the answer string
-    data['correct_answers']['SQLEditor'] = insertStatement(table, columnDatum)
+    data['correct_answers']['SQLEditor'] = insertStatement(table, row)
 
 # Generates an insert statement based on the data
 def insertStatement(table, row):
@@ -738,64 +702,6 @@ def getQuestionParameters(data):
         }
     
     return numberOfColumns, numberOfJoins, tableClauses, queryClauses
-
-
-
-# Loads noisy data into the editors
-def loadNoisyData(data, table, rows):
-
-    # For each column, select the i-th item and create
-    # a create an INSERT statemetn. Do so for all i items
-    data['params']['db_initialize'] += ''.join(insertStatement(table, [rows[key][i] for key in rows]) for i in range(len(list(rows.values())[0])))
-
-# Loads the noisy data supplied as well as generating and
-# loading noisy data for the referenced tables.
-#
-# Note: This function respects references so a foreign key
-# reference between two tables will holds the same value.
-#
-# Note: this CAN throw a "UNIQUE constraint failed" IF the
-# primary table has two references to the same table (such
-# as the static `flight` table) AND there exists a duplicate
-# value between the different tables. THIS CAN NEVER HAPPEN
-# ON RANDOM TABLES since a random primary table will never
-# hold more than one reference to a given secondary random
-# table. In other words, no worries.
-def loadAllNoisyData(data, table, rows, referencedTables={}):
-
-    # Gets a dicitonary of referenced tables.
-    # The keys are the name of the table
-    if not referencedTables:
-        referencedTables = getReferencedTables(table, unique=False)
-
-    # Gets a dictionary that maps the column to both
-    # the referenced table name and foreign key
-    keyMap = table.getKeyMap()
-
-
-
-    # Generates the noisy data. At this point, there
-    # is NOT consistency across foreign keys.
-    generatedData = {key: nd.generateColumns(referencedTables[keyMap[key]['references']], len(list(rows.values())[0])) for key in keyMap}
-
-    # Overrides the generated data to be the same as
-    # the primary table's data. This IS now consistent
-    # across foreign keys.
-    for key in keyMap:
-        generatedData[key][keyMap[key]['foreignKey']] = rows[key]
-    
-
-
-    # Loads the data into the actual table
-    for key in keyMap:
-        loadNoisyData(data, referencedTables[keyMap[key]['references']], generatedData[key])
-    
-    # Finally loads the primary table's data.
-    # Since the primary table may reference the foreign
-    # tables but NOT vice versa, it is required that the
-    # primary table is loaded after such that foreign
-    # key constrains are satisfied.
-    loadNoisyData(data, table, rows)
 
 
 
