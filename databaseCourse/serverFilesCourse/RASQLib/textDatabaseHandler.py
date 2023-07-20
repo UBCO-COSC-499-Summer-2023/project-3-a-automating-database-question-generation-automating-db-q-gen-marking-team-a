@@ -81,7 +81,8 @@ class Database:
         # Add their inserts to the initialize string
         if self.referencedTables:
             for table in self.referencedTables:
-                data['params']['db_initialize'] += self.referencedTables[table].getInserts()
+                if len(list(self.referencedTables[table].rows.values())[0]) > 0:
+                    data['params']['db_initialize'] += self.referencedTables[table].getInserts()
         
         # Adds the primary table afterwards.
         # Since the primary table may reference the foreign
@@ -713,6 +714,15 @@ class Table:
 
         # For each column, select the i-th item and create
         # a create an INSERT statemetn. Do so for all i items
+        '''
+        statements = ''
+        for row in range(len(list(self.rows.values())[0])):
+            vals = []
+            for key in self.columns.keys():
+                vals.append(self.rows[key][row])
+            statements += f"INSERT INTO {self.name} VALUES ({str(vals)[1:-1]});\n"
+        return statements
+        '''
         return ''.join([f"INSERT INTO {self.name} VALUES ({str([self.rows[key][i] for key in self.rows])[1:-1]});\n" for i in range(len(list(self.rows.values())[0]))])
         
 
