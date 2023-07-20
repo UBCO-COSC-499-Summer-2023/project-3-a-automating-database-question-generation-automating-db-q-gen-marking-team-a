@@ -81,7 +81,7 @@ class Database:
         # Add their inserts to the initialize string
         if self.referencedTables:
             for table in self.referencedTables:
-                if len(list(self.referencedTables[table].rows.values())[0]) > 0:
+                if self.referencedTables[table].rows:
                     data['params']['db_initialize'] += self.referencedTables[table].getInserts()
         
         # Adds the primary table afterwards.
