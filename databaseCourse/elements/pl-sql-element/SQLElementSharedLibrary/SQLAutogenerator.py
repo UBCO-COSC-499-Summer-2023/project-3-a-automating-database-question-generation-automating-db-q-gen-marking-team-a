@@ -203,7 +203,6 @@ def generateUpdate(data, difficulty):
     columns, joins, tableClauses, queryClauses = getQuestionParameters(data)
 
     # Chooses a table to load based on quesiton difficulty
-    # Randomly selects from the list at the given difficulty
     database = None
     match difficulty:
         case 'easy': 
@@ -356,37 +355,39 @@ def generateDelete(data, difficulty):
     columns, joins, tableClauses, queryClauses = getQuestionParameters(data)
 
     # Chooses a table to load based on quesiton difficulty
-    # Randomly selects from the list at the given difficulty
-    table = None
+    database = None
     match difficulty:
         case 'easy': 
-            table = loadTrimmedTable(random.randint(3, 4))
+            database = db.Database(file=loadTrimmedTable(random.randint(3, 4)), columns=0, random=False)
             queryClauses['useConditional'] = False
             queryClauses['useSubquery'] = False
 
         case 'medium': 
-            table = loadTrimmedTable(random.randint(4, 6))
+            database = db.Database(file=loadTrimmedTable(random.randint(4, 6)), columns=0, random=False)
             queryClauses['useConditional'] = True
             queryClauses['useSubquery'] = False
 
         case 'hard': 
-            table = loadTrimmedTable(random.randint(5, 8))
+            database = db.Database(file=loadTrimmedTable(random.randint(5, 8)), columns=0, random=False)
             queryClauses['useConditional'] = False
             queryClauses['useSubquery'] = True
             return None # Not yet implemented; first requires quesryStatement() to be completed
         
         case _:
-            table = db.Table(columns=columns, joins=joins, clauses=tableClauses)
+            database = db.Database(columns=columns, joins=joins, clauses=tableClauses)
+
+    # Gets the primary table for easy referencing
+    table = database.primaryTable
 
     # Generates a bunch of bogus rows
-    columnData = nd.generateColumns(table, columns * 3 + random.randint(-3, 3))
+    database.generateRows(random.randint(3, 7))
 
 
     
     # If the quesiton should use a condition, set parameters
     conditionalValues = {}
     columnList = list(table.columns.keys())
-    indexList = [i for i in range(len(list(columnData.values())[0]))]
+    indexList = [i for i in range(len(list(table.rows.values())[0]))]
     for i in range(queryClauses['useConditional']):
 
         # Selects a random column to affect.
@@ -400,7 +401,7 @@ def generateDelete(data, difficulty):
         randomValueIndex = nd.popRandom(indexList)
 
         # Grabs the randomly selected values
-        conditionalValues[conditionalColumn] = columnData[conditionalColumn][randomValueIndex]
+        conditionalValues[conditionalColumn] = table.rows[conditionalColumn][randomValueIndex]
 
 
 
@@ -440,15 +441,8 @@ def generateDelete(data, difficulty):
 
 
 
-    # Gets referenced tables
-    referenced = getReferencedTables(table)
-
-    # Loads the schema of all referenced tables
-    loadAllSchema(data, table, referenced)
-
-    # Loads the noisy data into the primary table as
-    # well as generating noisy data for referenced tables
-    loadAllNoisyData(data, table, columnData, referenced)
+    # Loads the database
+    database.loadDatabase(data)
 
     # Sets the question string
     data['params']['questionString'] = questionString
