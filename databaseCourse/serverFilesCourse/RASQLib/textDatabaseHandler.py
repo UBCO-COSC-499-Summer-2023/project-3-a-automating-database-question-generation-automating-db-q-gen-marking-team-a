@@ -1,6 +1,11 @@
 import os
 from random import choice
 from random import randint
+
+# This allows DroneCI to see the RASQLib module
+import sys
+sys.path.append('/drone/src/databaseCourse/serverFilesCourse/')
+
 from RASQLib import noisyData as nd
 
 # Used for modelling a database and tables during question 
