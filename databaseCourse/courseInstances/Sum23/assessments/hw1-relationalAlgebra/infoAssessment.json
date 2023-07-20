@@ -16,7 +16,8 @@
                 {"id": "RelaX_Questions/2",             "points": 2},
                 {"id": "RelaX_Questions/3",             "points": 2},
                 {"id": "RelaX_Questions/4",             "points": 2},
-                {"id": "RelaX_Questions/5",             "points": 2}
+                {"id": "RelaX_Questions/5",             "points": 2},
+                {"id": "RelaX_Questions/Random",        "points": 2}
             ]
         }
     ]
