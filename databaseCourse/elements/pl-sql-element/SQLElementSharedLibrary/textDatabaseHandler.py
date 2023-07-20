@@ -44,7 +44,7 @@ class Table:
     # File name and table name are equivalent.
     #   File: the name of the text file if it exists OR the name of the random table
     #   Columns: the number of columns in the table
-    def __init__(self, file='', columns=5, joins=0, clauses=[], constraints={}, random=True):
+    def __init__(self, file='', columns=5, joins=0, clauses={}, constraints={'': {'name': '', 'unit': 'INTEGER', 'unitOther': None}}, random=True):
         self.name = file
         self.columns = {}
 
@@ -148,6 +148,9 @@ class Table:
                 # Checks if the line has a NOT NULL clause
                 isNotNull = 'NOT NULL' in line.upper()
 
+                # Checks if the line has the UNIQUE clause
+                isUnique = 'UNIQUE' in line.upper()
+
                 # Adds the column
                 self.columns[name] = {
                     'name': name,
@@ -155,6 +158,7 @@ class Table:
                     'unitOther': unitOther,
                     'isPrimary': False,
                     'isNotNull': isNotNull,
+                    'isUnique': isUnique,
                     'references': None,
                     'foreignKey': None,
                     'isOnUpdateCascade': False,
@@ -164,8 +168,6 @@ class Table:
 
 
     # Creates a random table
-    # TODO
-    #   - clauses; will be completed on an as-needed basis
     def loadRandom(self, name, columns, joins, clauses, constraints):
 
         # Checks whether the parameters are legal
@@ -175,9 +177,55 @@ class Table:
         # It's due to the line `self.columns[columnName] = {...}`
         # BUT HOW!? How does *that* line get a timeout iff the
         # count of columns is either 1 or 2? It makes no sense!
-        if columns < 3 or joins < 0 or joins > columns:
-            self.columns = None
-            return
+        if columns < 3:
+            print(f"Table requires at least 3 columns (was supplied with {columns} columns)")
+            return None
+        
+        if joins < 0:
+            print(f"Table cannot have negative amount of foreign keys (was supplied with {joins} foreign keys)")
+            return None
+        
+        if joins > columns:
+            print(f"Table cannot have more foreign keys than columns (was supplied with {columns} columns and {joins} foreign keys)")
+            return None
+
+        # Tests if the clauses are valid
+        primaryKeys = 0
+        for clause in clauses:
+
+            # Grabs the value of the clause
+            value = clauses[clause]
+
+            # Checks if any clause has a negative amount
+            if value < 0:
+                print(f"Table cannot have negative amount of a clause (was supplied with {value} '{clause}')")
+                return None
+
+            # Checks if given clause has too many
+            match clause:
+                case 'primaryKeys':
+                    if value > columns - joins:
+                        print(f"Table cannot have more primary keys than columns and foreign keys (was supplied with {value} primary keys, {columns} columns, and {joins} foreign keys)")
+                        return None
+                    primaryKeys = value
+                case 'isNotNull':
+                    if value > columns - joins - primaryKeys:
+                        print(f"Table cannot have more NO NULL clauses than columns, primary keys, and foreign keys (was supplied with {value} clauses, {columns}, columns, {primaryKeys} primary keys, and {joins} foreign keys)")
+                        return None
+                case 'isUnique':
+                    if value > columns - joins - primaryKeys:
+                        print(f"Table cannot have more UNIQUE clauses than columns, primary keys, and foreign keys (was supplied with {value} clauses, {columns}, columns, {primaryKeys} primary keys, and {joins} foreign keys)")
+                        return None
+                case 'isOnUpdateCascade':
+                    if value > joins:
+                        print(f"Table cannot have more ON UPDATE CASCADE clauses than foreign keys (was supplied with {value} clauses and {joins} foreign keys)")
+                        return None
+                case 'isOnDeleteSetNull':
+                    if value > joins:
+                        print(f"Table cannot have more ON DELETE SET NULL clauses than foreign keys (was supplied with {value} clauses and {joins} foreign keys)")
+                        return None
+                    
+
 
         # Selects a random name if none are provided
         if not name:
@@ -190,12 +238,19 @@ class Table:
         # Adds foreign key constraints
         if constraints:
             for key in constraints.keys():
-                self.columns[key] = {
-                    'name': key,
+
+                # If the default contraint, then choose
+                # an applicable name for an INTEGER
+                if not key:
+                    constraints[key]['name'] = choice(['num', 'id', f"{self.name[:1].lower()}id"])
+
+                self.columns[constraints[key]['name']] = {
+                    'name': constraints[key]['name'],
                     'unit': constraints[key]['unit'],
                     'unitOther': constraints[key]['unitOther'],
                     'isPrimary': True, # Must be true to prevent SQLite FK constraint error
                     'isNotNull': False,
+                    'isUnique': False,
                     'references': None,
                     'foreignKey': None,
                     'isOnUpdateCascade': False,
@@ -237,6 +292,7 @@ class Table:
                     'unitOther': columnUnitOther,
                     'isPrimary': False,
                     'isNotNull': False,
+                    'isUnique': False,
                     'references': None,
                     'foreignKey': None,
                     'isOnUpdateCascade': False,
@@ -284,6 +340,79 @@ class Table:
 
             # Removes the old column while updateting the new
             self.columns[f"{self.name[0:1].lower()}{foreignColumn}"] = self.columns.pop(foreignColumn)
+
+
+
+        # Accounts for existing PKs due to table defaults
+        try:
+            clauses['primaryKeys'] -= len(self.getPrimaryKeys())
+        except:
+            pass
+
+        # Adds clauses
+        for clause in clauses:
+
+            # All clauses are of the form...
+            #   clause: INTEGER
+            # ...so iterate over the integer until a sufficient
+            # number of columns have been selected.
+            for i in range(clauses[clause]):
+
+                match clause:
+
+                    # Selects primary keys
+                    case 'primaryKeys':
+
+                        # Keeps choosing columns until one is valid
+                        column = None
+                        while not column or self.columns[column]['references'] or self.columns[column]['isPrimary']:
+                            column = choice(list(self.columns.keys()))
+
+                        self.columns[column]['isPrimary'] = True
+
+                    # NOT NULL constraint
+                    case 'isNotNull':
+                        
+                        # Keeps choosing columns until one is valid
+                        column = None
+                        while not column or self.columns[column]['references'] or self.columns[column]['isPrimary']:
+                            column = choice(list(self.columns.keys()))
+
+                        self.columns[column]['isNotNull'] = True
+
+                    # UNIQUE constraint
+                    case 'isUnique':
+
+                        # Keeps choosing columns until one is valid
+                        column = None
+                        while not column or self.columns[column]['references'] or self.columns[column]['isPrimary']:
+                            column = choice(list(self.columns.keys()))
+
+                        self.columns[column]['isUnique'] = True
+
+                    # CASCADE ON UPDATE clause
+                    case 'isOnUpdateCascade':
+                        
+                        # Keeps choosing columns until one is valid
+                        column = None
+                        while not column or not self.columns[column]['references'] or self.columns[column]['isOnUpdateCascade']:
+                            column = choice(list(self.columns.keys()))
+
+                        self.columns[column]['isOnUpdateCascade'] = True
+
+                    # SET NULL ON DELETE clause
+                    case 'isOnDeleteSetNull':
+
+                        # Keeps choosing columns until one is valid
+                        column = None
+                        while not column or not self.columns[column]['references'] or self.columns[column]['isOnDeleteSetNull']:
+                            column = choice(list(self.columns.keys()))
+
+                        self.columns[column]['isOnDeleteSetNull'] = True
+
+                    # Crashes if the clause is not valid
+                    case _:
+                        assert False, f"Clause {clause} is invalid"
 
 
 
@@ -375,6 +504,10 @@ class Table:
     #       'foreignKey': the column in the referenced table
     def getKeyMap(self):
         return {key: {'references': self.columns[key]['references'], 'foreignKey': self.columns[key]['foreignKey']} for key in self.columns.keys() if self.columns[key]['references']}
+    
+    # Returns all primary key columns
+    def getPrimaryKeys(self):
+        return {key: self.columns[key] for key in self.columns.keys() if self.columns[key]['isPrimary']}
 
 
 
@@ -392,9 +525,13 @@ class Table:
             if self.columns[column]['unitOther']:
                 schema += f"({self.columns[column]['unitOther']})"
             
-            # Includes the not null clause if necessary
+            # Includes the NOT NULL clause if necessary
             if self.columns[column]['isNotNull']:
                 schema += ' NOT NULL'
+
+            # Includes the UNIQUE clause if necessary
+            if self.columns[column]['isUnique']:
+                schema += ' UNIQUE'
 
             # Adds a comma at the end
             schema += ',\n'

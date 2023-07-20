@@ -8,7 +8,7 @@ class AutogenerateTest(unittest.TestCase):
 #---# autogenerate() Tests------------------------------------------------------------------------------------------------------------------
     # case1 : enter an invalid difficulty
     def testAutogenerateInvalidDifficultyReturnsNone(self):
-        data = {'params':{'html_params':{'random':{},'questionType':{},'difficulty':{}}}}
+        data = {'params':{'html_params':{'random':{},'questionType':{},'difficulty':'not valid difficulty'}}}
 
         result = autogenerate(data)
 
@@ -37,8 +37,8 @@ class AutogenerateTest(unittest.TestCase):
     def testAutogenerateReturnsCorrectQuestionType(self,testType,difficulty,keyWord):
         initialAns = "\n"
         db_initalize = ""
-        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
-                          'db_initialize':db_initalize},
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty, 'columns': 5, 'joins': 0},
+                          'db_initialize':db_initalize, 'html_table_clauses': {}},
                 'correct_answers':{'SQLEditor': initialAns}}
         
         autogenerate(data)
@@ -165,8 +165,9 @@ class QuestionTypeStatementsTest(unittest.TestCase):
         updateVal = "Alberta"
         conditionalCol = updateCol
         conditionalVal = "Ontario"
+        conditionalValues = {conditionalCol: conditionalVal}
 
-        result = updateStatement(table,updateCol,updateVal,conditionalCol,conditionalVal)
+        result = updateStatement(table,updateCol,updateVal,conditionalValues)
 
         self.assertIn("UPDATE",result)
         self.assertIn("WHERE",result)
