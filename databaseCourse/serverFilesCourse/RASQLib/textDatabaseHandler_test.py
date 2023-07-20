@@ -18,14 +18,8 @@ class DatabaseTest(unittest.TestCase):
         
         tableOne = "airport"
         database = Database(file=tableOne, random=False)
-
-        
-        #tableAirport = db.Table(tableOne)
         tableTwo = "flight"
-        #tableFlight = db.Table(tableTwo)
         tableThree = "airplane"
-        #tableAirplane = db.Table(tableThree)
-        #tables = {tableOne: tableAirport, tableThree: tableAirplane}
 
         self.assertEqual(len(data['params']['db_initialize']),0)
 
