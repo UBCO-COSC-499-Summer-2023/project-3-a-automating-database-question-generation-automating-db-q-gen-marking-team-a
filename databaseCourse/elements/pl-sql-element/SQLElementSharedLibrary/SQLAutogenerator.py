@@ -503,20 +503,23 @@ def generateQuery(data, difficulty):
     database = None
     match difficulty:
         case 'easy': 
-            database = db.Database(file=loadTrimmedTable(random.randint(3, 4)), columns=0, joins=0, random=False)
+            columns = random.randint(3, 4)
             joins = 0
+            database = db.Database(columns=columns, joins=joins)
             clauses = {}
 
         case 'medium': 
-            joins=random.randint(1, 2)
-            database = db.Database(file=loadTrimmedTable(random.randint(4, 6)), columns=0, joins=joins, random=False)
+            columns = random.randint(4, 6)
+            joins = random.randint(1, 2)
+            database = db.Database(columns=columns, joins=joins)
 
             clauses = {}
 
         case 'hard': 
-            joins=random.randint(1, 2)
-            database = db.Database(file=loadTrimmedTable(random.randint(5, 8)), columns=0, joins=joins, random=False)
-            clauses = {}
+            columns = random.randint(5, 8)
+            joins = random.randint(1, 2)
+            database = db.Database(columns=columns, joins=joins)
+            #clauses = {}
             clauses = random.randint(1, 3)
             return None # Not yet implemented; first requires queryStatement() to be completed
         
@@ -543,22 +546,6 @@ def generateQuery(data, difficulty):
     # }
     keyMap = table.getKeyMap()
 
-    # Maps the foreign keys to tables
-    # foreignKeyMap = {
-    #   $columnName: table
-    # }
-    foreignKeyMap = {table.name: table}
-
-    # Randomly chooses which tables are joined together
-    for join in range(joins):
-
-        # Chooses the foreign key randomly from the list
-        foreignKey = random.choice(list(keyMap.keys()))
-
-        # Pops the key out (ensures no repeated joins) and
-        # adds it to the mapping
-        foreignKeyMap[foreignKey] = referenced[keyMap.pop(foreignKey)['references']]
-
 
 
     # The columns that will be selected by the query
@@ -570,11 +557,28 @@ def generateQuery(data, difficulty):
     # Chooses one column randomly from each joined table.
     # Ensures that at least one column per table joined is
     # in the query
-    for key in foreignKeyMap:
-        selectedColumns[key] = [random.choice(list(foreignKeyMap[key].columns.keys()))]
+    for key in keyMap:
+        selectedColumns[key] = [keyMap[key]['foreignKey']]
+
+    # Maps the foreign keys to tables
+    # foreignKeyMap = {
+    #   $columnName: table
+    # }
+    foreignKeyMap = {table.name: table}
+
+    # Randomly chooses which tables are joined together
+    for join in range(joins):
+        
+        # Chooses the foreign key randomly from the list
+        foreignKey = random.choice(list(keyMap.keys()))
+
+        # Pops the key out (ensures no repeated joins) and
+        # adds it to the mapping
+        foreignKeyMap[foreignKey] = referenced[keyMap.pop(foreignKey)['references']]
 
     # Adds more columns until there are the amount as
     # specified by the difficulty
+    '''
     for i in range(len(list(table.columns)) - joins - 1):
 
         # Chooses a foreign key, aka chooses a table
@@ -587,6 +591,7 @@ def generateQuery(data, difficulty):
 
         # Adds the column to the appropriate table's selected column
         selectedColumns[foreignKey].append(uniqueKey)
+    '''
 
 
 
