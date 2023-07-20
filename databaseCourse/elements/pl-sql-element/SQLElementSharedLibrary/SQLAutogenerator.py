@@ -496,40 +496,37 @@ def deleteStatement(table, conditionalValues = None, useAnd = False, subquery = 
 # Have proper conditionals
 def generateQuery(data, difficulty):
     
-    # Sets the difficulty
-    columnCount = None
-    joins = None
-    clauses = None
+    # Obtains question specific parameters
+    columns, joins, tableClauses, queryClauses = getQuestionParameters(data)
+
+    # Chooses a table to load based on quesiton difficulty
+    database = None
     match difficulty:
-
-        # Easy:   conditional, no join, no clauses
         case 'easy': 
-            columnCount = random.randint(1, 3)
-            joins = 0
-            clauses = 0
+            database = db.Database(file=loadTrimmedTable(random.randint(3, 4)), columns=0, joins=0, random=False)
+            clauses = {}
 
-        # Medium: conditional, join, no clauses
         case 'medium': 
-            columnCount = random.randint(3, 4)
-            joins = random.randint(1, 2)
-            clauses = 0
+            database = db.Database(file=loadTrimmedTable(random.randint(4, 6)), columns=0, joins=random.randint(1, 2), random=False)
+            clauses = {}
 
-        # Hard:   conditional, join, clauses
         case 'hard': 
-            columnCount = random.randint(4, 5)
-            joins = random.randint(1, 2)
+            database = db.Database(file=loadTrimmedTable(random.randint(5, 8)), columns=0, joins=random.randint(1, 2), random=False)
+            clauses = {}
             clauses = random.randint(1, 3)
+            return None # Not yet implemented; first requires quesryStatement() to be completed
+        
+        case _:
+            database = db.Database(columns=columns, joins=joins, clauses=tableClauses)
 
+    # Gets the primary table for easy referencing
+    table = database.primaryTable
 
+    # Gets the referenced tables for easy referencing
+    referenced = database.referencedTables
 
-    # Selects a table based on the difficulty
-
-    # Keeps trying random tables until it finds one that
-    # fulfills the conditions set by the difficulty
-    table = loadTrimmedTable(columnCount, joins)
-
-    # Gets the referenced tables
-    referenced = getReferencedTables(table)
+    # Generates a bunch of bogus rows
+    database.generateRows(random.randint(3, 7))
 
 
 
@@ -573,7 +570,7 @@ def generateQuery(data, difficulty):
 
     # Adds more columns until there are the amount as
     # specified by the difficulty
-    for i in range(columnCount - joins - 1):
+    for i in range(len(list(table.columns)) - joins - 1):
 
         # Chooses a foreign key, aka chooses a table
         foreignKey = random.choice(list(foreignKeyMap.keys()))
@@ -622,7 +619,7 @@ def generateQuery(data, difficulty):
     questionString = questionString[:-1] + ' select the columns'
 
     # De-pluralizes the string if there is only one column
-    if columnCount == 1:
+    if len(list(table.columns)) == 1:
         questionString = questionString[:-1]
 
     # Adds the columns to be selected
@@ -643,7 +640,7 @@ def generateQuery(data, difficulty):
 
             # Adds an 'and' if it's the last item and
             # there are more than one item
-            if columnIndex == len(list(selectedColumns[key])) and keyIndex == len(list(selectedColumns)) and columnCount > 1:
+            if columnIndex == len(list(selectedColumns[key])) and keyIndex == len(list(selectedColumns)) and len(list(table.columns)) > 1:
                 questionString += ' and'
             
             questionString += f" <b>{column}</b>,"
@@ -651,20 +648,15 @@ def generateQuery(data, difficulty):
     # Removes the trailing comma
     questionString = questionString[:-1] + '.'
 
+
+    # Loads some rows
+    database.generateRows(random.randint(3, 7))
+
+    # Loads the database
+    database.loadDatabase(data)
+
     # Adds the question string to data
     data['params']['questionString'] = questionString
-
-
-
-    # Loads the schema of all referenced tables
-    loadAllSchema(data, table, referencedTables=referenced)
-
-    # Generates random data to populate the table
-    rows = nd.generateColumns(table, len(list(table.columns.keys())) * 3 + random.randint(-3, 3))
-
-    # Loads the noisy data into the primary table as
-    # well as generating noisy data for referenced tables
-    loadAllNoisyData(data, table, rows, referencedTables=referenced)
 
     # Sets the correct answers
     # TODO: clauses (the '[]') is blank; make it not blank
