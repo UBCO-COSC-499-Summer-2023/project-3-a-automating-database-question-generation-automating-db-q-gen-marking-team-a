@@ -20,7 +20,7 @@ class Database:
         else:
             self.primaryTable = Table(file, columns, joins, clauses, constraints, rows, self, random)
         
-        self.referencedTables = self.primaryTable.getReferencedTables()
+        self.referencedTables = self.primaryTable.getReferencedTables(static=not random)
         self.isSQL = isSQL
 
 

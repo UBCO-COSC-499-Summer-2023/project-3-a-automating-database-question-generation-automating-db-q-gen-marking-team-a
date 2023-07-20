@@ -15,9 +15,9 @@ class DatabaseTest(unittest.TestCase):
                           'db_initialize':db_initialize},
                 'correct_answers':{'SQLEditor': initialAns}}
         
-        tableOne = "airport"
+        tableOne = "flight"
         database = Database(file=tableOne, random=False)
-        tableTwo = "flight"
+        tableTwo = "airport"
         tableThree = "airplane"
 
         self.assertEqual(len(data['params']['db_initialize']),0)
@@ -81,7 +81,7 @@ class DatabaseTest(unittest.TestCase):
                 'correct_answers':{'SQLEditor': initialAns}}
         
         tableOne = "flight"
-        database = Database(tableOne, random=False)
+        database = Database(file=tableOne, random=False)
 
         self.assertEqual(len(data['params']['db_initialize']),0)
 
