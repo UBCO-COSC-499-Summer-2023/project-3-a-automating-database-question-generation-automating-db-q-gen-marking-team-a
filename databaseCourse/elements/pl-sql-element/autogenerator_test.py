@@ -196,11 +196,11 @@ class QuestionTypeStatementsTest(unittest.TestCase):
     # with a condition
     def testDeleteStatementWithConditional(self):
         tableName = "airport"
-        table = db.Table(tableName)
+        table = db.Table(tableName, random=False)
         col = "province"
         condition = "Alberta"
 
-        result = deleteStatement(table,col,condition)
+        result = deleteStatement(table,{col: condition})
 
         self.assertIn("DELETE",result)
         self.assertIn("WHERE",result)

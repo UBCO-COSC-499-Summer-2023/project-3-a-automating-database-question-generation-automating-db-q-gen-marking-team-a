@@ -62,9 +62,7 @@
         {
             "title": "Random Delete",
             "questions": [
-                {"id": "DDL_Questions/deleteTables/randomEasy1",          "points": 1},
-                {"id": "DDL_Questions/deleteTables/randomMedium1",          "points": 1},
-                {"id": "DDL_Questions/deleteTables/randomHard1",          "points": 1}
+                {"id": "DDL_Questions/deleteTables/randomParameterized",          "points": 1}
             ]
         }
     ]
