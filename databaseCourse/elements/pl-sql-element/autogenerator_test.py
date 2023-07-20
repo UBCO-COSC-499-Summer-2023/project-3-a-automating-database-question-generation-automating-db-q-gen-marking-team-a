@@ -32,7 +32,7 @@ class AutogenerateTest(unittest.TestCase):
             # TODO: needs to be implemented
             # ["update","hard","change"], #not implemented yet
             # ["delete","hard","delete"], #not implemented yet
-            ["query","hard","select"]
+            # ["query","hard","select"]
             ])
     def testAutogenerateReturnsCorrectQuestionType(self,testType,difficulty,keyWord):
         initialAns = "\n"

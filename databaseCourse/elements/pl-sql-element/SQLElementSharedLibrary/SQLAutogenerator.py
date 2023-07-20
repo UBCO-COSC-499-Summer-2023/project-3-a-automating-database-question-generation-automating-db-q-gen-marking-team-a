@@ -514,7 +514,7 @@ def generateQuery(data, difficulty):
             database = db.Database(file=loadTrimmedTable(random.randint(5, 8)), columns=0, joins=random.randint(1, 2), random=False)
             clauses = {}
             clauses = random.randint(1, 3)
-            return None # Not yet implemented; first requires quesryStatement() to be completed
+            return None # Not yet implemented; first requires queryStatement() to be completed
         
         case _:
             database = db.Database(columns=columns, joins=joins, clauses=tableClauses)
