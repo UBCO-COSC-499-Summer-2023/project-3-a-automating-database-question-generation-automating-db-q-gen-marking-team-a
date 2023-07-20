@@ -9,26 +9,89 @@ from RASQLib import noisyData as nd
 # Models a group of tables
 class Database:
     def __init__(self, isSQL = True, file='', columns=5, joins=0, clauses={}, constraints={'': {'name': '', 'unit': 'INTEGER', 'unitOther': None}}, rows=0, random=True):
-        self.primaryTable = Table(file, columns, joins, clauses, constraints, random)
+
+        if columns == 0:
+            self.primaryTable = file
+        else:
+            self.primaryTable = Table(file, columns, joins, clauses, constraints, rows, self, random)
+        
         self.referencedTables = self.primaryTable.getReferencedTables()
         self.isSQL = isSQL
+
+
+
+    # Populates the database with rows of data
+    #
+    # Note: This function respects references so a foreign key
+    # reference between two tables will holds the same value.
+    #
+    # Note: this CAN throw a "UNIQUE constraint failed" IF the
+    # primary table has two references to the same table (such
+    # as the static `flight` table) AND there exists a duplicate
+    # value between the different tables. THIS CAN NEVER HAPPEN
+    # ON RANDOM TABLES since a random primary table will never
+    # hold more than one reference to a given secondary random
+    # table. In other words, no worries.
+    def generateRows(self, qty):
+
+        # Generates the primary table's rows
+        self.primaryTable.generateRows(qty)
+
+        # Generates referenced table's rows.
+        # Foreign key constrains are violated here.
+        for table in self.referencedTables:
+            self.referencedTables[table].generateRows(qty)
+
+        # Gets the primary's key map for easy references
+        keyMap = self.primaryTable.getKeyMap()
+
+        # Overrides the foreign column in the referenced table
+        # to be the foreign key's column in the primary table.
+        # The list() performs a deep copy rather than a shallow one.
+        for key in keyMap:
+            self.referencedTables[keyMap[key]['references']].rows[keyMap[key]['foreignKey']] = list(self.primaryTable.rows[key])
     
+
+
     # Adds the tables' schema to data
-    def loadSchemas(self, data):
+    def loadColumns(self, data):
 
         # Iterate over tables, if there are any
         # Add their schema to the initialize string
         if self.referencedTables:
-            for key in self.referencedTables:
-                data['params']['db_initialize'] += f"{self.referencedTables[key].getSchema()}\n"
+            for table in self.referencedTables:
+                data['params']['db_initialize'] += f"{self.referencedTables[table].getSchema()}\n"
         
         # Adds the primary table afterwards.
         # Since the primary table may reference the foreign
         # tables but NOT vice versa, it is required that the
         # primary table is loaded after such that foreign
         # key constrains are satisfied.
-        data['params']['db_initialize'] += f"{self.table.getSchema()}\n"
+        data['params']['db_initialize'] += self.primaryTable.getSchema()
     
+    # Adds the tables' rows to the data
+    def loadRows(self, data):
+
+        # Iterate over tables, if there are any
+        # Add their inserts to the initialize string
+        if self.referencedTables:
+            for table in self.referencedTables:
+                data['params']['db_initialize'] += self.referencedTables[table].getInserts()
+        
+        # Adds the primary table afterwards.
+        # Since the primary table may reference the foreign
+        # tables but NOT vice versa, it is required that the
+        # primary table is loaded after such that foreign
+        # key constrains are satisfied.
+        data['params']['db_initialize'] += self.primaryTable.getInserts()
+    
+    # Adds everything necessary for each table to the data variable
+    def loadDatabase(self, data):
+        self.loadColumns(data)
+        self.loadRows(data)
+    
+
+
     # Prints the schema of all tables in the database
     def __str__(self):
         return f"{self.primaryTable.getSchema()}{''.join([self.referencedTables[referencedTable].getSchema() for referencedTable in self.referencedTables])}"
@@ -42,16 +105,17 @@ class Table:
     # File name and table name are equivalent.
     #   File: the name of the text file if it exists OR the name of the random table
     #   Columns: the number of columns in the table
-    def __init__(self, file='', columns=5, joins=0, clauses={}, constraints={'': {'name': '', 'unit': 'INTEGER', 'unitOther': None}}, rows=0, random=True):
+    def __init__(self, file='', columns=5, joins=0, clauses={}, constraints={'': {'name': '', 'unit': 'INTEGER', 'unitOther': None}}, rows=0, database=None, random=True):
         self.name = file
+        self.database = database
         self.columns = {}
-        self.data = {}
+        self.rows = {}
 
         # Adds columns
         self.load(file, columns, joins, clauses, constraints, random)
 
         # Adds data
-        self.addData(rows)
+        self.generateRows(rows)
 
 
 
@@ -560,10 +624,15 @@ class Table:
     
 
 
-    # Adds data to the table
-    def addData(self, rows):
-        if rows:
-            self.data = nd.generateColumns(self, rows)
+    # Populates the table's rows    
+    def generateRows(self, qty):
+        if qty:
+            self.rows = nd.generateColumns(self, qty)
+    
+    # Adds a row to this table
+    def addRow(self, row, index=0):
+        for key in self.columns.keys():
+            self.rows[key].append(row[key][index])
 
 
 
@@ -633,6 +702,14 @@ class Table:
         schema = schema[0:-2] + "\n);\n"
 
         return schema
+    
+    # Returns insert statements for this table's rows
+    def getInserts(self):
+
+        # For each column, select the i-th item and create
+        # a create an INSERT statemetn. Do so for all i items
+        return ''.join([f"INSERT INTO {self.name} VALUES ({str([self.rows[key][i] for key in self.rows])[1:-1]});\n" for i in range(len(list(self.rows.values())[0]))])
+        
 
 
     # The same as calling Table.getSchema()

@@ -180,6 +180,58 @@ class TableTest(unittest.TestCase):
 
 
 
+    #---# getReferencedTablesSet() Test(s)
+    # has referenced tables
+    def testGetReferencedTablesSetGetsAllReferencedDbs(self):
+        tableName = "flight"
+        referenced = ["airplane","airport","passenger"]
+        table = Table(tableName)
+
+        result = table.getReferencedTables(unique=True)
+
+        self.assertIsInstance(result,dict)
+        for x in result:
+            self.assertIn(x.name,referenced)
+
+    # has no referenced tables
+    def testGetReferencedTablesSetGetsAllZeroReferencedDbs(self):
+        tableName = "airport"
+        referenced = ["airplane","airport","passenger"]
+        table = Table(tableName)
+
+        result = table.getReferencedTables(unique=True)
+
+        self.assertIsInstance(result,dict)
+        for x in result:
+            self.assertNotIn(x.name,referenced)
+
+#---# getReferencedTableDictionary() Test(s)
+    # has referenced tables
+    def testGetReferencedTablesDictionaryGetsAllReferencedDbs(self):
+        tableName = "flight"
+        referenced = ["airplane","airport","passenger"]
+        table = Table(tableName)
+
+        result = table.getReferencedTables(unique=False)
+
+        self.assertIsInstance(result,dict)
+        for x in result:
+            self.assertIn(x,referenced)
+
+    # has no referenced tables
+    def testGetReferencedTablesDictionaryGetsAllZeroReferencedDbs(self):
+        tableName = "airport"
+        referenced = ["airplane","airport","passenger"]
+        table = Table(tableName)
+
+        result = table.getReferencedTables(unique=False)
+
+        self.assertIsInstance(result,dict)
+        for x in result:
+            self.assertNotIn(x,referenced)
+
+
+
     # Tests getKeyMap()
     # Case: table has no relations
     def testGetKeyMapWhenTableHasNoRelations(self):
