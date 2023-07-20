@@ -48,20 +48,7 @@ def generateRandom(unit, stringType=None):
 
 
 #? Plan is to use this function to return a string similar to reading 'shipmentDatabase.txt'
-def autoGenTableSet():
-    #* 1. create rand num of tables
-        #* a. rand num gen for amount of tables
-        #* b. rand num for rows and columns of each table
-        #* c. place each table into an array.
-    #* 2. Fill each table with dummy data
-        #* a. check dependent columns (cid/pid)
-        #* b. save dependents data 
-    #* 3. to string each table
-    #* contat each table as in 'shipmentDatabase.txt'
-    pass
-
 possibleTableNames = getRandomTableNames()
-
 
 def generateDataset(numTables=5) -> dict:
     possibleColumns = parseColumnsFromFile('randomColumns')
@@ -80,12 +67,6 @@ def generateDataset(numTables=5) -> dict:
 
     for i in range(depth, numTables):
         dataset[rand.randint(0,depth-1)].link(dataset[i])
-    
-    #* a list of each table reference formatted thusly [table1, table2]
-    #* 2 Trim list of tables such that no tuple is doubled.
-    #* 3 Take Values from larger table (more rows) to use as refill values
-    #* 4 Refill referenced column with random choices of refill values
-    #*  
 
     return dataset
 
