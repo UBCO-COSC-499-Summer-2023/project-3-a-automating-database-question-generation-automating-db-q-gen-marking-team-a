@@ -268,36 +268,18 @@ def generateUpdate(data, difficulty):
     # Generates the question string
     questionString = f"From the table <b>{table.name}</b> and in the column <b>{updateColumn}</b>, change all values to be <b>{updateValue}</b>"
 
-    # Adds the 'where' if necessary
-    if queryClauses['conditional'] or queryClauses['useSubquery']:
-        questionString += ' where'
-
-    # Adds conditionals to question string
-    if queryClauses['conditional']:
-
-        for key in conditionalValues.keys():
-            questionString += f" <b>{key}</b> equals <b>{conditionalValues[key]}</b>"
-        
-            # And the logical operator
-            if queryClauses['useAndInsteadOfOr']:
-                questionString += ' and'
-            else:
-                questionString += ' or'
+    # Keeps track of when to use 'and' vs 'or'
+    questionString, conditionalConnectors = questionConditionals(questionString, conditionalValues)
 
     # Adds subquery to question string
     # TODO: this
     if queryClauses['useSubquery']:
         questionString += f""
 
-    # Removes trailing 'or' if necessary
-    if queryClauses['conditional'] or queryClauses['useSubquery']:
-        if queryClauses['useAndInsteadOfOr']:
-            questionString = questionString[:-4]
-        else:
-            questionString = questionString[:-3]
-    
     # Finishes the sentence
     questionString += "."
+
+
 
     # Loads data
     database.loadDatabase(data)
@@ -306,35 +288,16 @@ def generateUpdate(data, difficulty):
     data['params']['questionString'] = questionString
 
     # Loads the correct answer
-    data['correct_answers']['SQLEditor'] = updateStatement(table, updateColumn, updateValue, conditionalValues, queryClauses['useAndInsteadOfOr'])
+    data['correct_answers']['SQLEditor'] = updateStatement(table, updateColumn, updateValue, conditionalValues, conditionalConnectors, queryClauses['useSubquery'])
 
 # Creates an update statement
-def updateStatement(table, updateColumn, updateValue, conditionalValues = None, useAnd = False, subquery = None):
+def updateStatement(table, updateColumn, updateValue, conditionalValues=None, conditionalConnectors={}, subquery=None):
 
     # Sets up the statement
     statement = f"UPDATE {table.name} SET {updateColumn} = '{updateValue}'"
 
-    # Adds where if necessary
-    if conditionalValues or subquery:
-        statement += ' WHERE'
-
-    # Includes the conditional if they exist
-    if conditionalValues:
-        for key in conditionalValues:
-            statement += f" {key} = '{conditionalValues[key]}'"
-        
-            # And the logical operator
-            if useAnd:
-                statement += ' AND'
-            else:
-                statement += ' OR'
-
-    # Removes trailing 'OR' if necessary
-    if conditionalValues or subquery:
-        if useAnd:
-            statement = statement[:-4]
-        else:
-            statement = statement[:-3]
+    # Adds the conditionals
+    statement = statementConditionals(statement, conditionalValues, conditionalConnectors)
     
     # Add finishing touches and returns
     statement += ';\n'
@@ -408,33 +371,13 @@ def generateDelete(data, difficulty):
     # Generates the question string
     questionString = f"From the table <b>{table.name}</b>, delete all values"
 
-    # Adds the 'where' if necessary
-    if queryClauses['conditional'] or queryClauses['useSubquery']:
-        questionString += ' where'
-
-    # Adds conditionals to question string
-    if queryClauses['conditional']:
-
-        for key in conditionalValues.keys():
-            questionString += f" <b>{key}</b> equals <b>{conditionalValues[key]}</b>"
-        
-            # And the logical operator
-            if queryClauses['useAndInsteadOfOr']:
-                questionString += ' and'
-            else:
-                questionString += ' or'
+    # Adds the 'WHERE's and such
+    questionString, conditionalConnectors = questionConditionals(questionString, conditionalValues)
 
     # Adds subquery to question string
     # TODO: this
     if queryClauses['useSubquery']:
         questionString += f""
-
-    # Removes trailing 'or' if necessary
-    if queryClauses['conditional'] or queryClauses['useSubquery']:
-        if queryClauses['useAndInsteadOfOr']:
-            questionString = questionString[:-4]
-        else:
-            questionString = questionString[:-3]
     
     # Finishes the sentence
     questionString += "."
@@ -448,35 +391,16 @@ def generateDelete(data, difficulty):
     data['params']['questionString'] = questionString
 
     # Sets the correct answer
-    data['correct_answers']['SQLEditor'] = deleteStatement(table, conditionalValues, queryClauses['useAndInsteadOfOr'], queryClauses['useSubquery'])
+    data['correct_answers']['SQLEditor'] = deleteStatement(table, conditionalValues, conditionalConnectors, queryClauses['useSubquery'])
 
 # Creates a delete statement
-def deleteStatement(table, conditionalValues = None, useAnd = False, subquery = None):
+def deleteStatement(table, conditionalValues=None, conditionalConnectors={}, subquery=None):
 
     # Sets up the statement
     statement = f"DELETE FROM {table.name}"
 
-    # Adds where if necessary
-    if conditionalValues or subquery:
-        statement += ' WHERE'
-
-    # Includes the conditional if they exist
-    if conditionalValues:
-        for key in conditionalValues:
-            statement += f" {key} = '{conditionalValues[key]}'"
-        
-            # And the logical operator
-            if useAnd:
-                statement += ' AND'
-            else:
-                statement += ' OR'
-
-    # Removes trailing 'OR' if necessary
-    if conditionalValues or subquery:
-        if useAnd:
-            statement = statement[:-4]
-        else:
-            statement = statement[:-3]
+    # Adds the conditionals
+    statement = statementConditionals(statement, conditionalValues, conditionalConnectors)
     
     # Add finishing touches and returns
     statement += ';\n'
@@ -737,6 +661,63 @@ def queryStatement(table, keyMap, foreignKeyMap, selectedColumns, clauses):
 # Returns a string for an SQL conditional
 def conditionalStatement(column, condition):
     return f"WHERE {column} = '{condition}'"
+
+# Adds a set of conditionals to a question string
+def questionConditionals(questionString, conditionalValues):
+    
+    # If there aren't any conditionals, just return
+    if not conditionalValues:
+        return
+
+    # Adds the 'where' if necessary
+    questionString += ' where'
+    
+    # Keeps track of when to use 'and' vs 'or'
+    conditionalConnectors = {}
+
+    for key in conditionalValues.keys():
+        questionString += f" <b>{key}</b> equals <b>{conditionalValues[key]}</b>"
+    
+        # Randomly chooses a logical operator to
+        # connect the conditionals. Prefers to use
+        # 'or's since they result in more rows
+        conditionalConnectors[key] = random.choices(['OR', 'AND'], [2, 1])[0]
+
+        if conditionalConnectors[key] == 'OR':
+            questionString += ' or'
+        else:
+            questionString += ' and'
+    
+    # Removes the trailing connector
+    if 'or' in questionString[:-2]:
+        questionString = questionString[:-3]
+    else:
+        questionString = questionString[:-4]
+    
+    return questionString, conditionalConnectors
+
+# Adds a set of conditionals to a statement
+def statementConditionals(statement, conditionalValues, conditionalConnectors):
+    
+    # If there aren't any conditionals, just return
+    if not conditionalValues:
+        return
+
+    # Adds where
+    statement += ' WHERE'
+
+    # Includes the conditional if they exist as
+    # well as the condtional connector
+    for key in conditionalValues:
+        statement += f" {key} = '{conditionalValues[key]}' {conditionalConnectors[key]}"
+
+    # Removes trailing 'OR' if necessary
+    if 'or' in statement[:-2]:
+        statement = statement[:-3]
+    else:
+        statement = statement[:-4]
+
+    return statement
 
 
 
