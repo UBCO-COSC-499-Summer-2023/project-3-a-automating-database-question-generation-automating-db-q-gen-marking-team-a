@@ -107,7 +107,6 @@ def prepare(element_html, data):
     data['params']['html_query_clauses'] = {
         'useConditional': questionUseConditional,
         'useSubquery': questionUseSubquery,
-        'useAndInsteadOfOr': questionUseAndInsteadOfOr,
         'orderBy': questionOrderBy,
         'groupBy': questionGroupBy,
         'having': questionHaving,
