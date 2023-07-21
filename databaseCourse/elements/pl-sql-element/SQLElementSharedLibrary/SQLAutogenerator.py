@@ -669,6 +669,8 @@ def questionConditionals(questionString, conditionalValues):
     if not conditionalValues:
         return questionString, {}
 
+
+
     # Adds the 'where' if necessary
     questionString += ' where'
     
@@ -702,6 +704,8 @@ def statementConditionals(statement, conditionalValues, conditionalConnectors):
     # If there aren't any conditionals, just return
     if not conditionalValues:
         return statement
+
+
 
     # Adds where
     statement += ' WHERE'
