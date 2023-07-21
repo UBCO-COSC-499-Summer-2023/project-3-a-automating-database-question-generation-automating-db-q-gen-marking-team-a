@@ -12,8 +12,12 @@
 - worked on update grading, still need to go
 
 ## Wednesday , July 19:
+- meeting with TA
+- finished up on autograding stuff for the most part now
 
 ## Thursday , July 20:
+- testing for sql autograding was a pain but it's done now
+- started on expected output preview
 
 ## Friday , July 21:
 
