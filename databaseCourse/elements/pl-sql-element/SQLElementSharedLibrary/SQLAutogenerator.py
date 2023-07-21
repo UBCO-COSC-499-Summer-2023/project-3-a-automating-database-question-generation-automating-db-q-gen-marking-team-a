@@ -936,7 +936,14 @@ def createPreview(data):
     expectedAns = cur.execute(expectedCode)
     dataRows = expectedAns.fetchall()
 
-    htmlTable = "<table class='output-tables'>"
+    columnNames = [description[0] for description in cur.description]
+
+    htmlTable = "<table class='output-tables'><thead>"
+
+    for column in columnNames:
+        htmlTable += "<th>" + str(column) + "</th>"
+
+    htmlTable += "</thead>"
 
     for row in dataRows:
         rowString = "<tr>"
