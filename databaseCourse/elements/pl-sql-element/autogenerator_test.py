@@ -166,8 +166,9 @@ class QuestionTypeStatementsTest(unittest.TestCase):
         conditionalCol = updateCol
         conditionalVal = "Ontario"
         conditionalValues = {conditionalCol: conditionalVal}
+        conditionalConnectors = {conditionalCol: 'OR'}
 
-        result = updateStatement(table,updateCol,updateVal,conditionalValues)
+        result = updateStatement(table,updateCol,updateVal,conditionalValues,conditionalConnectors)
 
         self.assertIn("UPDATE",result)
         self.assertIn("WHERE",result)
@@ -200,7 +201,7 @@ class QuestionTypeStatementsTest(unittest.TestCase):
         col = "province"
         condition = "Alberta"
 
-        result = deleteStatement(table,{col: condition})
+        result = deleteStatement(table, {col: condition}, {col, 'OR'})
 
         self.assertIn("DELETE",result)
         self.assertIn("WHERE",result)
