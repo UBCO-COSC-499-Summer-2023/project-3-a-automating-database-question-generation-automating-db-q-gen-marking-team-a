@@ -78,6 +78,15 @@ def prepare(element_html, data):
     questionUseSubquery = pl.get_boolean_attrib(element, 'usesubquery', False)
     questionUseAndInsteadOfOr = pl.get_boolean_attrib(element, 'useandinsteadofor', False)
 
+    questionOrderBy = pl.get_integer_attrib(element, "orderBy", 0)
+    questionGroupBy = pl.get_integer_attrib(element, "groupBy", 0)
+    questionHaving = pl.get_integer_attrib(element, 'having', 0)
+    questionLimit = pl.get_integer_attrib(element, 'limit', 0)
+    questionWith = pl.get_integer_attrib(element, 'with', 0)
+    questionDistinct = pl.get_integer_attrib(element, 'isDistinct', 0)
+
+    # LIKE -> GLOB in SQLite
+
     data['params']['html_params'] = {
         'random': questionRandom,
         'questionType': questionType,
@@ -99,12 +108,19 @@ def prepare(element_html, data):
     data['params']['html_query_clauses'] = {
         'useConditional': questionUseConditional,
         'useSubquery': questionUseSubquery,
-        'useAndInsteadOfOr': questionUseAndInsteadOfOr
+        'useAndInsteadOfOr': questionUseAndInsteadOfOr,
+        'orderBy': questionOrderBy,
+        'groupBy': questionGroupBy,
+        'having': questionHaving,
+        'limit': questionLimit,
+        'with': questionWith,
+        'distinct': questionDistinct
     }
 
     # If if is a randomised question, generate the question
     if questionRandom:
         autogen.autogenerate(data)
+
 
 
 # Renders the element
