@@ -207,17 +207,17 @@ def generateUpdate(data, difficulty):
     match difficulty:
         case 'easy': 
             database = db.Database(file=loadTrimmedTable(random.randint(3, 4)), columns=0, random=False)
-            queryClauses['useConditional'] = False
+            queryClauses['conditional'] = 0
             queryClauses['useSubquery'] = False
 
         case 'medium': 
             database = db.Database(file=loadTrimmedTable(random.randint(4, 6)), columns=0, random=False)
-            queryClauses['useConditional'] = True
+            queryClauses['conditional'] = random.randint(1, 3)
             queryClauses['useSubquery'] = False
 
         case 'hard': 
             database = db.Database(file=loadTrimmedTable(random.randint(5, 8)), columns=0, random=False)
-            queryClauses['useConditional'] = False
+            queryClauses['conditional'] = 0
             queryClauses['useSubquery'] = True
             return None # Not yet implemented; first requires quesryStatement() to be completed
         
@@ -231,8 +231,8 @@ def generateUpdate(data, difficulty):
 
     # Checks if the parameters are valid
     nonCascadingForeignKeys = len([key for key in table.columns.keys() if table.columns[key]['references'] and not table.columns[key]['isOnUpdateCascade']])
-    if columns - nonCascadingForeignKeys < queryClauses['useConditional']:
-        print(f"UPDATE question cannot have more conditional clauses than foreign keys that do not cascade on update (was supplied with {queryClauses['useConditional']} conditionals and {nonCascadingForeignKeys} non-cascading foreign keys)")
+    if columns - nonCascadingForeignKeys < queryClauses['conditional']:
+        print(f"UPDATE question cannot have more conditional clauses than foreign keys that do not cascade on update (was supplied with {queryClauses['conditional']} conditionals and {nonCascadingForeignKeys} non-cascading foreign keys)")
 
     # Generates a bunch of rows
     database.generateRows(random.randint(6, 10))
@@ -249,7 +249,7 @@ def generateUpdate(data, difficulty):
     conditionalValues = {}
     columnList = list(table.columns.keys())
     indexList = [i for i in range(len(list(table.rows.values())[0]))]
-    for i in range(queryClauses['useConditional']):
+    for i in range(queryClauses['conditional']):
 
         # Selects a random column to affect.
         # Cannot select a column that is both foreign and does not
@@ -269,11 +269,11 @@ def generateUpdate(data, difficulty):
     questionString = f"From the table <b>{table.name}</b> and in the column <b>{updateColumn}</b>, change all values to be <b>{updateValue}</b>"
 
     # Adds the 'where' if necessary
-    if queryClauses['useConditional'] or queryClauses['useSubquery']:
+    if queryClauses['conditional'] or queryClauses['useSubquery']:
         questionString += ' where'
 
     # Adds conditionals to question string
-    if queryClauses['useConditional']:
+    if queryClauses['conditional']:
 
         for key in conditionalValues.keys():
             questionString += f" <b>{key}</b> equals <b>{conditionalValues[key]}</b>"
@@ -290,7 +290,7 @@ def generateUpdate(data, difficulty):
         questionString += f""
 
     # Removes trailing 'or' if necessary
-    if queryClauses['useConditional'] or queryClauses['useSubquery']:
+    if queryClauses['conditional'] or queryClauses['useSubquery']:
         if queryClauses['useAndInsteadOfOr']:
             questionString = questionString[:-4]
         else:
@@ -359,17 +359,17 @@ def generateDelete(data, difficulty):
     match difficulty:
         case 'easy': 
             database = db.Database(file=loadTrimmedTable(random.randint(3, 4)), columns=0, random=False)
-            queryClauses['useConditional'] = False
+            queryClauses['conditional'] = 0
             queryClauses['useSubquery'] = False
 
         case 'medium': 
             database = db.Database(file=loadTrimmedTable(random.randint(4, 6)), columns=0, random=False)
-            queryClauses['useConditional'] = True
+            queryClauses['conditional'] = random.randint(1, 3)
             queryClauses['useSubquery'] = False
 
         case 'hard': 
             database = db.Database(file=loadTrimmedTable(random.randint(5, 8)), columns=0, random=False)
-            queryClauses['useConditional'] = False
+            queryClauses['conditional'] = 0
             queryClauses['useSubquery'] = True
             return None # Not yet implemented; first requires quesryStatement() to be completed
         
@@ -388,7 +388,7 @@ def generateDelete(data, difficulty):
     conditionalValues = {}
     columnList = list(table.columns.keys())
     indexList = [i for i in range(len(list(table.rows.values())[0]))]
-    for i in range(queryClauses['useConditional']):
+    for i in range(queryClauses['conditional']):
 
         # Selects a random column to affect.
         # Cannot select a column that is both foreign and is
@@ -409,11 +409,11 @@ def generateDelete(data, difficulty):
     questionString = f"From the table <b>{table.name}</b>, delete all values"
 
     # Adds the 'where' if necessary
-    if queryClauses['useConditional'] or queryClauses['useSubquery']:
+    if queryClauses['conditional'] or queryClauses['useSubquery']:
         questionString += ' where'
 
     # Adds conditionals to question string
-    if queryClauses['useConditional']:
+    if queryClauses['conditional']:
 
         for key in conditionalValues.keys():
             questionString += f" <b>{key}</b> equals <b>{conditionalValues[key]}</b>"
@@ -430,7 +430,7 @@ def generateDelete(data, difficulty):
         questionString += f""
 
     # Removes trailing 'or' if necessary
-    if queryClauses['useConditional'] or queryClauses['useSubquery']:
+    if queryClauses['conditional'] or queryClauses['useSubquery']:
         if queryClauses['useAndInsteadOfOr']:
             questionString = questionString[:-4]
         else:
@@ -498,6 +498,8 @@ def generateQuery(data, difficulty):
     
     # Obtains question specific parameters
     columns, joins, tableClauses, queryClauses = getQuestionParameters(data)
+
+
 
     # Chooses a table to load based on quesiton difficulty
     database = None
@@ -766,7 +768,7 @@ def getQuestionParameters(data):
 
     # Constructs query clauses.
     # Parameters:
-    #   - useConditional
+    #   - conditional
     #   - useSubquery
     queryClauses = {}
     try:
@@ -774,7 +776,7 @@ def getQuestionParameters(data):
             queryClauses[clause] = data['params']['html_query_clauses'][clause]
     except:
         queryClauses = {
-            'useConditional': 1,
+            'conditional': 1,
             'useSubquery': False,
             'useAndInsteadOfOr': False
         }
