@@ -499,6 +499,7 @@ def generateQuery(data, difficulty):
     # Obtains question specific parameters
     columns, joins, tableClauses, queryClauses = getQuestionParameters(data)
 
+    # Checks if the query clauses are valid
 
 
     # Chooses a table to load based on quesiton difficulty
@@ -508,22 +509,19 @@ def generateQuery(data, difficulty):
             columns = random.randint(3, 4)
             joins = 0
             database = db.Database(columns=columns, joins=joins)
-            clauses = {}
+            queryClauses = {'conditional': 0, 'subQuery': False}
 
         case 'medium': 
             columns = random.randint(4, 6)
             joins = random.randint(1, 2)
             database = db.Database(columns=columns, joins=joins)
-
-            clauses = {}
+            queryClauses = {'conditional': random.randint(1, 3), 'subQuery': False}
 
         case 'hard': 
             columns = random.randint(5, 8)
             joins = random.randint(1, 2)
             database = db.Database(columns=columns, joins=joins)
-            #clauses = {}
-            clauses = random.randint(1, 3)
-            return None # Not yet implemented; first requires queryStatement() to be completed
+            queryClauses = {'conditional': 0, 'subQuery': True}
         
         case _:
             database = db.Database(columns=columns, joins=joins, clauses=tableClauses)
@@ -534,8 +532,11 @@ def generateQuery(data, difficulty):
     # Gets the referenced tables for easy referencing
     referenced = database.referencedTables
 
-    # Generates a bunch of bogus rows
-    database.generateRows(random.randint(3, 7))
+    # Generates a bunch of bogus rows.
+    # This is more rows than other questions, since we
+    # want to increase the liklihood that a query will
+    # return more than a few rows
+    database.generateRows(random.randint(5, 15))
 
 
 
@@ -770,6 +771,13 @@ def getQuestionParameters(data):
     # Parameters:
     #   - conditional
     #   - useSubquery
+    #   - columnsToSelect
+    #   - orderBy
+    #   - groupBy
+    #   - having
+    #   - limit
+    #   - with
+    #   - distinct
     queryClauses = {}
     try:
         for clause in data['params']['html_query_clauses']:
@@ -778,7 +786,13 @@ def getQuestionParameters(data):
         queryClauses = {
             'conditional': 1,
             'useSubquery': False,
-            'useAndInsteadOfOr': False
+            'columnsToSelect': 3,
+            'orderBy': False,
+            'groupBy': 0,
+            'having': 0,
+            'limit': 0,
+            'with': 0,
+            'distinct': 0
         }
     
     return numberOfColumns, numberOfJoins, tableClauses, queryClauses

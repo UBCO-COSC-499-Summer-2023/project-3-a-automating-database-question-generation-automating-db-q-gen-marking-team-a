@@ -74,7 +74,7 @@ def prepare(element_html, data):
     questionIsOnUpdateCascade = pl.get_integer_attrib(element, 'isonupdatecascade', None)
     questionIsOnDeleteSetNull = pl.get_integer_attrib(element, 'isondeletesetnull', None)
 
-    questionUseConditional = pl.get_integer_attrib(element, 'conditional', 0)
+    questionConditional = pl.get_integer_attrib(element, 'conditional', 0)
     questionUseSubquery = pl.get_boolean_attrib(element, 'usesubquery', False)
 
     questionColumnsToSelect = pl.get_integer_attrib(element, "columnstoselect", 0)
@@ -108,9 +108,9 @@ def prepare(element_html, data):
         'isOnUpdateCascade': questionIsOnUpdateCascade,
         'isOnDeleteSetNull': questionIsOnDeleteSetNull
     }
-
+    
     data['params']['html_query_clauses'] = {
-        'useConditional': questionUseConditional,
+        'conditional': questionConditional,
         'useSubquery': questionUseSubquery,
         'columnsToSelect': questionColumnsToSelect,
         'orderBy': questionOrderBy,
