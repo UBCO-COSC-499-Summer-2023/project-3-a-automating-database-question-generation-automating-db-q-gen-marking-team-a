@@ -580,6 +580,7 @@ class Table:
                         assert False, f"Clause {clause} is invalid"
 
 
+
     # Links one table to another
     # Used with RelaX
     def link(self, foreignTable):     
@@ -594,7 +595,7 @@ class Table:
 
         if foreignTable.rows:
             foreignTable.rows[column] = self.rows[column]
-        #foreignTable.fillColumn(name=column, columnData=self.columns[column]['columnData'])
+
 
 
     # Given a marked-up textfile, return an array
