@@ -5,7 +5,8 @@ from SQLElementSharedLibrary.SQLCustomGrader import *
 class CustomGraderTest(unittest.TestCase):
     # 0 similarity
     def testAutograderReturnsZeroWhenNoSimilarities(self):
-        data = {'submitted_answers':{'SQLEditor':""},
+        data = {'params':{'html_params':{'questionType':'' ,'difficulty':''}},
+                'submitted_answers':{'SQLEditor':""},
                 'correct_answers':{'SQLEditor':"SELECT * FROM Airport"}}
     
         result = customGrader(data)
@@ -14,7 +15,8 @@ class CustomGraderTest(unittest.TestCase):
     
     # 100% similarity
     def testAutograderReturnsOneWhenExactMatch(self):
-        data = {'submitted_answers':{'SQLEditor':"SELECT * from Airport"},
+        data = {'params':{'html_params':{'questionType':'' ,'difficulty':''}},
+                'submitted_answers':{'SQLEditor':"SELECT * from Airport"},
                 'correct_answers':{'SQLEditor':"SELECT * FROM Airport"}}
     
         result = customGrader(data)
@@ -23,7 +25,8 @@ class CustomGraderTest(unittest.TestCase):
     
     # 75% similarity
     def testAutograderReturnsOneWhenAboveThresholdMatch(self):
-        data = {'submitted_answers':{'SQLEditor':"SELECT * FROM"},
+        data = {'params':{'html_params':{'questionType':'' ,'difficulty':''}},
+                'submitted_answers':{'SQLEditor':"SELECT * FROM"},
                 'correct_answers':{'SQLEditor':"SELECT * FROM Airport"}}
     
         result = customGrader(data)
@@ -32,7 +35,9 @@ class CustomGraderTest(unittest.TestCase):
     
     # 50% similarity
     def testAutograderReturnsDecimalWhenBelowThresholdMatch(self):
-        data = {'submitted_answers':{'SQLEditor':"SELECT *"},
+
+        data = {'params':{'html_params':{'questionType':'' ,'difficulty':''}},
+                'submitted_answers':{'SQLEditor':"SELECT *"},
                 'correct_answers':{'SQLEditor':"SELECT * FROM Airport"}}
     
         result = customGrader(data)

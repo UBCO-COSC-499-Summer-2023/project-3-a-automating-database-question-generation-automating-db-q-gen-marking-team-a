@@ -36,9 +36,11 @@ class AutogenerateTest(unittest.TestCase):
             ])
     def testAutogenerateReturnsCorrectQuestionType(self,testType,difficulty,keyWord):
         initialAns = "\n"
-        db_initalize = ""
-        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty, 'columns': 5, 'joins': 0},
-                          'db_initialize':db_initalize, 'html_table_clauses': {}},
+        db_initialize = ""
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
+                        'db_initialize_create':db_initialize, 
+                        'db_initialize_insert_frontend':db_initialize, 
+                        'db_initialize_insert_backend':db_initialize},
                 'correct_answers':{'SQLEditor': initialAns}}
         
         autogenerate(data)
@@ -60,7 +62,9 @@ class QuestionGenerationTest(unittest.TestCase):
         initialAns = ""
         difficulty = "easy"
         data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
-                          'db_initialize':db_initialize},
+                        'db_initialize_create':db_initialize, 
+                        'db_initialize_insert_frontend':db_initialize, 
+                        'db_initialize_insert_backend':db_initialize},
                 'correct_answers':{'SQLEditor': initialAns}}
         
         generateUpdate(data,difficulty)
@@ -75,7 +79,9 @@ class QuestionGenerationTest(unittest.TestCase):
         initialAns = ""
         difficulty = "medium"
         data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
-                          'db_initialize':db_initialize},
+                        'db_initialize_create':db_initialize, 
+                        'db_initialize_insert_frontend':db_initialize, 
+                        'db_initialize_insert_backend':db_initialize},
                 'correct_answers':{'SQLEditor': initialAns}}
         
         generateUpdate(data,difficulty)
@@ -94,7 +100,9 @@ class QuestionGenerationTest(unittest.TestCase):
         initialAns = ""
         difficulty = "medium"
         data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
-                          'db_initialize':db_initialize},
+                        'db_initialize_create':db_initialize, 
+                        'db_initialize_insert_frontend':db_initialize, 
+                        'db_initialize_insert_backend':db_initialize},
                 'correct_answers':{'SQLEditor': initialAns}}
         
         generateQuery(data,difficulty)
@@ -305,7 +313,9 @@ class HelperFnsTest(unittest.TestCase):
         initialAns = ""
         difficulty = "easy"
         data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
-                          'db_initialize':db_initialize},
+                        'db_initialize_create':db_initialize, 
+                        'db_initialize_insert_frontend':db_initialize, 
+                        'db_initialize_insert_backend':db_initialize},
                 'correct_answers':{'SQLEditor': initialAns}}
         tableOne = "airport"
         tableAirport = db.Table(tableOne)
@@ -315,13 +325,15 @@ class HelperFnsTest(unittest.TestCase):
         tableAirplane = db.Table(tableThree)
         tables = {tableOne: tableAirport, tableThree: tableAirplane}
 
-        self.assertEqual(len(data['params']['db_initialize']),0)
+        self.assertEqual(len(data['params']['db_initialize_create']),0)
+        self.assertEqual(len(data['params']['db_initialize_insert_frontend']),0)
+        self.assertEqual(len(data['params']['db_initialize_insert_backend']),0)
 
         loadSchemas(data,tableFlight,tables)
 
-        self.assertIn(tableOne,data['params']['db_initialize'])
-        self.assertIn(tableTwo,data['params']['db_initialize'])
-        self.assertIn(tableThree,data['params']['db_initialize'])
+        self.assertIn(tableOne,data['params']['db_initialize_create'])
+        self.assertIn(tableTwo,data['params']['db_initialize_create'])
+        self.assertIn(tableThree,data['params']['db_initialize_create'])
 
     # no tables are added to db init when input is empty
     def testLoadSchemasAddsNoTablesToDbInit(self):
@@ -330,16 +342,20 @@ class HelperFnsTest(unittest.TestCase):
         initialAns = ""
         difficulty = "easy"
         data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
-                          'db_initialize':db_initialize},
+                        'db_initialize_create':db_initialize, 
+                        'db_initialize_insert_frontend':db_initialize, 
+                        'db_initialize_insert_backend':db_initialize},
                 'correct_answers':{'SQLEditor': initialAns}}
         table = None
         tables = []
 
-        self.assertEqual(len(data['params']['db_initialize']),0)
+        self.assertEqual(len(data['params']['db_initialize_create']),0)
+        self.assertEqual(len(data['params']['db_initialize_insert_frontend']),0)
+        self.assertEqual(len(data['params']['db_initialize_insert_backend']),0)
 
         loadSchemas(data,table,tables)
 
-        self.assertEqual(len(data['params']['db_initialize']),0)
+        self.assertEqual(len(data['params']['db_initialize_create']),0)
 
 #---# loadAllSchema() Test(s)
     # table with no other referenced tables
@@ -349,16 +365,20 @@ class HelperFnsTest(unittest.TestCase):
         initialAns = ""
         difficulty = "easy"
         data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
-                          'db_initialize':db_initialize},
+                        'db_initialize_create':db_initialize, 
+                        'db_initialize_insert_frontend':db_initialize, 
+                        'db_initialize_insert_backend':db_initialize},
                 'correct_answers':{'SQLEditor': initialAns}}
         tableOne = "airport"
         tableAirport = db.Table(tableOne)
 
-        self.assertEqual(len(data['params']['db_initialize']),0)
+        self.assertEqual(len(data['params']['db_initialize_create']),0)
+        self.assertEqual(len(data['params']['db_initialize_insert_frontend']),0)
+        self.assertEqual(len(data['params']['db_initialize_insert_backend']),0)
 
         loadAllSchema(data,tableAirport)
 
-        self.assertIn(tableOne,data['params']['db_initialize'])
+        self.assertIn(tableOne,data['params']['db_initialize_create'])
     
     # table with other referenced tables
     def testLoadAllSchemaAddsTableWithReferencesToDbInit(self):
@@ -367,18 +387,22 @@ class HelperFnsTest(unittest.TestCase):
         initialAns = ""
         difficulty = "easy"
         data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
-                          'db_initialize':db_initialize},
+                        'db_initialize_create':db_initialize, 
+                        'db_initialize_insert_frontend':db_initialize, 
+                        'db_initialize_insert_backend':db_initialize},
                 'correct_answers':{'SQLEditor': initialAns}}
         tableOne = "flight"
         tableAirport = db.Table(tableOne, random=False)
 
-        self.assertEqual(len(data['params']['db_initialize']),0)
+        self.assertEqual(len(data['params']['db_initialize_create']),0)
+        self.assertEqual(len(data['params']['db_initialize_insert_frontend']),0)
+        self.assertEqual(len(data['params']['db_initialize_insert_backend']),0)
 
         loadAllSchema(data,tableAirport)
 
-        self.assertIn(tableOne,data['params']['db_initialize'])
-        self.assertIn("airplane",data['params']['db_initialize'])
-        self.assertIn("airport",data['params']['db_initialize'])
+        self.assertIn(tableOne,data['params']['db_initialize_create'])
+        self.assertIn("airplane",data['params']['db_initialize_create'])
+        self.assertIn("airport",data['params']['db_initialize_create'])
 
 #---# loadTrimmedTable() Test(s)
     # returns a table with a number of columns that we know will work
