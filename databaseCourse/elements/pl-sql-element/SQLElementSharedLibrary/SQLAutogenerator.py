@@ -424,6 +424,25 @@ def generateQuery(data, difficulty):
     columns, joins, tableClauses, queryClauses = getQuestionParameters(data)
 
     # Checks if the query clauses are valid
+    if queryClauses['columnsToSelect'] > joins * (columns - 1):
+        return None # More columnsToSelect than columns available
+    
+    if queryClauses['columnsToSelect'] < 1:
+        return None # Must select at least one column
+
+    if queryClauses['groupBy'] < 0:
+        return None # Cannot have nagative groupBy
+    
+    if queryClauses['limit'] < 0:
+        return None # Cannot have negative limit
+    
+    if queryClauses['with'] > joins + 1:
+        return None # Cannot have more with clauses than tables
+    
+    if queryClauses['with'] < 0:
+        return None # Cannot have negative withs
+
+    #orderBy = True groupBy = '1' having = '1' limit = '5' with = '2' isDistinct = True
 
 
     # Chooses a table to load based on quesiton difficulty
