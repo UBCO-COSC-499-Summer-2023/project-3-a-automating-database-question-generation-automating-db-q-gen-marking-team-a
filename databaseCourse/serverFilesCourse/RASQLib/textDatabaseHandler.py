@@ -1,6 +1,5 @@
 import os
-from random import choice
-from random import randint
+from random import choice, randint
 
 # This allows DroneCI to see the RASQLib module
 import sys
@@ -8,28 +7,87 @@ sys.path.append('/drone/src/databaseCourse/serverFilesCourse/')
 
 from RASQLib import noisyData as nd
 
+
+
 # Used for modelling a database and tables during question 
 # generation and loading table data from text files
 
 # Models a group of tables
 class Database:
-    def __init__(self, isSQL = True, file='', columns=5, joins=0, clauses={}, constraints={'': {'name': '', 'unit': 'INTEGER', 'unitOther': None}}, rows=0, random=True):
+    def __init__(self, isSQL=True, file='', columns=5, joins=0, depth=3, clauses={}, constraints={'': {'name': '', 'unit': 'INTEGER', 'unitOther': None}}, rows=0, random=True):
 
-        if columns == 0:
-            self.primaryTable = file
-        else:
-            self.primaryTable = Table(file, columns, joins, clauses, constraints, rows, self, random)
-        
-        self.referencedTables = self.primaryTable.getReferencedTables(static=not random)
         self.isSQL = isSQL
+
+        # For SQL databases
+        if isSQL:
+
+            # When columns are set to zero, it indicates that
+            # a table is being pased in (used to support old
+            # difficulty-class questions). Otherwise, create
+            # the primary table
+            if columns == 0:
+                self.primaryTable = file
+            else:
+                self.primaryTable = Table(file=file, columns=columns, joins=joins, clauses=clauses, constraints=constraints, rows=rows, database=self, isSQL=isSQL, random=random)
+            
+            # Gets the referenced tables
+            self.referencedTables = self.primaryTable.getReferencedTables(static=not random)
+        
+        # For RelaX databases
+        else:
+            self.generateTableSet(columns=columns, joins=joins, depth=depth, rows=rows)
+            
+        
+
+    # Generates a table set for RelaX
+    def generateTableSet(self, columns=5, joins=5, depth=3, rows=0) -> dict:
+
+        # Gets a list of possible table names
+        #possibleColumns = self.parseColumnsFromFile('randomColumns')
+        self.tableSet = {}
+        
+        # The primary table should have more columns
+        for i in range(joins + 1):
+            #dataset[i] = Table(columns=columns, possibleColumns=possibleColumns, joins=2, isSQL=False)
+            self.tableSet[i] = Table(columns=columns, joins=2, isSQL=False)
+            ''' Skyler here,
+                I'm getting rid of a random amount of tables
+                in favour of using the `columns` parameter.
+                Not to mention a table should NEVER have
+                less than 3 columns, as would be possible
+                in the `else` statement
+            if i == 0:
+                dataset[i] = Table(columns=randint(3,5), possibleColumns=possibleColumns, joins=2)
+            else:    
+                dataset[i] = Table(columns=randint(2,4), possibleColumns=possibleColumns, joins=2)
+            '''
+
+        # Populates the table with data
+        if rows:
+            self.generateRows(rows)
+
+        # Links tables such that there is a depth
+        # of `d`
+        for i in range(depth-1):
+            self.tableSet[i].link(self.tableSet[i+1])
+
+        # The rest of the joins link the remaining
+        # table to a random one in the depth chain
+        for i in range(depth, joins + 1):
+            self.tableSet[randint(0,depth-1)].link(self.tableSet[i])
 
 
 
     # Populates the database with rows of data
     #
     # Note: This function respects references so a foreign key
-    # reference between two tables will holds the same value.
-    #
+    # reference between two tables will holds the same value
+    def generateRows(self, qty):
+        if self.isSQL:
+            self.generateRowsSQL(qty)
+        else:
+            self.generateRowsRelaX(qty)
+
     # Note: this CAN throw a "UNIQUE constraint failed" IF the
     # primary table has two references to the same table (such
     # as the static `flight` table) AND there exists a duplicate
@@ -37,8 +95,7 @@ class Database:
     # ON RANDOM TABLES since a random primary table will never
     # hold more than one reference to a given secondary random
     # table. In other words, no worries.
-    def generateRows(self, qty):
-
+    def generateRowsSQL(self, qty):
         # Generates the primary table's rows
         self.primaryTable.generateRows(qty)
 
@@ -55,6 +112,13 @@ class Database:
         # The list() performs a deep copy rather than a shallow one.
         for key in keyMap:
             self.referencedTables[keyMap[key]['references']].rows[keyMap[key]['foreignKey']] = list(self.primaryTable.rows[key])
+
+    # Ensuring consistency across FKs is done in Table.link(),
+    # but does require the rows to be generated BEFORE the
+    # tables are linked
+    def generateRowsRelaX(self, qty):
+        for table in self.tableSet:
+            self.tableSet[table].generateRows(qty)
     
 
 
@@ -91,16 +155,30 @@ class Database:
         # key constrains are satisfied.
         data['params']['db_initialize'] += self.primaryTable.getInserts()
     
+
+    def loadRelaX(self, data):
+        for table in self.tableSet:
+            data['params']['db_initialize'] += self.tableSet[table].getRelaXSchema()
+        data['params']['db_initialize'] = data['params']['db_initialize'][:-1]
+        #with open("./RelaXElementSharedLibrary/ShipmemtDatabase.txt") as f:
+        #    data['params']['db_initialize'] = f.read()
+    
     # Adds everything necessary for each table to the data variable
     def loadDatabase(self, data):
-        self.loadColumns(data)
-        self.loadRows(data)
+        if self.isSQL:
+            self.loadColumns(data)
+            self.loadRows(data)
+        else:
+            self.loadRelaX(data)
     
 
 
     # Prints the schema of all tables in the database
     def __str__(self):
-        return f"{self.primaryTable.getSchema()}{''.join([self.referencedTables[referencedTable].getSchema() for referencedTable in self.referencedTables])}"
+        if self.isSQL:
+            return f"{self.primaryTable.getSchema()}{''.join([self.referencedTables[referencedTable].getSchema() for referencedTable in self.referencedTables])}"
+        else:
+            return f"{''.join([self.tableSet[table].getRelaXSchema() for table in self.tableSet])}"
 
 
 
@@ -111,11 +189,21 @@ class Table:
     # File name and table name are equivalent.
     #   File: the name of the text file if it exists OR the name of the random table
     #   Columns: the number of columns in the table
-    def __init__(self, file='', columns=5, joins=0, clauses={}, constraints={'': {'name': '', 'unit': 'INTEGER', 'unitOther': None}}, rows=0, database=None, random=True):
+    def __init__(self, file='', columns=5, joins=0, clauses={}, constraints={}, rows=0, database=None, isSQL=True, random=True):
         self.name = file
         self.database = database
         self.columns = {}
         self.rows = {}
+        self.isSQL = isSQL
+
+        # If no constrains are present, guarantees the
+        # existance of a basic INTEGER/NUMBER type column.
+        # Useful for generating random queries.
+        if not constraints:
+            if isSQL:
+                constraints = {'': {'name': '', 'unit': 'INTEGER', 'unitOther': None}}
+            else:
+                constraints = {'': {'name': '', 'unit': 'NUMBER', 'unitOther': None}}
 
         # Adds columns
         self.load(file, columns, joins, clauses, constraints, random)
@@ -305,7 +393,11 @@ class Table:
             self.name = choice(getRandomTableNames())
 
         # Gets the columns used to build a table
-        possibleColumns = self.parseColumnsFromFile('randomColumns')
+        possibleColumns = None
+        if self.isSQL:
+            possibleColumns = self.parseColumnsFromFile('randomColumnsSQL')
+        else:
+            possibleColumns = self.parseColumnsFromFile('randomColumnsRelaX')
 
 
         # Adds foreign key constraints
@@ -488,6 +580,22 @@ class Table:
                         assert False, f"Clause {clause} is invalid"
 
 
+    # Links one table to another
+    # Used with RelaX
+    def link(self, foreignTable):     
+        column = (choice(list(self.columns.keys())))
+        foreignTable.columns[column] = {
+            'name' : column,
+            'unit' : self.columns[column]['unit'],
+            'references' : None,
+            'foreignKey' : column,
+            #'columnData' : {}
+        }
+
+        if foreignTable.rows:
+            foreignTable.rows[column] = self.rows[column]
+        #foreignTable.fillColumn(name=column, columnData=self.columns[column]['columnData'])
+
 
     # Given a marked-up textfile, return an array
     # of possible columns for random table generation.
@@ -605,7 +713,7 @@ class Table:
                 }
 
                 # Loads an approrpiate table into the dictionary
-                tables[self.columns[key]['references']] = Table(file=self.columns[key]['references'], columns=columns, constraints=constraints, random=not static)
+                tables[self.columns[key]['references']] = Table(file=self.columns[key]['references'], columns=columns, constraints=constraints, database=self.database, isSQL=True, random=not static)
 
                 # Adds the table name to the set if unique is True
                 if unique:
@@ -643,7 +751,7 @@ class Table:
 
 
     # Returns the table's DDL schema
-    def getSchema(self):
+    def getSQLSchema(self):
 
         # Creates the first line
         schema = f"CREATE TABLE {self.name}" + " (\n"
@@ -711,25 +819,54 @@ class Table:
     
     # Returns insert statements for this table's rows
     def getInserts(self):
-
-        # For each column, select the i-th item and create
-        # a create an INSERT statemetn. Do so for all i items
-        '''
-        statements = ''
-        for row in range(len(list(self.rows.values())[0])):
-            vals = []
-            for key in self.columns.keys():
-                vals.append(self.rows[key][row])
-            statements += f"INSERT INTO {self.name} VALUES ({str(vals)[1:-1]});\n"
-        return statements
-        '''
         return ''.join([f"INSERT INTO {self.name} VALUES ({str([self.rows[key][i] for key in self.rows])[1:-1]});\n" for i in range(len(list(self.rows.values())[0]))]) if self.rows else ''
+
+    # Returns the entire schema for RelaX
+    def getRelaXSchema(self):
+        
+        schema = ''
+
+        # Iterates over all columns
+        for key in self.columns:
+            schema += f"{self.name}.{key}:{self.columns[key]['unit'].lower()}, "
+        schema = schema[:-2] + '\n'
+
+
+        # Iterates over rows and columns
+        for row in range(len(list(self.rows.values())[0])):
+            for key in self.rows:
+
+                # Adds the line, with quotes.
+                # Strings will break the editor if they do
+                # not have quotes. All other data types will
+                # break the editor if they do have quotes.
+                #
+                # Notice that, unlike most string formating,
+                # the single quotes are on the outside. It is
+                # important that the double quotes are on the
+                # inside due to apostrophes in names like
+                # "St. John's"
+                if self.columns[key]['unit'].upper() == 'STRING':
+                    schema += f'"{self.rows[key][row]}", '
+
+                # Adds the line, without quotes
+                else:
+                    schema += f"{self.rows[key][row]}, "
+        
+            # Removes the trailing comma and adds a newline
+            schema = schema[:-2] + '\n'
+
+        # Wraps the output in braces
+        return "{\n"+schema+"};"
         
 
 
     # The same as calling Table.getSchema()
     def __str__(self):
-        return self.getSchema()
+        if self.isSQL:
+            return self.getSQLSchema()
+        else:
+            return self.getRelaXSchema()
 
 
 

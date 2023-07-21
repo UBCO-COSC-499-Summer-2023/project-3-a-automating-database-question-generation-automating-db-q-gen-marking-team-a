@@ -103,7 +103,6 @@ def prepare(element_html, data):
     }
 
     # If if is a randomised question, generate the question
-    # data['params']['html_params']['random']
     if questionRandom:
         autogen.autogenerate(data)
 
