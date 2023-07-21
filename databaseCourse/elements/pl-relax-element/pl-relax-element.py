@@ -3,8 +3,15 @@ import chevron
 import lxml.html
 import html
 import prairielearn as pl
+
 import RelaXElementSharedLibrary.RelaXCustomGrader as grader
 import RelaXElementSharedLibrary.RelaXAutogenerator as autogen
+
+# This allows DroneCI to see the RASQLib module
+import sys
+sys.path.append('/drone/src/databaseCourse/serverFilesCourse/')
+
+from RASQLib import textDatabaseHandler as db
 
 def generate(element_html, data):
     pass
@@ -18,33 +25,60 @@ def prepare(element_html, data):
     correctAnswer = lxml.html.fromstring(pl.inner_html(element[0])).text_content()
     data['correct_answers']['RelaXEditor'] = correctAnswer
 
-def render(element_html, data):
-    # # Gets the element data from the HTML
-    element = lxml.html.fragment_fromstring(element_html)
-    # # Gets each element from the questionHTML
-    submittedAnswer = data['submitted_answers'].get('RelaXEditor','')
-    correctAnswer = data['correct_answers'].get('RelaXEditor', '')
+
+
+    # Grabs the path to the database file
+    # Only used in static questions
     databaseFilePath = pl.get_string_attrib(element, 'database', '')
 
     # If there is a database file, read and loads its contents
-    database = ''
-    tableSet = {}
+    data['params']['db_initialize'] = ''
     if databaseFilePath:
         with open(databaseFilePath,"r") as databaseFile:
-           database += databaseFile.read()
-    else:
-        tableSet = autogen.generateDataset()
-        for i in range(len(tableSet)):
-            if i == len(tableSet) - 1:
-                database+=tableSet[i].toString()
-            else:
-                database+=tableSet[i].toString()+";"
+           data['params']['db_initialize'] = databaseFile.read()
+        
+
+    
+    # Loads quesiton parameters into data
+    #
+    # Note to devs:
+    # Notice the strings in the pl.get_... are lowercase despite
+    # the html parameters being uppercase. I have no clue why
+    # this is, but the pl.get_... will fail to find the corresponding
+    # parameter if their string is uppercase. Hence all lowercase
+    questionRandom = pl.get_boolean_attrib(element, 'random', False)
+
+    data['params']['html_params'] = {
+        'random': questionRandom
+    }
+
+    # If if is a randomised question, generate the question
+    if questionRandom:
+        autogen.autogenerate(data)
+
+
+
+def render(element_html, data):
+    # Gets the element data from the HTML
+    element = lxml.html.fragment_fromstring(element_html)
+
+    # Gets each element from the questionHTML
+    submittedAnswer = data['submitted_answers'].get('RelaXEditor','')
+    correctAnswer = data['correct_answers'].get('RelaXEditor', '')
+
+
+
+    # NOTE: the database is loaded into the data
+    # variable during the `prepare()` function,
+    # when it called `autogenerate()`
+
+
 
     # This renders the question into PL
     if data['panel'] == 'question':
         # setting the paramaters
         html_params = {
-            'database' : database,
+            'database' : data['params']['db_initialize']
         }
             # Opens and renders mustache file into the question html
         with open('pl-relax-element.mustache', 'r', encoding='utf-8') as f:
@@ -55,7 +89,7 @@ def render(element_html, data):
   
         html_params = {
             'submission': True,
-            'submissionAnswer': submittedAnswer,
+            'submissionAnswer': submittedAnswer
         }
         
         with open('pl-relax-submission.mustache', 'r', encoding='utf-8') as f:

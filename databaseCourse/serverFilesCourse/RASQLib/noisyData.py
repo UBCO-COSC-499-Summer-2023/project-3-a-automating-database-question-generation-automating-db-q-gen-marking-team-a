@@ -3,11 +3,11 @@
 
 import random
 from string import ascii_uppercase
-from os import listdir
+import os
 
 # Generates random data based on the unit type
 def generateNoisyData(table, key, qty=1):
-    
+
     # Grabs the important information
     unit = table.columns[key]['unit']
     unitOther = table.columns[key]['unitOther']
@@ -41,27 +41,51 @@ def generateNoisyData(table, key, qty=1):
         return generateFromFile(qty, readLines(getColumnToFileMap()[key[1:]]), choose)
 
 
-    # Otherwise match on the unit type
-    match unit:
-        # Integers
-        case 'INTEGER': return generateNoisyInteger(unique, qty)
+    # Return values befitting of SQL datatypes
+    if table.isSQL:
 
-        # Decimals require total digits plus decimal precision
-        case 'DECIMAL': return generateRandomDecimal(unique, qty, unitOther)
+        # Match on the unit type if the key is not
+        # found in the file map
+        match unit:
+            # Integers
+            case 'INTEGER': return generateNoisyInteger(unique, qty)
 
-        # CHARs require the number of characters
-        case 'CHAR': return generateNoisyChar(unique, qty, int(unitOther))
+            # Decimals require total digits plus decimal precision
+            case 'DECIMAL': return generateRandomDecimal(unique, qty, unitOther)
 
-        # VARCHARs are capped at a length of 8 to prevent
-        # a string of 50 random characters
-        case 'VARCHAR': return generateNoisyVarchar(unique, qty, min(int(unitOther), 8))
+            # CHARs require the number of characters
+            case 'CHAR': return generateNoisyChar(unique, qty, int(unitOther))
 
-        # DATE and DATETIME
-        case 'DATE': return generateRandomDate(unique, qty)
-        case 'DATETIME': return generateRandomDateTime(unique, qty)
+            # VARCHARs are capped at a length of 8 to prevent
+            # a string of 50 random characters
+            case 'VARCHAR': return generateNoisyVarchar(unique, qty, min(int(unitOther), 8))
 
-        # Crash if the datatype is not correct
-        case _: return None
+            # DATE and DATETIME
+            case 'DATE': return generateRandomDate(unique, qty)
+            case 'DATETIME': return generateRandomDateTime(unique, qty)
+
+            # Crash if the datatype is not correct
+            case _: return None
+        
+    # Return values befitting of RelaX datatypes
+    else:
+
+        # Match on the unit type if the key is not
+        # found in the file map
+        match unit:
+            case 'NUMBER':
+                
+                # We don't have decimals in RelaX so check on the
+                # key name instead
+                if key == 'price':
+                    return generateRandomDecimal(unique, qty, '6,2')
+                
+                else:
+                    return generateNoisyInteger(unique, qty)
+
+            case 'DATE': return generateRandomDate(unique, qty)
+            case 'STRING': return generateNoisyVarchar(unique, qty, 6)
+
 
 
 
@@ -244,9 +268,33 @@ def generateColumns(table, qty=1):
 
 
 
+# Returns the filepath to a specific noisy data file
+def relativeFilePath(file):
+    return f"{absoluteDirectoryPath()}/noisyData/{file}.txt"
+
+# Returns the absolute directory of RASQLib
+def absoluteDirectoryPath():
+    currentDirectory = os.path.abspath(os.curdir)
+
+    if 'RASQLib' in currentDirectory:
+        return currentDirectory
+    else:
+        courseFile = currentDirectory[:currentDirectory.find('/elements')]
+        return f"{courseFile}/serverFilesCourse/RASQLib"
+    
+# Reads all lines from a specified file
+def readLines(fileName):
+    try:
+        with open(relativeFilePath(fileName)) as file:
+            return [line.strip() for line in file.readlines() if not line.isspace()]
+    except:
+        return None
+
+
+
 # Returns the mapping between column name and
 # the file which contains its clean data
-def getColumnToFileMap(path='./SQLElementSharedLibrary/columnToFile.txt'):
+def getColumnToFileMap(path=f"{absoluteDirectoryPath()}/randomTableData/columnToFile.txt"):
     try:
         # Reads the file
         with open(path) as file:
@@ -256,20 +304,6 @@ def getColumnToFileMap(path='./SQLElementSharedLibrary/columnToFile.txt'):
         # the dictionary has the form...
         #   column name: file name
         return {line[0: line.find(':')]: line[line.find(':') + 1:] for line in lines}
-    except:
-        return None
-
-
-
-# Returns the filepath to a specific noisy data file
-def relativeFilePath(filePath):
-    return f"./SQLElementSharedLibrary/noisyData/{filePath}.txt"
-
-# Reads all lines from a specified file
-def readLines(fileName):
-    try:
-        with open(relativeFilePath(fileName)) as file:
-            return [line.strip() for line in file.readlines() if not line.isspace()]
     except:
         return None
 

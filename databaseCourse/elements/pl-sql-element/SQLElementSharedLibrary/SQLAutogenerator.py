@@ -1,6 +1,12 @@
-import SQLElementSharedLibrary.textDatabaseHandler as db
 import random
-import SQLElementSharedLibrary.SQLNoisyData as nd
+
+# This allows DroneCI to see the RASQLib module
+import sys
+sys.path.append('/drone/src/databaseCourse/serverFilesCourse/')
+
+from RASQLib import textDatabaseHandler as db
+from RASQLib import noisyData as nd
+
 
 
 # Automatically generates an SQL question based on the question's parameters
@@ -37,12 +43,16 @@ def generateCreate(data, difficulty):
     columns, joins, tableClauses, queryClauses = getQuestionParameters(data)
 
     # Creates an appropriate table
-    table = None
+    database = None
     match difficulty:
-        case 'easy': table = db.Table(random.choice(['airport', 'airplane', 'product', 'customer']), random=False)
-        case 'medium': table = db.Table(random.choice(['passenger', 'shipment']), random=False)
-        case 'hard': table = db.Table(random.choice(['flight', 'shippedproduct']), random=False)
-        case _: table = db.Table(columns=columns, joins=joins, clauses=tableClauses)
+        case 'easy': database = db.Database(file=random.choice(['airport', 'airplane', 'product', 'customer']), random=False)
+        case 'medium': database = db.Database(file=random.choice(['passenger', 'shipment']), random=False)
+        case 'hard': database = db.Database(file=random.choice(['flight', 'shippedproduct']), random=False)
+        case _: database = db.Database(columns=columns, joins=joins, clauses=tableClauses)
+
+    # Grabs the primary table for easy referencing
+    table = database.primaryTable
+
 
 
     # Creates a string to tell the student what they need
@@ -105,8 +115,12 @@ def generateCreate(data, difficulty):
 
 
 
-    # Loads any tables this one references into the schema
-    loadSchemas(data, None, getReferencedTables(table, unique=True))
+    # Loads any tables this one references into the schema.
+    # This DOES NOT load the primary table into data,
+    # since that would give students the answer
+    if database.referencedTables:
+        for referencedTable in database.referencedTables:
+            data['params']['db_initialize'] += f"{database.referencedTables[referencedTable].getSQLSchema()}\n"
 
     # Places the question string into data
     data['params']['questionString'] = questionString
@@ -116,7 +130,7 @@ def generateCreate(data, difficulty):
 
 # Returns the schema for the current table.
 def createStatement(table):
-    return table.getSchema()
+    return table.getSQLSchema()
 
 '''
     End create-style question
@@ -136,74 +150,38 @@ def generateInsert(data, difficulty):
 
     # Based on the difficulty, choose a random amount of columns
     # If no difficulty is specified, uses question parameters instead
-    table = None
+    database = None
     match difficulty:
-        case 'easy': table = loadTrimmedTable(random.randint(3, 4), 0)
-        case 'medium': table = loadTrimmedTable(random.randint(4, 6), 0)
-        case 'hard': table = loadTrimmedTable(random.randint(5, 8), 0)
-        case _: table = db.Table(columns=columns, joins=joins, clauses=tableClauses)
+        case 'easy': database = db.Database(file=loadTrimmedTable(random.randint(3, 4), 0), columns=0)
+        case 'medium': database = db.Database(file=loadTrimmedTable(random.randint(4, 6), 0), columns=0)
+        case 'hard': database = db.Database(file=loadTrimmedTable(random.randint(5, 8), 0), columns=0)
+        case _: database = db.Database(columns=columns, joins=joins, clauses=tableClauses)
+
+    # Grabs the primary table for easy referencing
+    table = database.primaryTable
+
+    # Generates some data
+    database.generateRows(random.randint(3, 7))
 
 
 
-    # Creates the values ands add them to the question string
-
-    # Generates the data to be inserted.
-    # Converts the dictionary row to a list and removes arrays
-    columnData = nd.generateColumns(table, random.randint(3, 7))
-    columnDatum = [value[0] for value in list(columnData.values())]
+    # Obtains the row to be inserted by removed it
+    # from the primary table's rows    
+    row = [table.rows[key].pop() for key in table.columns.keys()]
     
 
 
-    # Adds the data to the question string, replacing the '[]'
-    # with '()'
-    valuesString = f"({str(columnDatum)[1:-1]})"
+    # Creates the question string
+    questionString = f"Insert the following values into the <b>{table.name}</b> table:\n({str(row)[1:-1]})"
 
-    # Creates and adds the question string
-    data['params']['questionString'] = f"Insert the following values into the <b>{table.name}</b> table:\n{valuesString}"
+    # Loads the database
+    database.loadDatabase(data)
 
-
-
-    # Gets referenced tables
-    referencedTables = getReferencedTables(table)
-
-    # Adds the table to the schema as well as
-    # the schemas of referenced tables
-    loadAllSchema(data, table, referencedTables)
-
-
-
-    # Loads noisy data
-    # Doesn't call loadAllNoisyData() since we want
-    # to load the referenced row into the foreign
-    # table, but we don't want to load the row the
-    # student is supposed to insert themselves
-
-    # Gets a key map for easy reference later
-    keyMap = table.getKeyMap()
-
-    # Generates the noisy data. At this point, there
-    # is NOT consistency across foreign keys.
-    generatedData = {key: nd.generateColumns(referencedTables[keyMap[key]['references']], len(list(columnData.values())[0])) for key in keyMap}
-
-    # Overrides the generated data to be the same as
-    # the primary table's data. This IS now consistent
-    # across foreign keys.
-    for key in keyMap:
-        generatedData[key][keyMap[key]['foreignKey']] = columnData[key]
-    
-    # Loads the data into the actual table
-    for key in keyMap:
-        loadNoisyData(data, referencedTables[keyMap[key]['references']], generatedData[key])
-
-    # Loads the primary table's data, aside from
-    # the row that needs to be inserted
-    columnData = {key: columnData[key][1:] for key in columnData}
-    loadNoisyData(data, table, columnData)
-
-
+    # Adds the question string
+    data['params']['questionString'] = questionString
 
     # Creates the answer string
-    data['correct_answers']['SQLEditor'] = insertStatement(table, columnDatum)
+    data['correct_answers']['SQLEditor'] = insertStatement(table, row)
 
 # Generates an insert statement based on the data
 def insertStatement(table, row):
@@ -225,35 +203,39 @@ def generateUpdate(data, difficulty):
     columns, joins, tableClauses, queryClauses = getQuestionParameters(data)
 
     # Chooses a table to load based on quesiton difficulty
-    # Randomly selects from the list at the given difficulty
-    table = None
+    database = None
     match difficulty:
         case 'easy': 
-            table = loadTrimmedTable(random.randint(3, 4))
+            database = db.Database(file=loadTrimmedTable(random.randint(3, 4)), columns=0, random=False)
             queryClauses['useConditional'] = False
             queryClauses['useSubquery'] = False
 
         case 'medium': 
-            table = loadTrimmedTable(random.randint(4, 6))
+            database = db.Database(file=loadTrimmedTable(random.randint(4, 6)), columns=0, random=False)
             queryClauses['useConditional'] = True
             queryClauses['useSubquery'] = False
 
         case 'hard': 
-            table = loadTrimmedTable(random.randint(5, 8))
+            database = db.Database(file=loadTrimmedTable(random.randint(5, 8)), columns=0, random=False)
             queryClauses['useConditional'] = False
             queryClauses['useSubquery'] = True
             return None # Not yet implemented; first requires quesryStatement() to be completed
         
         case _:
-            table = db.Table(columns=columns, joins=joins, clauses=tableClauses)
+            database = db.Database(columns=columns, joins=joins, clauses=tableClauses)
+
+    # Gets the primary table for easy referencing
+    table = database.primaryTable
+
+
 
     # Checks if the parameters are valid
     nonCascadingForeignKeys = len([key for key in table.columns.keys() if table.columns[key]['references'] and not table.columns[key]['isOnUpdateCascade']])
     if columns - nonCascadingForeignKeys < queryClauses['useConditional']:
         print(f"UPDATE question cannot have more conditional clauses than foreign keys that do not cascade on update (was supplied with {queryClauses['useConditional']} conditionals and {nonCascadingForeignKeys} non-cascading foreign keys)")
 
-    # Generates a bunch of bogus rows
-    columnData = nd.generateColumns(table, random.randint(6, 10))
+    # Generates a bunch of rows
+    database.generateRows(random.randint(6, 10))
 
     # Selects a random column to affect
     updateColumn = random.choice(list(table.columns.keys()))
@@ -266,7 +248,7 @@ def generateUpdate(data, difficulty):
     # If the quesiton should use a condition, set parameters
     conditionalValues = {}
     columnList = list(table.columns.keys())
-    indexList = [i for i in range(len(list(columnData.values())[0]))]
+    indexList = [i for i in range(len(list(table.rows.values())[0]))]
     for i in range(queryClauses['useConditional']):
 
         # Selects a random column to affect.
@@ -280,7 +262,7 @@ def generateUpdate(data, difficulty):
         randomValueIndex = nd.popRandom(indexList)
 
         # Grabs the randomly selected values
-        conditionalValues[conditionalColumn] = columnData[conditionalColumn][randomValueIndex]
+        conditionalValues[conditionalColumn] = table.rows[conditionalColumn][randomValueIndex]
 
 
     # Generates the question string
@@ -317,15 +299,8 @@ def generateUpdate(data, difficulty):
     # Finishes the sentence
     questionString += "."
 
-    # Loads referenced tables
-    referenced = getReferencedTables(table)
-
-    # Loads the schema of all referenced tables
-    loadAllSchema(data, table, referenced)
-
-    # Loads the noisy data into the primary table as
-    # well as generating noisy data for referenced tables
-    loadAllNoisyData(data, table, columnData, referenced)
+    # Loads data
+    database.loadDatabase(data)
 
     # Sets the question string
     data['params']['questionString'] = questionString
@@ -375,59 +350,137 @@ def updateStatement(table, updateColumn, updateValue, conditionalValues = None, 
 '''
 
 def generateDelete(data, difficulty):
-        
-    # Chooses a table to load based on quesiton difficulty
-    # Randomly selects from the list at the given difficulty
-    columnCount = None
-    match difficulty:
-        case 'easy': columnCount = random.randint(3, 4)
-        case 'medium': columnCount = random.randint(4, 6)
-        case 'hard': return None # Not yet implemented; first requires quesryStatement() to be completed
+    
+    # Obtains question specific parameters
+    columns, joins, tableClauses, queryClauses = getQuestionParameters(data)
 
-    # Gets a table with the specified number of columns
-    table = loadTrimmedTable(columnCount, 0)
+    # Chooses a table to load based on quesiton difficulty
+    database = None
+    match difficulty:
+        case 'easy': 
+            database = db.Database(file=loadTrimmedTable(random.randint(3, 4)), columns=0, random=False)
+            queryClauses['useConditional'] = False
+            queryClauses['useSubquery'] = False
+
+        case 'medium': 
+            database = db.Database(file=loadTrimmedTable(random.randint(4, 6)), columns=0, random=False)
+            queryClauses['useConditional'] = True
+            queryClauses['useSubquery'] = False
+
+        case 'hard': 
+            database = db.Database(file=loadTrimmedTable(random.randint(5, 8)), columns=0, random=False)
+            queryClauses['useConditional'] = False
+            queryClauses['useSubquery'] = True
+            return None # Not yet implemented; first requires quesryStatement() to be completed
+        
+        case _:
+            database = db.Database(columns=columns, joins=joins, clauses=tableClauses)
+
+    # Gets the primary table for easy referencing
+    table = database.primaryTable
 
     # Generates a bunch of bogus rows
-    rows = nd.generateColumns(table, columnCount * 3 + random.randint(-3, 3))
-
-    # Selects a random column to affect
-    # Won't select a foreign key if the difficulty is easy
-    randomKey = None
-    while not randomKey or (table.columns[randomKey]['references'] and difficulty == 'easy'):
-        randomKey = random.choice(list(table.columns.keys()))
-
-    # Chooses a random value from the generated data to be deleted
-    randomValueIndex = random.choice(range(len(rows)))
-
-    # Grabs the randomly selected values
-    deleteValue = rows[randomKey][randomValueIndex]
+    database.generateRows(random.randint(3, 7))
 
 
+    
+    # If the quesiton should use a condition, set parameters
+    conditionalValues = {}
+    columnList = list(table.columns.keys())
+    indexList = [i for i in range(len(list(table.rows.values())[0]))]
+    for i in range(queryClauses['useConditional']):
 
-    # Creates the question string
-    data['params']['questionString'] = f"From the table <b>{table.name}</b>, delete the entry where <b>{randomKey}</b> equals <b>'{deleteValue}'</b>."
+        # Selects a random column to affect.
+        # Cannot select a column that is both foreign and is
+        # not set to null on delete
+        conditionalColumn = None
+        while not conditionalColumn or table.columns[conditionalColumn]['references'] and not table.columns[conditionalColumn]['isOnDeleteSetNull']:
+            conditionalColumn = nd.popRandom(columnList)
+
+        # Chooses a random value from the generated data to be updated
+        randomValueIndex = nd.popRandom(indexList)
+
+        # Grabs the randomly selected values
+        conditionalValues[conditionalColumn] = table.rows[conditionalColumn][randomValueIndex]
 
 
-    # Gets referenced tables
-    referenced = getReferencedTables(table)
 
-    # Loads the schema of all referenced tables
-    loadAllSchema(data, table, referenced)
+    # Generates the question string
+    questionString = f"From the table <b>{table.name}</b>, delete all values"
 
-    # Loads the noisy data into the primary table as
-    # well as generating noisy data for referenced tables
-    loadAllNoisyData(data, table, rows, referenced)
+    # Adds the 'where' if necessary
+    if queryClauses['useConditional'] or queryClauses['useSubquery']:
+        questionString += ' where'
+
+    # Adds conditionals to question string
+    if queryClauses['useConditional']:
+
+        for key in conditionalValues.keys():
+            questionString += f" <b>{key}</b> equals <b>{conditionalValues[key]}</b>"
+        
+            # And the logical operator
+            if queryClauses['useAndInsteadOfOr']:
+                questionString += ' and'
+            else:
+                questionString += ' or'
+
+    # Adds subquery to question string
+    # TODO: this
+    if queryClauses['useSubquery']:
+        questionString += f""
+
+    # Removes trailing 'or' if necessary
+    if queryClauses['useConditional'] or queryClauses['useSubquery']:
+        if queryClauses['useAndInsteadOfOr']:
+            questionString = questionString[:-4]
+        else:
+            questionString = questionString[:-3]
+    
+    # Finishes the sentence
+    questionString += "."
+
+
+
+    # Loads the database
+    database.loadDatabase(data)
+
+    # Sets the question string
+    data['params']['questionString'] = questionString
 
     # Sets the correct answer
-    data['correct_answers']['SQLEditor'] = deleteStatement(table, randomKey, deleteValue)
-
+    data['correct_answers']['SQLEditor'] = deleteStatement(table, conditionalValues, queryClauses['useAndInsteadOfOr'], queryClauses['useSubquery'])
 
 # Creates a delete statement
-def deleteStatement(table, column = None, condition = None):
-    ans = f"DELETE FROM {table.name}"
-    if(column and condition):
-        ans += f" {conditionalStatement(column, condition)};\n"
-    return ans
+def deleteStatement(table, conditionalValues = None, useAnd = False, subquery = None):
+
+    # Sets up the statement
+    statement = f"DELETE FROM {table.name}"
+
+    # Adds where if necessary
+    if conditionalValues or subquery:
+        statement += ' WHERE'
+
+    # Includes the conditional if they exist
+    if conditionalValues:
+        for key in conditionalValues:
+            statement += f" {key} = '{conditionalValues[key]}'"
+        
+            # And the logical operator
+            if useAnd:
+                statement += ' AND'
+            else:
+                statement += ' OR'
+
+    # Removes trailing 'OR' if necessary
+    if conditionalValues or subquery:
+        if useAnd:
+            statement = statement[:-4]
+        else:
+            statement = statement[:-3]
+    
+    # Add finishing touches and returns
+    statement += ';\n'
+    return statement
 
 '''
     End delete-style question
@@ -443,40 +496,44 @@ def deleteStatement(table, column = None, condition = None):
 # Have proper conditionals
 def generateQuery(data, difficulty):
     
-    # Sets the difficulty
-    columnCount = None
-    joins = None
-    clauses = None
+    # Obtains question specific parameters
+    columns, joins, tableClauses, queryClauses = getQuestionParameters(data)
+
+    # Chooses a table to load based on quesiton difficulty
+    database = None
     match difficulty:
-
-        # Easy:   conditional, no join, no clauses
         case 'easy': 
-            columnCount = random.randint(1, 3)
+            columns = random.randint(3, 4)
             joins = 0
-            clauses = 0
+            database = db.Database(columns=columns, joins=joins)
+            clauses = {}
 
-        # Medium: conditional, join, no clauses
         case 'medium': 
-            columnCount = random.randint(3, 4)
+            columns = random.randint(4, 6)
             joins = random.randint(1, 2)
-            clauses = 0
+            database = db.Database(columns=columns, joins=joins)
 
-        # Hard:   conditional, join, clauses
+            clauses = {}
+
         case 'hard': 
-            columnCount = random.randint(4, 5)
+            columns = random.randint(5, 8)
             joins = random.randint(1, 2)
+            database = db.Database(columns=columns, joins=joins)
+            #clauses = {}
             clauses = random.randint(1, 3)
+            return None # Not yet implemented; first requires queryStatement() to be completed
+        
+        case _:
+            database = db.Database(columns=columns, joins=joins, clauses=tableClauses)
 
+    # Gets the primary table for easy referencing
+    table = database.primaryTable
 
+    # Gets the referenced tables for easy referencing
+    referenced = database.referencedTables
 
-    # Selects a table based on the difficulty
-
-    # Keeps trying random tables until it finds one that
-    # fulfills the conditions set by the difficulty
-    table = loadTrimmedTable(columnCount, joins)
-
-    # Gets the referenced tables
-    referenced = getReferencedTables(table)
+    # Generates a bunch of bogus rows
+    database.generateRows(random.randint(3, 7))
 
 
 
@@ -489,21 +546,6 @@ def generateQuery(data, difficulty):
     # }
     keyMap = table.getKeyMap()
 
-    # Maps the foreign keys to tables
-    # foreignKeyMap = {
-    #   $columnName: table
-    # }
-    foreignKeyMap = {table.name: table}
-
-    # Randomly chooses which tables are joined together
-    for join in range(joins):
-
-        # Chooses the foreign key randomly from the list
-        foreignKey = random.choice(list(keyMap.keys()))
-
-        # Pops the key out (ensures no repeated joins) and
-        # adds it to the mapping
-        foreignKeyMap[foreignKey] = referenced[keyMap.pop(foreignKey)['references']]
 
 
     # The columns that will be selected by the query
@@ -515,12 +557,29 @@ def generateQuery(data, difficulty):
     # Chooses one column randomly from each joined table.
     # Ensures that at least one column per table joined is
     # in the query
-    for key in foreignKeyMap:
-        selectedColumns[key] = [random.choice(list(foreignKeyMap[key].columns.keys()))]
+    for key in keyMap:
+        selectedColumns[key] = [keyMap[key]['foreignKey']]
+
+    # Maps the foreign keys to tables
+    # foreignKeyMap = {
+    #   $columnName: table
+    # }
+    foreignKeyMap = {table.name: table}
+
+    # Randomly chooses which tables are joined together
+    for join in range(joins):
+        
+        # Chooses the foreign key randomly from the list
+        foreignKey = random.choice(list(keyMap.keys()))
+
+        # Pops the key out (ensures no repeated joins) and
+        # adds it to the mapping
+        foreignKeyMap[foreignKey] = referenced[keyMap.pop(foreignKey)['references']]
 
     # Adds more columns until there are the amount as
     # specified by the difficulty
-    for i in range(columnCount - joins - 1):
+    '''
+    for i in range(len(list(table.columns)) - joins - 1):
 
         # Chooses a foreign key, aka chooses a table
         foreignKey = random.choice(list(foreignKeyMap.keys()))
@@ -532,6 +591,7 @@ def generateQuery(data, difficulty):
 
         # Adds the column to the appropriate table's selected column
         selectedColumns[foreignKey].append(uniqueKey)
+    '''
 
 
 
@@ -569,7 +629,7 @@ def generateQuery(data, difficulty):
     questionString = questionString[:-1] + ' select the columns'
 
     # De-pluralizes the string if there is only one column
-    if columnCount == 1:
+    if len(list(table.columns)) == 1:
         questionString = questionString[:-1]
 
     # Adds the columns to be selected
@@ -590,7 +650,7 @@ def generateQuery(data, difficulty):
 
             # Adds an 'and' if it's the last item and
             # there are more than one item
-            if columnIndex == len(list(selectedColumns[key])) and keyIndex == len(list(selectedColumns)) and columnCount > 1:
+            if columnIndex == len(list(selectedColumns[key])) and keyIndex == len(list(selectedColumns)) and len(list(table.columns)) > 1:
                 questionString += ' and'
             
             questionString += f" <b>{column}</b>,"
@@ -598,20 +658,15 @@ def generateQuery(data, difficulty):
     # Removes the trailing comma
     questionString = questionString[:-1] + '.'
 
+
+    # Loads some rows
+    database.generateRows(random.randint(3, 7))
+
+    # Loads the database
+    database.loadDatabase(data)
+
     # Adds the question string to data
     data['params']['questionString'] = questionString
-
-
-
-    # Loads the schema of all referenced tables
-    loadAllSchema(data, table, referencedTables=referenced)
-
-    # Generates random data to populate the table
-    rows = nd.generateColumns(table, len(list(table.columns.keys())) * 3 + random.randint(-3, 3))
-
-    # Loads the noisy data into the primary table as
-    # well as generating noisy data for referenced tables
-    loadAllNoisyData(data, table, rows, referencedTables=referenced)
 
     # Sets the correct answers
     # TODO: clauses (the '[]') is blank; make it not blank
@@ -725,140 +780,6 @@ def getQuestionParameters(data):
         }
     
     return numberOfColumns, numberOfJoins, tableClauses, queryClauses
-
-
-
-# Returns a dictionary that maps the foreign key of the supplied
-# table to the referenced tables. If the unique parameter is true,
-# this dictionary contains a set of tables: no duplicated. Otherwise,
-# there may be duplicate tables with unique foreign keys.
-def getReferencedTables(table, unique=True, static=False):
-    
-    # Uses a dictionary to store the tables and a set to keep track
-    # of unique table names
-    tables = {}
-    tableSet = set()
-
-    # Iterates over the table's foreign keys
-    for key in table.getKeyMap().keys():
-
-        # Checks to see if the table name is already in the set.
-        # Only matters if unique is True.
-        if table.columns[key]['references'] not in tableSet:
-
-            columns = random.randint(3, 6)
-
-            # Ensures foreign key consistency across generated tables
-            #   name of the column in the foreign table: {
-            #       'unit': the data type of the column
-            #       'unitOther': the other information related to the data type
-            #   }
-            constraints = {
-                table.columns[key]['foreignKey']: {
-                    'name': table.columns[key]['foreignKey'],
-                    'unit': table.columns[key]['unit'],
-                    'unitOther': table.columns[key]['unitOther']
-                }
-            }
-
-            # Loads an approrpiate table into the dictionary
-            tables[table.columns[key]['references']] = db.Table(file=table.columns[key]['references'], columns=columns, constraints=constraints, random=not static)
-
-            # Adds the table name to the set if unique is True
-            if unique:
-                tableSet.add(table.columns[key]['references'])
-
-    # Returns a dictionary of all referenced tables
-    #   table name: respective Table object
-    return tables
-
-
-
-# Adds the schema tables to data
-def loadSchemas(data, table, referencedTables):
-
-    # Iterate over tables, if there are any
-    # Add their schema to the initialize string
-    if referencedTables:
-        for key in referencedTables:
-            data['params']['db_initialize'] += f"{referencedTables[key].getSchema()}\n"
-    
-    # Adds the primary table afterwards.
-    # Since the primary table may reference the foreign
-    # tables but NOT vice versa, it is required that the
-    # primary table is loaded after such that foreign
-    # key constrains are satisfied.
-    if table:
-        data['params']['db_initialize'] += f"{table.getSchema()}\n"
-
-# Loads the schema of the current table as well
-# as all referenced tables.
-def loadAllSchema(data, table, referencedTables={}):
-
-    # Gets all referenced tables
-    if not referencedTables:
-        referencedTables = getReferencedTables(table, unique=True)
-
-    # Loads all their schema
-    loadSchemas(data, table, referencedTables)
-
-
-
-# Loads noisy data into the editors
-def loadNoisyData(data, table, rows):
-
-    # For each column, select the i-th item and create
-    # a create an INSERT statemetn. Do so for all i items
-    data['params']['db_initialize'] += ''.join(insertStatement(table, [rows[key][i] for key in rows]) for i in range(len(list(rows.values())[0])))
-
-# Loads the noisy data supplied as well as generating and
-# loading noisy data for the referenced tables.
-#
-# Note: This function respects references so a foreign key
-# reference between two tables will holds the same value.
-#
-# Note: this CAN throw a "UNIQUE constraint failed" IF the
-# primary table has two references to the same table (such
-# as the static `flight` table) AND there exists a duplicate
-# value between the different tables. THIS CAN NEVER HAPPEN
-# ON RANDOM TABLES since a random primary table will never
-# hold more than one reference to a given secondary random
-# table. In other words, no worries.
-def loadAllNoisyData(data, table, rows, referencedTables={}):
-
-    # Gets a dicitonary of referenced tables.
-    # The keys are the name of the table
-    if not referencedTables:
-        referencedTables = getReferencedTables(table, unique=False)
-
-    # Gets a dictionary that maps the column to both
-    # the referenced table name and foreign key
-    keyMap = table.getKeyMap()
-
-
-
-    # Generates the noisy data. At this point, there
-    # is NOT consistency across foreign keys.
-    generatedData = {key: nd.generateColumns(referencedTables[keyMap[key]['references']], len(list(rows.values())[0])) for key in keyMap}
-
-    # Overrides the generated data to be the same as
-    # the primary table's data. This IS now consistent
-    # across foreign keys.
-    for key in keyMap:
-        generatedData[key][keyMap[key]['foreignKey']] = rows[key]
-    
-
-
-    # Loads the data into the actual table
-    for key in keyMap:
-        loadNoisyData(data, referencedTables[keyMap[key]['references']], generatedData[key])
-    
-    # Finally loads the primary table's data.
-    # Since the primary table may reference the foreign
-    # tables but NOT vice versa, it is required that the
-    # primary table is loaded after such that foreign
-    # key constrains are satisfied.
-    loadNoisyData(data, table, rows)
 
 
 

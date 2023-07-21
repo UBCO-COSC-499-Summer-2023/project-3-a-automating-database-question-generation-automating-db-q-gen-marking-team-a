@@ -1,6 +1,96 @@
 import unittest
-#from parameterized import parameterized
-from SQLElementSharedLibrary.textDatabaseHandler import *
+from textDatabaseHandler import *
+
+# Test database methods
+class DatabaseTest(unittest.TestCase):
+
+    #---# loadSchemas() Test(s)
+    # all tables are added to db init 
+    def testLoadSchemasAddsTablesToDbInit(self):
+        testType = "Update"
+        db_initialize = ""
+        initialAns = ""
+        difficulty = "easy"
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
+                          'db_initialize':db_initialize},
+                'correct_answers':{'SQLEditor': initialAns}}
+        
+        tableOne = "flight"
+        database = Database(file=tableOne, random=False)
+        tableTwo = "airport"
+        tableThree = "airplane"
+
+        self.assertEqual(len(data['params']['db_initialize']),0)
+
+        database.loadDatabase(data)
+
+        self.assertIn(tableOne,data['params']['db_initialize'])
+        self.assertIn(tableTwo,data['params']['db_initialize'])
+        self.assertIn(tableThree,data['params']['db_initialize'])
+
+    # no tables are added to db init when input is empty
+    ''' This test was removed since there cannot exist a
+        database without any tables. As such, we cannot
+        call .loadDatabase() on type None
+    def testLoadSchemasAddsNoTablesToDbInit(self):
+        testType = "Update"
+        db_initialize = ""
+        initialAns = ""
+        difficulty = "easy"
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
+                          'db_initialize':db_initialize},
+                'correct_answers':{'SQLEditor': initialAns}}
+        table = None
+        tables = []
+
+        self.assertEqual(len(data['params']['db_initialize']),0)
+
+        loadSchemas(data,table,tables)
+
+        self.assertEqual(len(data['params']['db_initialize']),0)
+    '''
+
+#---# loadAllSchema() Test(s)
+    # table with no other referenced tables
+    def testLoadAllSchemaAddsTableWithNoReferencesToDbInit(self):
+        testType = "Update"
+        db_initialize = ""
+        initialAns = ""
+        difficulty = "easy"
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
+                          'db_initialize':db_initialize},
+                'correct_answers':{'SQLEditor': initialAns}}
+        
+        tableOne = "airport"
+        database = Database(file=tableOne, random=False)
+
+        self.assertEqual(len(data['params']['db_initialize']),0)
+
+        database.loadDatabase(data)
+
+        self.assertIn(tableOne,data['params']['db_initialize'])
+    
+    # table with other referenced tables
+    def testLoadAllSchemaAddsTableWithReferencesToDbInit(self):
+        testType = "Update"
+        db_initialize = ""
+        initialAns = ""
+        difficulty = "easy"
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
+                          'db_initialize':db_initialize},
+                'correct_answers':{'SQLEditor': initialAns}}
+        
+        tableOne = "flight"
+        database = Database(file=tableOne, random=False)
+
+        self.assertEqual(len(data['params']['db_initialize']),0)
+
+        database.loadDatabase(data)
+
+        self.assertIn(tableOne,data['params']['db_initialize'])
+        self.assertIn("airplane",data['params']['db_initialize'])
+        self.assertIn("airport",data['params']['db_initialize'])
+
 
 # Tests the helper functions
 class TableHelperFunctionsTest(unittest.TestCase):
@@ -9,9 +99,10 @@ class TableHelperFunctionsTest(unittest.TestCase):
     def testRelativeFilePathReturnsFilePathWithFileName(self):
         file = "random"
 
-        result = relativeFilePath(file)
+        result = relativeTableFilePath(file)
+        absolutePath = absoluteDirectoryPath()
 
-        self.assertEqual(f"./SQLElementSharedLibrary/randomTables/{file}.txt",result)
+        self.assertEqual(f"{absolutePath}/randomTables/{file}.txt",result)
 
 
 
@@ -179,6 +270,58 @@ class TableTest(unittest.TestCase):
 
 
 
+    #---# getReferencedTablesSet() Test(s)
+    # has referenced tables
+    def testGetReferencedTablesSetGetsAllReferencedDbs(self):
+        tableName = "flight"
+        referenced = ["airplane","airport","passenger"]
+        table = Table(tableName)
+
+        result = table.getReferencedTables(unique=True)
+
+        self.assertIsInstance(result,dict)
+        for x in result:
+            self.assertIn(x.name,referenced)
+
+    # has no referenced tables
+    def testGetReferencedTablesSetGetsAllZeroReferencedDbs(self):
+        tableName = "airport"
+        referenced = ["airplane","airport","passenger"]
+        table = Table(tableName)
+
+        result = table.getReferencedTables(unique=True)
+
+        self.assertIsInstance(result,dict)
+        for x in result:
+            self.assertNotIn(x.name,referenced)
+
+#---# getReferencedTableDictionary() Test(s)
+    # has referenced tables
+    def testGetReferencedTablesDictionaryGetsAllReferencedDbs(self):
+        tableName = "flight"
+        referenced = ["airplane","airport","passenger"]
+        table = Table(tableName)
+
+        result = table.getReferencedTables(unique=False)
+
+        self.assertIsInstance(result,dict)
+        for x in result:
+            self.assertIn(x,referenced)
+
+    # has no referenced tables
+    def testGetReferencedTablesDictionaryGetsAllZeroReferencedDbs(self):
+        tableName = "airport"
+        referenced = ["airplane","airport","passenger"]
+        table = Table(tableName)
+
+        result = table.getReferencedTables(unique=False)
+
+        self.assertIsInstance(result,dict)
+        for x in result:
+            self.assertNotIn(x,referenced)
+
+
+
     # Tests getKeyMap()
     # Case: table has no relations
     def testGetKeyMapWhenTableHasNoRelations(self):
@@ -198,12 +341,12 @@ class TableTest(unittest.TestCase):
 
 
 
-    # Tests getSchema()
+    # Tests getSQLSchema()
     # Case: table is unmodified from file Schema
     def testGetSchemaWhenTableIsUnmodified(self):
         tableName = 'flight'
         table = Table(tableName, random=False)
-        tableSchema = table.getSchema()
+        tableSchema = table.getSQLSchema()
 
         unmodifiedSchema = getStaticSchema(tableName)
 
@@ -219,7 +362,7 @@ class TableTest(unittest.TestCase):
         tableName = 'flight'
         table = Table(tableName, random=False)
         table.columns.pop('departAirport')
-        tableSchema = table.getSchema().split('\n')
+        tableSchema = table.getSQLSchema().split('\n')
 
         # To check if the table was correctly modified, 
         # count the number of foreign keys in the table.
