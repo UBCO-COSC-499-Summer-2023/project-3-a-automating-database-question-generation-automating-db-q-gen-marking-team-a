@@ -201,7 +201,7 @@ class QuestionTypeStatementsTest(unittest.TestCase):
         col = "province"
         condition = "Alberta"
 
-        result = deleteStatement(table, {col: condition}, {col, 'OR'})
+        result = deleteStatement(table, {col: condition}, {col: 'OR'})
 
         self.assertIn("DELETE",result)
         self.assertIn("WHERE",result)
