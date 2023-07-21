@@ -120,7 +120,7 @@ def generateCreate(data, difficulty):
     # since that would give students the answer
     if database.referencedTables:
         for referencedTable in database.referencedTables:
-            data['params']['db_initialize'] += f"{database.referencedTables[referencedTable].getSchema()}\n"
+            data['params']['db_initialize'] += f"{database.referencedTables[referencedTable].getSQLSchema()}\n"
 
     # Places the question string into data
     data['params']['questionString'] = questionString
@@ -130,7 +130,7 @@ def generateCreate(data, difficulty):
 
 # Returns the schema for the current table.
 def createStatement(table):
-    return table.getSchema()
+    return table.getSQLSchema()
 
 '''
     End create-style question

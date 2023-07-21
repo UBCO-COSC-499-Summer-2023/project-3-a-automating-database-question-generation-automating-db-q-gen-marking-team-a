@@ -341,12 +341,12 @@ class TableTest(unittest.TestCase):
 
 
 
-    # Tests getSchema()
+    # Tests getSQLSchema()
     # Case: table is unmodified from file Schema
     def testGetSchemaWhenTableIsUnmodified(self):
         tableName = 'flight'
         table = Table(tableName, random=False)
-        tableSchema = table.getSchema()
+        tableSchema = table.getSQLSchema()
 
         unmodifiedSchema = getStaticSchema(tableName)
 
@@ -362,7 +362,7 @@ class TableTest(unittest.TestCase):
         tableName = 'flight'
         table = Table(tableName, random=False)
         table.columns.pop('departAirport')
-        tableSchema = table.getSchema().split('\n')
+        tableSchema = table.getSQLSchema().split('\n')
 
         # To check if the table was correctly modified, 
         # count the number of foreign keys in the table.
