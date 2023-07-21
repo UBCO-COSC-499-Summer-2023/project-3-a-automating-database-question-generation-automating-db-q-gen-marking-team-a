@@ -1,6 +1,8 @@
 import SQLElementSharedLibrary.textDatabaseHandler as db
 import random
 import SQLElementSharedLibrary.SQLNoisyData as nd
+import sqlite3
+import os
 
 
 # Automatically generates an SQL question based on the question's parameters
@@ -617,6 +619,12 @@ def generateQuery(data, difficulty):
     # TODO: clauses (the '[]') is blank; make it not blank
     data['correct_answers']['SQLEditor'] = queryStatement(table, keyMap, foreignKeyMap, selectedColumns, [])
 
+    if os.path.exists("preview.db"):
+        os.remove("preview.db")
+    expectedOutput = data['params']['html_params']['expectedOutput']
+    if expectedOutput:
+        data['params']['expectedOutput'] = createPreview(data)
+
 # Creates a delete statement
 # TODO
 #   Conditionals
@@ -909,3 +917,34 @@ def loadTrimmedTable(columnCount, joinCount=0):
             doomCounter -= 1
     
     return table
+
+# solutioncode (Str) => html table code (str)
+# runs solution code on sqlite3 and gets results and puts that in html table format
+def createPreview(data):
+    data['params']['html_params']['expectedOutput'] 
+    con = sqlite3.connect("preview.db")
+    cur  = con.cursor()
+
+    commands = data['params']['db_initialize'].replace('\n', '').replace('\t', '')
+
+    cur.executescript(commands)
+    con.commit()
+
+    correctAnswer = data['correct_answers']['SQLEditor']
+    expectedCode = correctAnswer.replace('\n', ' ').replace('\t', ' ')
+
+    expectedAns = cur.execute(expectedCode)
+    dataRows = expectedAns.fetchall()
+
+    htmlTable = "<table class='output-tables'>"
+
+    for row in dataRows:
+        rowString = "<tr>"
+        for x in row:
+            rowString+= "<th>" + str(x) + "</th>"
+        rowString += "</tr>"
+        htmlTable += rowString
+
+    htmlTable += "</table>"
+
+    return htmlTable
