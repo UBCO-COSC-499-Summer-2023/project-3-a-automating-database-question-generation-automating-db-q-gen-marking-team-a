@@ -77,14 +77,19 @@ def prepare(element_html, data):
     questionUseConditional = pl.get_integer_attrib(element, 'conditional', 0)
     questionUseSubquery = pl.get_boolean_attrib(element, 'usesubquery', False)
 
-    questionOrderBy = pl.get_integer_attrib(element, "orderBy", 0)
-    questionGroupBy = pl.get_integer_attrib(element, "groupBy", 0)
+    questionColumnsToSelect = pl.get_integer_attrib(element, "columnstoselect", 0)
+    questionOrderBy = pl.get_boolean_attrib(element, "orderby", False)
+    questionGroupBy = pl.get_integer_attrib(element, "groupby", 0)
     questionHaving = pl.get_integer_attrib(element, 'having', 0)
     questionLimit = pl.get_integer_attrib(element, 'limit', 0)
     questionWith = pl.get_integer_attrib(element, 'with', 0)
-    questionDistinct = pl.get_integer_attrib(element, 'isDistinct', 0)
+    questionDistinct = pl.get_boolean_attrib(element, 'isdistinct', False)
 
-    # LIKE -> GLOB in SQLite
+    # Notice that there is no "LIKE" clause included.
+    # This is becuase SQLite does not have a LIKE clause,
+    # rather it uses "WHERE $col GLOB $val". While this
+    # is similar, testing on a 'gotcha' between SQL and
+    # SQLite is a poor idea
 
     data['params']['html_params'] = {
         'random': questionRandom,
@@ -107,6 +112,7 @@ def prepare(element_html, data):
     data['params']['html_query_clauses'] = {
         'useConditional': questionUseConditional,
         'useSubquery': questionUseSubquery,
+        'columnsToSelect': questionColumnsToSelect,
         'orderBy': questionOrderBy,
         'groupBy': questionGroupBy,
         'having': questionHaving,
