@@ -64,6 +64,7 @@ def prepare(element_html, data):
     questionDifficulty = pl.get_string_attrib(element, 'difficulty', None)
     questionMaxGrade = pl.get_float_attrib(element, 'maxgrade', 1)
     questionMarkerFeedback = pl.get_boolean_attrib(element, 'markerfeedback', False)
+    questionExpectedPreview = pl.get_boolean_attrib(element,'expectedoutput',False)
 
     questionColumns = pl.get_integer_attrib(element, 'columns', 5)
     questionJoins = pl.get_integer_attrib(element, 'joins', 0)
@@ -85,7 +86,8 @@ def prepare(element_html, data):
         'maxGrade': questionMaxGrade,
         'markerFeedback': questionMarkerFeedback,
         'columns': questionColumns,
-        'joins': questionJoins
+        'joins': questionJoins,
+        'expectedOutput': questionExpectedPreview
     }
 
     data['params']['html_table_clauses'] = {
@@ -138,7 +140,8 @@ def render(element_html, data):
         html_params = {
             'question': True,
             'db_initialize': dbInit,
-            'questionString': data['params'].get('questionString', '')
+            'questionString': data['params'].get('questionString', ''),
+            'expectedOutput': data['params'].get('expectedOutput', '')
         }
     
         with open('pl-sql-element.mustache', 'r', encoding='utf-8') as f:
