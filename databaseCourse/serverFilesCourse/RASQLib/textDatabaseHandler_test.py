@@ -350,7 +350,7 @@ class TableHelperFunctionsTest(unittest.TestCase):
         string = '3-5'
         trueRange = range(3, 6)
 
-        returnedRange = .parseRange(string)
+        returnedRange = parseRange(string)
 
         self.assertEqual(trueRange, returnedRange)
 
