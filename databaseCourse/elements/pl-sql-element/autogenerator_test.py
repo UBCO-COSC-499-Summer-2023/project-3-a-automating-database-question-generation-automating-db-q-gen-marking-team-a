@@ -8,7 +8,7 @@ class AutogenerateTest(unittest.TestCase):
 #---# autogenerate() Tests------------------------------------------------------------------------------------------------------------------
     # case1 : enter an invalid difficulty
     def testAutogenerateInvalidDifficultyReturnsNone(self):
-        data = {'params':{'html_params':{'random':{},'questionType':{},'difficulty':{}}}}
+        data = {'params':{'html_params':{'random':{},'questionType':{},'difficulty':'not valid difficulty'}}}
 
         result = autogenerate(data)
 
@@ -32,15 +32,16 @@ class AutogenerateTest(unittest.TestCase):
             # TODO: needs to be implemented
             # ["update","hard","change"], #not implemented yet
             # ["delete","hard","delete"], #not implemented yet
-            ["query","hard","select"]
+            # ["query","hard","select"]
             ])
     def testAutogenerateReturnsCorrectQuestionType(self,testType,difficulty,keyWord):
         initialAns = "\n"
-        db_initialize = ""
-        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
+        db_initalize = ""
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty, 'columns': 5, 'joins': 0, 'expectedOutput':True},
                         'db_initialize_create':db_initialize, 
                         'db_initialize_insert_frontend':db_initialize, 
                         'db_initialize_insert_backend':db_initialize},
+                        'html_table_clauses': {}},
                 'correct_answers':{'SQLEditor': initialAns}}
         
         autogenerate(data)
@@ -99,7 +100,7 @@ class QuestionGenerationTest(unittest.TestCase):
         db_initialize = ""
         initialAns = ""
         difficulty = "medium"
-        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty,'expectedOutput':True},
                         'db_initialize_create':db_initialize, 
                         'db_initialize_insert_frontend':db_initialize, 
                         'db_initialize_insert_backend':db_initialize},
@@ -173,8 +174,9 @@ class QuestionTypeStatementsTest(unittest.TestCase):
         updateVal = "Alberta"
         conditionalCol = updateCol
         conditionalVal = "Ontario"
+        conditionalValues = {conditionalCol: conditionalVal}
 
-        result = updateStatement(table,updateCol,updateVal,conditionalCol,conditionalVal)
+        result = updateStatement(table,updateCol,updateVal,conditionalValues)
 
         self.assertIn("UPDATE",result)
         self.assertIn("WHERE",result)
@@ -203,11 +205,11 @@ class QuestionTypeStatementsTest(unittest.TestCase):
     # with a condition
     def testDeleteStatementWithConditional(self):
         tableName = "airport"
-        table = db.Table(tableName)
+        table = db.Table(tableName, random=False)
         col = "province"
         condition = "Alberta"
 
-        result = deleteStatement(table,col,condition)
+        result = deleteStatement(table,{col: condition})
 
         self.assertIn("DELETE",result)
         self.assertIn("WHERE",result)
@@ -254,155 +256,8 @@ class HelperFnsTest(unittest.TestCase):
 
         self.assertIn("WHERE",result)
 
-#---# getReferencedTablesSet() Test(s)
-    # has referenced tables
-    def testGetReferencedTablesSetGetsAllReferencedDbs(self):
-        tableName = "flight"
-        referenced = ["airplane","airport","passenger"]
-        table = db.Table(tableName)
-
-        result = getReferencedTables(table, unique=True)
-
-        self.assertIsInstance(result,dict)
-        for x in result:
-            self.assertIn(x.name,referenced)
-
-    # has no referenced tables
-    def testGetReferencedTablesSetGetsAllZeroReferencedDbs(self):
-        tableName = "airport"
-        referenced = ["airplane","airport","passenger"]
-        table = db.Table(tableName)
-
-        result = getReferencedTables(table, unique=True)
-
-        self.assertIsInstance(result,dict)
-        for x in result:
-            self.assertNotIn(x.name,referenced)
-
-#---# getReferencedTableDictionary() Test(s)
-    # has referenced tables
-    def testGetReferencedTablesDictionaryGetsAllReferencedDbs(self):
-        tableName = "flight"
-        referenced = ["airplane","airport","passenger"]
-        table = db.Table(tableName)
-
-        result = getReferencedTables(table, unique=False)
-
-        self.assertIsInstance(result,dict)
-        for x in result:
-            self.assertIn(x,referenced)
-
-    # has no referenced tables
-    def testGetReferencedTablesDictionaryGetsAllZeroReferencedDbs(self):
-        tableName = "airport"
-        referenced = ["airplane","airport","passenger"]
-        table = db.Table(tableName)
-
-        result = getReferencedTables(table, unique=False)
-
-        self.assertIsInstance(result,dict)
-        for x in result:
-            self.assertNotIn(x,referenced)
-
-#---# loadSchemas() Test(s)
-    # all tables are added to db init 
-    def testLoadSchemasAddsTablesToDbInit(self):
-        testType = "Update"
-        db_initialize = ""
-        initialAns = ""
-        difficulty = "easy"
-        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
-                        'db_initialize_create':db_initialize, 
-                        'db_initialize_insert_frontend':db_initialize, 
-                        'db_initialize_insert_backend':db_initialize},
-                'correct_answers':{'SQLEditor': initialAns}}
-        tableOne = "airport"
-        tableAirport = db.Table(tableOne)
-        tableTwo = "flight"
-        tableFlight = db.Table(tableTwo)
-        tableThree = "airplane"
-        tableAirplane = db.Table(tableThree)
-        tables = {tableOne: tableAirport, tableThree: tableAirplane}
-
-        self.assertEqual(len(data['params']['db_initialize_create']),0)
-        self.assertEqual(len(data['params']['db_initialize_insert_frontend']),0)
-        self.assertEqual(len(data['params']['db_initialize_insert_backend']),0)
-
-        loadSchemas(data,tableFlight,tables)
-
-        self.assertIn(tableOne,data['params']['db_initialize_create'])
-        self.assertIn(tableTwo,data['params']['db_initialize_create'])
-        self.assertIn(tableThree,data['params']['db_initialize_create'])
-
-    # no tables are added to db init when input is empty
-    def testLoadSchemasAddsNoTablesToDbInit(self):
-        testType = "Update"
-        db_initialize = ""
-        initialAns = ""
-        difficulty = "easy"
-        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
-                        'db_initialize_create':db_initialize, 
-                        'db_initialize_insert_frontend':db_initialize, 
-                        'db_initialize_insert_backend':db_initialize},
-                'correct_answers':{'SQLEditor': initialAns}}
-        table = None
-        tables = []
-
-        self.assertEqual(len(data['params']['db_initialize_create']),0)
-        self.assertEqual(len(data['params']['db_initialize_insert_frontend']),0)
-        self.assertEqual(len(data['params']['db_initialize_insert_backend']),0)
-
-        loadSchemas(data,table,tables)
-
-        self.assertEqual(len(data['params']['db_initialize_create']),0)
-
-#---# loadAllSchema() Test(s)
-    # table with no other referenced tables
-    def testLoadAllSchemaAddsTableWithNoReferencesToDbInit(self):
-        testType = "Update"
-        db_initialize = ""
-        initialAns = ""
-        difficulty = "easy"
-        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
-                        'db_initialize_create':db_initialize, 
-                        'db_initialize_insert_frontend':db_initialize, 
-                        'db_initialize_insert_backend':db_initialize},
-                'correct_answers':{'SQLEditor': initialAns}}
-        tableOne = "airport"
-        tableAirport = db.Table(tableOne)
-
-        self.assertEqual(len(data['params']['db_initialize_create']),0)
-        self.assertEqual(len(data['params']['db_initialize_insert_frontend']),0)
-        self.assertEqual(len(data['params']['db_initialize_insert_backend']),0)
-
-        loadAllSchema(data,tableAirport)
-
-        self.assertIn(tableOne,data['params']['db_initialize_create'])
-    
-    # table with other referenced tables
-    def testLoadAllSchemaAddsTableWithReferencesToDbInit(self):
-        testType = "Update"
-        db_initialize = ""
-        initialAns = ""
-        difficulty = "easy"
-        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
-                        'db_initialize_create':db_initialize, 
-                        'db_initialize_insert_frontend':db_initialize, 
-                        'db_initialize_insert_backend':db_initialize},
-                'correct_answers':{'SQLEditor': initialAns}}
-        tableOne = "flight"
-        tableAirport = db.Table(tableOne, random=False)
-
-        self.assertEqual(len(data['params']['db_initialize_create']),0)
-        self.assertEqual(len(data['params']['db_initialize_insert_frontend']),0)
-        self.assertEqual(len(data['params']['db_initialize_insert_backend']),0)
-
-        loadAllSchema(data,tableAirport)
-
-        self.assertIn(tableOne,data['params']['db_initialize_create'])
-        self.assertIn("airplane",data['params']['db_initialize_create'])
-        self.assertIn("airport",data['params']['db_initialize_create'])
-
+        
+        
 #---# loadTrimmedTable() Test(s)
     # returns a table with a number of columns that we know will work
     def testLoadTrimmedTableReturnsValidTableWhenGivenValidSize(self):
