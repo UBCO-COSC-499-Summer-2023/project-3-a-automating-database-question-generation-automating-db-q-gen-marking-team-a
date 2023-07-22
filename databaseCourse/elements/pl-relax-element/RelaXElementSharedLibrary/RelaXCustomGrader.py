@@ -12,37 +12,41 @@ def customGrader(data):
         submittedAnswer = data['submitted_answers']['RelaXEditor']
         correctAnswer = data['correct_answers']['RelaXEditor']
 
-        host_ip = "192.168.1.66"
-        url = f"http://{host_ip}:4000/index"
+        host_ip = "localhost"
+        url = f"http://{host_ip}:3000/ra_autoGrader"
 
         # Construct the data to be sent in the POST request
         data_to_send = {
-            "db": db,
+            "database": db,
             "submittedAnswer": submittedAnswer,
             "correctAnswer": correctAnswer
         }
+        
+        print("Url:", url)
+        print("Data: ",data_to_send)
 
-        response = requests.post(url, data=data_to_send)
+        response = requests.get(url, json=data_to_send)
+        
+        print("Response: ", response)
+        print("Response status code:", response.status_code)
+        print("Response text:", response.text)
 
-        # Assuming the server returns JSON data containing queriedSA and queriedCA
+        # Assuming the server returns JSON data containing the processed result
         response_data = response.json()
+        
+        print("Response data: ", response_data)
 
+        # Process the response data as needed
         queriedSA = response_data.get('queriedSA', None)
         queriedCA = response_data.get('queriedCA', None)
 
-        print("Response status code:", response.status_code)
-        print("Response text:", response.text)
+
         print("QueriedSA:", queriedSA)
         print("QueriedCA:", queriedCA)
 
-    except KeyError as e:
-        # Handle the case when the required keys are missing in the 'data' dictionary
-        print("KeyError:", e)
-        return 0.0
-    except ValueError as e:
-        # Handle the case when the response does not contain valid JSON data
-        print("ValueError:", e)
-        return 0.0
+    except Exception as e:
+        print("Error:", str(e))
+        raise e
     
     # db = data['params']['database']
     
