@@ -83,7 +83,7 @@ def prepare(element_html, data):
     questionHaving = pl.get_integer_attrib(element, 'having', 0)
     questionLimit = pl.get_integer_attrib(element, 'limit', 0)
     questionWith = pl.get_integer_attrib(element, 'with', 0)
-    questionDistinct = pl.get_boolean_attrib(element, 'isdistinct', False)
+    questionIsDistinct = pl.get_boolean_attrib(element, 'isdistinct', False)
 
     # Notice that there is no "LIKE" clause included.
     # This is becuase SQLite does not have a LIKE clause,
@@ -118,7 +118,7 @@ def prepare(element_html, data):
         'having': questionHaving,
         'limit': questionLimit,
         'with': questionWith,
-        'distinct': questionDistinct
+        'isDistinct': questionIsDistinct
     }
 
     # If if is a randomised question, generate the question
