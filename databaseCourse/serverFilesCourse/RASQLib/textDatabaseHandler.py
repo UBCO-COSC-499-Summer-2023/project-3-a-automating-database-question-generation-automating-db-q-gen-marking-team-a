@@ -209,8 +209,10 @@ class Table:
             else:
                 constraints = {'': {'name': '', 'unit': 'NUMBER', 'unitOther': None}}
 
-        # Adds columns
-        self.load(file, columns, joins, clauses, constraints, random, columnNames)
+        # Adds columns.
+        # Also passes in column names from the file if they
+        # were not supplied, which only happens for testing.
+        self.load(file, columns, joins, clauses, constraints, random, columnNames if columnNames else parseColumnsFromFile('randomColumnsSQL'))
 
         # Adds data
         self.generateRows(rows)
