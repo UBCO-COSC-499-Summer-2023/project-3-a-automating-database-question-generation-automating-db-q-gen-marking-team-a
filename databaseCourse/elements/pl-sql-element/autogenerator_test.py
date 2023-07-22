@@ -38,7 +38,7 @@ class AutogenerateTest(unittest.TestCase):
         initialAns = "\n"
         db_initalize = ""
         data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty, 'columns': 5, 'joins': 0},
-                          'db_initialize':db_initalize, 'html_table_clauses': {}},
+                          'db_initialize':db_initalize, 'html_table_clauses': {},'expectedOutput':True},
                 'correct_answers':{'SQLEditor': initialAns}}
         
         autogenerate(data)
@@ -94,7 +94,7 @@ class QuestionGenerationTest(unittest.TestCase):
         initialAns = ""
         difficulty = "medium"
         data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
-                          'db_initialize':db_initialize},
+                          'db_initialize':db_initialize,'expectedOutput':True},
                 'correct_answers':{'SQLEditor': initialAns}}
         
         generateQuery(data,difficulty)
