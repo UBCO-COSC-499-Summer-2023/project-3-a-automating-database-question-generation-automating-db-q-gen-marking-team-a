@@ -17,9 +17,13 @@ class Database:
     def __init__(self, isSQL=True, file='', columns=5, joins=0, depth=3, clauses={}, constraints={'': {'name': '', 'unit': 'INTEGER', 'unitOther': None}}, rows=0, random=True):
 
         self.isSQL = isSQL
+        
+
 
         # For SQL databases
         if isSQL:
+
+            columnNames = parseColumnsFromFile('randomColumnsSQL')
 
             # When columns are set to zero, it indicates that
             # a table is being pased in (used to support old
@@ -28,28 +32,28 @@ class Database:
             if columns == 0:
                 self.primaryTable = file
             else:
-                self.primaryTable = Table(file=file, columns=columns, joins=joins, clauses=clauses, constraints=constraints, rows=rows, database=self, isSQL=isSQL, random=random)
+                self.primaryTable = Table(file=file, columns=columns, joins=joins, clauses=clauses, constraints=constraints, rows=rows, database=self, isSQL=isSQL, random=random, columnNames=columnNames)
             
             # Gets the referenced tables
-            self.referencedTables = self.primaryTable.getReferencedTables(static=not random)
+            self.referencedTables = self.primaryTable.getReferencedTables(static=not random, columnNames=columnNames)
         
         # For RelaX databases
         else:
-            self.generateTableSet(columns=columns, joins=joins, depth=depth, rows=rows)
+            columnNames = parseColumnsFromFile('randomColumnsRelaX')
+            self.generateTableSet(columns=columns, joins=joins, depth=depth, rows=rows, columnNames=columnNames)
             
         
 
     # Generates a table set for RelaX
-    def generateTableSet(self, columns=5, joins=5, depth=3, rows=0) -> dict:
+    def generateTableSet(self, columns=5, joins=5, depth=3, rows=0, columnNames=[]) -> dict:
 
         # Gets a list of possible table names
-        #possibleColumns = self.parseColumnsFromFile('randomColumns')
         self.tableSet = {}
         
         # The primary table should have more columns
         for i in range(joins + 1):
-            #dataset[i] = Table(columns=columns, possibleColumns=possibleColumns, joins=2, isSQL=False)
-            self.tableSet[i] = Table(columns=columns, joins=2, isSQL=False)
+            #dataset[i] = Table(columns=columns, columnNames=columnNames, joins=2, isSQL=False)
+            self.tableSet[i] = Table(columns=columns, joins=2, isSQL=False, columnNames=columnNames)
             ''' Skyler here,
                 I'm getting rid of a random amount of tables
                 in favour of using the `columns` parameter.
@@ -57,9 +61,9 @@ class Database:
                 less than 3 columns, as would be possible
                 in the `else` statement
             if i == 0:
-                dataset[i] = Table(columns=randint(3,5), possibleColumns=possibleColumns, joins=2)
+                dataset[i] = Table(columns=randint(3,5), columnNames=columnNames, joins=2)
             else:    
-                dataset[i] = Table(columns=randint(2,4), possibleColumns=possibleColumns, joins=2)
+                dataset[i] = Table(columns=randint(2,4), columnNames=columnNames, joins=2)
             '''
 
         # Populates the table with data
@@ -189,7 +193,7 @@ class Table:
     # File name and table name are equivalent.
     #   File: the name of the text file if it exists OR the name of the random table
     #   Columns: the number of columns in the table
-    def __init__(self, file='', columns=5, joins=0, clauses={}, constraints={}, rows=0, database=None, isSQL=True, random=True):
+    def __init__(self, file='', columns=5, joins=0, clauses={}, constraints={}, rows=0, database=None, isSQL=True, random=True, columnNames=[]):
         self.name = file
         self.database = database
         self.columns = {}
@@ -206,7 +210,7 @@ class Table:
                 constraints = {'': {'name': '', 'unit': 'NUMBER', 'unitOther': None}}
 
         # Adds columns
-        self.load(file, columns, joins, clauses, constraints, random)
+        self.load(file, columns, joins, clauses, constraints, random, columnNames)
 
         # Adds data
         self.generateRows(rows)
@@ -218,12 +222,12 @@ class Table:
     # random tables, not static tables; for random tables.
     # f"{file}" will become the table name if it is
     # provided, otherwise a random name will be chosen
-    def load(self, file, columns, joins, clauses, constraints, random):
+    def load(self, file, columns, joins, clauses, constraints, random, columnNames):
 
         if not random:
             self.loadFromText(file)
         else:
-            self.loadRandom(self.name, columns, joins, clauses, constraints)
+            self.loadRandom(self.name, columns, joins, clauses, constraints, columnNames)
 
     # Given the path to a text file, loads its data
     def loadFromText(self, file):
@@ -329,7 +333,7 @@ class Table:
 
 
     # Creates a random table
-    def loadRandom(self, name, columns, joins, clauses, constraints):
+    def loadRandom(self, name, columns, joins, clauses, constraints, columnNames):
 
         # Checks whether the parameters are legal
         #
@@ -392,13 +396,6 @@ class Table:
         if not name:
             self.name = choice(getRandomTableNames())
 
-        # Gets the columns used to build a table
-        possibleColumns = None
-        if self.isSQL:
-            possibleColumns = self.parseColumnsFromFile('randomColumnsSQL')
-        else:
-            possibleColumns = self.parseColumnsFromFile('randomColumnsRelaX')
-
 
         # Adds foreign key constraints
         if constraints:
@@ -428,7 +425,7 @@ class Table:
 
             # Chooses a random column to add
             # Pops the column to ensure no duplicates
-            addColumn = possibleColumns.pop(choice(range(len(possibleColumns))))
+            addColumn = columnNames.pop(choice(range(len(columnNames))))
 
             # Checks if the column would override an existing 
             # column. This could only occur due to foreign key
@@ -436,7 +433,7 @@ class Table:
             # giving the same column. Requires at most one more
             # pop() to fix
             if addColumn[0] in self.columns.keys():
-                addColumn = possibleColumns.pop(choice(range(len(possibleColumns))))
+                addColumn = columnNames.pop(choice(range(len(columnNames))))
 
             # Grabs parameters
             columnName = addColumn[0]
@@ -598,93 +595,11 @@ class Table:
 
 
 
-    # Given a marked-up textfile, return an array
-    # of possible columns for random table generation.
-    # A helper function for loadRandom
-    def parseColumnsFromFile(self, file):
-
-        # Holds all the columns that can be selected
-        possibleColumns = []
-
-        # Reads the text file
-        with open(relativeTableDataFilePath(file)) as columnsFile:
-
-            # Iterates over each line
-            for line in columnsFile:
-
-                # Only cares about non-whitespace lines
-                if line and not line.isspace():
-
-                    # Formats the line correctly.
-                    # Removes leading and trailing whitespace from
-                    # each word, as deliminated by ',' in the line
-                    words = [word.strip() for word in line.split(',')]
-
-                    # Grabs the parameters
-                    name = words[0]
-                    unit = words[1]
-                    unitOther = None
-
-
-
-                    # Handles the cases where the unitOther is not none
-                    if 'DECIMAL' == unit or 'CHAR' == unit or 'VARCHAR' == unit:
-                        unitOther = self.parseRange(words[2])
-                        
-                        # Decimal needs two bits of data to
-                        # describe its unitOther; hence length of 4
-                        if unit == 'DECIMAL':
-                            possibleColumns.append([name, unit, unitOther, self.parseRange(words[3])])
-                        # The other columns with uniOther only require 3
-                        else:
-                            possibleColumns.append([name, unit, unitOther])
-                    
-                    # Adds columns without unitOther
-                    else:
-                        possibleColumns.append([name, unit])
-            
-        # Returns the populated array
-        return possibleColumns
-
-    # Given a range in the form of `xx-yy-zz` or
-    # `xx-yy`, returns a range. If there is no `-`,
-    # then return it unchanged as a string.
-    # A helper funciton of parseColumnsFromFile()
-    def parseRange(self, string):
-
-        # Checks if it is a range
-        if '-' in string:
-
-            # Split over '-'
-            split = string.split('-')
-
-            # The format is:
-            #   First item is the start
-            #   Second item is the stop (inclusive!)
-            #   Third item is the step (optional)
-            start = int(split[0])
-            stop = int(split[1]) + 1
-
-            # Obtains the step, if it is included.
-            # otherwise it defualts to 1
-            step = 1
-            if len(split) > 2:
-                step = int(split[2])
-            
-            # Returns the range
-            return range(start, stop, step)
-        
-        # If it is not a range, return as a string
-        else:
-            return f"{string}"
-
-
-
     # Returns a dictionary that maps the foreign key of the supplied
     # table to the referenced tables. If the unique parameter is true,
     # this dictionary contains a set of tables: no duplicated. Otherwise,
     # there may be duplicate tables with unique foreign keys.
-    def getReferencedTables(self, unique=True, static=False):
+    def getReferencedTables(self, unique=True, static=False, columnNames=[]):
         
         # Uses a dictionary to store the tables and a set to keep track
         # of unique table names
@@ -714,7 +629,7 @@ class Table:
                 }
 
                 # Loads an approrpiate table into the dictionary
-                tables[self.columns[key]['references']] = Table(file=self.columns[key]['references'], columns=columns, constraints=constraints, database=self.database, isSQL=True, random=not static)
+                tables[self.columns[key]['references']] = Table(file=self.columns[key]['references'], columns=columns, constraints=constraints, database=self.database, isSQL=True, random=not static, columnNames=columnNames)
 
                 # Adds the table name to the set if unique is True
                 if unique:
@@ -919,3 +834,84 @@ def getRandomTableNames(path=relativeTableDataFilePath('randomTableNames')):
             return [line.strip() for line in file.readlines() if not line.isspace()]
     except:
        return []
+    
+
+# Given a marked-up textfile, return an array
+# of possible columns for random table generation.
+# A helper function for loadRandom
+def parseColumnsFromFile(file):
+
+    # Holds all the columns that can be selected
+    columnNames = []
+
+    # Reads the text file
+    with open(relativeTableDataFilePath(file)) as columnsFile:
+
+        # Iterates over each line
+        for line in columnsFile:
+
+            # Only cares about non-whitespace lines
+            if line and not line.isspace():
+
+                # Formats the line correctly.
+                # Removes leading and trailing whitespace from
+                # each word, as deliminated by ',' in the line
+                words = [word.strip() for word in line.split(',')]
+
+                # Grabs the parameters
+                name = words[0]
+                unit = words[1]
+                unitOther = None
+
+
+
+                # Handles the cases where the unitOther is not none
+                if 'DECIMAL' == unit or 'CHAR' == unit or 'VARCHAR' == unit:
+                    unitOther = parseRange(words[2])
+                    
+                    # Decimal needs two bits of data to
+                    # describe its unitOther; hence length of 4
+                    if unit == 'DECIMAL':
+                        columnNames.append([name, unit, unitOther, parseRange(words[3])])
+                    # The other columns with uniOther only require 3
+                    else:
+                        columnNames.append([name, unit, unitOther])
+                
+                # Adds columns without unitOther
+                else:
+                    columnNames.append([name, unit])
+        
+    # Returns the populated array
+    return columnNames
+
+# Given a range in the form of `xx-yy-zz` or
+# `xx-yy`, returns a range. If there is no `-`,
+# then return it unchanged as a string.
+# A helper funciton of parseColumnsFromFile()
+def parseRange(string):
+
+    # Checks if it is a range
+    if '-' in string:
+
+        # Split over '-'
+        split = string.split('-')
+
+        # The format is:
+        #   First item is the start
+        #   Second item is the stop (inclusive!)
+        #   Third item is the step (optional)
+        start = int(split[0])
+        stop = int(split[1]) + 1
+
+        # Obtains the step, if it is included.
+        # otherwise it defualts to 1
+        step = 1
+        if len(split) > 2:
+            step = int(split[2])
+        
+        # Returns the range
+        return range(start, stop, step)
+    
+    # If it is not a range, return as a string
+    else:
+        return f"{string}"
