@@ -92,56 +92,6 @@ class DatabaseTest(unittest.TestCase):
         self.assertIn("airport",data['params']['db_initialize'])
 
 
-# Tests the helper functions
-class TableHelperFunctionsTest(unittest.TestCase):
-    
-    #---# relativeFilePath() Test(s)
-    def testRelativeFilePathReturnsFilePathWithFileName(self):
-        file = "random"
-
-        result = relativeTableFilePath(file)
-        absolutePath = absoluteDirectoryPath()
-
-        self.assertEqual(f"{absolutePath}/randomTables/{file}.txt",result)
-
-
-
-    # Tests getStaticSchema()
-    # Case: file is found
-    def testGetStaticSchemaFileIsFound(self):
-        tableName = 'airport'
-        schema = getStaticSchema(tableName)
-
-        self.assertIsNotNone(schema)
-
-    # Case: file is not found
-    def testGetStaticSchemaFileIsNotFound(self):
-        tableName = 'noSuchTable'
-        schema = getStaticSchema(tableName)
-
-        self.assertIsNone(schema)
-
-
-
-    # Tests the getAllTableFiles() function
-    # This test isn't really needed since it is implicitly
-    # tested through other test functions
-    def testGetAllTableFiles(self):
-        tableList = getAllTableFiles()
-
-        self.assertGreater(len(tableList), 0)
-
-    
-
-    # Tests the getRandomTableNames() function
-    # This test isn't really needed since it is implicitly
-    # tested through other test functions
-    def testGetRandomTableNames(self):
-        randomNames = getRandomTableNames()
-
-        self.assertGreater(len(randomNames), 0)
-
-
 
 # Tests the table object
 class TableTest(unittest.TestCase):
@@ -218,55 +168,6 @@ class TableTest(unittest.TestCase):
         table = Table(tableName, columns, joins)
 
         self.assertEqual(len(list(table.columns)), 0)
-
-
-
-    # Tests parseColumnsFromFile()
-    # This one does not need to be tested since it is
-    # integration tested with Table instantiation
-
-
-
-    # Tests parseRange()
-    # Case: a string, not a range, is provided
-    def testParseRangeStringNotRange(self):
-        table = Table('randomTable')
-        
-        string = 'this is not a range'
-        returnedRange = table.parseRange(string)
-
-        self.assertEqual(string, returnedRange)
-
-    # Case: range has two components
-    def testParseRangeTwoComponents(self):
-        table = Table('randomTable')
-        
-        string = '3-5'
-        trueRange = range(3, 6)
-        returnedRange = table.parseRange(string)
-
-        self.assertEqual(trueRange, returnedRange)
-
-    # Case: range has three components
-    def testParseRangeThreeComponents(self):
-        table = Table('randomTable')
-        
-        string = '20-30-5'
-        trueRange = range(20, 31, 5)
-        returnedRange = table.parseRange(string)
-
-        self.assertEqual(trueRange, returnedRange)
-
-    # Case: range has four components
-    # The fourth component should be ignored
-    def testParseRangeThreeComponents(self):
-        table = Table('randomTable')
-        
-        string = '7-10-3-1'
-        trueRange = range(7, 11, 3)
-        returnedRange = table.parseRange(string)
-
-        self.assertEqual(trueRange, returnedRange)
 
 
 
@@ -375,6 +276,105 @@ class TableTest(unittest.TestCase):
                 fks += 1
 
         self.assertEqual(fks, 2)
+
+
+
+# Tests the helper functions
+class TableHelperFunctionsTest(unittest.TestCase):
+    
+    #---# relativeFilePath() Test(s)
+    def testRelativeFilePathReturnsFilePathWithFileName(self):
+        file = "random"
+
+        result = relativeTableFilePath(file)
+        absolutePath = absoluteDirectoryPath()
+
+        self.assertEqual(f"{absolutePath}/randomTables/{file}.txt",result)
+
+
+
+    # Tests getStaticSchema()
+    # Case: file is found
+    def testGetStaticSchemaFileIsFound(self):
+        tableName = 'airport'
+        schema = getStaticSchema(tableName)
+
+        self.assertIsNotNone(schema)
+
+    # Case: file is not found
+    def testGetStaticSchemaFileIsNotFound(self):
+        tableName = 'noSuchTable'
+        schema = getStaticSchema(tableName)
+
+        self.assertIsNone(schema)
+
+
+
+    # Tests the getAllTableFiles() function
+    # This test isn't really needed since it is implicitly
+    # tested through other test functions
+    def testGetAllTableFiles(self):
+        tableList = getAllTableFiles()
+
+        self.assertGreater(len(tableList), 0)
+
+    
+
+    # Tests the getRandomTableNames() function
+    # This test isn't really needed since it is implicitly
+    # tested through other test functions
+    def testGetRandomTableNames(self):
+        randomNames = getRandomTableNames()
+
+        self.assertGreater(len(randomNames), 0)
+
+
+
+    # Tests parseColumnsFromFile()
+    # This one does not need to be tested since it is
+    # integration tested with Table instantiation
+
+
+
+    # Tests parseRange()
+    # Case: a string, not a range, is provided
+    def testParseRangeStringNotRange(self):
+        string = 'this is not a range'
+
+        returnedRange = parseRange(string)
+
+        self.assertEqual(string, returnedRange)
+
+    # Case: range has two components
+    def testParseRangeTwoComponents(self):
+        string = '3-5'
+        trueRange = range(3, 6)
+
+        returnedRange = .parseRange(string)
+
+        self.assertEqual(trueRange, returnedRange)
+
+    # Case: range has three components
+    def testParseRangeThreeComponents(self):
+        string = '20-30-5'
+        trueRange = range(20, 31, 5)
+
+        returnedRange = parseRange(string)
+
+        self.assertEqual(trueRange, returnedRange)
+
+    # Case: range has four components
+    # The fourth component should be ignored
+    def testParseRangeThreeComponents(self):
+        string = '7-10-3-1'
+        trueRange = range(7, 11, 3)
+
+        returnedRange = parseRange(string)
+
+        self.assertEqual(trueRange, returnedRange)
+
+
+
 
 
 
