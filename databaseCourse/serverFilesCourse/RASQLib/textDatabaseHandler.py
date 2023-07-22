@@ -37,6 +37,8 @@ class Database:
             # Gets the referenced tables
             self.referencedTables = self.primaryTable.getReferencedTables(static=not random, columnNames=columnNames)
         
+
+        
         # For RelaX databases
         else:
             columnNames = parseColumnsFromFile('randomColumnsRelaX')
