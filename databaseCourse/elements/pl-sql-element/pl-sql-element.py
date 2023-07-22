@@ -53,8 +53,6 @@ def prepare(element_html, data):
     data['params']['db_initialize_insert_frontend'] = ''
     data['params']['db_initialize_insert_backend'] = ''
 
-    data['params']['html_params']['expectedOutput'] = ''
-
 
     # Loads quesiton parameters into data
     #

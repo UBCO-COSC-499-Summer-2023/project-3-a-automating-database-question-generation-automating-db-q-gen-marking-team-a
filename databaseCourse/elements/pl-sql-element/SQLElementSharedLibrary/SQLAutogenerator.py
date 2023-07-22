@@ -846,7 +846,7 @@ def createPreview(data):
     con = sqlite3.connect("preview.db")
     cur  = con.cursor()
 
-    commands = data['params']['db_initialize'].replace('\n', '').replace('\t', '')
+    commands = data['params']['db_initialize_create'].replace('\n', '').replace('\t', '')
 
     cur.executescript(commands)
     con.commit()

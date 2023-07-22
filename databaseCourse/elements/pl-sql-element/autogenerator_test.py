@@ -37,7 +37,7 @@ class AutogenerateTest(unittest.TestCase):
     def testAutogenerateReturnsCorrectQuestionType(self,testType,difficulty,keyWord):
         initialAns = "\n"
         db_initialize = ""
-        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty,'expectedOutput':False},
                     'db_initialize_create':db_initialize, 
                     'db_initialize_insert_frontend':db_initialize, 
                     'db_initialize_insert_backend':db_initialize},
