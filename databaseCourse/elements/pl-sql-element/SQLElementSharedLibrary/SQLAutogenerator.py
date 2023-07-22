@@ -1,5 +1,6 @@
 import random
-
+import sqlite3
+import os
 # This allows DroneCI to see the RASQLib module
 import sys
 sys.path.append('/drone/src/databaseCourse/serverFilesCourse/')
@@ -672,6 +673,12 @@ def generateQuery(data, difficulty):
     # TODO: clauses (the '[]') is blank; make it not blank
     data['correct_answers']['SQLEditor'] = queryStatement(table, keyMap, foreignKeyMap, selectedColumns, [])
 
+    if os.path.exists("preview.db"):
+        os.remove("preview.db")
+    expectedOutput = data['params']['html_params']['expectedOutput']
+    if expectedOutput:
+        data['params']['expectedOutput'] = createPreview(data)
+
 # Creates a delete statement
 # TODO
 #   Conditionals
@@ -830,3 +837,41 @@ def loadTrimmedTable(columnCount, joinCount=0):
             doomCounter -= 1
     
     return table
+
+# solutioncode (Str) => html table code (str)
+# runs solution code on sqlite3 and gets results and puts that in html table format
+def createPreview(data):
+    data['params']['html_params']['expectedOutput'] 
+    con = sqlite3.connect("preview.db")
+    cur  = con.cursor()
+
+    commands = data['params']['db_initialize'].replace('\n', '').replace('\t', '')
+
+    cur.executescript(commands)
+    con.commit()
+
+    correctAnswer = data['correct_answers']['SQLEditor']
+    expectedCode = correctAnswer.replace('\n', ' ').replace('\t', ' ')
+
+    expectedAns = cur.execute(expectedCode)
+    dataRows = expectedAns.fetchall()
+
+    columnNames = [description[0] for description in cur.description]
+
+    htmlTable = "<table class='output-tables'><thead>"
+
+    for column in columnNames:
+        htmlTable += "<th>" + str(column) + "</th>"
+
+    htmlTable += "</thead>"
+
+    for row in dataRows:
+        rowString = "<tr>"
+        for x in row:
+            rowString+= "<th>" + str(x) + "</th>"
+        rowString += "</tr>"
+        htmlTable += rowString
+
+    htmlTable += "</table>"
+
+    return htmlTable
