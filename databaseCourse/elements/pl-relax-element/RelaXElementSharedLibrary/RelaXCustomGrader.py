@@ -48,23 +48,6 @@ def customGrader(data):
         print("Error:", str(e))
         raise e
     
-    # db = data['params']['database']
-    
-    # # Grabs the student answer from data
-    # submittedAnswer = data['submitted_answers']['RelaXEditor']
-
-    # # Grabs the solution from data
-    # correctAnswer = data['correct_answers']['RelaXEditor']
-    
-    
-    # host_ip = "192.168.1.66"
-    # url = f"http://{host_ip}:4000/index"
-    # data = {"Car": "BMW", "Testing": "API"}
-
-    # request = requests.post(url,data=data)
-    # print(request.status_code)
-    # print(request.text)
-    
 
     
     # Strips both of whitespace
