@@ -36,12 +36,11 @@ class AutogenerateTest(unittest.TestCase):
             ])
     def testAutogenerateReturnsCorrectQuestionType(self,testType,difficulty,keyWord):
         initialAns = "\n"
-        db_initalize = ""
-        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty, 'columns': 5, 'joins': 0, 'expectedOutput':True},
-                        'db_initialize_create':db_initialize, 
-                        'db_initialize_insert_frontend':db_initialize, 
-                        'db_initialize_insert_backend':db_initialize},
-                        'html_table_clauses': {}},
+        db_initialize = ""
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
+                    'db_initialize_create':db_initialize, 
+                    'db_initialize_insert_frontend':db_initialize, 
+                    'db_initialize_insert_backend':db_initialize},
                 'correct_answers':{'SQLEditor': initialAns}}
         
         autogenerate(data)
