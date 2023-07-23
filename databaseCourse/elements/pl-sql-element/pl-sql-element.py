@@ -78,7 +78,7 @@ def prepare(element_html, data):
     questionUseSubquery = pl.get_boolean_attrib(element, 'usesubquery', False)
 
     questionColumnsToSelect = pl.get_integer_attrib(element, "columnstoselect", 0)
-    questionOrderBy = pl.get_boolean_attrib(element, "orderby", False)
+    questionOrderBy = pl.get_integer_attrib(element, "orderby", 0)
     questionGroupBy = pl.get_integer_attrib(element, "groupby", 0)
     questionHaving = pl.get_integer_attrib(element, 'having', 0)
     questionLimit = pl.get_integer_attrib(element, 'limit', 0)
