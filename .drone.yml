@@ -4,7 +4,7 @@ name: default
 
 steps:
 
-  - name: Run Autogenerator tests
+  - name: Run Autogenerator + Autograder tests
     image: prairielearn/prairielearn
     commands: 
       - pip install -r requirements.txt --quiet
