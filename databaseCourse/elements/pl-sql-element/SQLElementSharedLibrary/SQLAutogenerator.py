@@ -30,7 +30,7 @@ def autogenerate(data):
         case 'insert': generateInsert(data, difficulty)
         case 'update': generateUpdate(data, difficulty)
         case 'delete': generateDelete(data, difficulty)
-        case 'query': generateQuery(data, difficulty)
+        case 'query': generateQuery(data, difficulty) # TODO
 
 '''
     Begin create-style question
@@ -243,33 +243,16 @@ def generateUpdate(data, difficulty):
     # Generates the updated valued
     updateValue = nd.generateNoisyData(table, updateColumn)[0]
 
-
-
     # If the quesiton should use a condition, set parameters
-    conditionalValues = {}
-    columnList = list(table.columns.keys())
-    indexList = [i for i in range(len(list(table.rows.values())[0]))]
-    for i in range(queryClauses['conditional']):
+    conditionalValues = getConditionalValues(queryClauses['conditional'], list(table.columns.keys()), {table.name: table})
 
-        # Selects a random column to affect.
-        # Cannot select a column that is both foreign and does not
-        # update on cascade
-        conditionalColumn = None
-        while not conditionalColumn or table.columns[conditionalColumn]['references'] and not table.columns[conditionalColumn]['isOnUpdateCascade']:
-            conditionalColumn = nd.popRandom(columnList)
-
-        # Chooses a random value from the generated data to be updated
-        randomValueIndex = nd.popRandom(indexList)
-
-        # Grabs the randomly selected values
-        conditionalValues[conditionalColumn] = table.rows[conditionalColumn][randomValueIndex]
 
 
     # Generates the question string
     questionString = f"From the table <b>{table.name}</b> and in the column <b>{updateColumn}</b>, change all values to be <b>{updateValue}</b>"
 
     # Keeps track of when to use 'and' vs 'or'
-    questionString, conditionalConnectors = questionConditionals(questionString, conditionalValues)
+    questionString, conditionalConnectors = questionConditionals(conditionalValues, questionString)
 
     # Adds subquery to question string
     # TODO: this
@@ -345,26 +328,8 @@ def generateDelete(data, difficulty):
     # Generates a bunch of bogus rows
     database.generateRows(random.randint(3, 7))
 
-
-    
     # If the quesiton should use a condition, set parameters
-    conditionalValues = {}
-    columnList = list(table.columns.keys())
-    indexList = [i for i in range(len(list(table.rows.values())[0]))]
-    for i in range(queryClauses['conditional']):
-
-        # Selects a random column to affect.
-        # Cannot select a column that is both foreign and is
-        # not set to null on delete
-        conditionalColumn = None
-        while not conditionalColumn or table.columns[conditionalColumn]['references'] and not table.columns[conditionalColumn]['isOnDeleteSetNull']:
-            conditionalColumn = nd.popRandom(columnList)
-
-        # Chooses a random value from the generated data to be updated
-        randomValueIndex = nd.popRandom(indexList)
-
-        # Grabs the randomly selected values
-        conditionalValues[conditionalColumn] = table.rows[conditionalColumn][randomValueIndex]
+    conditionalValues = getConditionalValues(queryClauses['conditional'], list(table.columns.keys()), {table.name: table})
 
 
 
@@ -372,7 +337,7 @@ def generateDelete(data, difficulty):
     questionString = f"From the table <b>{table.name}</b>, delete all values"
 
     # Adds the 'WHERE's and such
-    questionString, conditionalConnectors = questionConditionals(questionString, conditionalValues)
+    questionString, conditionalConnectors = questionConditionals(conditionalValues, questionString)
 
     # Adds subquery to question string
     # TODO: this
@@ -423,28 +388,6 @@ def generateQuery(data, difficulty):
     # Obtains question specific parameters
     columns, joins, tableClauses, queryClauses = getQuestionParameters(data)
 
-    # Checks if the query clauses are valid
-    if not difficulty:
-        if queryClauses['columnsToSelect'] > joins * (columns - 1):
-            return None # More columnsToSelect than columns available
-        
-        if queryClauses['columnsToSelect'] < 1:
-            return None # Must select at least one column
-
-        if queryClauses['groupBy'] < 0:
-            return None # Cannot have nagative groupBy
-        
-        if queryClauses['limit'] < 0:
-            return None # Cannot have negative limit
-        
-        if queryClauses['with'] > joins + 1:
-            return None # Cannot have more with clauses than tables
-        
-        if queryClauses['with'] < 0:
-            return None # Cannot have negative withs
-
-
-
     # Chooses a table to load based on quesiton difficulty
     database = None
     match difficulty:
@@ -452,19 +395,22 @@ def generateQuery(data, difficulty):
             columns = random.randint(3, 4)
             joins = 0
             database = db.Database(columns=columns, joins=joins)
-            queryClauses = {'conditional': 0, 'subQuery': False}
+            clauses = {}
 
         case 'medium': 
             columns = random.randint(4, 6)
             joins = random.randint(1, 2)
             database = db.Database(columns=columns, joins=joins)
-            queryClauses = {'conditional': random.randint(1, 3), 'subQuery': False}
+
+            clauses = {}
 
         case 'hard': 
             columns = random.randint(5, 8)
             joins = random.randint(1, 2)
             database = db.Database(columns=columns, joins=joins)
-            queryClauses = {'conditional': 0, 'subQuery': True}
+            #clauses = {}
+            clauses = random.randint(1, 3)
+            return None # Not yet implemented; first requires queryStatement() to be completed
         
         case _:
             database = db.Database(columns=columns, joins=joins, clauses=tableClauses)
@@ -475,11 +421,8 @@ def generateQuery(data, difficulty):
     # Gets the referenced tables for easy referencing
     referenced = database.referencedTables
 
-    # Generates a bunch of bogus rows.
-    # This is more rows than other questions, since we
-    # want to increase the liklihood that a query will
-    # return more than a few rows
-    database.generateRows(random.randint(5, 15))
+    # Generates a bunch of bogus rows
+    database.generateRows(random.randint(3, 7))
 
 
 
@@ -618,6 +561,263 @@ def generateQuery(data, difficulty):
     # TODO: clauses (the '[]') is blank; make it not blank
     data['correct_answers']['SQLEditor'] = queryStatement(table, keyMap, foreignKeyMap, selectedColumns, [])
 
+# This one doesn't work yet, but it is the
+# one that will be used. I, Skyler, started
+# it from scratch, but wanted to keep the
+# old one around so I could see what my
+# previous approach was.
+def generateQuery2(data, difficulty):
+    
+    # Obtains question specific parameters
+    columns, joins, tableClauses, queryClauses = getQuestionParameters(data)
+
+
+
+    # Chooses a table to load based on quesiton difficulty
+    database = None
+    match difficulty:
+        case 'easy': 
+            columns = random.randint(3, 4)
+            joins = 0
+            database = db.Database(columns=columns, joins=joins)
+            queryClauses['conditional': 0]
+
+        case 'medium': 
+            columns = random.randint(4, 6)
+            joins = random.randint(1, 2)
+            database = db.Database(columns=columns, joins=joins)
+            queryClauses['conditional'] = random.randint(1, 3)
+
+        case 'hard': 
+            columns = random.randint(5, 8)
+            joins = random.randint(1, 2)
+            database = db.Database(columns=columns, joins=joins)
+            queryClauses['useSubquery'] = True
+        
+        case _:
+            database = db.Database(columns=columns, joins=joins, clauses=tableClauses)
+    
+    # Generates a bunch of rows.
+    # This is more rows than other questions, since we
+    # want to increase the liklihood that a query will
+    # return more than a few rows
+    database.generateRows(random.randint(10, 15))
+
+
+
+    # Unpacks variables for easy referencing
+    table = database.primaryTable
+    referenced = database.referencedTables
+
+    keyMap = table.getKeyMap()
+
+    tableMap = {key: referenced[keyMap[key]['references']] for key in keyMap}
+    tableMap[table.name] = table
+
+    conditionals = queryClauses['conditional']
+    useSubquery = queryClauses['useSubquery']
+    columnsToSelect = queryClauses['columnsToSelect']
+    orderBy = queryClauses['orderBy']
+    groupBy = queryClauses['groupBy']
+    having = queryClauses['having']
+    limit = queryClauses['limit']
+    withClause = queryClauses['with']
+    isDistinct = queryClauses['isDistinct']
+
+
+
+    # Randomly selects unique columns
+    #   selectedColumns {
+    #       $tableName = [
+    #           $columnNames
+    #       ]
+    #   }
+    selectedColumns = selectColumns(columnsToSelect, tableMap)
+
+
+
+    # Obtains the conditional values
+    conditionalValues = getConditionalValues(conditionals, tableMap, restrictive=False)
+
+
+    # A list of all columns in the table.
+    columnList = getColumnList(tableMap)
+
+    # Gets the columns to order and whether or not they're
+    # ascending
+    orderByColumns = {}
+    while len(orderByColumns) < orderBy:
+        orderByColumns[columnList.pop(random.choice(range(len(columnList))))] = random.choice(['ASC', 'DESC'])
+    
+
+    # A list of *selected* columns
+    selectedColumnList = []
+    for table in selectedColumns:
+        for column in selectedColumns[table]:
+            selectedColumnList.append(column)
+
+    # Gets the columns to group
+    groupByColumns = []
+    while len(groupByColumns) < groupBy:
+        groupByColumns.append(selectedColumnList.pop(random.choice(range(len(selectedColumnList)))))
+
+    
+    # A list of *group by* columns
+    groupByColumnList = [x for x in groupByColumns]
+
+    # The columns for the having clause. The valid columns
+    # are the columns in the groupByColumns list
+    #   havingColumns {
+    #       $column: $value
+    #   }
+    havingColumns = getConditionalValues(having, tableMap, groupByColumnList, restrictive=False)
+
+
+
+    # Which columns will use aliasing
+    tableNames = [table for table in selectedColumns]
+    withColumns = {}
+    while len(withColumns) < withClause:
+        tableName = tableNames.pop(random.choice(range(len(tableNames))))
+
+        withColumns[tableName] = tableName[:1].upper()
+    
+
+
+    # Begins the question string
+    questionString = 'From the tables'
+
+    # De-pluralizes if necessary
+    questionString = removeTrailingChars(questionString, condition=len(selectedColumns) == 1)
+
+    # Lists all the tables to add
+    questionString, index = dictionaryQuestionString(selectedColumns, questionString, tag='b')
+    
+
+
+    # Starts the column selection section
+    questionString += ' select the columns'
+
+    # De-pluralizes if necessary
+    questionString = removeTrailingChars(questionString, condition=columnsToSelect == 1)
+    
+    # Lists all the columns to add
+    index = 0
+    for table in selectedColumns:
+        questionString, index = dictionaryQuestionString(selectedColumns[table], questionString, columnsToSelect, index, tag='b')
+
+    # Removes the trailing comma
+    questionString = removeTrailingChars(questionString)
+
+
+
+    # Adds the conditionals
+    questionString, conditionalConnectors = questionConditionals(conditionalValues, questionString)
+
+    # Finishes the sentence
+    questionString += '.'
+
+
+
+    # Adds the order by
+    if orderBy:
+        questionString += ' Order the output by the columns'
+
+        # Depluralizes if necessary
+        questionString = removeTrailingChars(questionString, 1, orderBy == 1)
+
+        # Adds the order by columns
+        orderString, index = dictionaryQuestionString(orderByColumns)
+
+        # Inserts whether or not the order should be
+        # ascending or descening
+        for key in orderByColumns:
+
+            # Grabs the appropriate string for ascending
+            # or descending
+            ascOrDesc = ' <em>in ascending order</em>' if orderByColumns[key] == 'ASC' else ' <em>in descending order</em>'
+
+            # Inserts the string after it's corresponding key.
+            # The `+ 4` accounts for the length of the '</b>' tag
+            orderString = orderString[:orderString.find(key) + len(key) + 4] + ascOrDesc + orderString[orderString.find(key) + len(key) + 4:]
+
+        # Removes trailing comma
+        questionString = questionString + removeTrailingChars(orderString, 1, orderBy == 1)
+
+
+
+
+    # Combines the order by and group by sections
+    # for more dynamic appearing questions
+    if orderBy and groupBy:
+        questionString += ' and group'
+    elif groupBy:
+        questionString += '. Group'
+    else:
+        questionString += '.'
+
+    # Handles group by clause
+    if groupBy:
+        questionString += ' the columns'
+
+        # De-pluralizes if necessary
+        questionString = removeTrailingChars(questionString, condition=columnsToSelect == 1) + ' by'
+
+        questionString = dictionaryQuestionString(groupByColumns, questionString)[0]
+
+        # Removes trailing comma
+        questionString = removeTrailingChars(questionString)
+
+        # Finishes the sentence
+        questionString += '.'
+
+
+
+    # Handles having clause
+    if having:
+
+        # Removes the period
+        questionString = removeTrailingChars(questionString) + ' having'
+
+        # Gets the string, removes the leading 'where'
+        # and adds it to the question string
+        havingString, havingConnectors = questionConditionals(havingColumns)
+        questionString += havingString[6:]
+
+        
+
+        # Finishes the sentence
+        questionString += '.'
+
+
+
+    # Handles limit clause
+    if limit:
+        questionString += f" <em>Limit the search to {limit} results</em>"
+    
+
+
+    # Combines the limit and distinct sections
+    # for more dynamic appearing questions
+    if limit and isDistinct:
+        questionString += ' and <em>only include distinct values</em>.'
+    elif isDistinct:
+        questionString += '. <em>Only include distinct values in the search</em>.'
+    else:
+        questionString += '.'
+
+
+
+    # Loads database
+    database.loadDatabase(data)
+
+    # Adds the question string to data
+    data['params']['questionString'] = questionString
+
+    # Sets the correct answer
+    # TODO
+
+
 # Creates a delete statement
 # TODO
 #   Conditionals
@@ -667,6 +867,111 @@ def queryStatement(table, keyMap, foreignKeyMap, selectedColumns, clauses):
     # Returns, appending the finishing touches
     return queryString + ";\n"
 
+
+
+# A simle list of all tables
+def getColumnList(tableMap):
+    columnList = []
+    for key in tableMap:
+        columnList += [column for column in tableMap[key].columns]
+    return columnList
+
+# Column map is the opposite of tableMap. Given a column,
+# it returns the table it originated from.
+#   columnMap {
+#       $columnName: $table
+#   }
+def getColumnMap(tableMap, tableNames=True):
+    columnMap = {}
+    for key in tableMap:
+        for column in tableMap[key].columns:
+            if tableNames:
+                columnMap[column] = tableMap[key].name
+            else:
+                columnMap[column] = tableMap[key]
+    return columnMap
+
+def selectColumns(columnsToSelect, tableMap):
+
+    # Gets a list of all columns, where the key is the 
+    # column name and the value is the table name. Since
+    # the columns of each table are uniquely named, this
+    # is used to randomly select unique columns
+    #   allColumns {
+    #       $columnName: $tableName
+    #   }
+    columnMap = getColumnMap(tableMap)
+
+
+
+    # Holds the columns that have been selected for the query
+    #   selectedColumns {
+    #       $tableName = [
+    #           $columnNames
+    #       ]
+    #   }
+    selectedColumns = {}
+
+    # Selects the columns for the query
+    for i in range(columnsToSelect):
+        
+        # Obtains a random column from a table, removing it
+        # from the list of columns to preserve uniqueness
+        column = random.choice(list(columnMap.keys()))
+        tableName = columnMap.pop(column)
+
+        # Creates an array for this key if it does not
+        # already exist
+        if tableName not in selectedColumns:
+            selectedColumns[tableName] = []
+        
+        # Adds this item to the array
+        selectedColumns[tableName].append(column)
+    
+    return selectedColumns
+
+# Removes the last character of a string 
+def removeTrailingChars(string, qty=1, condition=True):
+    if condition:
+        string = string[:-1 * qty]
+    return string
+
+# Adds the columns or tables of a dictionary to a question string.
+# This questionString code is used a few times, so here
+# is a somewhat general version of it.
+def dictionaryQuestionString(dictionary, string='', iterations=None, index=0, tag='b'):
+    
+    # If there's nothing supplied, return the string
+    if not dictionary:
+        return string
+
+    # Sets a default value for iterations
+    if not iterations:
+        iterations = len(dictionary)
+    
+    # Iterates over all items in the dictionary
+    for key in dictionary:
+
+        # Adds the and, if necessary
+        if index == iterations - 1 and index > 0:
+            # Removes the comma if there are only two tables
+            if index == 1:
+                string = string[:-1]
+
+            string += ' and'
+
+        # Adds the key to the string
+        if tag:
+            string += f" <{tag}>{key}</{tag}>,"
+        else:
+            string += f" {key},"
+
+        # Increments the interations
+        index += 1
+
+    # Returns
+    return string, index
+
 '''
     End query-style question
 '''
@@ -682,22 +987,21 @@ def conditionalStatement(column, condition):
     return f"WHERE {column} = '{condition}'"
 
 # Adds a set of conditionals to a question string
-def questionConditionals(questionString, conditionalValues):
+def questionConditionals(conditionalValues, string=''):
     
     # If there aren't any conditionals, just return
     if not conditionalValues:
-        return questionString, {}
-
+        return string, {}
 
 
     # Adds the 'where' if necessary
-    questionString += ' where'
+    string += ' where'
     
     # Keeps track of when to use 'and' vs 'or'
     conditionalConnectors = {}
 
     for key in conditionalValues.keys():
-        questionString += f" <b>{key}</b> equals <b>{conditionalValues[key]}</b>"
+        string += f" <b>{key}</b> equals <b>{conditionalValues[key]}</b>"
     
         # Randomly chooses a logical operator to
         # connect the conditionals. Prefers to use
@@ -705,17 +1009,19 @@ def questionConditionals(questionString, conditionalValues):
         conditionalConnectors[key] = random.choices(['OR', 'AND'], [2, 1])[0]
 
         if conditionalConnectors[key] == 'OR':
-            questionString += ' or'
+            string += ' or'
         else:
-            questionString += ' and'
+            string += ' and'
     
-    # Removes the trailing connector
-    if 'or' in questionString[:-2]:
-        questionString = questionString[:-3]
-    else:
-        questionString = questionString[:-4]
+    # Removes the trailing connector.
+    # This isn't as efficient as I would prefer, but
+    # I was getting an odd issue on other approaches
+    # where it also chopped off the trailing '>' and
+    # cause a great-many rendering issues.
+    while string[-1] != '>':
+        string = string[:-1]
     
-    return questionString, conditionalConnectors
+    return string, conditionalConnectors
 
 # Adds a set of conditionals to a statement
 def statementConditionals(statement, conditionalValues, conditionalConnectors):
@@ -741,6 +1047,50 @@ def statementConditionals(statement, conditionalValues, conditionalConnectors):
         statement = statement[:-4]
 
     return statement
+
+
+
+# Get a set of conditional values
+#   conditionalValues {
+#       $column: $value
+#   }
+def getConditionalValues(conditionals, tableMap, columnList=[], restrictive=True):
+
+    # Holds the values
+    conditionalValues = {}
+
+    # Maps column name to its table
+    columnMap = getColumnMap(tableMap, tableNames=False)
+
+    # Gets a list of all columns present between
+    # the provided tables, if it was not provided
+    if not columnList:
+        columnList = getColumnList(tableMap)
+
+    # A list from 0 to n where n is the number of rows.
+    # The `.values()` and `list()[0]` is to just get the
+    # 'first' item in the dictionary
+    indexList = [i for i in range(len(list(list(columnMap.values())[0].rows.values())[0]))]
+
+    # Iterates over the amount of conditionals
+    while len(conditionalValues) < conditionals:
+
+        # Selects a random column to affect.
+        conditionalColumn = nd.popRandom(columnList)
+        
+        # Prevents a selection of a column that is both foreign
+        # and does not update on cascade, only if 'restrictive'
+        if restrictive and columnMap[conditionalColumn].columns[conditionalColumn]['references'] and not columnMap[conditionalColumn].columns[conditionalColumn]['isOnUpdateCascade']:
+            continue
+            
+        # Chooses a random value from the generated data to be updated
+        randomValueIndex = nd.popRandom(indexList)
+
+        # Grabs the randomly selected values
+        conditionalValues[conditionalColumn] = columnMap[conditionalColumn].rows[conditionalColumn][randomValueIndex]
+    
+    # Returns the conditionals
+    return conditionalValues
 
 
 
@@ -791,7 +1141,7 @@ def getQuestionParameters(data):
             'conditional': 1,
             'useSubquery': False,
             'columnsToSelect': 3,
-            'orderBy': False,
+            'orderBy': 0,
             'groupBy': 0,
             'having': 0,
             'limit': 0,
