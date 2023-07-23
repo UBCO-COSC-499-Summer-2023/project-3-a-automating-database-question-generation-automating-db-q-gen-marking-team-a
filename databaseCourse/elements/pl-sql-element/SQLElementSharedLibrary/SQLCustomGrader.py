@@ -2,6 +2,10 @@ from difflib import SequenceMatcher
 import sqlite3
 import os
 
+# weights for input and oututbased grading
+outputScoreWeight = 0.85
+inputScoreWeight = 0.15
+
 # Uses Python's SequenceMatcher library to check the
 # similarity between the correct answer and the student's
 # submitted answer.
@@ -24,8 +28,6 @@ def customGrader(data):
 
     outputScore = 0
     inputScore = 0
-    outputScoreWeight = 0.85
-    inputScoreWeight = 0.15
 
     if os.path.exists("ans.db"):
         os.remove("ans.db")
@@ -352,7 +354,7 @@ def rowMatch(expectedAns,actualAns):
     expectedTotal += expectedRowCount
 
     if not (actualAns or expectedAns): return 1
-    if not actualAns: return 0
+    if not actualAns or not actualAns[0]: return 0
 
     actualRowCount = len(actualAns)
     actualTotal += actualRowCount
@@ -368,9 +370,9 @@ def colMatch(expectedAns,actualAns):
     expectedTotal += expectedColumnCount
 
     if not (actualAns or expectedAns): return 1
-    if not actualAns: return 0
-
-    actualColumnCount = len((actualAns[0]))
+    if not actualAns or not actualAns[0]: return 0
+    
+    actualColumnCount = len(actualAns[0])
     actualTotal += actualColumnCount
 
     colGrade = abs(expectedTotal - actualTotal)
