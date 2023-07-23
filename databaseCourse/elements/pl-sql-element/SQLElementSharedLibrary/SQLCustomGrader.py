@@ -89,21 +89,19 @@ def similar(a, b):
 # QUERY------------------------------------------------------------------------------------------------------------------------
 # grades the response for a query question
 def gradeQueryQuestion(data,correctAnswer,submittedAnswer):
-    # rowColWeight = 0.3
-    # number of rows is affected by things like WHERE
-    # number of columns is usually what the user SELECTs
+    # grading weight for each component of statement
     orderWeight = 0.05
     rowWeight = 0.10
     colWeight = 0.25
     valueMatchWeight = 0.6
 
+    # gets outputs in proper formatting
     arr = getExpectedAndActualQueryResults(data,correctAnswer,submittedAnswer)
 
     expectedAns = arr[0]
     actualAns = arr[1]
 
-    # row + column matching
-    # rowColScore = rowColMatch(expectedAns,actualAns)
+    # row matching + column matching
     rowScore = rowMatch(expectedAns,actualAns)
     colScore = colMatch(expectedAns,actualAns)
 
@@ -120,26 +118,35 @@ def gradeQueryQuestion(data,correctAnswer,submittedAnswer):
     score = round(score,2)
     return score
 
+# {}, str, str => (,)
+# takes in data variable, correct ans, submitted ans, runs the queries and returns the output in proper formatting
+# compares query results of solution and submission
 def getExpectedAndActualQueryResults(data,correctAnswer,submittedAnswer):
     con = sqlite3.connect("ans.db")
     cur  = con.cursor()
     
+    # formats database initialization from string to SQL
     commands = data['params']['db_initialize_create'].replace('\n', '').replace('\t', '')
     commands += data['params']['db_initialize_insert_backend'].replace('\n', '').replace('\t', '')
     
+    # db initialization
     cur.executescript(commands)
     con.commit()
-    expectedCode = correctAnswer.replace('\n', ' ').replace('\t', ' ')
 
+    # format solution from string to code and execute + fetch results
+    expectedCode = correctAnswer.replace('\n', ' ').replace('\t', ' ')
     expectedAns = cur.execute(expectedCode).fetchall()
     
+    # format submission from string to code and execute + fetch results
     studentCode = submittedAnswer.replace('\n', ' ').replace('\t', ' ')
     actualAns = cur.execute(studentCode).fetchall()
     
     return (expectedAns,actualAns)
 
 # CREATE------------------------------------------------------------------------------------------------------------------------
+# grades create questions
 def gradeCreateQuestion(data,correctAnswer,submittedAnswer):
+    # gets output in proper formatting
     arr = getExpectedAndActualCreateResults(data,correctAnswer,submittedAnswer)
 
     expectedAns = arr[0]
@@ -152,32 +159,43 @@ def gradeCreateQuestion(data,correctAnswer,submittedAnswer):
     score = round(score,2)
     return score
 
+# {}, str, str => (,)
+# takes in data variable, correct ans, submitted ans, runs the queries and returns the output in proper formatting
+# compares table metadate from (tables created by solution) and (tables created by submission)
 def getExpectedAndActualCreateResults(data,correctAnswer,submittedAnswer):
     con = sqlite3.connect("ans.db")
     cur  = con.cursor()
 
+# correct answer execution
+    # formatting from string to SQL + execution
     expectedCode = correctAnswer.replace('\n', ' ').replace('\t', ' ')
     cur.executescript(expectedCode)
     con.commit()
 
+    # get all tables that the solution creates
     tables = cur.execute("SELECT name FROM sqlite_master WHERE type='table';").fetchall()
     tablesCleaned = [item[0] for item in tables]
 
+    # gets the schema info and metadata for each table in the db after running the solution
     expectedAns = []
     for table in tablesCleaned:
         expectedAns += cur.execute("PRAGMA table_info(" + table + ")").fetchall()
         expectedAns += cur.execute("PRAGMA foreign_key_list(" + table + ")").fetchall()
-    # -----------------------
+
+# submitted answer execution
     conTwo = sqlite3.connect("ans2.db")
     curTwo  = conTwo.cursor()
 
+    # formatting submission from string to SQL + execution
     studentCode = submittedAnswer.replace('\n', ' ').replace('\t', ' ')
     curTwo.executescript(studentCode)
     conTwo.commit()
 
+    # gets all tables that the submission creates
     tables = curTwo.execute("SELECT name FROM sqlite_master WHERE type='table';").fetchall()
     tablesCleaned = [item[0] for item in tables]
 
+    # get metadatae on tables created by submission
     actualAns = []
     for table in tablesCleaned:
         actualAns += curTwo.execute("PRAGMA table_info(" + table + ")").fetchall()
@@ -186,8 +204,9 @@ def getExpectedAndActualCreateResults(data,correctAnswer,submittedAnswer):
     return (expectedAns,actualAns)
 
 # INSERT------------------------------------------------------------------------------------------------------------------------
-# all or nothing
+# all or nothing grading for insert questions
 def gradeInsertQuestion(data,correctAnswer,submittedAnswer):
+    # gets output in proper formatting
     arr = getExpectedAndActualInsertResults(data,correctAnswer,submittedAnswer)
 
     expectedAns = arr[0]
@@ -200,28 +219,39 @@ def gradeInsertQuestion(data,correctAnswer,submittedAnswer):
     score = round(score,2)
     return score
 
+# {}, str, str => (,)
+# takes in data variable, correct ans, submitted ans, runs the queries and returns the output in proper formatting
+# compares (DB after executing solution inserts) to (DB after submission inserts)
 def getExpectedAndActualInsertResults(data,correctAnswer,submittedAnswer):
     con = sqlite3.connect("ans.db")
     cur  = con.cursor()
     
+    # formats db initialization code from string to SQL and executes
     commands = data['params']['db_initialize_create'].replace('\n', '').replace('\t', '')
-    
     cur.executescript(commands)
     con.commit()
 
+    # gets all tables
     tables = cur.execute("SELECT name FROM sqlite_master WHERE type='table';").fetchall()
     tablesCleaned = [item[0] for item in tables]
 
+    # formats solution from string to SQL
     expectedCode = correctAnswer.replace('\n', ' ').replace('\t', ' ')
     
+    # executes solution and gets updated DB after all the inserts
     cur.executescript(expectedCode)
     expectedAns = []
     for table in tablesCleaned:
         expectedAns += cur.execute("SELECT * FROM " + table).fetchall()
 
+    # re-initialize db
     cur.executescript(commands)
     con.commit()
+
+    # format submission from string to SQL
     studentCode = submittedAnswer.replace('\n', ' ').replace('\t', ' ')
+
+    # executes submission and gets updated DB after all the inserts
     cur.executescript(studentCode)
     actualAns = []
     for table in tablesCleaned:
@@ -230,57 +260,73 @@ def getExpectedAndActualInsertResults(data,correctAnswer,submittedAnswer):
     return (expectedAns,actualAns)
 
 # UPDATE------------------------------------------------------------------------------------------------------------------------
+# grades update question
 def gradeUpdateQuestion(data,correctAnswer,submittedAnswer):
+    # gets output in proper formatting
     arr = getExpectedAndActualUpdateResults(data,correctAnswer,submittedAnswer)
     expectedAns = arr[0]
     actualAns = arr[1]
     originalDb = arr[2]
 
+    # checks the value match of the updates
     updateMatchVal = updateMatch(expectedAns,actualAns,originalDb)
 
     return updateMatchVal
 
+# compares the differences between (db after running solution update code) and (db after running submission update code)
 def updateMatch(expectedAns,actualAns,originalDb):
-    expectedDeletedRows = [row for row in expectedAns if row not in originalDb]
-    actualDeletedRows = [row for row in actualAns if row not in originalDb]
     rowMatchWeight = 0.5
     valMatchWeight = 0.5
-    rowMatchScore = rowMatch(expectedDeletedRows,actualDeletedRows)
-    valMatchScore = valueMatch(expectedDeletedRows,actualDeletedRows)
+    # finds the rows that have been updated when running solution
+    expectedUpdatedRows = [row for row in expectedAns if row not in originalDb]
+    # finds the rows that have been updated when running submission
+    actualUpdatedRows = [row for row in actualAns if row not in originalDb]
+    # row matching and value matching
+    rowMatchScore = rowMatch(expectedUpdatedRows,actualUpdatedRows)
+    valMatchScore = valueMatch(expectedUpdatedRows,actualUpdatedRows)
     score = (rowMatchScore*rowMatchWeight) + (valMatchScore*valMatchWeight)
     return score
 
-
+# {}, str, str => (,)
+# takes in data variable, correct ans, submitted ans, runs the queries and returns the output in proper formatting
+# gives us the db when initialized, after running solution, and then after running submission for comparison of all 3
 def getExpectedAndActualUpdateResults(data,correctAnswer,submittedAnswer):
     con = sqlite3.connect("ans.db")
     cur  = con.cursor()
     
+    # formats db initialization code from string to SQL and executes
     commands = data['params']['db_initialize_create'].replace('\n', '').replace('\t', '')
-
     cur.executescript(commands)
     con.commit()
 
+    # gets all tables in db
     tables = cur.execute("SELECT name FROM sqlite_master WHERE type='table';").fetchall()
     tablesCleaned = [item[0] for item in tables]
 
+    # defines the original db by fetching all its tables and rows
     originalDb = []
     for table in tablesCleaned:
         originalDb += cur.execute("SELECT * FROM " + table).fetchall()
 
+    # executes solution
     expectedCode = correctAnswer.replace('\n', ' ').replace('\t', ' ')
-    
     cur.executescript(expectedCode)
+
+    # gets the database after executing the solution
     expectedAns = []
     for table in tablesCleaned:
         expectedAns += cur.execute("SELECT * FROM " + table).fetchall()
-
+    
+    # re-initialize db
     cur.executescript(commands)
     con.commit()
 
+    # format and execute submission
     studentCode = submittedAnswer.replace('\n', ' ').replace('\t', ' ')
-    
     cur.executescript(studentCode)
     con.commit()
+
+    # gets the database after executing the submission
     actualAns = []
     for table in tablesCleaned:
         actualAns += cur.execute("SELECT * FROM " + table).fetchall()
@@ -288,7 +334,9 @@ def getExpectedAndActualUpdateResults(data,correctAnswer,submittedAnswer):
     return (expectedAns,actualAns,originalDb)
 
 # DELETE------------------------------------------------------------------------------------------------------------------------
+# grades delete questions
 def gradeDeleteQuestion(data,correctAnswer,submittedAnswer):
+    # gets output in proper formatting
     arr = getExpectedAndActualDeleteResults(data,correctAnswer,submittedAnswer)
 
     expectedAns = arr[0]
@@ -302,51 +350,74 @@ def gradeDeleteQuestion(data,correctAnswer,submittedAnswer):
     score = round(score,2)
     return score
 
+# compares the differences between (db after running solution update code) and (db after running submission update code)
 def deleteMatch(dbAfterSolution,dbAfterSubmission,originalDb):
     rowMatchWeight = 0.5
     valMatchWeight = 0.5
+
+    # finds the rows that have been updated when running solution
     expectedDeletedRows = [row for row in originalDb if row not in dbAfterSolution]
+
+    # finds the rows that have been updated when running submission
     actualDeletedRows = [row for row in originalDb if row not in dbAfterSubmission]
+
+    # row matching and value matching
     rowMatchScore = rowMatch(expectedDeletedRows,actualDeletedRows)
     valMatchScore = valueMatch(expectedDeletedRows,actualDeletedRows)
     score = (rowMatchScore*rowMatchWeight) + (valMatchScore*valMatchWeight)
     return score
 
+# {}, str, str => (,)
+# takes in data variable, correct ans, submitted ans, runs the queries and returns the output in proper formatting
+# gives us the db when initialized, after running solution, and then after running submission for comparison of all 3
 def getExpectedAndActualDeleteResults(data,correctAnswer,submittedAnswer):
     con = sqlite3.connect("ans.db")
     cur  = con.cursor()
     
+    # formats db initialization code from string to SQL and executes
     commands = data['params']['db_initialize_create'].replace('\n', '').replace('\t', '')
-
     cur.executescript(commands)
     con.commit()
 
+    # gets all tables in db
     tables = cur.execute("SELECT name FROM sqlite_master WHERE type='table';").fetchall()
     tablesCleaned = [item[0] for item in tables]
+
+    # defines the original db by fetching all its tables and rows
     originalDb = []
     for table in tablesCleaned:
         originalDb += cur.execute("SELECT * FROM " + table).fetchall()
 
+    # executes solution
     expectedCode = correctAnswer.replace('\n', ' ').replace('\t', ' ')
-    
     cur.executescript(expectedCode)
+
+    # gets the database after executing the solution
     expectedAns = []
     for table in tablesCleaned:
         expectedAns += cur.execute("SELECT * FROM " + table).fetchall()
 
+    # re-initialize db
     cur.executescript(commands)
     con.commit()
+    
+    # format and execute submission
     studentCode = submittedAnswer.replace('\n', ' ').replace('\t', ' ')
     cur.executescript(studentCode)
     con.commit()
+
+    # gets all tables in db
     tables = cur.execute("SELECT name FROM sqlite_master WHERE type='table';").fetchall()
     tablesCleaned = [item[0] for item in tables]
+    
+    # gets the database after executing the submission
     actualAns = []
     for table in tablesCleaned:
         actualAns += cur.execute("SELECT * FROM " + table).fetchall()
     return (expectedAns,actualAns,originalDb)
 
 # HELPERS ----------------------------------------------------------------------------------------------------------------------
+# scores the difference in the number of rows between both outputs
 def rowMatch(expectedAns,actualAns):
     expectedTotal = 0
     actualTotal = 0
@@ -359,10 +430,12 @@ def rowMatch(expectedAns,actualAns):
     actualRowCount = len(actualAns)
     actualTotal += actualRowCount
 
+    # for each row that the submitted answer has that is more or less than the expected answer, a point is deducted
     rowGrade = abs(expectedTotal - actualTotal)
     rowScore = (expectedTotal - rowGrade)/expectedTotal
     return rowScore
 
+# scores the difference in the number of columns between both outputs
 def colMatch(expectedAns,actualAns):
     expectedTotal = 0
     actualTotal = 0
@@ -375,13 +448,17 @@ def colMatch(expectedAns,actualAns):
     actualColumnCount = len(actualAns[0])
     actualTotal += actualColumnCount
 
+    # for each column that the submitted answer has that is more or less than the expected answer, a point is deducted
     colGrade = abs(expectedTotal - actualTotal)
     colScore = (expectedTotal - colGrade)/expectedTotal
     return colScore
 
+# scores how much the values match between the expected ans and the actual ans
 def valueMatch(expectedAns,actualAns):
     valueMatchExpectedTotal = len(expectedAns)
     valueMatchActualTotal = 0
+
+    # +1 point per row of exact values matched
     for x in actualAns:
         if x in expectedAns:
             valueMatchActualTotal += 1
