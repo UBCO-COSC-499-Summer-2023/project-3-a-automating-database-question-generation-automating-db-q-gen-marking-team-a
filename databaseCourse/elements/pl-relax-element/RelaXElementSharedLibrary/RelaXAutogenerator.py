@@ -19,10 +19,11 @@ def autogenerate(data):
     
     # Generates a random database
     columns = rand.randint(4, 7)
-    joins = rand.randint(2, 5)
+    joins = rand.randint(2, 5) #! Change to joins/rand -> whichever is bigger
     rows = rand.randint(5, 15)
     database = db.Database(isSQL=False, columns=columns, joins=joins, rows=rows)
 
+    question = Question(dataset=database, attribDict=data['params']['attrib_dict'])
     # Loads the database into the data variable
     database.loadDatabase(data)
 
@@ -42,35 +43,31 @@ class Question:
     outerFullJoins="⟗"
     semiRightJoins="⋉"
     semiLeftJoins="⋊"
-    antiJoins="▷"
+    antiJoins="▷" 
 
-    def  __init__(self, dataset, attribDict,
-                    numClauses=0,
-                    orderBy=False,
-                    groupBy=False,
-                    numCrossJoins=0,
-                    numNaturalJoins=0,
-                    numOuterRightJoins=0,
-                    numOuterLeftJoins=0,
-                    numOuterFullJoins=0,
-                    numSemiRightJoins=0,
-                    numSemiLeftJoins=0,
-                    numAntiJoins=0) -> None:
+    def  __init__(self, dataset, attribDict) -> None:
         
-        attribDict
 
+        # Join first -- may need recursive function
 
-
-        self.numClauses=numClauses
-        self.orderBy=orderBy
-        self.groupBy=groupBy
-        self.numCrossJoins=numCrossJoins
-        self.numNaturalJoins=numNaturalJoins
-        self.numOuterRightJoins=numOuterRightJoins
-        self.numOuterLeftJoins=numOuterLeftJoins
-        self.numOuterFullJoins=numOuterFullJoins
-        self.numSemiRightJoins=numSemiRightJoins
-        self.numSemiLeftJoins=numSemiLeftJoins
-        self.numAntiJoins=numAntiJoins
         
-        return self
+        table = rand.choice(list(dataset.tableSet.keys()))
+        table = dataset.tableSet[table]
+        joinDict = {}
+        print(dataset)
+        for i in range(attribDict['numJoins']):
+            for column in table.columns:
+                if table.columns[column]['references']:
+                    referencedName = table.columns[column]['references']
+            joinDict[table.name] = referencedName
+
+            table = dataset.tableSet[referencedName]
+        
+        print(joinDict)
+    
+        # Project Second
+
+        # Select third
+
+        # order by / Group by last
+

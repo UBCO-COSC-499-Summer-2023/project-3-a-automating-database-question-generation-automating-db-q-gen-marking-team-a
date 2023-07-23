@@ -37,6 +37,7 @@ def prepare(element_html, data):
         with open(databaseFilePath,"r") as databaseFile:
            data['params']['db_initialize'] = databaseFile.read()
         
+        
 
     
     # Loads quesiton parameters into data
@@ -51,6 +52,17 @@ def prepare(element_html, data):
     data['params']['html_params'] = {
         'random': questionRandom
     }
+
+    if questionRandom:
+        attribDict = {
+            "numClauses": pl.get_integer_attrib(element, "numclauses", 1),
+            "orderBy": pl.get_boolean_attrib(element, "orderby", False),
+            "groupBy": pl.get_boolean_attrib(element, "groupby", False),
+            "numJoins": pl.get_integer_attrib(element, "numjoins", 0),
+            "AntiJoin": pl.get_boolean_attrib(element, "numantijoins", False)
+        }
+        print(f"elem: {attribDict['numJoins']}")
+        data['params']['attrib_dict'] = attribDict
 
     # If if is a randomised question, generate the question
     if questionRandom:
