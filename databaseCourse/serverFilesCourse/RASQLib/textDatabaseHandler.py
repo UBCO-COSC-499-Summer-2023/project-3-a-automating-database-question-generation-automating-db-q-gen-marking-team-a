@@ -129,14 +129,14 @@ class Database:
         # Add their schema to the initialize string
         if self.referencedTables:
             for table in self.referencedTables:
-                data['params']['db_initialize_create'] += f"{self.referencedTables[table].getSQLSchema()}\n"
+                data['params']['db_initialize'] += f"{self.referencedTables[table].getSQLSchema()}\n"
         
         # Adds the primary table afterwards.
         # Since the primary table may reference the foreign
         # tables but NOT vice versa, it is required that the
         # primary table is loaded after such that foreign
         # key constrains are satisfied.
-        data['params']['db_initialize_create'] += self.primaryTable.getSQLSchema()
+        data['params']['db_initialize'] += self.primaryTable.getSQLSchema()
     
     # Adds the tables' rows to the data
     def loadRows(self, data):
