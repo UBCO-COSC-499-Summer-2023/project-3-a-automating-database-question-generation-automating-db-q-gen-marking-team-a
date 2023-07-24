@@ -2,14 +2,14 @@ from difflib import SequenceMatcher
 import sqlite3
 import os
 
-# weights for input and oututbased grading
-outputScoreWeight = 0.85
-inputScoreWeight = 0.15
-
 # Uses Python's SequenceMatcher library to check the
 # similarity between the correct answer and the student's
 # submitted answer.
 def customGrader(data):
+    # weights for input and oututbased grading
+    outputScoreWeight = 0.85
+    inputScoreWeight = 0.15
+
     # Grabs the student answer from data
     submittedAnswer = data['submitted_answers']['SQLEditor']
 
@@ -34,26 +34,53 @@ def customGrader(data):
     if os.path.exists("ans2.db"):
         os.remove("ans2.db")
 
+    # if student makes a typo, the grading is shifted so that the input is weighted more than the output
     # partial grading for lab 2 - Create Questions
     if(questionType == "create"):
-        outputScore += gradeCreateQuestion(data,correctAnswer,submittedAnswer)
+        try:
+            outputScore += gradeCreateQuestion(correctAnswer,submittedAnswer)
+        except sqlite3.OperationalError as e:
+            if "syntax error" in str(e).lower():
+                outputScoreWeight = 0.15
+                inputScoreWeight = 0.85
     
     # partial grading for lab 2 - Insert Questions
     if(questionType == "insert"):
-        outputScore += gradeInsertQuestion(data,correctAnswer,submittedAnswer)
+        try:
+            outputScore += gradeInsertQuestion(data,correctAnswer,submittedAnswer)
+        except sqlite3.OperationalError as e:
+            if "syntax error" in str(e).lower():
+                outputScoreWeight = 0.15
+                inputScoreWeight = 0.85
 
     # partial grading for lab 2 - Update Questions
     if(questionType == "update"):
-        outputScore += gradeUpdateQuestion(data,correctAnswer,submittedAnswer)
+        try:
+            outputScore += gradeUpdateQuestion(data,correctAnswer,submittedAnswer)
+        except sqlite3.OperationalError as e:
+            if "syntax error" in str(e).lower():
+                outputScoreWeight = 0.15
+                inputScoreWeight = 0.85
 
     # partial grading for lab 2 - Delete Questions
     if(questionType == "delete"):
-        outputScore += gradeDeleteQuestion(data,correctAnswer,submittedAnswer)
+        try:
+            outputScore += gradeDeleteQuestion(data,correctAnswer,submittedAnswer)
+        except sqlite3.OperationalError as e:
+            if "syntax error" in str(e).lower():
+                outputScoreWeight = 0.15
+                inputScoreWeight = 0.85
 
     # partial grading for lab 2 - Create Questions
     if(questionType == "query"):
-        outputScore += gradeQueryQuestion(data,correctAnswer,submittedAnswer)
-    
+        try:
+            outputScore += gradeQueryQuestion(data,correctAnswer,submittedAnswer)
+        except sqlite3.OperationalError as e:
+            if "syntax error" in str(e).lower():
+                outputScoreWeight = 0.15
+                inputScoreWeight = 0.85
+
+
     # Uses the sequence checker to check similatiry between
     # the submission and answer. It returns a number between
     # 0 and 1. 1 means the strings are identical and 0 is
@@ -78,7 +105,6 @@ def customGrader(data):
     grade = (inputScoreWeight*inputScore) + (outputScoreWeight*outputScore)
     grade = round(grade,2)
     return grade
-
 
 # Returns the similarity between two strings.
 # 1 means that the strings are identical.
@@ -127,7 +153,6 @@ def getExpectedAndActualQueryResults(data,correctAnswer,submittedAnswer):
     
     # formats database initialization from string to SQL
     commands = data['params']['db_initialize_create'].replace('\n', '').replace('\t', '')
-    print(commands)
     commands += data['params']['db_initialize_insert_backend'].replace('\n', '').replace('\t', '')
     
     # db initialization
@@ -146,9 +171,9 @@ def getExpectedAndActualQueryResults(data,correctAnswer,submittedAnswer):
 
 # CREATE------------------------------------------------------------------------------------------------------------------------
 # grades create questions
-def gradeCreateQuestion(data,correctAnswer,submittedAnswer):
+def gradeCreateQuestion(correctAnswer,submittedAnswer):
     # gets output in proper formatting
-    arr = getExpectedAndActualCreateResults(data,correctAnswer,submittedAnswer)
+    arr = getExpectedAndActualCreateResults(correctAnswer,submittedAnswer)
 
     expectedAns = arr[0]
     actualAns = arr[1]
@@ -160,10 +185,10 @@ def gradeCreateQuestion(data,correctAnswer,submittedAnswer):
     score = round(score,2)
     return score
 
-# {}, str, str => (,)
+# str, str => (,)
 # takes in data variable, correct ans, submitted ans, runs the queries and returns the output in proper formatting
 # compares table metadate from (tables created by solution) and (tables created by submission)
-def getExpectedAndActualCreateResults(data,correctAnswer,submittedAnswer):
+def getExpectedAndActualCreateResults(correctAnswer,submittedAnswer):
     con = sqlite3.connect("ans.db")
     cur  = con.cursor()
 
@@ -229,6 +254,7 @@ def getExpectedAndActualInsertResults(data,correctAnswer,submittedAnswer):
     
     # formats db initialization code from string to SQL and executes
     commands = data['params']['db_initialize_create'].replace('\n', '').replace('\t', '')
+    commands += data['params']['db_initialize_insert_backend'].replace('\n', '').replace('\t', '')
     cur.executescript(commands)
     con.commit()
 
@@ -297,6 +323,7 @@ def getExpectedAndActualUpdateResults(data,correctAnswer,submittedAnswer):
     
     # formats db initialization code from string to SQL and executes
     commands = data['params']['db_initialize_create'].replace('\n', '').replace('\t', '')
+    commands += data['params']['db_initialize_insert_backend'].replace('\n', '').replace('\t', '')
     cur.executescript(commands)
     con.commit()
 
@@ -377,6 +404,7 @@ def getExpectedAndActualDeleteResults(data,correctAnswer,submittedAnswer):
     
     # formats db initialization code from string to SQL and executes
     commands = data['params']['db_initialize_create'].replace('\n', '').replace('\t', '')
+    commands += data['params']['db_initialize_insert_backend'].replace('\n', '').replace('\t', '')
     cur.executescript(commands)
     con.commit()
 
@@ -422,11 +450,12 @@ def getExpectedAndActualDeleteResults(data,correctAnswer,submittedAnswer):
 def rowMatch(expectedAns,actualAns):
     expectedTotal = 0
     actualTotal = 0
-    expectedRowCount = len(expectedAns)
-    expectedTotal += expectedRowCount
 
     if not (actualAns or expectedAns): return 1
     if not actualAns or not actualAns[0]: return 0
+
+    expectedRowCount = len(expectedAns)
+    expectedTotal += expectedRowCount
 
     actualRowCount = len(actualAns)
     actualTotal += actualRowCount
@@ -440,11 +469,12 @@ def rowMatch(expectedAns,actualAns):
 def colMatch(expectedAns,actualAns):
     expectedTotal = 0
     actualTotal = 0
-    expectedColumnCount = len((expectedAns[0]))
-    expectedTotal += expectedColumnCount
 
     if not (actualAns or expectedAns): return 1
     if not actualAns or not actualAns[0]: return 0
+
+    expectedColumnCount = len((expectedAns[0]))
+    expectedTotal += expectedColumnCount
     
     actualColumnCount = len(actualAns[0])
     actualTotal += actualColumnCount
