@@ -127,6 +127,7 @@ def getExpectedAndActualQueryResults(data,correctAnswer,submittedAnswer):
     
     # formats database initialization from string to SQL
     commands = data['params']['db_initialize_create'].replace('\n', '').replace('\t', '')
+    print(commands)
     commands += data['params']['db_initialize_insert_backend'].replace('\n', '').replace('\t', '')
     
     # db initialization

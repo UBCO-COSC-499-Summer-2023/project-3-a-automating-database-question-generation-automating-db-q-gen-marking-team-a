@@ -8,11 +8,15 @@ class DatabaseTest(unittest.TestCase):
     # all tables are added to db init 
     def testLoadSchemasAddsTablesToDbInit(self):
         testType = "Update"
-        db_initialize = ""
+        db_initialize_create = ""
+        db_initialize_insert_frontend = ""
+        db_initialize_insert_backend = ""
         initialAns = ""
         difficulty = "easy"
         data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
-                          'db_initialize':db_initialize},
+                          'db_initialize_create':db_initialize_create,
+                          'db_initialize_insert_frontend':db_initialize_insert_frontend,
+                          'db_initialize_insert_backend':db_initialize_insert_backend},
                 'correct_answers':{'SQLEditor': initialAns}}
         
         tableOne = "flight"
@@ -20,13 +24,13 @@ class DatabaseTest(unittest.TestCase):
         tableTwo = "airport"
         tableThree = "airplane"
 
-        self.assertEqual(len(data['params']['db_initialize']),0)
+        self.assertEqual(len(data['params']['db_initialize_create']),0)
 
         database.loadDatabase(data)
 
-        self.assertIn(tableOne,data['params']['db_initialize'])
-        self.assertIn(tableTwo,data['params']['db_initialize'])
-        self.assertIn(tableThree,data['params']['db_initialize'])
+        self.assertIn(tableOne,data['params']['db_initialize_create'])
+        self.assertIn(tableTwo,data['params']['db_initialize_create'])
+        self.assertIn(tableThree,data['params']['db_initialize_create'])
 
     # no tables are added to db init when input is empty
     ''' This test was removed since there cannot exist a
@@ -54,42 +58,50 @@ class DatabaseTest(unittest.TestCase):
     # table with no other referenced tables
     def testLoadAllSchemaAddsTableWithNoReferencesToDbInit(self):
         testType = "Update"
-        db_initialize = ""
+        db_initialize_create = ""
+        db_initialize_insert_frontend = ""
+        db_initialize_insert_backend = ""
         initialAns = ""
         difficulty = "easy"
         data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
-                          'db_initialize':db_initialize},
+                          'db_initialize_create':db_initialize_create,
+                          'db_initialize_insert_frontend':db_initialize_insert_frontend,
+                          'db_initialize_insert_backend':db_initialize_insert_backend},
                 'correct_answers':{'SQLEditor': initialAns}}
         
         tableOne = "airport"
         database = Database(file=tableOne, random=False)
 
-        self.assertEqual(len(data['params']['db_initialize']),0)
+        self.assertEqual(len(data['params']['db_initialize_create']),0)
 
         database.loadDatabase(data)
 
-        self.assertIn(tableOne,data['params']['db_initialize'])
+        self.assertIn(tableOne,data['params']['db_initialize_create'])
     
     # table with other referenced tables
     def testLoadAllSchemaAddsTableWithReferencesToDbInit(self):
         testType = "Update"
-        db_initialize = ""
+        db_initialize_create = ""
+        db_initialize_insert_frontend = ""
+        db_initialize_insert_backend = ""
         initialAns = ""
         difficulty = "easy"
         data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
-                          'db_initialize':db_initialize},
+                          'db_initialize_create':db_initialize_create,
+                          'db_initialize_insert_frontend':db_initialize_insert_frontend,
+                          'db_initialize_insert_backend':db_initialize_insert_backend},
                 'correct_answers':{'SQLEditor': initialAns}}
         
         tableOne = "flight"
         database = Database(file=tableOne, random=False)
 
-        self.assertEqual(len(data['params']['db_initialize']),0)
+        self.assertEqual(len(data['params']['db_initialize_create']),0)
 
         database.loadDatabase(data)
 
-        self.assertIn(tableOne,data['params']['db_initialize'])
-        self.assertIn("airplane",data['params']['db_initialize'])
-        self.assertIn("airport",data['params']['db_initialize'])
+        self.assertIn(tableOne,data['params']['db_initialize_create'])
+        self.assertIn("airplane",data['params']['db_initialize_create'])
+        self.assertIn("airport",data['params']['db_initialize_create'])
 
 
 # Tests the helper functions
