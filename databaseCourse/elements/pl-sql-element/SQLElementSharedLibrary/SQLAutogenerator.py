@@ -266,6 +266,7 @@ def generateUpdate(data, difficulty):
         conditionalValues[conditionalColumn] = table.rows[conditionalColumn][randomValueIndex]
 
 
+
     # Generates the question string
     questionString = f"From the table <b>{table.name}</b> and in the column <b>{updateColumn}</b>, change all values to be <b>{updateValue}</b>"
 
@@ -299,6 +300,11 @@ def generateUpdate(data, difficulty):
     
     # Finishes the sentence
     questionString += "."
+
+
+
+    # Adds the important rows to the backend DB
+    database.addRowsBackend(conditionalValues)
 
     # Loads data
     database.loadDatabase(data)
@@ -441,6 +447,9 @@ def generateDelete(data, difficulty):
     questionString += "."
 
 
+
+    # Adds the important rows to the backend DB
+    database.addRowsBackend(conditionalValues)
 
     # Loads the database
     database.loadDatabase(data)
@@ -662,6 +671,9 @@ def generateQuery(data, difficulty):
 
     # Loads some rows
     database.generateRows(random.randint(3, 7))
+
+    # Adds the important rows to the backend DB
+    #database.addRowsBackend(conditionalValues)
 
     # Loads the database
     database.loadDatabase(data)
