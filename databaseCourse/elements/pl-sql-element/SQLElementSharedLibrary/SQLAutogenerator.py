@@ -30,7 +30,7 @@ def autogenerate(data):
         case 'insert': generateInsert(data, difficulty)
         case 'update': generateUpdate(data, difficulty)
         case 'delete': generateDelete(data, difficulty)
-        case 'query': generateQuery(data, difficulty) # TODO
+        case 'query': generateQuery(data, difficulty)
 
 '''
     Begin create-style question
@@ -394,7 +394,7 @@ def generateQuery(data, difficulty):
             columns = random.randint(3, 4)
             joins = 0
             database = db.Database(columns=columns, joins=joins)
-            queryClauses['conditional': 0]
+            queryClauses['conditional'] = 0
 
         case 'medium': 
             columns = random.randint(4, 6)
