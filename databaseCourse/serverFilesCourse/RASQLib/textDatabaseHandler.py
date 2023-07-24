@@ -59,12 +59,17 @@ class Database:
         # of `d`
         keyList = list(self.tableSet.keys())
 
-        for i in range(len(keyList[:depth-1])):
-            self.tableSet[keyList[i]].link(self.tableSet[keyList[i+1]])
+        # Ensures that index issue doesnt happen
+        if depth > joins:
+            depth = joins
 
+        for i in range(len(keyList[:depth-1])):
+           self.tableSet[keyList[i]].link(self.tableSet[keyList[i+1]])
         # The rest of the joins link the remaining
         # table to a random one in the depth chain
-        for i in range(depth, joins):
+        if joins == len(keyList):
+            joins-=1
+        for i in range(depth, joins+1):
             self.tableSet[keyList[randint(0,depth-1)]].link(self.tableSet[keyList[i]])
 
 
@@ -84,6 +89,7 @@ class Database:
             self.generateRowsSQL(qty)
         else:
             self.generateRowsRelaX(qty)
+
 
     # Note: this CAN throw a "UNIQUE constraint failed" IF the
     # primary table has two references to the same table (such
