@@ -670,6 +670,7 @@ def generateQuery(data, difficulty):
 
 
     # Handles having clause
+    havingConnectors = {}
     if having:
 
         # Removes the period
@@ -718,6 +719,7 @@ def generateQuery(data, difficulty):
     
     # Sets the correct answer
     data['correct_answers']['SQLEditor'] = queryStatement(database, selectedColumns, joinTypes, conditionalValues, conditionalConnectors, orderByColumns, groupByColumns, havingColumns, havingConnectors, withColumns, limit, isDistinct)
+
 
 
 # Creates a query
