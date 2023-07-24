@@ -244,7 +244,7 @@ def generateUpdate(data, difficulty):
     updateValue = nd.generateNoisyData(table, updateColumn)[0]
 
     # If the quesiton should use a condition, set parameters
-    conditionalValues = getConditionalValues(queryClauses['conditional'], list(table.columns.keys()), {table.name: table})
+    conditionalValues = getConditionalValues(queryClauses['conditional'], {table.name: table}, list(table.columns.keys()))
 
 
 
@@ -329,7 +329,7 @@ def generateDelete(data, difficulty):
     database.generateRows(random.randint(3, 7))
 
     # If the quesiton should use a condition, set parameters
-    conditionalValues = getConditionalValues(queryClauses['conditional'], list(table.columns.keys()), {table.name: table})
+    conditionalValues = getConditionalValues(queryClauses['conditional'], {table.name: table}, list(table.columns.keys()))
 
 
 
