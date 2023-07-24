@@ -380,193 +380,7 @@ def deleteStatement(table, conditionalValues=None, conditionalConnectors={}, sub
     Begin query-style question
 '''
 
-# TODO
-# Generate clauses
-# Have proper conditionals
 def generateQuery(data, difficulty):
-    
-    # Obtains question specific parameters
-    columns, joins, tableClauses, queryClauses = getQuestionParameters(data)
-
-    # Chooses a table to load based on quesiton difficulty
-    database = None
-    match difficulty:
-        case 'easy': 
-            columns = random.randint(3, 4)
-            joins = 0
-            database = db.Database(columns=columns, joins=joins)
-            clauses = {}
-
-        case 'medium': 
-            columns = random.randint(4, 6)
-            joins = random.randint(1, 2)
-            database = db.Database(columns=columns, joins=joins)
-
-            clauses = {}
-
-        case 'hard': 
-            columns = random.randint(5, 8)
-            joins = random.randint(1, 2)
-            database = db.Database(columns=columns, joins=joins)
-            #clauses = {}
-            clauses = random.randint(1, 3)
-            return None # Not yet implemented; first requires queryStatement() to be completed
-        
-        case _:
-            database = db.Database(columns=columns, joins=joins, clauses=tableClauses)
-
-    # Gets the primary table for easy referencing
-    table = database.primaryTable
-
-    # Gets the referenced tables for easy referencing
-    referenced = database.referencedTables
-
-    # Generates a bunch of bogus rows
-    database.generateRows(random.randint(3, 7))
-
-
-
-    # keyMap maps the primary table's FKs to the other tables
-    # keyMap = {
-    #   $foreignKey: {
-    #       'references': $foreignTableName
-    #       'foreignKey': $columnReferenced
-    #   }
-    # }
-    keyMap = table.getKeyMap()
-
-
-
-    # The columns that will be selected by the query
-    # selectedColumns {
-    #   $foreignKey: $column
-    # }
-    selectedColumns = {}
-
-    # Chooses one column randomly from each joined table.
-    # Ensures that at least one column per table joined is
-    # in the query
-    for key in keyMap:
-        selectedColumns[key] = [keyMap[key]['foreignKey']]
-
-    # Maps the foreign keys to tables
-    # foreignKeyMap = {
-    #   $columnName: table
-    # }
-    foreignKeyMap = {table.name: table}
-
-    # Randomly chooses which tables are joined together
-    for join in range(joins):
-        
-        # Chooses the foreign key randomly from the list
-        foreignKey = random.choice(list(keyMap.keys()))
-
-        # Pops the key out (ensures no repeated joins) and
-        # adds it to the mapping
-        foreignKeyMap[foreignKey] = referenced[keyMap.pop(foreignKey)['references']]
-
-    # Adds more columns until there are the amount as
-    # specified by the difficulty
-    '''
-    for i in range(len(list(table.columns)) - joins - 1):
-
-        # Chooses a foreign key, aka chooses a table
-        foreignKey = random.choice(list(foreignKeyMap.keys()))
-
-        # Chooses unique column
-        uniqueKey = None
-        while not uniqueKey or uniqueKey in selectedColumns[foreignKey]:
-            uniqueKey = random.choice(list(foreignKeyMap[foreignKey].columns.keys()))
-
-        # Adds the column to the appropriate table's selected column
-        selectedColumns[foreignKey].append(uniqueKey)
-    '''
-
-
-
-    # Generate a new keyMap since the last one was modified
-    # through pop()
-    keyMap = table.getKeyMap()
-
-    # Adds the current table to the keyMap (for ease)
-    keyMap[table.name] = {'references': table.name, 'foreignKey': None}
-
-
-
-    # Creates the question string
-    questionString = 'From the tables'
-
-    # De-pluralizes the string if there are no joins
-    if joins == 0:
-        questionString = questionString[:-1]
-
-    # Adds the tables to the string
-    keyIndex = 0
-    for key in foreignKeyMap:
-
-        # Used to track when the 'and' needs to be added
-        keyIndex += 1
-
-        # Adds an 'and' if it's the last item and
-        # there are more than one item
-        if keyIndex == len(list(foreignKeyMap)) and joins > 0:
-            questionString += ' and'
-
-        questionString += f" <b>{keyMap[key]['references']}</b>,"
-    
-    # Removes the trailing comma and add the next bit of text
-    questionString = questionString[:-1] + ' select the columns'
-
-    # De-pluralizes the string if there is only one column
-    if len(list(table.columns)) == 1:
-        questionString = questionString[:-1]
-
-    # Adds the columns to be selected
-    keyIndex = 0
-    for key in selectedColumns:
-
-        # Used to keep track of the and
-        columnIndex = 0
-        keyIndex += 1
-
-        # Specifies which table the column belongs to.
-        # Also specifies the 'as' clause
-        questionString += f" ({keyMap[key]['references']} as {keyMap[key]['references'][0:1].upper()})"
-
-        # Adds the column to the string
-        for column in selectedColumns[key]:
-            columnIndex += 1
-
-            # Adds an 'and' if it's the last item and
-            # there are more than one item
-            if columnIndex == len(list(selectedColumns[key])) and keyIndex == len(list(selectedColumns)) and len(list(table.columns)) > 1:
-                questionString += ' and'
-            
-            questionString += f" <b>{column}</b>,"
-
-    # Removes the trailing comma
-    questionString = questionString[:-1] + '.'
-
-
-    # Loads some rows
-    database.generateRows(random.randint(3, 7))
-
-    # Loads the database
-    database.loadDatabase(data)
-
-    # Adds the question string to data
-    data['params']['questionString'] = questionString
-
-    # Sets the correct answers
-    # TODO: clauses (the '[]') is blank; make it not blank
-    data['correct_answers']['SQLEditor'] = queryStatement(table, keyMap, foreignKeyMap, selectedColumns, [])
-
-# This one doesn't work yet, but it is the
-# one that will be used. I, Skyler, started
-# it from scratch, but wanted to keep the
-# old one around so I could see what my
-# previous approach was.
-def generateQuery2(data, difficulty):
     
     # Obtains question specific parameters
     columns, joins, tableClauses, queryClauses = getQuestionParameters(data)
@@ -640,6 +454,23 @@ def generateQuery2(data, difficulty):
     conditionalValues = getConditionalValues(conditionals, tableMap, restrictive=False)
 
 
+
+    # Gets the type of joins.
+    # SQLite only supports the following joins:
+    #   - JOIN or equivilently INNER JOIN: must specify join condition
+    #   - NATURAL JOIN: no join condition specified
+    #   - CROSS JOIN: no join condition specified
+    #   - LEFT OUTER JOIN: join condition specified
+    #       * Right and full outer joins are not supported
+    joinTypes = {}
+    for selectedTable in selectedColumns:
+
+        # We don't want to join the table to itself
+        if selectedTable != table.name:
+            joinTypes[selectedTable] = random.choices(['JOIN', 'INNER JOIN', 'NATURAL JOIN', 'CROSS JOIN', 'LEFT OUTER JOIN'], [2, 2, 4, 1, 1])[0]
+
+
+
     # A list of all columns in the table.
     columnList = getColumnList(tableMap)
 
@@ -652,8 +483,8 @@ def generateQuery2(data, difficulty):
 
     # A list of *selected* columns
     selectedColumnList = []
-    for table in selectedColumns:
-        for column in selectedColumns[table]:
+    for selectedTable in selectedColumns:
+        for column in selectedColumns[selectedTable]:
             selectedColumnList.append(column)
 
     # Gets the columns to group
@@ -675,12 +506,15 @@ def generateQuery2(data, difficulty):
 
 
     # Which columns will use aliasing
-    tableNames = [table for table in selectedColumns]
+    withColumns = {}
+    ''' Aliasing is works but is not currently used
+    tableNames = [selectedTable for selectedTable in selectedColumns]
     withColumns = {}
     while len(withColumns) < withClause:
         tableName = tableNames.pop(random.choice(range(len(tableNames))))
 
         withColumns[tableName] = tableName[:1].upper()
+    '''
     
 
 
@@ -690,8 +524,34 @@ def generateQuery2(data, difficulty):
     # De-pluralizes if necessary
     questionString = removeTrailingChars(questionString, condition=len(selectedColumns) == 1)
 
+
+
     # Lists all the tables to add
     questionString, index = dictionaryQuestionString(selectedColumns, questionString, tag='b')
+    ''' Aliasing is works but is not currently used
+    index = 0
+    for key in selectedColumns:
+        
+        # Adds the and, if necessary.
+        if index == len(selectedColumns) - 1 and index > 0:
+            # Removes the comma if there are only two tables
+            if index == 1:
+                questionString = questionString[:-1]
+
+            questionString += ' and'
+
+        
+        # Adds the table
+        questionString += f" <b>{key}</b>"
+
+        # Includes aliasing if necessary
+        if key in withColumns:
+            questionString += f" <em>with the alias {withColumns[key]}</em>"
+        
+        questionString += ','
+
+        index += 1
+    '''
     
 
 
@@ -703,8 +563,8 @@ def generateQuery2(data, difficulty):
     
     # Lists all the columns to add
     index = 0
-    for table in selectedColumns:
-        questionString, index = dictionaryQuestionString(selectedColumns[table], questionString, columnsToSelect, index, tag='b')
+    for selectedTable in selectedColumns:
+        questionString, index = dictionaryQuestionString(selectedColumns[selectedTable], questionString, columnsToSelect, index, tag='b')
 
     # Removes the trailing comma
     questionString = removeTrailingChars(questionString)
@@ -717,6 +577,42 @@ def generateQuery2(data, difficulty):
     # Finishes the sentence
     questionString += '.'
 
+
+
+    # Adds the join types
+    if joinTypes:
+
+        # Used to keep track of when and if to add the 'and'
+        index = 0
+
+        # Starts the string
+        questionString += f" Use"
+
+        # Iterates over all joins
+        for key in joinTypes:
+
+            # Adds the and, if necessary.
+            if index == len(joinTypes) - 1 and index > 0:
+                # Removes the comma if there are only two tables
+                if index == 1:
+                    questionString = questionString[:-1]
+
+                questionString += ' and'
+
+            questionString += ' a'
+
+            # Reduces ambiguity for the unspecified join
+            if joinTypes[key] == 'JOIN':
+                questionString += ' regular'
+            
+            # Adds the join and table to the question string
+            questionString += f" <em>{joinTypes[key].lower()}</em> for the table <b>{key}</b>,"
+
+            index += 1
+        
+        # Removes trailing comma and finishes the sentance
+        questionString = removeTrailingChars(questionString) + '.'
+        
 
 
     # Adds the order by
@@ -793,7 +689,13 @@ def generateQuery2(data, difficulty):
 
     # Handles limit clause
     if limit:
-        questionString += f" <em>Limit the search to {limit} results</em>"
+        questionString += f" <em>Limit the search to {limit} results"
+
+        # De-pluralizes if necessary
+        questionString = removeTrailingChars(questionString, condition=limit == 1)
+
+        questionString += '</em>'
+
     
 
 
@@ -813,54 +715,108 @@ def generateQuery2(data, difficulty):
 
     # Adds the question string to data
     data['params']['questionString'] = questionString
-
-    # Sets the correct answer
-    # TODO
-
-
-# Creates a delete statement
-# TODO
-#   Conditionals
-#   Clauses
-def queryStatement(table, keyMap, foreignKeyMap, selectedColumns, clauses):
     
+    # Sets the correct answer
+    data['correct_answers']['SQLEditor'] = queryStatement(database, selectedColumns, joinTypes, conditionalValues, conditionalConnectors, orderByColumns, groupByColumns, havingColumns, havingConnectors, withColumns, limit, isDistinct)
+
+
+# Creates a query
+def queryStatement(database, selectedColumns, joinTypes={}, conditionalValues={}, conditionalConnectors={}, orderByColumns={}, groupByColumns={}, havingColumns={}, havingConnectors={}, withColumns={}, limit=0, isDistinct=False):
+    
+    table = database.primaryTable
+    keyMap = table.getKeyMap()
+
     # Begins the query string
     queryString = 'SELECT'
+
+
+
+    # Adds distinct clause
+    if isDistinct:
+        queryString += ' DISTINCT'
+
+
 
     # Adds the columns to the query string
     # All columns use a '$table.' to specify
     for key in selectedColumns:
         for column in selectedColumns[key]:
-            queryString += f" {keyMap[key]['references'][0:1].upper()}.{column},"
+            queryString += f" {column},"
     
     # Removes trailing comma
-    queryString = queryString[:-1] + ' FROM'
+    queryString = queryString[:-1] + f"\nFROM {table.name}"
 
     # Adds the tables to be selected from
-    for key in foreignKeyMap:
-        queryString += f" {keyMap[key]['references']} AS {keyMap[key]['references'][0:1].upper()},"
-
-    # Removes trailing comma
-    queryString = queryString[:-1] + ' WHERE'
+    for key in joinTypes:
+        queryString += f" {joinTypes[key]} {key}"
 
 
+
+    # Begins the conditionals block
+    queryString += '\nWHERE'
 
     # Specifies how the tables are joined together
+    if joinTypes:
+        for key in keyMap:
+            if keyMap[key]['references'] in joinTypes and joinTypes[keyMap[key]['references']] in ['JOIN', 'INNER JOIN', 'FULL OUTER JOIN']:
+                queryString += f" {table.name}.{key} = {keyMap[key]['references']}.{keyMap[key]['foreignKey']} AND"
 
-    # Removes the primary table, since it is the holder of all
-    # the foreign keys so we don't want to say "join table to self"
-    foreignKeyMap.pop(table.name)
+        # Removes the final 'AND' if necessary
+        if not conditionalValues:
+            queryString = queryString[:-4]
+    
 
-    if foreignKeyMap:
-        for key in foreignKeyMap:
-            queryString += f" {table.name[0:1].upper()}.{key} = {keyMap[key]['references'][0:1].upper()}.{keyMap[key]['foreignKey']} AND"
 
-        # Removes the final 'AND'
-        queryString = queryString[:-4]
+    # Adds the conditional values
+    if conditionalValues:
+        queryString = statementConditionals(queryString, conditionalValues, conditionalConnectors, clauseType='')
     
     # Removes the WHERE clause if necessary
-    if not clauses and not foreignKeyMap:
+    if 'WHERE' in queryString[-6:]:
         queryString = queryString[:-6]
+
+    
+
+    # Adds the group by clause
+    if groupByColumns:
+
+        # Begins the section
+        queryString += '\nGROUP BY'
+
+        # Iterates over the array
+        for value in groupByColumns:
+            queryString += f" {value},"
+        
+        # Removes trailing comma
+        queryString = removeTrailingChars(queryString)
+
+
+
+    # Adds the having clause
+    if havingColumns:
+        queryString += '\n'
+        queryString = statementConditionals(queryString, havingColumns, havingConnectors, 'HAVING')
+
+
+
+    # Adds the order clause
+    if orderByColumns:
+
+        # Begins the section
+        queryString += '\nORDER BY'
+
+        # Iterates over all the columns to order by
+        for key in orderByColumns:
+            queryString += f" {key} {orderByColumns[key]},"
+        
+        # Removes the trailing comma
+        queryString = removeTrailingChars(queryString)
+
+
+
+    # Adds the limit clause
+    if limit:
+        queryString += f"\nLIMIT {limit}"
 
 
 
@@ -1024,24 +980,21 @@ def questionConditionals(conditionalValues, string=''):
     return string, conditionalConnectors
 
 # Adds a set of conditionals to a statement
-def statementConditionals(statement, conditionalValues, conditionalConnectors):
+def statementConditionals(statement='', conditionalValues={}, conditionalConnectors={}, clauseType=' WHERE'):
     
     # If there aren't any conditionals, just return
     if not conditionalValues:
         return statement
-
-
-
-    # Adds where
-    statement += ' WHERE'
+    
+    statement += clauseType
 
     # Includes the conditional if they exist as
     # well as the condtional connector
     for key in conditionalValues:
         statement += f" {key} = '{conditionalValues[key]}' {conditionalConnectors[key]}"
 
-    # Removes trailing 'OR' if necessary
-    if 'or' in statement[:-2]:
+    # Removes trailing 'OR' or 'AND' if necessary
+    if statement[-3] == ' ':
         statement = statement[:-3]
     else:
         statement = statement[:-4]
