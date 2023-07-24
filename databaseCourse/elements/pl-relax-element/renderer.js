@@ -13,7 +13,6 @@ $(document).ready(function () {
     }
     // Creating dropbtn (Schema) tables
     for (var i = 0; i < dataset.length; i++) {
-
         dbSchema.innerHTML += createSchemaTables(dataset.at(i)._schema)
     }
 
@@ -100,7 +99,8 @@ $(document).ready(function () {
             var key = dataset.at(i)._schema._relAliases.at(0);
             dataStuff[key] = dataset[i];
         }
-
+        
+        
         try {
             activeNode = null;
 
@@ -113,8 +113,11 @@ $(document).ready(function () {
             treeDiv.append(ulDiv);
             treeElm.append(treeDiv);
         } catch (err) {
-            console.log(err.stack)
-            createErrorOutput(err); // creates and renders error in event user has incorrect RA query 
+            console.error(err)
+            if (err.name === 'SyntaxError')
+                createErrorOutput(err.message); // creates and renders error in event user has incorrect RA query 
+            else
+                createErrorOutput(err);
         }
     }
     0
@@ -180,9 +183,9 @@ $(document).ready(function () {
         outputElm.append(table);
     }
     var ifDateChecker = [];
-
     // Function that creates the table header
     function createTableHeader(columnSchema, rows) {
+        ifDateChecker = [];
         var header = $("<thead></thead>");
         var headerRow = $("<tr></tr>");
         // reads each header
@@ -345,6 +348,7 @@ $(document).ready(function () {
             return container.append(button); // adds the main node
         }
     }
+
 });
 
 function createTreeNodeDropdown(output) {

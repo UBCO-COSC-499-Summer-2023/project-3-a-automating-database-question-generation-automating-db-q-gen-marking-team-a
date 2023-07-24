@@ -61,20 +61,50 @@ def prepare(element_html, data):
     # parameter if their string is uppercase. Hence all lowercase
     questionRandom = pl.get_boolean_attrib(element, 'random', False)
     questionType = pl.get_string_attrib(element, 'questiontype', 'query')
-    questionDifficulty = pl.get_string_attrib(element, 'difficulty', 'normal')
+    questionDifficulty = pl.get_string_attrib(element, 'difficulty', None)
     questionMaxGrade = pl.get_float_attrib(element, 'maxgrade', 1)
     questionMarkerFeedback = pl.get_boolean_attrib(element, 'markerfeedback', False)
+    questionExpectedPreview = pl.get_boolean_attrib(element,'expectedoutput',False)
+
+    questionColumns = pl.get_integer_attrib(element, 'columns', 5)
+    questionJoins = pl.get_integer_attrib(element, 'joins', 0)
+
+    questionPrimaryKeys = pl.get_integer_attrib(element, 'primarykeys', 1)
+    questionIsNotNull = pl.get_integer_attrib(element, 'isnotnull', None)
+    questionIsUnique = pl.get_integer_attrib(element, 'isunique', None)
+    questionIsOnUpdateCascade = pl.get_integer_attrib(element, 'isonupdatecascade', None)
+    questionIsOnDeleteSetNull = pl.get_integer_attrib(element, 'isondeletesetnull', None)
+
+    questionUseConditional = pl.get_integer_attrib(element, 'useconditional', 0)
+    questionUseSubquery = pl.get_boolean_attrib(element, 'usesubquery', False)
+    questionUseAndInsteadOfOr = pl.get_boolean_attrib(element, 'useandinsteadofor', False)
 
     data['params']['html_params'] = {
         'random': questionRandom,
         'questionType': questionType,
         'difficulty': questionDifficulty,
         'maxGrade': questionMaxGrade,
-        'markerFeedback': questionMarkerFeedback
+        'markerFeedback': questionMarkerFeedback,
+        'columns': questionColumns,
+        'joins': questionJoins,
+        'expectedOutput': questionExpectedPreview
+    }
+
+    data['params']['html_table_clauses'] = {
+        'primaryKeys': questionPrimaryKeys,
+        'isNotNull': questionIsNotNull,
+        'isUnique': questionIsUnique,
+        'isOnUpdateCascade': questionIsOnUpdateCascade,
+        'isOnDeleteSetNull': questionIsOnDeleteSetNull
+    }
+
+    data['params']['html_query_clauses'] = {
+        'useConditional': questionUseConditional,
+        'useSubquery': questionUseSubquery,
+        'useAndInsteadOfOr': questionUseAndInsteadOfOr
     }
 
     # If if is a randomised question, generate the question
-    # data['params']['html_params']['random']
     if questionRandom:
         autogen.autogenerate(data)
 
@@ -109,7 +139,8 @@ def render(element_html, data):
         html_params = {
             'question': True,
             'db_initialize': dbInit,
-            'questionString': data['params'].get('questionString', '')
+            'questionString': data['params'].get('questionString', ''),
+            'expectedOutput': data['params'].get('expectedOutput', '')
         }
     
         with open('pl-sql-element.mustache', 'r', encoding='utf-8') as f:

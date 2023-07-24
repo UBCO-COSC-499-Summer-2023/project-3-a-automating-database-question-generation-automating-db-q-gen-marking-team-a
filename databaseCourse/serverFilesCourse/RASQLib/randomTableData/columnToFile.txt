@@ -1,0 +1,12 @@
+state:states
+city:cities
+address:addresses
+province:provinces
+aname:airports
+departAirport:airports
+arriveAirport:airports
+firstName:firstNames
+lastName:lastNames
+street:addresses
+address:addresses
+country:countries
