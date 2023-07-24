@@ -1099,7 +1099,7 @@ def getQuestionParameters(data):
             'having': 0,
             'limit': 0,
             'with': 0,
-            'distinct': 0
+            'isDistinct': 0
         }
     
     return numberOfColumns, numberOfJoins, tableClauses, queryClauses
