@@ -48,21 +48,8 @@ class Database:
         
         # The primary table should have more columns
         for i in range(joins + 1):
-            #dataset[i] = Table(columns=columns, possibleColumns=possibleColumns, joins=2, isSQL=False)
-            table = Table(columns=columns, joins=2, isSQL=False)
+            table = Table(columns=columns, joins=0, isSQL=False)
             self.tableSet[table.name] = table 
-
-            ''' Skyler here,
-                I'm getting rid of a random amount of tables
-                in favour of using the `columns` parameter.
-                Not to mention a table should NEVER have
-                less than 3 columns, as would be possible
-                in the `else` statement
-                if i == 0:
-                    dataset[i] = Table(columns=randint(3,5), possibleColumns=possibleColumns, joins=2)
-                else:    
-                    dataset[i] = Table(columns=randint(2,4), possibleColumns=possibleColumns, joins=2)
-            '''
 
         # Populates the table with data
         if rows:
@@ -71,18 +58,22 @@ class Database:
         # Links tables such that there is a depth
         # of `d`
         keyList = list(self.tableSet.keys())
-        print(len(keyList))
-        print(len(keyList[:depth-1]))
+
         for i in range(len(keyList[:depth-1])):
             self.tableSet[keyList[i]].link(self.tableSet[keyList[i+1]])
-            print(f"firstLoop: {i}")
 
         # The rest of the joins link the remaining
         # table to a random one in the depth chain
-        for i in range(len(keyList[depth:joins+1])):
+        for i in range(depth, joins):
             self.tableSet[keyList[randint(0,depth-1)]].link(self.tableSet[keyList[i]])
-            print(f"secondLoop: {i}")
 
+
+        # For relax, Foreign keys are created by having the same column name
+        # This insures that only desired columns are foreign keys
+        for key in keyList:
+            for column in self.tableSet[key].columns:
+                if self.tableSet[key].columns[column]['references'] is None:
+                    self.tableSet[key].columns[column]['name'] = key + column
 
     # Populates the database with rows of data
     #
@@ -602,9 +593,6 @@ class Table:
         if foreignTable.rows:
             foreignTable.rows[column] = self.rows[column]
 
-        print(f"{self.name}, {foreignTable.name}")
-        #foreignTable.fillColumn(name=column, columnData=self.columns[column]['columnData'])
-
 
     # Given a marked-up textfile, return an array
     # of possible columns for random table generation.
@@ -839,7 +827,7 @@ class Table:
 
         # Iterates over all columns
         for key in self.columns:
-            schema += f"{self.name}.{key}:{self.columns[key]['unit'].lower()}, "
+            schema += f"{self.name}.{self.columns[key]['name']}:{self.columns[key]['unit'].lower()}, "
         schema = schema[:-2] + '\n'
 
 

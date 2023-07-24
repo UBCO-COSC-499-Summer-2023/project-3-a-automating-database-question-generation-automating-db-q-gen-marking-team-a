@@ -53,21 +53,18 @@ class Question:
         
         table = rand.choice(list(dataset.tableSet.keys()))
         table = dataset.tableSet[table]
-        joinDict = {}
-        print(dataset)
-        for i in range(attribDict['numJoins']):
-            for column in table.columns:
-                if table.columns[column]['references']:
-                    referencedName = table.columns[column]['references']
-            joinDict[table.name] = referencedName
-
-            table = dataset.tableSet[referencedName]
-        
-        print(joinDict)
+        tableDict = {}
+        for table in dataset.tableSet:
+            for column in dataset.tableSet[table].columns:
+                if dataset.tableSet[table].columns[column]['references']:
+                    if column not in tableDict:
+                        tableDict[dataset.tableSet[table].columns[column]['references']] = []
+                        tableDict[dataset.tableSet[table].columns[column]['references']].append(table)
+        print(tableDict)
     
         # Project Second
 
-        # Select third
+        # Select third 
 
         # order by / Group by last
 
