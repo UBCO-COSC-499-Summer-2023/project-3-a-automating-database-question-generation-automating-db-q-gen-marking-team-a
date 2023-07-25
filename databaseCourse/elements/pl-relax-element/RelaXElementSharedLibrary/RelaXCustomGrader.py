@@ -231,8 +231,6 @@ def valueMatch(valueSA, valueCA):
     totalValuesCA = 0
     commonValues = 0
     
-    print("ValueCA:", valueCA)
-    print("ValueSA:", valueSA)
     
     # Calculate totalValuesCA - count all values in all lists of valueCA
     for row in valueCA:
@@ -253,8 +251,6 @@ def valueMatch(valueSA, valueCA):
     missingVals = abs(totalValuesCA - totalValuesSA)
     correctVals = totalValuesCA - missingVals
     valueScore = correctVals / totalValuesCA
-    
-    print("ValueScore:", valueScore)
     
     valueData = {
         'score': valueScore,
