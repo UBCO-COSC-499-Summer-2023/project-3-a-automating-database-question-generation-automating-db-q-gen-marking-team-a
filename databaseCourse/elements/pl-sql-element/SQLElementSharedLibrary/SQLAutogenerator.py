@@ -599,7 +599,8 @@ def generateQuery(data, difficulty):
 
                 questionString += ' and'
 
-            questionString += ' a'
+            # Makes sure to use 'an' when they're a leading vowel
+            questionString += ' a' if joinTypes[key] not in ['INNER JOIN'] else ' an'
 
             # Reduces ambiguity for the unspecified join
             if joinTypes[key] == 'JOIN':
