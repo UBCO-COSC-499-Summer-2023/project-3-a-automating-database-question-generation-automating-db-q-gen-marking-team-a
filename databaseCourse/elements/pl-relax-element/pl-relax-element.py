@@ -31,6 +31,8 @@ def prepare(element_html, data):
     
     data['params']['database'] = database
     
+    data['params']['feedback'] = ''
+    
     correctAnswer = lxml.html.fromstring(pl.inner_html(element[0])).text_content()
     data['correct_answers']['RelaXEditor'] = correctAnswer
 
@@ -98,7 +100,8 @@ def render(element_html, data):
   
         html_params = {
             'submission': True,
-            'submissionAnswer': submittedAnswer
+            'submissionAnswer': submittedAnswer,
+            'feedback' : data['params']['feedback']
         }
         
         with open('pl-relax-submission.mustache', 'r', encoding='utf-8') as f:
@@ -129,12 +132,16 @@ def grade(element_html, data):
     # rather it must be placed within partial scores.
     # Updating final score is done automatically by PrairieLearn
     # based upon the partial scores.
+    
+    #data['params']['feedback'] = "bloop: test2"
+    
     data['partial_scores']['RelaXEditor'] = {
         'score': studentScore,
         'weight': 1,
-        'feedback': "",
-        'marker_feedback': ""
+        'feedback': "test1",
+        'marker_feedback': "marker test1"
     }
+    
 
 def test(element_html, data):
     pass
