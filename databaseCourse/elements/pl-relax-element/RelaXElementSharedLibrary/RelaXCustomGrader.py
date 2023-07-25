@@ -146,7 +146,7 @@ def gradeQuery(data, feedback):
         addFeedback(data, "rows", totalRowsSA, totalRowsCA)
         addFeedback(data, "columns", totalColsSA, totalColsCA)
         if missingCols:
-            data['params']['queryFeedback'] += f"Missing columns: {missingCols}<br>"
+            data['params']['queryFeedback'] += f"missing columns: {missingCols}<br>"
         addFeedback(data, "values", totalValuesSA, totalValuesCA)
         addFeedback(data, "order", order, "Correct")
 
