@@ -859,6 +859,7 @@ def createPreview(data):
     cur  = con.cursor()
 
     commands = data['params']['db_initialize_create'].replace('\n', '').replace('\t', '')
+    commands += data['params']['db_initialize_insert_frontend'].replace('\n', '').replace('\t', '')
 
     cur.executescript(commands)
     con.commit()
