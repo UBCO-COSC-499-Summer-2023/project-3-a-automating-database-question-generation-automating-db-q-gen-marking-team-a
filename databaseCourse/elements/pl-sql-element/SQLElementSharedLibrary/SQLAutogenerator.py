@@ -920,8 +920,33 @@ def generateSubquery(database):
 
     # Build subquery
 
-def subqueryStatement(comparisonOperator, selectedColumnName, tableName, queryFunction=''):
-    return f" {comparisonOperator} (SELECT {queryFunction}({selectedColumnName}) FROM {tableName})" if queryFunction else f" {comparisonOperator} (SELECT {selectedColumnName} FROM {tableName})"
+def subqueryStatement(comparisonOperator, selectedColumnName, tableName, queryFunction='', conditionalValues={}):
+
+    # Begins the statement
+    statement = f" {comparisonOperator} (SELECT"
+
+    # Wraps the selected column in parenthesis if there
+    # is a function
+    if queryFunction:
+        statement += f" {queryFunction}({selectedColumnName})"
+    else:
+        statement += f"  {selectedColumnName}"
+    
+    # Adds the table name
+    statement += f" FROM {tableName}"
+
+
+
+    # Adds conditional values, if they're present
+    if conditionalValues:
+        statement = statementConditionals(statement, conditionalValues)
+
+
+
+    # Finishes the subquery
+    statement += ')'
+
+    return statement
 
 
 
