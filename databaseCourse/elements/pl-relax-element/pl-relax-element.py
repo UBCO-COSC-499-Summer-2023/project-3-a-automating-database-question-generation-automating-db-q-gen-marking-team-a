@@ -31,8 +31,12 @@ def prepare(element_html, data):
     
     data['params']['database'] = database
     
-    #prepare the feedback parameter
-    data['params']['feedback'] = ''
+    # parameter whether to show feedback or not
+    feedback = pl.get_boolean_attrib(element, 'feedback', False)
+    data['params']['feedback'] = feedback
+    
+    # storing the actual feedback
+    data['params']['queryFeedback'] = ''
     
     #get the url to execute relax from backend
     url = pl.get_string_attrib(element, 'url', '')
@@ -84,7 +88,6 @@ def render(element_html, data):
     correctAnswer = data['correct_answers'].get('RelaXEditor', '')
 
 
-
     # NOTE: the database is loaded into the data
     # variable during the `prepare()` function,
     # when it called `autogenerate()`
@@ -95,7 +98,8 @@ def render(element_html, data):
     if data['panel'] == 'question':
         # setting the paramaters
         html_params = {
-            'database' : data['params']['db_initialize']
+            'database' : data['params']['db_initialize'],
+            'previousSubmission' : submittedAnswer
         }
             # Opens and renders mustache file into the question html
         with open('pl-relax-element.mustache', 'r', encoding='utf-8') as f:
@@ -107,7 +111,7 @@ def render(element_html, data):
         html_params = {
             'submission': True,
             'submissionAnswer': submittedAnswer,
-            'feedback' : data['params']['feedback']
+            'feedback' : data['params']['queryFeedback']
         }
         
         with open('pl-relax-submission.mustache', 'r', encoding='utf-8') as f:
@@ -142,8 +146,8 @@ def grade(element_html, data):
     data['partial_scores']['RelaXEditor'] = {
         'score': studentScore,
         'weight': 1,
-        'feedback': "test1",
-        'marker_feedback': "marker test1"
+        'feedback': "",
+        'marker_feedback': ""
     }
     
 

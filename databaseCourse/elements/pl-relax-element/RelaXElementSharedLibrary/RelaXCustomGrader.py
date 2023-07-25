@@ -15,9 +15,13 @@ threshold = 0.75
 # submitted answer.
 def customGrader(data):
     
-    
     feedback = True
-    outputScore = gradeQuery(data)
+    
+    if (data['params']['feedback'] is False):
+        feedback = False
+        data['params']['queryFeedback'] = "Your instructor has disabled feedback for this question."
+    
+    outputScore = gradeQuery(data, feedback)
     inputScore = 0
     
     submittedAnswer = data['submitted_answers']['RelaXEditor']
@@ -55,9 +59,9 @@ def customGrader(data):
         global inputScoreWeight
         inputScoreWeight = 0.85
         if (feedback):
-            data['params']['feedback'] = "Query was unable to execute. Scoring done through input matching. <br>"
-            data['params']['feedback'] += f"Input Score: {inputScore*100:.2f}% <br>"
-            data['params']['feedback'] += f"Execution Penalty: {outputScoreWeight*100:.2f}% <br>"
+            data['params']['queryFeedback'] = "Query was unable to execute. Scoring done through input matching. <br>"
+            data['params']['queryFeedback'] += f"Input Score: {inputScore*100:.2f}% <br>"
+            data['params']['queryFeedback'] += f"Execution Penalty: {outputScoreWeight*100:.2f}% <br>"
         outputScore = 0
         
     return (outputScore * outputScoreWeight + inputScore * inputScoreWeight)
@@ -69,10 +73,9 @@ def customGrader(data):
 def similar(a, b):
     return SequenceMatcher(None, a, b).ratio()
 
-def gradeQuery(data):
+def gradeQuery(data, feedback):
     
     score = 0
-    feedback = True
     
     # grading weight for each component of statement
     orderWeight = 0.05
@@ -139,11 +142,11 @@ def gradeQuery(data):
     order = "Correct" if orderScore == 1 else "Incorrect"
     
     if (feedback):
-        data['params']['feedback'] = "<em>Category: [actual / expected]</em>  <br>"
+        data['params']['queryFeedback'] = "<em>Category: [actual / expected]</em>  <br>"
         addFeedback(data, "rows", totalRowsSA, totalRowsCA)
         addFeedback(data, "columns", totalColsSA, totalColsCA)
         if missingCols:
-            data['params']['feedback'] += f"Missing columns: {missingCols}<br>"
+            data['params']['queryFeedback'] += f"Missing columns: {missingCols}<br>"
         addFeedback(data, "values", totalValuesSA, totalValuesCA)
         addFeedback(data, "order", order, "Correct")
 
@@ -282,4 +285,4 @@ def checkOrder(valueSA, valueCA):
 
 
 def addFeedback(data, category, submitted, correct):
-    data['params']['feedback'] += f"{category} : [{submitted} / {correct}] <br>"
+    data['params']['queryFeedback'] += f"{category} : [{submitted} / {correct}] <br>"
