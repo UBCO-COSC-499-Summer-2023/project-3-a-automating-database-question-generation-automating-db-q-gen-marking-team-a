@@ -84,8 +84,8 @@ def gradeQuery(data):
     submittedAnswer = data['submitted_answers']['RelaXEditor']
     correctAnswer = data['correct_answers']['RelaXEditor']
 
-    host_ip = "localhost"
-    url = f"http://{host_ip}:3000/ra_autoGrader"
+    #url = f"http://localhost:3000/ra_autoGrader"
+    url = data['params']['url']
 
     # Construct the data to be sent in the POST request
     data_to_send = {
@@ -95,28 +95,15 @@ def gradeQuery(data):
     }
     
     try:
-        
-        # print("Url:", url)
-        # print("Data: ",data_to_send)
 
         response = requests.get(url, json=data_to_send)
-        
-        # print("Response: ", response)
-        # print("Response status code:", response.status_code)
-        # print("Response text:", response.text)
 
         # Assuming the server returns JSON data containing the processed result
         response_data = response.json()
-        
-        #print("Response data: ", response_data)
 
         # Process the response data as needed
         queriedSA = response_data.get('queriedSA', None)
         queriedCA = response_data.get('queriedCA', None)
-
-
-        print("QueriedSA:", queriedSA)
-        print("QueriedCA:", queriedCA)
 
     except Exception as e:
         print("Error:", str(e))
@@ -260,21 +247,38 @@ def valueMatch(valueSA, valueCA):
     
     return valueData
 
+# checks if rows are ordered the same direction as the correct answer
 def orderMatch(valueSA, valueCA):
-    min_rows = min(len(valueSA), len(valueCA))
+    
+    numRowsSA = len(valueSA)
+    numRowsCA = len(valueCA)
+    
+    # if either list is empty, return 1
+    if numRowsSA or numRowsCA == 0: return 1
+    
+    # if either list has 1 row, return 1
+    if numRowsSA or numRowsCA == 1:
+        for rowCA in valueCA:
+            if rowCA in valueSA:
+                return 1
+    
+    return checkOrder(valueSA, valueCA)
 
-    for i in range(min_rows):
-        if valueSA[i] != valueCA[i]:
+#helper function for ordermatch
+def checkOrder(valueSA, valueCA):
+    # if ascending
+    if valueCA[0] < valueCA[:-1]:
+        if valueSA[0] < valueSA[:-1]:
+            return 1
+        else:
             return 0
-
-    # Check if there are any remaining rows in valueCA
-    if len(valueCA) > min_rows:
-        for i in range(min_rows, len(valueCA)):
-            # If any remaining row in valueCA is not an empty list, ordering is different
-            if valueCA[i]:
-                return 0
-
-    return 1
+    # if descending
+    elif valueCA[0] > valueCA[:-1]:
+        if valueSA[0] > valueSA[:-1]:
+            return 1
+        else :
+            return 0
+    
 
 
 def addFeedback(data, category, submitted, correct):

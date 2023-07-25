@@ -6,7 +6,7 @@
   <br>
   <img src="{{options.client_files_question_url}}/ra_q3.png" alt="The columns are Customer.id, Customer.cname, Customer.address, and Customer.state" class="expected-output-img">
 </pl-question-panel>
-<pl-relax-element database="./RelaXElementSharedLibrary/ShipmemtDatabase.txt" random="False" max-grade = "10">
+<pl-relax-element database="./RelaXElementSharedLibrary/ShipmemtDatabase.txt" random="False" max-grade = "10" url="http://localhost:3000/ra_autoGrader">
 
   <relax-answer>π pid,pname,price (σ price < 50 ∧ amount < 5 ∧ shipdate < Date('2014-05-17')(ShippedProduct⨝Product⨝Shipment))</relax-answer>
 

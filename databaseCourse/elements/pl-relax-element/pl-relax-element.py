@@ -31,8 +31,14 @@ def prepare(element_html, data):
     
     data['params']['database'] = database
     
+    #prepare the feedback parameter
     data['params']['feedback'] = ''
     
+    #get the url to execute relax from backend
+    url = pl.get_string_attrib(element, 'url', '')
+    data['params']['url'] = url
+    
+    #get the correct answer from question.html
     correctAnswer = lxml.html.fromstring(pl.inner_html(element[0])).text_content()
     data['correct_answers']['RelaXEditor'] = correctAnswer
 
@@ -132,8 +138,6 @@ def grade(element_html, data):
     # rather it must be placed within partial scores.
     # Updating final score is done automatically by PrairieLearn
     # based upon the partial scores.
-    
-    #data['params']['feedback'] = "bloop: test2"
     
     data['partial_scores']['RelaXEditor'] = {
         'score': studentScore,
