@@ -5,9 +5,6 @@ import requests
 outputScoreWeight = 0.85
 inputScoreWeight = 0.15
 
-# if query can't execute, receive penalty
-executionFailPenalty = 0.5
-
 #threshold for how close input matching needs to be for a correct answer
 #above which the student is given a score of 100%
 threshold = 0.75
@@ -19,14 +16,9 @@ threshold = 0.75
 def customGrader(data):
     
     
+    feedback = True
     outputScore = gradeQuery(data)
     inputScore = 0
-    
-    if outputScore == 0:
-        global outputScoreWeight
-        outputScoreWeight = 0.15
-        global inputScoreWeight
-        inputScoreWeight = 0.85
     
     submittedAnswer = data['submitted_answers']['RelaXEditor']
     correctAnswer = data['correct_answers']['RelaXEditor']
@@ -56,6 +48,17 @@ def customGrader(data):
     # similarity of 0 they recieve a score of 0. 
     else:
         inputScore = similarity / threshold
+        
+    if type(outputScore) == str:
+        global outputScoreWeight
+        outputScoreWeight = 0.15
+        global inputScoreWeight
+        inputScoreWeight = 0.85
+        if (feedback):
+            data['params']['feedback'] = "Query was unable to execute. Scoring done through input matching. <br>"
+            data['params']['feedback'] += f"Input Score: {inputScore*100:.2f}% <br>"
+            data['params']['feedback'] += f"Execution Penalty: {outputScoreWeight*100:.2f}% <br>"
+        outputScore = 0
         
     return (outputScore * outputScoreWeight + inputScore * inputScoreWeight)
 
@@ -117,10 +120,10 @@ def gradeQuery(data):
 
     except Exception as e:
         print("Error:", str(e))
-        return score
+        return "error"
     
     if ('error' in queriedSA or 'error' in queriedCA):
-        return score
+        return "error"
         
     #row matching
     rowData = rowMatch(queriedSA['rows'], queriedCA['rows'])
@@ -145,7 +148,8 @@ def gradeQuery(data):
     
     
     #order matching
-    orderScore = 0
+    orderScore = orderMatch(queriedSA['rows'], queriedCA['rows'])
+    order = "Correct" if orderScore == 1 else "Incorrect"
     
     if (feedback):
         data['params']['feedback'] = "<em>Category: [actual / expected]</em>  <br>"
@@ -153,11 +157,11 @@ def gradeQuery(data):
         addFeedback(data, "columns", totalColsSA, totalColsCA)
         if missingCols:
             data['params']['feedback'] += f"Missing columns: {missingCols}<br>"
-        addFeedback(data, "values", totalColsSA, totalValuesCA)
-        addFeedback(data, "order", "desc", "asc")
+        addFeedback(data, "values", totalValuesSA, totalValuesCA)
+        addFeedback(data, "order", order, "Correct")
 
     
-    score = (rowScore * rowWeight) + (colScore * colWeight) + (valueScore * valueMatchWeight) + orderScore
+    score = (rowScore * rowWeight) + (colScore * colWeight) + (valueScore * valueMatchWeight) + (orderScore * orderWeight)
     score = round(score, 2)
     return score
 
@@ -224,16 +228,33 @@ def colMatch(colsSA, colsCA):
 def valueMatch(valueSA, valueCA):
     
     totalValuesSA = 0
-    totalValuesCA = len(valueCA)
+    totalValuesCA = 0
+    commonValues = 0
+    
+    print("ValueCA:", valueCA)
+    print("ValueSA:", valueSA)
+    
+    # Calculate totalValuesCA - count all values in all lists of valueCA
+    for row in valueCA:
+        totalValuesCA += len(row)
+        
+    for row in valueSA:
+        totalValuesSA += len(row)
     
     #+1 point for each correct value
-    for x in valueCA:
-        if x in valueSA:
-            totalValuesSA += 1
+    # Calculate totalValuesSA - count the number of valueSA that exist in the rows of valueCA
+    for rowCA in valueCA:
+        for valueCA in rowCA:
+            if any(valueCA in rowSA for rowSA in valueSA):
+                commonValues += 1
+                
+    totalValuesSA = max(totalValuesSA, commonValues)
             
     missingVals = abs(totalValuesCA - totalValuesSA)
     correctVals = totalValuesCA - missingVals
     valueScore = correctVals / totalValuesCA
+    
+    print("ValueScore:", valueScore)
     
     valueData = {
         'score': valueScore,
@@ -242,6 +263,23 @@ def valueMatch(valueSA, valueCA):
     }
     
     return valueData
+
+def orderMatch(valueSA, valueCA):
+    min_rows = min(len(valueSA), len(valueCA))
+
+    for i in range(min_rows):
+        if valueSA[i] != valueCA[i]:
+            return 0
+
+    # Check if there are any remaining rows in valueCA
+    if len(valueCA) > min_rows:
+        for i in range(min_rows, len(valueCA)):
+            # If any remaining row in valueCA is not an empty list, ordering is different
+            if valueCA[i]:
+                return 0
+
+    return 1
+
 
 def addFeedback(data, category, submitted, correct):
     data['params']['feedback'] += f"{category} : [{submitted} / {correct}] <br>"
