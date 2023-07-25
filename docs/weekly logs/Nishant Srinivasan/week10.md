@@ -20,5 +20,9 @@
 - started on expected output preview
 
 ## Friday , July 21:
+- meeting with TA
+- got tables to show up for expected output preview
 
 ## Saturday , July 22:
+- working on chagning up ui for expected preview tables but decided to just leave it
+- went through and organized the boards and issues a little more
