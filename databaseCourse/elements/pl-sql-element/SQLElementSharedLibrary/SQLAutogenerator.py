@@ -649,7 +649,7 @@ def generateQuery(data, difficulty):
         questionString += ' and group'
     elif groupBy:
         questionString += '. Group'
-    else:
+    elif orderBy:
         questionString += '.'
 
     # Handles group by clause
@@ -706,7 +706,7 @@ def generateQuery(data, difficulty):
         questionString += ' and <em>only include distinct values</em>.'
     elif isDistinct:
         questionString += '. <em>Only include distinct values in the search</em>.'
-    else:
+    elif isDistinct:
         questionString += '.'
 
 
