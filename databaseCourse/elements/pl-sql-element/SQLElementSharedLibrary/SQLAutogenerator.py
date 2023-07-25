@@ -244,7 +244,7 @@ def generateUpdate(data, difficulty):
     updateValue = nd.generateNoisyData(table, updateColumn)[0]
 
     # If the quesiton should use a condition, set parameters
-    conditionalValues = getConditionalValues(queryClauses['conditional'], {table.name: table}, list(table.columns.keys()))
+    conditionalValues = getConditionalValues(queryClauses['conditional'], database, list(table.columns.keys()))
 
 
 
@@ -252,7 +252,7 @@ def generateUpdate(data, difficulty):
     questionString = f"From the table <b>{table.name}</b> and in the column <b>{updateColumn}</b>, change all values to be <b>{updateValue}</b>"
 
     # Keeps track of when to use 'and' vs 'or'
-    questionString, conditionalConnectors = questionConditionals(conditionalValues, questionString)
+    questionString, conditionalConnectors, conditionalComparators = questionConditionals(conditionalValues, questionString, database)
 
     # Adds subquery to question string
     # TODO: this
@@ -271,16 +271,16 @@ def generateUpdate(data, difficulty):
     data['params']['questionString'] = questionString
 
     # Loads the correct answer
-    data['correct_answers']['SQLEditor'] = updateStatement(table, updateColumn, updateValue, conditionalValues, conditionalConnectors, queryClauses['useSubquery'])
+    data['correct_answers']['SQLEditor'] = updateStatement(table, updateColumn, updateValue, conditionalValues, conditionalConnectors, conditionalComparators, queryClauses['useSubquery'])
 
 # Creates an update statement
-def updateStatement(table, updateColumn, updateValue, conditionalValues=None, conditionalConnectors={}, subquery=None):
+def updateStatement(table, updateColumn, updateValue, conditionalValues=None, conditionalConnectors={}, conditionalComparators={}, subquery=None):
 
     # Sets up the statement
     statement = f"UPDATE {table.name} SET {updateColumn} = '{updateValue}'"
 
     # Adds the conditionals
-    statement = statementConditionals(statement, conditionalValues, conditionalConnectors)
+    statement = statementConditionals(statement, conditionalValues, conditionalConnectors, conditionalComparators)
     
     # Add finishing touches and returns
     statement += ';\n'
@@ -329,7 +329,7 @@ def generateDelete(data, difficulty):
     database.generateRows(random.randint(3, 7))
 
     # If the quesiton should use a condition, set parameters
-    conditionalValues = getConditionalValues(queryClauses['conditional'], {table.name: table}, list(table.columns.keys()))
+    conditionalValues = getConditionalValues(queryClauses['conditional'], database, list(table.columns.keys()))
 
 
 
@@ -337,7 +337,7 @@ def generateDelete(data, difficulty):
     questionString = f"From the table <b>{table.name}</b>, delete all values"
 
     # Adds the 'WHERE's and such
-    questionString, conditionalConnectors = questionConditionals(conditionalValues, questionString)
+    questionString, conditionalConnectors, conditionalComparators = questionConditionals(conditionalValues, questionString, database)
 
     # Adds subquery to question string
     # TODO: this
@@ -356,16 +356,16 @@ def generateDelete(data, difficulty):
     data['params']['questionString'] = questionString
 
     # Sets the correct answer
-    data['correct_answers']['SQLEditor'] = deleteStatement(table, conditionalValues, conditionalConnectors, queryClauses['useSubquery'])
+    data['correct_answers']['SQLEditor'] = deleteStatement(table, conditionalValues, conditionalConnectors, conditionalComparators, queryClauses['useSubquery'])
 
 # Creates a delete statement
-def deleteStatement(table, conditionalValues=None, conditionalConnectors={}, subquery=None):
+def deleteStatement(table, conditionalValues=None, conditionalConnectors={}, conditionalComparators={}, subquery=None):
 
     # Sets up the statement
     statement = f"DELETE FROM {table.name}"
 
     # Adds the conditionals
-    statement = statementConditionals(statement, conditionalValues, conditionalConnectors)
+    statement = statementConditionals(statement, conditionalValues, conditionalConnectors, conditionalComparators)
     
     # Add finishing touches and returns
     statement += ';\n'
@@ -446,12 +446,12 @@ def generateQuery(data, difficulty):
     #           $columnNames
     #       ]
     #   }
-    selectedColumns = selectColumns(columnsToSelect, tableMap)
+    selectedColumns = selectColumns(columnsToSelect, database)
 
 
 
     # Obtains the conditional values
-    conditionalValues = getConditionalValues(conditionals, tableMap, restrictive=False)
+    conditionalValues = getConditionalValues(conditionals, database, restrictive=False)
 
 
 
@@ -501,7 +501,7 @@ def generateQuery(data, difficulty):
     #   havingColumns {
     #       $column: $value
     #   }
-    havingColumns = getConditionalValues(having, tableMap, groupByColumnList, restrictive=False)
+    havingColumns = getConditionalValues(having, database, groupByColumnList, restrictive=False)
 
 
 
@@ -572,7 +572,7 @@ def generateQuery(data, difficulty):
 
 
     # Adds the conditionals
-    questionString, conditionalConnectors = questionConditionals(conditionalValues, questionString)
+    questionString, conditionalConnectors, conditionalComparators = questionConditionals(conditionalValues, questionString, database)
 
     # Finishes the sentence
     questionString += '.'
@@ -671,6 +671,7 @@ def generateQuery(data, difficulty):
 
     # Handles having clause
     havingConnectors = {}
+    havingComparators = {}
     if having:
 
         # Removes the period
@@ -678,7 +679,7 @@ def generateQuery(data, difficulty):
 
         # Gets the string, removes the leading 'where'
         # and adds it to the question string
-        havingString, havingConnectors = questionConditionals(havingColumns)
+        havingString, havingConnectors, havingComparators = questionConditionals(havingColumns, database=database)
         questionString += havingString[6:]
 
         
@@ -718,12 +719,12 @@ def generateQuery(data, difficulty):
     data['params']['questionString'] = questionString
     
     # Sets the correct answer
-    data['correct_answers']['SQLEditor'] = queryStatement(database, selectedColumns, joinTypes, conditionalValues, conditionalConnectors, orderByColumns, groupByColumns, havingColumns, havingConnectors, withColumns, limit, isDistinct)
+    data['correct_answers']['SQLEditor'] = queryStatement(database, selectedColumns, joinTypes, conditionalValues, conditionalConnectors, conditionalComparators, orderByColumns, groupByColumns, havingColumns, havingConnectors, havingComparators, withColumns, limit, isDistinct)
 
 
 
 # Creates a query
-def queryStatement(database, selectedColumns, joinTypes={}, conditionalValues={}, conditionalConnectors={}, orderByColumns={}, groupByColumns={}, havingColumns={}, havingConnectors={}, withColumns={}, limit=0, isDistinct=False):
+def queryStatement(database, selectedColumns, joinTypes={}, conditionalValues={}, conditionalConnectors={}, conditionalComparators={}, orderByColumns={}, groupByColumns={}, havingColumns={}, havingConnectors={}, havingComparators={}, withColumns={}, limit=0, isDistinct=False):
     
     table = database.primaryTable
     keyMap = table.getKeyMap()
@@ -771,7 +772,7 @@ def queryStatement(database, selectedColumns, joinTypes={}, conditionalValues={}
 
     # Adds the conditional values
     if conditionalValues:
-        queryString = statementConditionals(queryString, conditionalValues, conditionalConnectors, clauseType='')
+        queryString = statementConditionals(queryString, conditionalValues, conditionalConnectors, conditionalComparators, clauseType='')
     
     # Removes the WHERE clause if necessary
     if 'WHERE' in queryString[-6:]:
@@ -797,7 +798,7 @@ def queryStatement(database, selectedColumns, joinTypes={}, conditionalValues={}
     # Adds the having clause
     if havingColumns:
         queryString += '\n'
-        queryString = statementConditionals(queryString, havingColumns, havingConnectors, 'HAVING')
+        queryString = statementConditionals(queryString, havingColumns, havingConnectors, havingComparators, 'HAVING')
 
 
 
@@ -827,29 +828,19 @@ def queryStatement(database, selectedColumns, joinTypes={}, conditionalValues={}
 
 
 
-# A simle list of all tables
-def getColumnList(tableMap):
+# A simle list of all tables.
+# Will return a list of column names (as strings) by
+# default, otherwise it will return the columns themselves
+def getColumnList(tableMap, columnNames=True):
     columnList = []
     for key in tableMap:
-        columnList += [column for column in tableMap[key].columns]
+        if columnNames:
+            columnList += [column for column in tableMap[key].columns]
+        else:
+            columnList += [tableMap[key].columns[column] for column in tableMap[key].columns]
     return columnList
 
-# Column map is the opposite of tableMap. Given a column,
-# it returns the table it originated from.
-#   columnMap {
-#       $columnName: $table
-#   }
-def getColumnMap(tableMap, tableNames=True):
-    columnMap = {}
-    for key in tableMap:
-        for column in tableMap[key].columns:
-            if tableNames:
-                columnMap[column] = tableMap[key].name
-            else:
-                columnMap[column] = tableMap[key]
-    return columnMap
-
-def selectColumns(columnsToSelect, tableMap):
+def selectColumns(columnsToSelect, database):
 
     # Gets a list of all columns, where the key is the 
     # column name and the value is the table name. Since
@@ -858,7 +849,7 @@ def selectColumns(columnsToSelect, tableMap):
     #   allColumns {
     #       $columnName: $tableName
     #   }
-    columnMap = getColumnMap(tableMap)
+    columnMap = database.getColumnMap()
 
 
 
@@ -945,32 +936,73 @@ def conditionalStatement(column, condition):
     return f"WHERE {column} = '{condition}'"
 
 # Adds a set of conditionals to a question string
-def questionConditionals(conditionalValues, string=''):
+def questionConditionals(conditionalValues, string='', database=None):
     
     # If there aren't any conditionals, just return
     if not conditionalValues:
         return string, {}
 
 
+    if database:
+        columnMap = database.getColumnMap(tableNames=False)
+
     # Adds the 'where' if necessary
     string += ' where'
     
+    # Keeps track of when to use which comparisons:
+    # `>`, `<`, `>=`, `<=`, `!=`, `=`
+    conditionalComparators = {}
+
     # Keeps track of when to use 'and' vs 'or'
     conditionalConnectors = {}
 
+
     for key in conditionalValues.keys():
-        string += f" <b>{key}</b> equals <b>{conditionalValues[key]}</b>"
-    
+
+        # Selects the comparison operator.
+        # Drastically prefers comparison operators that will return
+        # many values even when the column is unique. Also is biased
+        # against `!=` since, unlike for CHAR and VARCHAR, the value
+        # has no guarantee of being in conditionalValues, so a query
+        # with `WHERE $col != $val` will often be equivalent to the
+        # cluase's absence
+        if columnMap and columnMap[key].columns[key]['unit'] in ['INTEGER', 'DECIMAL', 'DATE', 'DATETIME']:
+            conditionalComparators[key] = random.choices(['>', '>=', '<', '<=', '=', '!='], [5, 5, 5, 5, 2, 1])[0]
+        
+        # Weights `!=` as less likely mainly because it looks worse
+        else:
+            conditionalComparators[key] = random.choices(['=', '!='], [2, 1])[0]
+
         # Randomly chooses a logical operator to
         # connect the conditionals. Prefers to use
         # 'or's since they result in more rows
         conditionalConnectors[key] = random.choices(['OR', 'AND'], [2, 1])[0]
 
+
+
+        # Adds the column
+        string += f" <b>{key}</b>"
+
+        # Adds the appropraite comparing operator
+        match conditionalComparators[key]:
+            case '>': string += ' <em>is greater than</em>'
+            case '>=': string += ' <em>is greater than or equal to</em>'
+            case '<': string += ' <em>is less than</em>'
+            case '<=': string += ' <em>is less than or equal to</em>'
+            case '=': string += ' <em>is equal to</em>'
+            case '!=': string += ' <em>is not equal to</em>'
+        
+        # Adds the value
+        string += f" <b>{conditionalValues[key]}</b>"
+
+        # Adds the logical operator
         if conditionalConnectors[key] == 'OR':
             string += ' or'
         else:
             string += ' and'
     
+
+
     # Removes the trailing connector.
     # This isn't as efficient as I would prefer, but
     # I was getting an odd issue on other approaches
@@ -979,10 +1011,10 @@ def questionConditionals(conditionalValues, string=''):
     while string[-1] != '>':
         string = string[:-1]
     
-    return string, conditionalConnectors
+    return string, conditionalConnectors, conditionalComparators
 
 # Adds a set of conditionals to a statement
-def statementConditionals(statement='', conditionalValues={}, conditionalConnectors={}, clauseType=' WHERE'):
+def statementConditionals(statement='', conditionalValues={}, conditionalConnectors={}, conditionalComparators={}, clauseType=' WHERE'):
     
     # If there aren't any conditionals, just return
     if not conditionalValues:
@@ -993,7 +1025,7 @@ def statementConditionals(statement='', conditionalValues={}, conditionalConnect
     # Includes the conditional if they exist as
     # well as the condtional connector
     for key in conditionalValues:
-        statement += f" {key} = '{conditionalValues[key]}' {conditionalConnectors[key]}"
+        statement += f" {key} {conditionalComparators[key]} '{conditionalValues[key]}' {conditionalConnectors[key]}"
 
     # Removes trailing 'OR' or 'AND' if necessary
     if statement[-3] == ' ':
@@ -1009,34 +1041,65 @@ def statementConditionals(statement='', conditionalValues={}, conditionalConnect
 #   conditionalValues {
 #       $column: $value
 #   }
-def getConditionalValues(conditionals, tableMap, columnList=[], restrictive=True):
+def getConditionalValues(conditionals, database, columnList=[], restrictive=True):
 
     # Holds the values
     conditionalValues = {}
 
     # Maps column name to its table
-    columnMap = getColumnMap(tableMap, tableNames=False)
+    columnMap = database.getColumnMap(tableNames=False)
 
     # Gets a list of all columns present between
     # the provided tables, if it was not provided
     if not columnList:
-        columnList = getColumnList(tableMap)
+        columnList = getColumnList(database.getTableMap())
 
     # A list from 0 to n where n is the number of rows.
     # The `.values()` and `list()[0]` is to just get the
     # 'first' item in the dictionary
     indexList = [i for i in range(len(list(list(columnMap.values())[0].rows.values())[0]))]
 
+    # Creates weights for each column, drastically
+    # preferring INTEGER, DECIMAL, DATE, and DATETIME 
+    # columns. This is to improve query results since 
+    # these data types support more comparisons than
+    # the restrictive `=`
+    weights = [90 if columnMap[column].columns[column]['unit'] in ['INTEGER', 'DECIMAL', 'DATE', 'DATETIME'] else 10 for column in columnList]
+
+
+
     # Iterates over the amount of conditionals
     while len(conditionalValues) < conditionals:
 
         # Selects a random column to affect.
-        conditionalColumn = nd.popRandom(columnList)
+        conditionalColumn = nd.popRandom(columnList, weights)
         
         # Prevents a selection of a column that is both foreign
         # and does not update on cascade, only if 'restrictive'
         if restrictive and columnMap[conditionalColumn].columns[conditionalColumn]['references'] and not columnMap[conditionalColumn].columns[conditionalColumn]['isOnUpdateCascade']:
             continue
+
+        
+        # If the column can support querries of the form 
+        # `>`, `<`, `>=`, `<=`, then create a random value
+        # to place in conditionalValues
+        if columnMap[conditionalColumn].columns[conditionalColumn]['unit'] in ['INTEGER', 'DECIMAL', 'DATE', 'DATETIME']:
+
+            # Generate a handful of random values of the appropriate
+            # type and sort them
+            vals = sorted(nd.generateNoisyDataNoFile(columnMap[conditionalColumn], conditionalColumn, 10, True))
+
+            # Return the middle value. Since the list was sorted, the
+            # middle value is also the median value. Since an even number
+            # of items were created, this is biased towards smaller numbers,
+            # but only slightly
+            conditionalValues[conditionalColumn] = vals[len(vals) // 2]
+
+            # Skips the rest of the loop, since we don't want to override this
+            # value with an existing one, as through the lines below
+            continue
+
+
             
         # Chooses a random value from the generated data to be updated
         randomValueIndex = nd.popRandom(indexList)

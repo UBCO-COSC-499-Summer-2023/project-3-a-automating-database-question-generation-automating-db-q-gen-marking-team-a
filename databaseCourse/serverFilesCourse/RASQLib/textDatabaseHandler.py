@@ -179,6 +179,29 @@ class Database:
     
 
 
+    def getTableMap(self):
+        keyMap = self.primaryTable.getKeyMap()
+        tableMap = {key: self.referencedTables[keyMap[key]['references']] for key in keyMap}
+        tableMap[self.primaryTable.name] = self.primaryTable
+        return tableMap
+
+    # Column map is the opposite of tableMap. Given a column,
+    # it returns the table it originated from.
+    #   columnMap {
+    #       $columnName: $table
+    #   }
+    def getColumnMap(self, tableNames=True):
+        tableMap = self.getTableMap()
+        columnMap = {}
+        for key in tableMap:
+            for column in tableMap[key].columns:
+                if tableNames:
+                    columnMap[column] = tableMap[key].name
+                else:
+                    columnMap[column] = tableMap[key]
+        return columnMap
+
+
     # Prints the schema of all tables in the database
     def __str__(self):
         if self.isSQL:
