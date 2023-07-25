@@ -710,7 +710,7 @@ def generateQuery(data, difficulty):
     elif isDistinct:
         questionString += '.'
 
-
+    generateSubquery(database)
 
     # Loads database
     database.loadDatabase(data)
@@ -825,6 +825,102 @@ def queryStatement(database, selectedColumns, joinTypes={}, conditionalValues={}
 
     # Returns, appending the finishing touches
     return queryString + ";\n"
+
+
+
+# Creates a subquery
+def generateSubquery(database):
+
+    # Grabs some parameters for easy referencing
+    table = database.primaryTable
+    referenced = database.referencedTables
+
+    keyMap = table.getKeyMap()
+    tableMap = database.getTableMap()
+    columnMap = database.getColumnMap(tableNames=False)
+
+    #tableMap = {key: self.referencedTables[keyMap[key]['references']] for key in keyMap}
+    # All columns that are in the database but not in
+    # the primary table
+    foreignColumnList = [column for column in columnMap if column not in table.columns]
+
+
+    
+    # Assigns weights to columns by data type. If the
+    # data type is not present, it gets a weight of 100.
+    #   - INTEGER and DECIMAL have plenty of interesting
+    #     functions, such as SUM() so they get the highest
+    #     weighting
+    #   - VARCHAR has LENGTH() and COUNT() so it's not bad
+    #   - CHAR, DATE, and DATETIME only have COUNT() so
+    #     they get the smallest weight
+    weightMap = {
+        'INTEGER': 200,
+        'DECIMAL': 200,
+        'VARCHAR': 75,
+        'CHAR': 25,
+        'DATE': 25,
+        'DATETIME': 25
+    }
+    weights = [weightMap[columnMap[column].columns[column]['unit']] if columnMap[column].columns[column]['unit'] in weightMap else 100 for column in foreignColumnList]
+
+    # Selects a random column based on the weights
+    selectedColumn = random.choices(foreignColumnList, weights)[0]
+
+
+
+    # Holds the operator and function
+    comparisonOperator = ''
+    queryFunction = ''
+    
+
+
+    # There's a small chance to eschew caring about the datatype
+    # and instead use an `IN (SELECT ...)`
+    if random.random() * 10 < 1:
+
+        # ...And another less small chance to use conditionals
+        # on this type of subquery
+        if random.random() * 3 < 1:
+            pass
+
+        return subqueryStatement('IN', selectedColumn, columnMap[selectedColumn].name)
+
+
+    # Chooses 
+    if columnMap[selectedColumn].columns[selectedColumn]['unit'] in ['INTEGER', 'DECIMAL']:
+        pass
+
+    if columnMap[selectedColumn].columns[selectedColumn]['unit'] in ['DATE', 'DATETIME']:
+        pass
+
+    if columnMap[selectedColumn].columns[selectedColumn]['unit'] in ['VARCHAR']:
+        pass
+
+    statement = subqueryStatement(comparisonOperator, selectedColumn, columnMap[selectedColumn].name, queryFunction)
+    print(statement)
+
+
+    # INTEGER functions
+    #AVG() – returns the average value of a group.
+    #COUNT() – returns the number of rows that match a specified condition
+    #MAX() – returns the maximum value in a group.
+    #MIN() – returns the minimum value in a group
+    #SUM() – returns the sum of values
+
+    # STRING functions
+    #LENGTH()
+
+    # Select column
+
+    # Select function (if function)
+
+    # Select comparator based on column data type
+
+    # Build subquery
+
+def subqueryStatement(comparisonOperator, selectedColumnName, tableName, queryFunction=''):
+    return f" {comparisonOperator} (SELECT {queryFunction}({selectedColumnName}) FROM {tableName})" if queryFunction else f" {comparisonOperator} (SELECT {selectedColumnName} FROM {tableName})"
 
 
 
