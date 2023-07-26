@@ -219,7 +219,6 @@ def generateUpdate(data, difficulty):
             database = db.Database(file=loadTrimmedTable(random.randint(5, 8)), columns=0, random=False)
             queryClauses['conditional'] = 0
             queryClauses['useSubquery'] = True
-            return None # Not yet implemented; first requires quesryStatement() to be completed
         
         case _:
             database = db.Database(columns=columns, joins=joins, clauses=tableClauses)
@@ -254,13 +253,16 @@ def generateUpdate(data, difficulty):
     # Keeps track of when to use 'and' vs 'or'
     questionString = questionConditionals(conditionalValues, questionString, database)
 
-    # Adds subquery to question string
-    # TODO: this
-    if queryClauses['useSubquery']:
-        questionString += f""
-
     # Finishes the sentence
     questionString += "."
+
+
+
+    # Adds subquery to question string
+    subquery = ''
+    if queryClauses['useSubquery']:
+        subquery, subqueryString = generateSubquery(database)
+        questionString += f" {subqueryString}"
 
 
 
@@ -271,16 +273,22 @@ def generateUpdate(data, difficulty):
     data['params']['questionString'] = questionString
 
     # Loads the correct answer
-    data['correct_answers']['SQLEditor'] = updateStatement(table, updateColumn, updateValue, conditionalValues, queryClauses['useSubquery'])
+    data['correct_answers']['SQLEditor'] = updateStatement(table, updateColumn, updateValue, conditionalValues, subquery)
 
 # Creates an update statement
-def updateStatement(table, updateColumn, updateValue, conditionalValues=None, subquery=None):
+def updateStatement(table, updateColumn, updateValue, conditionalValues=None, subquery=''):
 
     # Sets up the statement
     statement = f"UPDATE {table.name} SET {updateColumn} = '{updateValue}'"
 
     # Adds the conditionals
     statement = statementConditionals(statement, conditionalValues)
+
+    # Adds the subquery
+    if 'WHERE' in statement:
+        statement += f" AND {subquery}"
+    else:
+        statement += f" WHERE {subquery}"
     
     # Add finishing touches and returns
     statement += ';\n'
@@ -317,7 +325,6 @@ def generateDelete(data, difficulty):
             database = db.Database(file=loadTrimmedTable(random.randint(5, 8)), columns=0, random=False)
             queryClauses['conditional'] = 0
             queryClauses['useSubquery'] = True
-            return None # Not yet implemented; first requires quesryStatement() to be completed
         
         case _:
             database = db.Database(columns=columns, joins=joins, clauses=tableClauses)
@@ -338,14 +345,17 @@ def generateDelete(data, difficulty):
 
     # Adds the 'WHERE's and such
     questionString = questionConditionals(conditionalValues, questionString, database)
-
-    # Adds subquery to question string
-    # TODO: this
-    if queryClauses['useSubquery']:
-        questionString += f""
     
     # Finishes the sentence
     questionString += "."
+
+
+
+    # Adds subquery to question string
+    subquery = ''
+    if queryClauses['useSubquery']:
+        subquery, subqueryString = generateSubquery(database)
+        questionString += f" {subqueryString}"
 
 
 
@@ -356,16 +366,22 @@ def generateDelete(data, difficulty):
     data['params']['questionString'] = questionString
 
     # Sets the correct answer
-    data['correct_answers']['SQLEditor'] = deleteStatement(table, conditionalValues, queryClauses['useSubquery'])
+    data['correct_answers']['SQLEditor'] = deleteStatement(table, conditionalValues, subquery)
 
 # Creates a delete statement
-def deleteStatement(table, conditionalValues=None, subquery=None):
+def deleteStatement(table, conditionalValues=None, subquery=''):
 
     # Sets up the statement
     statement = f"DELETE FROM {table.name}"
 
     # Adds the conditionals
     statement = statementConditionals(statement, conditionalValues)
+
+    # Adds the subquery
+    if 'WHERE' in statement:
+        statement += f" AND {subquery}"
+    else:
+        statement += f" WHERE {subquery}"
     
     # Add finishing touches and returns
     statement += ';\n'
