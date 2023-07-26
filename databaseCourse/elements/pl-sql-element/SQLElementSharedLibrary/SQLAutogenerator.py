@@ -1046,16 +1046,14 @@ def subqueryQuestionString(database, conditionalColumn, comparisonOperator, sele
         case '!=': questionString += ' <em>is not equal to</em>'
         case 'IN': questionString += ' <em>are in</em>'
 
-    questionString += ' the'
-
     # Adds the query function
     if queryFunction:
         match queryFunction:
-            case 'COUNT': questionString += ' <em>count of</em>'
-            case 'MAX': questionString += ' <em>maximum value of</em>>'
-            case 'MIN': questionString += ' <em>minimum value of</em>'
-            case 'LENGTH': questionString += ' <em>length of</em>'
-            case '': questionString += ' <em>set of</em>'
+            case 'COUNT': questionString += ' the <em>count of</em>'
+            case 'MAX': questionString += ' the <em>maximum value of</em>>'
+            case 'MIN': questionString += ' the <em>minimum value of</em>'
+            case 'LENGTH': questionString += ' the <em>length of</em>'
+            case '': questionString += ' the <em>set of</em>'
     
     # Adds the selected column
     questionString += f" <b>{selectedColumnName}</b>"
