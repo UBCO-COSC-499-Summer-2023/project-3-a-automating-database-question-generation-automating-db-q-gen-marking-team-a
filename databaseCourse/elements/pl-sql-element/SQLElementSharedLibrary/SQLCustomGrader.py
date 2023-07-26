@@ -522,4 +522,4 @@ def valueMatch(expectedAns,actualAns):
     return matchScore
 
 def addFeedback(data, category, categoryScore):
-    data['params']['feedback'] += f"{category} : {abs(round((categoryScore*100),2))}"+"%<br>"
+    data['params']['feedback'] += f"{category} : {(round((categoryScore*100),2))}"+"%<br>"
