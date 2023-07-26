@@ -892,6 +892,7 @@ def generateSubquery(database):
         conditionalValues = getConditionalValues(random.choices([1, 2, 3], [100, 10, 1])[0], columnList=[column for column in columnMap[selectedColumn].columns], restrictive=False)
 
 
+
     # INTEGERs and DECIMALs
     if columnMap[selectedColumn].columns[selectedColumn]['unit'] in ['INTEGER', 'DECIMAL']:
 
@@ -917,6 +918,7 @@ def generateSubquery(database):
         queryFunction = random.choices(['COUNT', 'MAX', 'MIN'], [1, 1, 1] if not conditionalValues else [1, 3, 3])[0]
 
 
+
     # VARCHARs
     if columnMap[selectedColumn].columns[selectedColumn]['unit'] in ['VARCHAR']:
         
@@ -926,6 +928,16 @@ def generateSubquery(database):
         # weight. Conditional values doesn't affect either 
         # function much
         queryFunction = random.choices(['COUNT', 'LENGTH'], [1, 6])[0]
+
+    
+
+    # CHARs
+    if columnMap[selectedColumn].columns[selectedColumn]['unit'] in ['CHAR']:
+
+        # Selects an appropraite function.
+        # Either it's the count, or we do an 'IN' subquery.
+        # The latter is a better option
+        queryFunction = random.choices(['COUNT', ''], [1, 3])[0]
 
 
 
@@ -946,6 +958,11 @@ def generateSubquery(database):
     elif queryFunction in ['LENGTH']:
         comparisonOperator = random.choices('>', '>=', '<', '<=', '=', '!=', [2, 2, 2, 2, 1, 1])[0]
 
+    # If the rows aren't aggregate, then we have to use the
+    # 'IN' clause
+    elif queryFunction == '':
+        comparisonOperator = 'IN'
+
     # No chance of the 'equals'
     else:
         comparisonOperator = random.choices('>', '>=', '<', '<=', '=', '!=', [1, 1, 1, 1, 0, 0])[0]
@@ -955,9 +972,6 @@ def generateSubquery(database):
     print(statement)
 
     return statement
-
-    # STRING functions
-    #LENGTH()
 
 def subqueryStatement(comparisonOperator, selectedColumnName, tableName, queryFunction='', conditionalValues={}):
 
