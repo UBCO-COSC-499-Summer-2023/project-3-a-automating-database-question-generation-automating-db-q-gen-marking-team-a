@@ -286,9 +286,9 @@ def updateStatement(table, updateColumn, updateValue, conditionalValues=None, su
 
     # Adds the subquery
     if 'WHERE' in statement:
-        statement += f" AND {subquery}"
+        statement += " AND" + subquery
     else:
-        statement += f" WHERE {subquery}"
+        statement += " WHERE" + subquery
     
     # Add finishing touches and returns
     statement += ';\n'
@@ -379,9 +379,9 @@ def deleteStatement(table, conditionalValues=None, subquery=''):
 
     # Adds the subquery
     if 'WHERE' in statement:
-        statement += f" AND {subquery}"
+        statement += " AND" + subquery
     else:
-        statement += f" WHERE {subquery}"
+        statement += " WHERE" + subquery
     
     # Add finishing touches and returns
     statement += ';\n'
