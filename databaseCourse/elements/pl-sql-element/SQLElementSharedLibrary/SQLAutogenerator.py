@@ -251,7 +251,7 @@ def generateUpdate(data, difficulty):
     questionString = f"From the table <b>{table.name}</b> and in the column <b>{updateColumn}</b>, change all values to be <b>{updateValue}</b>"
 
     # Keeps track of when to use 'and' vs 'or'
-    questionString = questionConditionals(conditionalValues, questionString, database)
+    questionString = questionConditionals(conditionalValues, questionString)
 
     # Finishes the sentence
     questionString += "."
@@ -344,7 +344,7 @@ def generateDelete(data, difficulty):
     questionString = f"From the table <b>{table.name}</b>, delete all values"
 
     # Adds the 'WHERE's and such
-    questionString = questionConditionals(conditionalValues, questionString, database)
+    questionString = questionConditionals(conditionalValues, questionString)
     
     # Finishes the sentence
     questionString += "."
@@ -588,7 +588,7 @@ def generateQuery(data, difficulty):
 
 
     # Adds the conditionals
-    questionString = questionConditionals(conditionalValues, questionString, database)
+    questionString = questionConditionals(conditionalValues, questionString)
 
     # Finishes the sentence
     questionString += '.'
@@ -702,7 +702,7 @@ def generateQuery(data, difficulty):
 
         # Gets the string, removes the leading 'where'
         # and adds it to the question string
-        havingString = questionConditionals(havingColumns, database=database)
+        havingString = questionConditionals(havingColumns)
         questionString += havingString[6:]
 
         
@@ -1062,7 +1062,7 @@ def subqueryQuestionString(database, conditionalColumn, comparisonOperator, sele
 
     # If present, adds the conditional values
     if conditionalValues:
-        questionString = questionConditionals(conditionalValues, questionString, database)
+        questionString = questionConditionals(conditionalValues, questionString)
     
     # Finishes the sentence
     questionString += '.'
@@ -1207,16 +1207,12 @@ def conditionalStatement(column, condition):
     return f"WHERE {column} = '{condition}'"
 
 # Adds a set of conditionals to a question string
-def questionConditionals(conditionalValues, string='', database=None):
+def questionConditionals(conditionalValues, string=''):
     
     # If there aren't any conditionals, just return
     if not conditionalValues:
         return string, {}
-
-    # Gets the column map
-    if database:
-        columnMap = database.getColumnMap(tableNames=False)
-
+    
 
 
     # Adds the 'where' if necessary
