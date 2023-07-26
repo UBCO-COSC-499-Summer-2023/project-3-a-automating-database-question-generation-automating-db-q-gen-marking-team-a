@@ -16,6 +16,8 @@ from RASQLib import noisyData as nd
 class Database:
     def __init__(self, isSQL=True, file='', columns=5, joins=0, depth=3, clauses={}, constraints={'': {'name': '', 'unit': 'INTEGER', 'unitOther': None}}, rows=0, random=True):
 
+        
+
         self.isSQL = isSQL
 
         # For SQL databases
@@ -35,12 +37,13 @@ class Database:
         
         # For RelaX databases
         else:
-            self.generateTableSet(columns=columns, joins=joins, depth=depth, rows=rows)
+            tableNames = getRandomTableNames()
+            self.generateTableSet(columns=columns, joins=joins, depth=depth, rows=rows, tableNames=tableNames)
             
         
 
     # Generates a table set for RelaX
-    def generateTableSet(self, columns=5, joins=5, depth=3, rows=0) -> dict:
+    def generateTableSet(self, columns=5, joins=5, depth=3, rows=0, tableNames=None) -> dict:
 
         # Gets a list of possible table names
         #possibleColumns = self.parseColumnsFromFile('randomColumns')
@@ -48,7 +51,7 @@ class Database:
         
         # The primary table should have more columns
         for i in range(joins + 1):
-            table = Table(columns=columns, joins=0, isSQL=False)
+            table = Table(columns=columns, joins=0, isSQL=False, tableNames=tableNames)
             self.tableSet[table.name] = table 
 
         # Populates the table with data
@@ -61,7 +64,7 @@ class Database:
 
         # Ensures that index issue doesnt happen
         if depth > joins:
-            depth = joins
+            depth = joins-1
 
         for i in range(len(keyList[:depth-1])):
            self.tableSet[keyList[i]].link(self.tableSet[keyList[i+1]])
@@ -70,7 +73,11 @@ class Database:
         if joins == len(keyList):
             joins-=1
         for i in range(depth, joins+1):
-            self.tableSet[keyList[randint(0,depth-1)]].link(self.tableSet[keyList[i]])
+            if i == len(self.tableSet):
+                break
+            randIndex = randint(0,depth-1)
+            print(f"{randIndex}/ {depth-1}/ {i}\n{joins+1}/ {len(keyList)}/ {len(self.tableSet)}")
+            self.tableSet[keyList[randIndex]].link(self.tableSet[keyList[i]])
 
 
         # For relax, Foreign keys are created by having the same column name
@@ -192,7 +199,7 @@ class Table:
     # File name and table name are equivalent.
     #   File: the name of the text file if it exists OR the name of the random table
     #   Columns: the number of columns in the table
-    def __init__(self, file='', columns=5, joins=0, clauses={}, constraints={}, rows=0, database=None, isSQL=True, random=True):
+    def __init__(self, file='', columns=5, joins=0, clauses={}, constraints={}, rows=0, database=None, isSQL=True, random=True, tableNames=None):
         self.name = file
         self.database = database
         self.columns = {}
@@ -209,7 +216,7 @@ class Table:
                 constraints = {'': {'name': '', 'unit': 'NUMBER', 'unitOther': None}}
 
         # Adds columns
-        self.load(file, columns, joins, clauses, constraints, random)
+        self.load(file, columns, joins, clauses, constraints, random, tableNames)
 
         # Adds data
         self.generateRows(rows)
@@ -221,12 +228,12 @@ class Table:
     # random tables, not static tables; for random tables.
     # f"{file}" will become the table name if it is
     # provided, otherwise a random name will be chosen
-    def load(self, file, columns, joins, clauses, constraints, random):
+    def load(self, file, columns, joins, clauses, constraints, random, tableNames):
 
         if not random:
             self.loadFromText(file)
         else:
-            self.loadRandom(self.name, columns, joins, clauses, constraints)
+            self.loadRandom(self.name, columns, joins, clauses, constraints, tableNames)
 
     # Given the path to a text file, loads its data
     def loadFromText(self, file):
@@ -332,7 +339,7 @@ class Table:
 
 
     # Creates a random table
-    def loadRandom(self, name, columns, joins, clauses, constraints):
+    def loadRandom(self, name, columns, joins, clauses, constraints, tableNames):
 
         # Checks whether the parameters are legal
         #
@@ -393,7 +400,9 @@ class Table:
 
         # Selects a random name if none are provided
         if not name:
-            self.name = choice(getRandomTableNames())
+            self.name = tableNames.pop(choice(range(len(tableNames))))
+
+
 
         # Gets the columns used to build a table
         possibleColumns = None
@@ -587,6 +596,9 @@ class Table:
     # Used with RelaX
     def link(self, foreignTable):     
         column = (choice(list(self.columns.keys())))
+        while self.columns[column]['references']:
+            column = (choice(list(self.columns.keys())))
+    
         foreignTable.columns[column] = {
             'name' : column,
             'unit' : self.columns[column]['unit'],
@@ -879,6 +891,7 @@ class Table:
 
 # Returns the file path to the table file
 def relativeTableFilePath(file):
+    print(f"{absoluteDirectoryPath()}/randomTables/{file}.txt")
     return f"{absoluteDirectoryPath()}/randomTables/{file}.txt"
 
 # Returns the file path to the table metadata file
@@ -891,6 +904,8 @@ def absoluteDirectoryPath():
 
     if 'RASQLib' in currentDirectory:
         return currentDirectory
+    elif 'home/matthewo' in currentDirectory:
+        return f"{currentDirectory}/databaseCourse/serverFilesCourse/RASQLib"
     else:
         courseFile = currentDirectory[:currentDirectory.find('/elements')]
         return f"{courseFile}/serverFilesCourse/RASQLib"
