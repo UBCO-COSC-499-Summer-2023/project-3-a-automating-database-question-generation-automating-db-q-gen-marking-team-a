@@ -868,33 +868,57 @@ def generateSubquery(database):
     # Selects a random column based on the weights
     selectedColumn = random.choices(foreignColumnList, weights)[0]
 
-
-
-    # Holds the operator and function
+    # Declares some variables for later
     comparisonOperator = ''
     queryFunction = ''
+    conditionalValues = {}
     
-
 
     # There's a small chance to eschew caring about the datatype
     # and instead use an `IN (SELECT ...)`
     if random.random() * 10 < 1:
 
-        # ...And another slighly less small chance to use 
-        # conditionals on this type of subquery
-        if random.random() * 3 < 1:
-
-            # Drastically prefers selecting only one column
-            conditionalValues = getConditionalValues(random.choices([1, 2, 3], [100, 10, 1])[0], columnList=[column for column in columnMap[selectedColumn].columns], restrictive=False)
-            
-            return subqueryStatement('IN', selectedColumn, columnMap[selectedColumn].name, conditionalValues=conditionalValues)
-
-        return subqueryStatement('IN', selectedColumn, columnMap[selectedColumn].name)
+        # Guarantees some conditional values
+        conditionalValues = getConditionalValues(random.choices([1, 2, 3], [100, 10, 1])[0], columnList=[column for column in columnMap[selectedColumn].columns], restrictive=False)
+        return subqueryStatement('IN', selectedColumn, columnMap[selectedColumn].name, conditionalValues=conditionalValues)
 
 
-    # Chooses 
+
+    # A small chance to include conditionals
+    if random.random() * 3 < 1:
+
+        # Drastically prefers selecting only one column
+        conditionalValues = getConditionalValues(random.choices([1, 2, 3], [100, 10, 1])[0], columnList=[column for column in columnMap[selectedColumn].columns], restrictive=False)
+
+
+    # INTEGERs and DECIMALs
     if columnMap[selectedColumn].columns[selectedColumn]['unit'] in ['INTEGER', 'DECIMAL']:
-        pass
+
+        # Selects an appropraite function.
+        # Prefers AVG since it compares the best to noisy data's
+        # randomly generated integers. Comparing to MAX, MIN, or
+        # COUNT could easily lead to an empty or near-empty query.
+        # If there are conditional values, then all are weighted
+        # the same except for COUNT since that one is still bad
+        # for our noisy data
+        queryFunction = random.choices(['AVG', 'COUNT', 'MAX', 'MIN'], [4, 1, 1, 1] if not conditionalValues else [2, 1, 2, 2])[0]
+
+        # Selects an appropriate operator.
+        # Prefers 'greater thans' since we prefer larger query 
+        # results. The 'equals' and 'not equals have no chance 
+        # since they ruin query results
+        if queryFunction in ['COUNT', 'MIN']:
+            comparisonOperator = random.choices('>', '>=', '<', '<=', '=', '!=', [10, 10, 1, 1, 0, 0])[0]
+        
+        # Similarly, 'less than' works best for MAX function
+        elif queryFunction in ['MAX']:
+            comparisonOperator = random.choices('>', '>=', '<', '<=', '=', '!=', [1, 1, 10, 10, 0, 0])[0]
+        
+        # Still no chance of the 'equals'
+        else:
+            comparisonOperator = random.choices('>', '>=', '<', '<=', '=', '!=', [1, 1, 1, 1, 0, 0])[0]
+        
+        return subqueryStatement(comparisonOperator, selectedColumn, columnMap[selectedColumn].name, conditionalValues=conditionalValues)
 
     if columnMap[selectedColumn].columns[selectedColumn]['unit'] in ['DATE', 'DATETIME']:
         pass
@@ -904,14 +928,6 @@ def generateSubquery(database):
 
     statement = subqueryStatement(comparisonOperator, selectedColumn, columnMap[selectedColumn].name, queryFunction)
     print(statement)
-
-
-    # INTEGER functions
-    #AVG() – returns the average value of a group.
-    #COUNT() – returns the number of rows that match a specified condition
-    #MAX() – returns the maximum value in a group.
-    #MIN() – returns the minimum value in a group
-    #SUM() – returns the sum of values
 
     # STRING functions
     #LENGTH()
