@@ -140,7 +140,8 @@ def render(element_html, data):
             'question': True,
             'db_initialize': dbInit,
             'questionString': data['params'].get('questionString', ''),
-            'expectedOutput': data['params'].get('expectedOutput', '')
+            'expectedOutput': data['params'].get('expectedOutput', ''),
+            'previousSubmission': submittedAnswer
         }
     
         with open('pl-sql-element.mustache', 'r', encoding='utf-8') as f:
