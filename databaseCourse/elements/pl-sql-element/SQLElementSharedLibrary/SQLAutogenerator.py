@@ -711,7 +711,7 @@ def generateQuery(data, difficulty):
     elif isDistinct:
         questionString += '.'
 
-    generateSubquery(database)
+    print(generateSubquery(database))
 
     # Loads database
     database.loadDatabase(data)
@@ -839,14 +839,12 @@ def generateSubquery(database):
     keyMap = table.getKeyMap()
     tableMap = database.getTableMap()
     columnMap = database.getColumnMap(tableNames=False)
-
-    #tableMap = {key: self.referencedTables[keyMap[key]['references']] for key in keyMap}
-    # All columns that are in the database but not in
-    # the primary table
-    foreignColumnList = [column for column in columnMap if column not in table.columns]
-
-
     
+
+
+    # All columns that are in the primary table
+    primaryColumnList = [column for column in table.columns]
+
     # Assigns weights to columns by data type. If the
     # data type is not present, it gets a weight of 100.
     #   - INTEGER and DECIMAL have plenty of interesting
@@ -864,10 +862,31 @@ def generateSubquery(database):
         'DATE': 50,
         'DATETIME': 25
     }
-    weights = [weightMap[columnMap[column].columns[column]['unit']] if columnMap[column].columns[column]['unit'] in weightMap else 100 for column in foreignColumnList]
 
-    # Selects a random column based on the weights
-    selectedColumn = random.choices(foreignColumnList, weights)[0]
+    # Uses the weight map to create weights for selecting a
+    # conditional column
+    conditionalWeights = [weightMap[table.columns[key]['unit']] for key in primaryColumnList]
+
+    # Gets all units in referenced tables to ensure that the
+    # conditional column has the same units as at least one
+    # other column in a referenced table
+    unitsInReferenced = set(columnMap[key].columns[key]['unit'] for key in columnMap if key not in table.columns)
+
+    # Selects a random column based on the weights, and keeps
+    # doing so until the column's unit are in a set belonging
+    # to the units of the referenced tables
+    conditionalColumn = None
+    while not conditionalColumn or table.columns[conditionalColumn]['unit'] not in unitsInReferenced:
+        conditionalColumn = random.choices(primaryColumnList, conditionalWeights)[0]
+
+    # Creates a list of all columns from referenced tables that
+    # have the same unit as the conditional column
+    foreignColumnList = [column for column in columnMap if column not in table.columns and columnMap[column].columns[column]['unit'] == table.columns[conditionalColumn]['unit']]
+
+    # Selects one such column
+    selectedColumn = random.choice(foreignColumnList)
+
+
 
     # Declares some variables for later
     comparisonOperator = ''
@@ -880,8 +899,8 @@ def generateSubquery(database):
     if random.random() * 10 < 1:
 
         # Guarantees some conditional values
-        conditionalValues = getConditionalValues(random.choices([1, 2, 3], [100, 10, 1])[0], columnList=[column for column in columnMap[selectedColumn].columns], restrictive=False)
-        return subqueryStatement('IN', selectedColumn, columnMap[selectedColumn].name, conditionalValues=conditionalValues)
+        conditionalValues = getConditionalValues(random.choices([1, 2, 3], [100, 10, 1])[0], database, columnList=[column for column in columnMap[selectedColumn].columns], restrictive=False)
+        return subqueryStatement(conditionalColumn, 'IN', selectedColumn, columnMap[selectedColumn].name, conditionalValues=conditionalValues)
 
 
 
@@ -889,7 +908,7 @@ def generateSubquery(database):
     if random.random() * 3 < 1:
 
         # Drastically prefers selecting only one column
-        conditionalValues = getConditionalValues(random.choices([1, 2, 3], [100, 10, 1])[0], columnList=[column for column in columnMap[selectedColumn].columns], restrictive=False)
+        conditionalValues = getConditionalValues(random.choices([1, 2, 3], [100, 10, 1])[0], database, columnList=[column for column in columnMap[selectedColumn].columns], restrictive=False)
 
 
 
@@ -946,17 +965,17 @@ def generateSubquery(database):
     # results. The 'equals' and 'not equals have no chance 
     # since they ruin query results
     if queryFunction in ['COUNT', 'MIN']:
-        comparisonOperator = random.choices('>', '>=', '<', '<=', '=', '!=', [10, 10, 1, 1, 0, 0])[0]
+        comparisonOperator = random.choices(['>', '>=', '<', '<=', '=', '!='], [10, 10, 1, 1, 0, 0])[0]
     
     # Similarly, 'less than' works best for MAX function
     elif queryFunction in ['MAX']:
-        comparisonOperator = random.choices('>', '>=', '<', '<=', '=', '!=', [1, 1, 10, 10, 0, 0])[0]
+        comparisonOperator = random.choices(['>', '>=', '<', '<=', '=', '!='], [1, 1, 10, 10, 0, 0])[0]
     
     # For the LENGTH function, all comparators are about as
     # good as one another. Notably, the 'equals' aren't
     # all too bad, so we include them now
     elif queryFunction in ['LENGTH']:
-        comparisonOperator = random.choices('>', '>=', '<', '<=', '=', '!=', [2, 2, 2, 2, 1, 1])[0]
+        comparisonOperator = random.choices(['>', '>=', '<', '<=', '=', '!='], [2, 2, 2, 2, 1, 1])[0]
 
     # If the rows aren't aggregate, then we have to use the
     # 'IN' clause
@@ -965,25 +984,22 @@ def generateSubquery(database):
 
     # No chance of the 'equals'
     else:
-        comparisonOperator = random.choices('>', '>=', '<', '<=', '=', '!=', [1, 1, 1, 1, 0, 0])[0]
+        comparisonOperator = random.choices(['>', '>=', '<', '<=', '=', '!='], [1, 1, 1, 1, 0, 0])[0]
 
 
-    statement = subqueryStatement(comparisonOperator, selectedColumn, columnMap[selectedColumn].name, queryFunction, conditionalValues=conditionalValues)
-    print(statement)
+    return subqueryStatement(conditionalColumn, comparisonOperator, selectedColumn, columnMap[selectedColumn].name, queryFunction, conditionalValues=conditionalValues)
 
-    return statement
-
-def subqueryStatement(comparisonOperator, selectedColumnName, tableName, queryFunction='', conditionalValues={}):
+def subqueryStatement(conditionalColumn, comparisonOperator, selectedColumnName, tableName, queryFunction='', conditionalValues={}):
 
     # Begins the statement
-    statement = f" {comparisonOperator} (SELECT"
+    statement = f" {conditionalColumn} {comparisonOperator} (SELECT"
 
     # Wraps the selected column in parenthesis if there
     # is a function
     if queryFunction:
         statement += f" {queryFunction}({selectedColumnName})"
     else:
-        statement += f"  {selectedColumnName}"
+        statement += f" {selectedColumnName}"
     
     # Adds the table name
     statement += f" FROM {tableName}"
