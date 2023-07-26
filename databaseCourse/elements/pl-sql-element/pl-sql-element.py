@@ -106,6 +106,8 @@ def prepare(element_html, data):
         'useAndInsteadOfOr': questionUseAndInsteadOfOr
     }
 
+    data['params']['feedback']=""
+
     # If if is a randomised question, generate the question
     if questionRandom:
         autogen.autogenerate(data)
@@ -129,6 +131,9 @@ def render(element_html, data):
     
     # Grabs the correct answer from the data variable
     correctAnswer = data['correct_answers']['SQLEditor']
+
+    # feedback
+    feedback = data['params']['feedback']
     
     # Grabs the string to initialize the database.
     # The join command turns an array of strings into a single string.
@@ -155,7 +160,8 @@ def render(element_html, data):
         
         html_params = {
             'submission': True,
-            'studentSubmission': submittedAnswer
+            'studentSubmission': submittedAnswer,
+            'feedback':feedback
         }
         
 
