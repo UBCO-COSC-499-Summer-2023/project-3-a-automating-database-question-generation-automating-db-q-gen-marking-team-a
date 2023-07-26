@@ -853,14 +853,15 @@ def generateSubquery(database):
     #     functions, such as SUM() so they get the highest
     #     weighting
     #   - VARCHAR has LENGTH() and COUNT() so it's not bad
-    #   - CHAR, DATE, and DATETIME only have COUNT() so
-    #     they get the smallest weight
+    #   - DATE, and DATETIME only have COUNT(), MIN(), and 
+    #     MAX() so they're also not too bad
+    #   - CHAR only has COUNT()
     weightMap = {
         'INTEGER': 200,
         'DECIMAL': 200,
-        'VARCHAR': 75,
-        'CHAR': 25,
-        'DATE': 25,
+        'VARCHAR': 50,
+        'CHAR': 50,
+        'DATE': 50,
         'DATETIME': 25
     }
     weights = [weightMap[columnMap[column].columns[column]['unit']] if columnMap[column].columns[column]['unit'] in weightMap else 100 for column in foreignColumnList]
@@ -916,9 +917,17 @@ def generateSubquery(database):
         queryFunction = random.choices(['COUNT', 'MAX', 'MIN'], [1, 1, 1] if not conditionalValues else [1, 3, 3])[0]
 
 
-
+    # VARCHARs
     if columnMap[selectedColumn].columns[selectedColumn]['unit'] in ['VARCHAR']:
-        pass
+        
+        # Selects an appropraite function.
+        # LENGTH will produce good queries relative to the data
+        # that the noisy data gen create, so we give it a big
+        # weight. Conditional values doesn't affect either 
+        # function much
+        queryFunction = random.choices(['COUNT', 'LENGTH'], [1, 6])[0]
+
+
 
     # Selects an appropriate operator.
     # Prefers 'greater thans' since we prefer larger query 
@@ -931,7 +940,13 @@ def generateSubquery(database):
     elif queryFunction in ['MAX']:
         comparisonOperator = random.choices('>', '>=', '<', '<=', '=', '!=', [1, 1, 10, 10, 0, 0])[0]
     
-    # Still no chance of the 'equals'
+    # For the LENGTH function, all comparators are about as
+    # good as one another. Notably, the 'equals' aren't
+    # all too bad, so we include them now
+    elif queryFunction in ['LENGTH']:
+        comparisonOperator = random.choices('>', '>=', '<', '<=', '=', '!=', [2, 2, 2, 2, 1, 1])[0]
+
+    # No chance of the 'equals'
     else:
         comparisonOperator = random.choices('>', '>=', '<', '<=', '=', '!=', [1, 1, 1, 1, 0, 0])[0]
 
