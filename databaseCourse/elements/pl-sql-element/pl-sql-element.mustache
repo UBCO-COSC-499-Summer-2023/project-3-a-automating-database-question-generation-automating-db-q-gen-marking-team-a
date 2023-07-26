@@ -16,7 +16,7 @@
     <label for='commands'>Enter some SQL</label>
     <br>
   
-    <textarea id="commands" name="SQLEditor" type="text">{{previousSubmission}}</textarea>
+    <textarea id="commands" name="SQLEditor" type="text">{{submitted_answers.SQLEditor}}</textarea>
   
       <div id="execute" class="button">Execute</div>
       
@@ -27,6 +27,10 @@
 
       <div id="db-init">
         {{db_initialize}}
+      </div>
+
+      <div id="previousSubmission">
+        {{previousSubmission}}
       </div>
   
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.1/mode/sql/sql.min.js"></script>

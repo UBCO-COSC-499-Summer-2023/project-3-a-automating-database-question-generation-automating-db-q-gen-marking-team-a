@@ -11,6 +11,9 @@ $(document).ready(function () {
             execute(dbInitElm.text());
         }
         dbInitElm.remove();
+
+        updateCodeMirrorPreviousSubmission();
+
     }
 
     /*
@@ -43,6 +46,8 @@ $(document).ready(function () {
 
     const dbSchemaElm = $("#db-schema");
 
+    previousSubmissionElm = $("#previousSubmission");
+
     const tables = [];
 
     // Add syntax highlighting to the textarea
@@ -59,6 +64,10 @@ $(document).ready(function () {
             "Ctrl-Enter": executeEditorContents,
         }
     });
+
+    // Load previous submission into editor
+    
+    
 
     /*
     //
@@ -221,52 +230,6 @@ $(document).ready(function () {
 
     /*
     //
-    // Functions regarding the dropdowns' visbility ---------------------------------------------------------------------------
-    // modeled after the dropdowns found in autoEr
-    */
-
-    // REFACTORED USING CSS
-    // Temporarily left in for visibility in case code is needed
-
-    /*
-
-    // function to show the dropdown of the selected schema
-    window.openMenu = function (tableName) {
-        // so that only the dropdown of one schema is open at a time
-        closeMenus();
-        let schemaDropdownId = 'schema-' + tableName.id.slice(4)
-        document.getElementById(schemaDropdownId).classList.toggle('show');
-    }
-
-    // function to close any and all dropdowns that are showing
-    window.closeMenus = function () {
-        let allDropDownsClass = 'dropdown-content'
-        let dropdowns = document.getElementsByClassName(allDropDownsClass);
-        for (let i = 0; i < dropdowns.length; i++) {
-            if (dropdowns[i].classList.contains('show')) {
-                dropdowns[i].classList.remove('show')
-            }
-        }
-    }
-
-
-    // close the dropdown when the mouse moves away from the button and the dropdown menu
-    
-    window.addEventListener('mouseleave', function (event) {
-        const target = event.target;
-        const relatedTarget = event.relatedTarget;
-        console.log(target);
-        console.log(relatedTarget);
-        if (!target.classList.contains('dropbtn') || !relatedTarget.classList.contains('dropdown-content')) {
-            closeMenus();
-        }
-    });
-
-    */
-
-
-    /*
-    //
     // Functions regarding the SQL editor  -------------------------------------------------------------------
     //
     */
@@ -388,6 +351,13 @@ $(document).ready(function () {
         doc.replaceRange(data, doc.getCursor()); // adds data at position of cursor
         editor.focus();
         editor.setCursor(doc.getCursor());
+    }
+
+    // insert previous submission into editor
+    function updateCodeMirrorPreviousSubmission() {
+        var doc = editor.getDoc(); //gets the information of the editor
+        doc.setValue(previousSubmissionElm.text().trim());
+        previousSubmissionElm.remove();
     }
 
     /*

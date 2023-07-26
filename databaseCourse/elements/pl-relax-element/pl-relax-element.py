@@ -78,7 +78,8 @@ def render(element_html, data):
     if data['panel'] == 'question':
         # setting the paramaters
         html_params = {
-            'database' : data['params']['db_initialize']
+            'database' : data['params']['db_initialize'],
+            'previousSubmission' : submittedAnswer
         }
             # Opens and renders mustache file into the question html
         with open('pl-relax-element.mustache', 'r', encoding='utf-8') as f:
