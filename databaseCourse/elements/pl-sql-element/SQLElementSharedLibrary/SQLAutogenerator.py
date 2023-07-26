@@ -880,10 +880,14 @@ def generateSubquery(database):
     # and instead use an `IN (SELECT ...)`
     if random.random() * 10 < 1:
 
-        # ...And another less small chance to use conditionals
-        # on this type of subquery
+        # ...And another slighly less small chance to use 
+        # conditionals on this type of subquery
         if random.random() * 3 < 1:
-            pass
+
+            # Drastically prefers selecting only one column
+            conditionalValues = getConditionalValues(random.choices([1, 2, 3], [100, 10, 1])[0], columnList=[column for column in columnMap[selectedColumn].columns], restrictive=False)
+            
+            return subqueryStatement('IN', selectedColumn, columnMap[selectedColumn].name, conditionalValues=conditionalValues)
 
         return subqueryStatement('IN', selectedColumn, columnMap[selectedColumn].name)
 
