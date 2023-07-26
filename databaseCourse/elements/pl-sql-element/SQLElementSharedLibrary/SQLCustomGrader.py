@@ -282,17 +282,19 @@ def getExpectedAndActualInsertResults(data,correctAnswer,submittedAnswer):
         expectedAns += cur.execute("SELECT * FROM " + table).fetchall()
 
     # re-initialize db
-    cur.executescript(commands)
-    con.commit()
+    conTwo = sqlite3.connect("ans2.db")
+    curTwo  = conTwo.cursor()
+    curTwo.executescript(commands)
+    conTwo.commit()
 
     # format submission from string to SQL
     studentCode = submittedAnswer.replace('\n', ' ').replace('\t', ' ')
 
     # executes submission and gets updated DB after all the inserts
-    cur.executescript(studentCode)
+    curTwo.executescript(studentCode)
     actualAns = []
     for table in tablesCleaned:
-        actualAns += cur.execute("SELECT * FROM " + table).fetchall()
+        actualAns += curTwo.execute("SELECT * FROM " + table).fetchall()
         
     return (expectedAns,actualAns)
 
@@ -360,18 +362,20 @@ def getExpectedAndActualUpdateResults(data,correctAnswer,submittedAnswer):
         expectedAns += cur.execute("SELECT * FROM " + table).fetchall()
     
     # re-initialize db
-    cur.executescript(commands)
-    con.commit()
+    conTwo = sqlite3.connect("ans2.db")
+    curTwo  = conTwo.cursor()
+    curTwo.executescript(commands)
+    conTwo.commit()
 
     # format and execute submission
     studentCode = submittedAnswer.replace('\n', ' ').replace('\t', ' ')
-    cur.executescript(studentCode)
-    con.commit()
+    curTwo.executescript(studentCode)
+    conTwo.commit()
 
     # gets the database after executing the submission
     actualAns = []
     for table in tablesCleaned:
-        actualAns += cur.execute("SELECT * FROM " + table).fetchall()
+        actualAns += curTwo.execute("SELECT * FROM " + table).fetchall()
         
     return (expectedAns,actualAns,originalDb)
 
@@ -445,22 +449,24 @@ def getExpectedAndActualDeleteResults(data,correctAnswer,submittedAnswer):
         expectedAns += cur.execute("SELECT * FROM " + table).fetchall()
 
     # re-initialize db
-    cur.executescript(commands)
-    con.commit()
+    conTwo = sqlite3.connect("ans2.db")
+    curTwo  = conTwo.cursor()
+    curTwo.executescript(commands)
+    conTwo.commit()
     
     # format and execute submission
     studentCode = submittedAnswer.replace('\n', ' ').replace('\t', ' ')
-    cur.executescript(studentCode)
-    con.commit()
+    curTwo.executescript(studentCode)
+    conTwo.commit()
 
     # gets all tables in db
-    tables = cur.execute("SELECT name FROM sqlite_master WHERE type='table';").fetchall()
+    tables = curTwo.execute("SELECT name FROM sqlite_master WHERE type='table';").fetchall()
     tablesCleaned = [item[0] for item in tables]
     
     # gets the database after executing the submission
     actualAns = []
     for table in tablesCleaned:
-        actualAns += cur.execute("SELECT * FROM " + table).fetchall()
+        actualAns += curTwo.execute("SELECT * FROM " + table).fetchall()
     return (expectedAns,actualAns,originalDb)
 
 # HELPERS ----------------------------------------------------------------------------------------------------------------------
