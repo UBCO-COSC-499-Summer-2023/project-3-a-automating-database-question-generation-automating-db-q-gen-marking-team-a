@@ -1,0 +1,52 @@
+<!-- Question introduction -->
+<pl-question-panel>
+    Given the following relational schema, write queries in SQL to answer the English question.
+
+    <markdown>
+        customer(cid: integer, cname: string, address: string, city: string, state: string)
+        product(pid: integer, pname: string, price: currency, inventory: integer)
+        shipment(sid: integer, cid: integer, shipdate: DateTime)
+        shippedproduct(sid: integer, pid: integer, amount: integer)
+    </markdown>
+</pl-question-panel>
+
+<!-- Start Part 1 -->
+
+<!-- Question text -->
+<pl-question-panel>
+    Return the product names, price, inventory, and inventory value of each product (<strong>price*inventory</strong>) (rename as <strong>inventoryValue</strong>) for products with price greater than <strong>$20</strong>. Order by product name ascending.
+    <br>
+    Expected Output:
+    <br>
+    <markdown>
+        +-------------------------+-----------+-----------+----------------+
+        | pname                   | price     | inventory | inventoryValue |
+        +-------------------------+-----------+-----------+----------------+
+        | Deluxe Sweet Collection |     32.65 |        83 |        2709.95 |
+        | Desk                    |    250.99 |       100 |       25099.00 |
+        | Sports Car              | 123500.00 |         0 |           0.00 |
+        | Swiss Chocolate         |     32.99 |        40 |        1319.60 |
+        | Table                   |    500.00 |        44 |       22000.00 |
+        | Textbook                |    250.00 |        23 |        5750.00 |
+        | Wooden Chair            |     99.99 |        12 |        1199.88 |
+        +-------------------------+-----------+-----------+----------------+
+    </markdown>
+</pl-question-panel>
+
+
+<!-- SQL editor -->
+<pl-sql-element database = "./SQLElementSharedLibrary/lab3Databases/shipmentDDL.sql">
+    <sql-question>
+    </sql-question>
+    
+    <sql-answer answer = "SELECT pname, price, inventory, price*inventory AS inventoryValue
+FROM product
+WHERE price > 20
+ORDER BY pname ASC;">
+    </sql-answer>
+
+    <sql-marking >
+    </sql-marking>
+</pl-sql-element>
+
+<!-- End Part 1 -->

@@ -1,0 +1,167 @@
+.dropdown-content,
+.submenu-content,
+.sub-submenu-content,
+.sub-sub-submenu-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 120px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+
+.dropdown-content a,
+.submenu-content a,
+.sub-submenu-content a {
+  color: black;
+  padding: 8px;
+  min-width: 120px;
+  text-decoration: none;
+  display: block;
+  z-index: 10;
+}
+
+.dropdown-content a:hover,
+.submenu-content a:hover,
+.sub-submenu-content a:hover,
+.sub-sub-submenu-content a:hover {
+  background-color: #ddd
+}
+
+
+
+.dropbtn{
+	font-family: ubuntu, sans-serif;
+	border: none;
+    background-color: transparent;
+	margin: 0.25em 0 0.25em 0;
+}
+
+.schemaTable:hover div{
+	display: block;
+}
+
+
+#execute.button {
+	color: white;
+	background-color: #007bff;
+	border: 1px solid #222;
+	border-radius: 3px;
+	padding: 7px;
+	margin-right: 5px;
+	transition: .3s;
+	font-family: ubuntu, sans-serif;
+	font-size: 1em;
+}
+
+#execute.button:active {
+	background-color: #0062cc;
+    border-color: #005cbf;
+}
+
+.button:hover, button:focus {
+	cursor: pointer;
+}
+
+#execute {
+	margin-top: 5px;;
+	width: 10%;
+	min-width:100px;
+	text-align: center;
+}
+
+.CodeMirror {
+  border: 1px solid #222;
+  height: auto;
+}
+.CodeMirror-scroll {
+  overflow-y: hidden;
+  overflow-x: auto;
+}
+
+.error {
+	color:red;
+	transition:.5s;
+	overflow:hidden;
+	margin: 15px;
+}
+
+
+#db-schema {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	justify-content: space-evenly;
+	border: 2px solid black;
+	margin: 1em 0 1em 0;
+	text-align: center;
+}
+
+#db-init{
+	display: none;
+}
+
+.scrollable{
+	height: auto;
+	max-height: 400px;
+	overflow-y: auto;
+}
+
+.output-tables{
+	border-collapse: collapse;
+    font-size: 0.9em;
+    font-family: ubuntu, sans-serif;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+	border-radius: 5px;
+	width: -webkit-fill-available;
+}
+
+.output-tables thead tr{
+	background-color: #007bff;
+    color: #ffffff;
+    text-align: left;
+	font-weight: bold;
+	
+}
+
+.output-tables thead {
+	position: sticky;
+	top: 0;
+	z-index: 2;
+}
+
+.output-tables thead th{
+	cursor: pointer;
+}
+
+.output-tables thead th:first-child{
+	border-top-left-radius: 5px;
+}
+
+.output-tables thead th:last-child{
+	border-top-right-radius: 5px;
+}
+
+
+.output-tables th, .output-tables td{
+	padding: 10px 13px;
+}
+
+.output-tables tr{
+	border-bottom: 1px solid #dddddd;
+}
+
+.output-tables tr:nth-of-type(even){
+	background-color: #f3f3f3;
+}
+
+.output-tables tr:last-of-type{
+	border-bottom: 2px solid #007bff;
+}
+
+.output-tables tbody > tr:hover{
+	background: #000000b6;
+	color: #fff;
+}
+
