@@ -1211,9 +1211,7 @@ def questionConditionals(conditionalValues, string=''):
     
     # If there aren't any conditionals, just return
     if not conditionalValues:
-        return string, {}
-    
-
+        return string
 
     # Adds the 'where' if necessary
     string += ' where'
@@ -1241,8 +1239,6 @@ def questionConditionals(conditionalValues, string=''):
         else:
             string += ' and'
     
-
-
     # Removes the trailing connector.
     # This isn't as efficient as I would prefer, but
     # I was getting an odd issue on other approaches
