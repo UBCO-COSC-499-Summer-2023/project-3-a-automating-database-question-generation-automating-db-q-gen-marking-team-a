@@ -1050,7 +1050,7 @@ def subqueryQuestionString(database, conditionalColumn, comparisonOperator, sele
     if queryFunction:
         match queryFunction:
             case 'COUNT': questionString += ' the <em>count of</em>'
-            case 'MAX': questionString += ' the <em>maximum value of</em>>'
+            case 'MAX': questionString += ' the <em>maximum value of</em>'
             case 'MIN': questionString += ' the <em>minimum value of</em>'
             case 'LENGTH': questionString += ' the <em>length of</em>'
             case '': questionString += ' the <em>set of</em>'
