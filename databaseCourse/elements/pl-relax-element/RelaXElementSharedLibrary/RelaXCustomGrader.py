@@ -79,9 +79,9 @@ def gradeQuery(data, feedback):
     
     # grading weight for each component of statement
     orderWeight = 0.05
-    rowWeight = 0.10
+    rowWeight = 0.20
     colWeight = 0.25
-    valueMatchWeight = 0.6
+    valueMatchWeight = 0.50
     
     db = data['params']['database']
     submittedAnswer = data['submitted_answers']['RelaXEditor']
