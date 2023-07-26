@@ -28,7 +28,8 @@
         {
             "title": "Random Queries",
             "questions": [
-                {"id": "SQL_Questions/randomParameterized",          "points": 2}
+                {"id": "SQL_Questions/randomParameterized",          "points": 2},
+                {"id": "SQL_Questions/randomParameterizedSubquery",          "points": 2}
             ]
         }
     ]
