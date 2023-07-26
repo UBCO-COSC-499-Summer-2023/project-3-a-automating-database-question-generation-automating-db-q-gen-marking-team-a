@@ -799,7 +799,10 @@ def queryStatement(database, selectedColumns, joinTypes={}, conditionalValues={}
 
     # Adds the subquery
     if subquery:
-        queryString += subquery
+        if 'WHERE' in queryString:
+            queryString += ' AND' + subquery
+        else:
+            queryString += ' WHERE' + subquery
     
     # Removes the WHERE clause if necessary
     if 'WHERE' in queryString[-6:]:
