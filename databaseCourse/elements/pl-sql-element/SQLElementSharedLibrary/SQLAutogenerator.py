@@ -745,8 +745,6 @@ def generateQuery(data, difficulty):
     # Sets the correct answer
     data['correct_answers']['SQLEditor'] = queryStatement(database, selectedColumns, joinTypes, conditionalValues, orderByColumns, groupByColumns, havingColumns, withColumns, limit, isDistinct, subquery)
 
-
-
     if os.path.exists("preview.db"):
         os.remove("preview.db")
     expectedOutput = data['params']['html_params']['expectedOutput']
