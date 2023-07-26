@@ -903,42 +903,46 @@ def generateSubquery(database):
         # for our noisy data
         queryFunction = random.choices(['AVG', 'COUNT', 'MAX', 'MIN'], [4, 1, 1, 1] if not conditionalValues else [2, 1, 2, 2])[0]
 
-        # Selects an appropriate operator.
-        # Prefers 'greater thans' since we prefer larger query 
-        # results. The 'equals' and 'not equals have no chance 
-        # since they ruin query results
-        if queryFunction in ['COUNT', 'MIN']:
-            comparisonOperator = random.choices('>', '>=', '<', '<=', '=', '!=', [10, 10, 1, 1, 0, 0])[0]
-        
-        # Similarly, 'less than' works best for MAX function
-        elif queryFunction in ['MAX']:
-            comparisonOperator = random.choices('>', '>=', '<', '<=', '=', '!=', [1, 1, 10, 10, 0, 0])[0]
-        
-        # Still no chance of the 'equals'
-        else:
-            comparisonOperator = random.choices('>', '>=', '<', '<=', '=', '!=', [1, 1, 1, 1, 0, 0])[0]
-        
-        return subqueryStatement(comparisonOperator, selectedColumn, columnMap[selectedColumn].name, conditionalValues=conditionalValues)
 
+
+    # DATEs and DATETIMEs
     if columnMap[selectedColumn].columns[selectedColumn]['unit'] in ['DATE', 'DATETIME']:
-        pass
+        
+        # Selects an appropraite function.
+        # Without conditional values, they're all about as bad
+        # in terms of their output. With conditional values, 
+        # MIN and MAX are prefered since then they'll have
+        # better outputs
+        queryFunction = random.choices(['COUNT', 'MAX', 'MIN'], [1, 1, 1] if not conditionalValues else [1, 3, 3])[0]
+
+
 
     if columnMap[selectedColumn].columns[selectedColumn]['unit'] in ['VARCHAR']:
         pass
 
-    statement = subqueryStatement(comparisonOperator, selectedColumn, columnMap[selectedColumn].name, queryFunction)
+    # Selects an appropriate operator.
+    # Prefers 'greater thans' since we prefer larger query 
+    # results. The 'equals' and 'not equals have no chance 
+    # since they ruin query results
+    if queryFunction in ['COUNT', 'MIN']:
+        comparisonOperator = random.choices('>', '>=', '<', '<=', '=', '!=', [10, 10, 1, 1, 0, 0])[0]
+    
+    # Similarly, 'less than' works best for MAX function
+    elif queryFunction in ['MAX']:
+        comparisonOperator = random.choices('>', '>=', '<', '<=', '=', '!=', [1, 1, 10, 10, 0, 0])[0]
+    
+    # Still no chance of the 'equals'
+    else:
+        comparisonOperator = random.choices('>', '>=', '<', '<=', '=', '!=', [1, 1, 1, 1, 0, 0])[0]
+
+
+    statement = subqueryStatement(comparisonOperator, selectedColumn, columnMap[selectedColumn].name, queryFunction, conditionalValues=conditionalValues)
     print(statement)
+
+    return statement
 
     # STRING functions
     #LENGTH()
-
-    # Select column
-
-    # Select function (if function)
-
-    # Select comparator based on column data type
-
-    # Build subquery
 
 def subqueryStatement(comparisonOperator, selectedColumnName, tableName, queryFunction='', conditionalValues={}):
 
