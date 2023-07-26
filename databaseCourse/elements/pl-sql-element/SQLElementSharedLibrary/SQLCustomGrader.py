@@ -7,6 +7,7 @@ import os
 # submitted answer.
 def customGrader(data):
     # weights for input and oututbased grading
+    data['params']['feedback'] = ""
     outputScoreWeight = 0.85
     inputScoreWeight = 0.15
 
@@ -515,4 +516,4 @@ def valueMatch(expectedAns,actualAns):
     return matchScore
 
 def addFeedback(data, category, categoryScore):
-    data['params']['feedback'] += f"{category} : {categoryScore}"+"%}<br>"
+    data['params']['feedback'] += f"{category} : {abs(round((categoryScore*100),2))}"+"%<br>"

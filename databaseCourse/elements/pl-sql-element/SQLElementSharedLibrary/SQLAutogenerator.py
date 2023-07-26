@@ -853,12 +853,12 @@ def loadTrimmedTable(columnCount, joinCount=0):
 
 # solutioncode (Str) => html table code (str)
 # runs solution code on sqlite3 and gets results and puts that in html table format
-def createPreview(data):
-    data['params']['html_params']['expectedOutput'] 
+def createPreview(data): 
     con = sqlite3.connect("preview.db")
     cur  = con.cursor()
 
     commands = data['params']['db_initialize_create'].replace('\n', '').replace('\t', '')
+    commands += data['params']['db_initialize_insert_frontend'].replace('\n', '').replace('\t', '')
 
     cur.executescript(commands)
     con.commit()
