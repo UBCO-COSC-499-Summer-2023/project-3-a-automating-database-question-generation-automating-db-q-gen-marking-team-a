@@ -580,10 +580,10 @@ def generateQuery(data, difficulty):
 
 
     # Adds the subquery
+    subquery = ''
     if useSubquery:
-
-        # Removes the period
-        questionString = removeTrailingChars(questionString)
+        subquery, subqueryString = generateSubquery(database)
+        questionString += f" {subqueryString}"
 
 
 
@@ -726,12 +726,12 @@ def generateQuery(data, difficulty):
     data['params']['questionString'] = questionString
     
     # Sets the correct answer
-    data['correct_answers']['SQLEditor'] = queryStatement(database, selectedColumns, joinTypes, conditionalValues, orderByColumns, groupByColumns, havingColumns, withColumns, limit, isDistinct)
-    
+    data['correct_answers']['SQLEditor'] = queryStatement(database, selectedColumns, joinTypes, conditionalValues, orderByColumns, groupByColumns, havingColumns, withColumns, limit, isDistinct, subquery)
+
 
 
 # Creates a query
-def queryStatement(database, selectedColumns, joinTypes={}, conditionalValues={}, orderByColumns={}, groupByColumns={}, havingColumns={}, withColumns={}, limit=0, isDistinct=False):
+def queryStatement(database, selectedColumns, joinTypes={}, conditionalValues={}, orderByColumns={}, groupByColumns={}, havingColumns={}, withColumns={}, limit=0, isDistinct=False, subquery=''):
     
     table = database.primaryTable
     keyMap = table.getKeyMap()
@@ -780,6 +780,10 @@ def queryStatement(database, selectedColumns, joinTypes={}, conditionalValues={}
     # Adds the conditional values
     if conditionalValues:
         queryString = statementConditionals(queryString, conditionalValues, clauseType='')
+
+    # Adds the subquery
+    if subquery:
+        queryString += subquery
     
     # Removes the WHERE clause if necessary
     if 'WHERE' in queryString[-6:]:
