@@ -18,3 +18,5 @@ tests/ui/__pycache__/sample_test.cpython-311.pyc
 databaseCourse/elements/pl-sql-element/SQLElementSharedLibrary/__pycache__/__init__.cpython-36.pyc
 .vscode/settings.json
 databaseCourse/elements/pl-sql-element/autograder_test.py
+databaseCourse/elements/pl-sql-element/ans.db
+databaseCourse/elements/pl-sql-element/ans.db-journal

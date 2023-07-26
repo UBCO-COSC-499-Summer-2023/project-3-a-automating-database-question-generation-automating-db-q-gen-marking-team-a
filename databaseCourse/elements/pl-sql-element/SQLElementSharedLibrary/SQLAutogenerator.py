@@ -514,7 +514,7 @@ def generateQuery(data, difficulty):
     match difficulty:
         case 'easy': 
             columns = random.randint(3, 4)
-            joins = 0
+            joins = 1
             database = db.Database(columns=columns, joins=joins)
             clauses = {}
 
@@ -705,7 +705,7 @@ def queryStatement(table, keyMap, foreignKeyMap, selectedColumns, clauses):
     for key in selectedColumns:
         for column in selectedColumns[key]:
             queryString += f" {keyMap[key]['references'][0:1].upper()}.{column},"
-    
+
     # Removes trailing comma
     queryString = queryString[:-1] + ' FROM'
 
@@ -715,8 +715,6 @@ def queryStatement(table, keyMap, foreignKeyMap, selectedColumns, clauses):
 
     # Removes trailing comma
     queryString = queryString[:-1] + ' WHERE'
-
-
 
     # Specifies how the tables are joined together
 
@@ -730,12 +728,10 @@ def queryStatement(table, keyMap, foreignKeyMap, selectedColumns, clauses):
 
         # Removes the final 'AND'
         queryString = queryString[:-4]
-    
+
     # Removes the WHERE clause if necessary
     if not clauses and not foreignKeyMap:
         queryString = queryString[:-6]
-
-
 
     # Returns, appending the finishing touches
     return queryString + ";\n"
@@ -853,8 +849,7 @@ def loadTrimmedTable(columnCount, joinCount=0):
 
 # solutioncode (Str) => html table code (str)
 # runs solution code on sqlite3 and gets results and puts that in html table format
-def createPreview(data):
-    data['params']['html_params']['expectedOutput'] 
+def createPreview(data): 
     con = sqlite3.connect("preview.db")
     cur  = con.cursor()
 

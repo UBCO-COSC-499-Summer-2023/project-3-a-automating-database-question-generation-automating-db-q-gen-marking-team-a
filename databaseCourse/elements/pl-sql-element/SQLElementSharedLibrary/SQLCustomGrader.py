@@ -7,6 +7,7 @@ import os
 # submitted answer.
 def customGrader(data):
     # weights for input and oututbased grading
+    data['params']['feedback'] = ""
     outputScoreWeight = 0.85
     inputScoreWeight = 0.15
 
@@ -38,7 +39,7 @@ def customGrader(data):
     # partial grading for lab 2 - Create Questions
     if(questionType == "create"):
         try:
-            outputScore += gradeCreateQuestion(correctAnswer,submittedAnswer)
+            outputScore += gradeCreateQuestion(data,correctAnswer,submittedAnswer)
         except sqlite3.OperationalError as e:
             if "syntax error" in str(e).lower():
                 outputScoreWeight = 0.15
@@ -139,6 +140,11 @@ def gradeQueryQuestion(data,correctAnswer,submittedAnswer):
     if rowScore == 1 and colScore ==1:
         if expectedAns[0] == actualAns[0] and expectedAns[-1] == actualAns[-1]:
             orderScore = 1
+        
+    addFeedback(data,"Rows",round(rowScore,2))
+    addFeedback(data,"Columns",round(colScore,2))
+    addFeedback(data,"Values",round(valueMatchScore,2))
+    addFeedback(data,"Order",round(orderScore,2))
 
     score = (rowWeight*rowScore) + (valueMatchWeight*valueMatchScore) + (colWeight*colScore) + (orderWeight*orderScore)
     score = round(score,2)
@@ -171,7 +177,7 @@ def getExpectedAndActualQueryResults(data,correctAnswer,submittedAnswer):
 
 # CREATE------------------------------------------------------------------------------------------------------------------------
 # grades create questions
-def gradeCreateQuestion(correctAnswer,submittedAnswer):
+def gradeCreateQuestion(data,correctAnswer,submittedAnswer):
     # gets output in proper formatting
     arr = getExpectedAndActualCreateResults(correctAnswer,submittedAnswer)
 
@@ -180,6 +186,8 @@ def gradeCreateQuestion(correctAnswer,submittedAnswer):
 
     # value matching
     valueMatchScore = valueMatch(expectedAns,actualAns)
+
+    addFeedback(data,"Values",round(valueMatchScore,2))
 
     score = valueMatchScore
     score = round(score,2)
@@ -241,6 +249,8 @@ def gradeInsertQuestion(data,correctAnswer,submittedAnswer):
     # value matching
     valueMatchScore = valueMatch(expectedAns,actualAns)
 
+    addFeedback(data,"Values",round(valueMatchScore,2))
+
     score = valueMatchScore
     score = round(score,2)
     return score
@@ -272,17 +282,19 @@ def getExpectedAndActualInsertResults(data,correctAnswer,submittedAnswer):
         expectedAns += cur.execute("SELECT * FROM " + table).fetchall()
 
     # re-initialize db
-    cur.executescript(commands)
-    con.commit()
+    conTwo = sqlite3.connect("ans2.db")
+    curTwo  = conTwo.cursor()
+    curTwo.executescript(commands)
+    conTwo.commit()
 
     # format submission from string to SQL
     studentCode = submittedAnswer.replace('\n', ' ').replace('\t', ' ')
 
     # executes submission and gets updated DB after all the inserts
-    cur.executescript(studentCode)
+    curTwo.executescript(studentCode)
     actualAns = []
     for table in tablesCleaned:
-        actualAns += cur.execute("SELECT * FROM " + table).fetchall()
+        actualAns += curTwo.execute("SELECT * FROM " + table).fetchall()
         
     return (expectedAns,actualAns)
 
@@ -296,12 +308,12 @@ def gradeUpdateQuestion(data,correctAnswer,submittedAnswer):
     originalDb = arr[2]
 
     # checks the value match of the updates
-    updateMatchVal = updateMatch(expectedAns,actualAns,originalDb)
+    updateMatchVal = updateMatch(data,expectedAns,actualAns,originalDb)
 
     return updateMatchVal
 
 # compares the differences between (db after running solution update code) and (db after running submission update code)
-def updateMatch(expectedAns,actualAns,originalDb):
+def updateMatch(data,expectedAns,actualAns,originalDb):
     rowMatchWeight = 0.5
     valMatchWeight = 0.5
     # finds the rows that have been updated when running solution
@@ -311,6 +323,10 @@ def updateMatch(expectedAns,actualAns,originalDb):
     # row matching and value matching
     rowMatchScore = rowMatch(expectedUpdatedRows,actualUpdatedRows)
     valMatchScore = valueMatch(expectedUpdatedRows,actualUpdatedRows)
+
+    addFeedback(data,"Rows",round(rowMatchScore,2))
+    addFeedback(data,"Values",round(valMatchScore,2))
+
     score = (rowMatchScore*rowMatchWeight) + (valMatchScore*valMatchWeight)
     return score
 
@@ -346,18 +362,20 @@ def getExpectedAndActualUpdateResults(data,correctAnswer,submittedAnswer):
         expectedAns += cur.execute("SELECT * FROM " + table).fetchall()
     
     # re-initialize db
-    cur.executescript(commands)
-    con.commit()
+    conTwo = sqlite3.connect("ans2.db")
+    curTwo  = conTwo.cursor()
+    curTwo.executescript(commands)
+    conTwo.commit()
 
     # format and execute submission
     studentCode = submittedAnswer.replace('\n', ' ').replace('\t', ' ')
-    cur.executescript(studentCode)
-    con.commit()
+    curTwo.executescript(studentCode)
+    conTwo.commit()
 
     # gets the database after executing the submission
     actualAns = []
     for table in tablesCleaned:
-        actualAns += cur.execute("SELECT * FROM " + table).fetchall()
+        actualAns += curTwo.execute("SELECT * FROM " + table).fetchall()
         
     return (expectedAns,actualAns,originalDb)
 
@@ -372,14 +390,14 @@ def gradeDeleteQuestion(data,correctAnswer,submittedAnswer):
     originalDb = arr[2]
 
     # value matching
-    deleteMatchScore = deleteMatch(expectedAns,actualAns,originalDb)
+    deleteMatchScore = deleteMatch(data,expectedAns,actualAns,originalDb)
 
     score = deleteMatchScore
     score = round(score,2)
     return score
 
 # compares the differences between (db after running solution update code) and (db after running submission update code)
-def deleteMatch(dbAfterSolution,dbAfterSubmission,originalDb):
+def deleteMatch(data,dbAfterSolution,dbAfterSubmission,originalDb):
     rowMatchWeight = 0.5
     valMatchWeight = 0.5
 
@@ -392,6 +410,10 @@ def deleteMatch(dbAfterSolution,dbAfterSubmission,originalDb):
     # row matching and value matching
     rowMatchScore = rowMatch(expectedDeletedRows,actualDeletedRows)
     valMatchScore = valueMatch(expectedDeletedRows,actualDeletedRows)
+
+    addFeedback(data,"Rows",round(rowMatchScore,2))
+    addFeedback(data,"Values",round(valMatchScore,2))
+
     score = (rowMatchScore*rowMatchWeight) + (valMatchScore*valMatchWeight)
     return score
 
@@ -427,22 +449,24 @@ def getExpectedAndActualDeleteResults(data,correctAnswer,submittedAnswer):
         expectedAns += cur.execute("SELECT * FROM " + table).fetchall()
 
     # re-initialize db
-    cur.executescript(commands)
-    con.commit()
+    conTwo = sqlite3.connect("ans2.db")
+    curTwo  = conTwo.cursor()
+    curTwo.executescript(commands)
+    conTwo.commit()
     
     # format and execute submission
     studentCode = submittedAnswer.replace('\n', ' ').replace('\t', ' ')
-    cur.executescript(studentCode)
-    con.commit()
+    curTwo.executescript(studentCode)
+    conTwo.commit()
 
     # gets all tables in db
-    tables = cur.execute("SELECT name FROM sqlite_master WHERE type='table';").fetchall()
+    tables = curTwo.execute("SELECT name FROM sqlite_master WHERE type='table';").fetchall()
     tablesCleaned = [item[0] for item in tables]
     
     # gets the database after executing the submission
     actualAns = []
     for table in tablesCleaned:
-        actualAns += cur.execute("SELECT * FROM " + table).fetchall()
+        actualAns += curTwo.execute("SELECT * FROM " + table).fetchall()
     return (expectedAns,actualAns,originalDb)
 
 # HELPERS ----------------------------------------------------------------------------------------------------------------------
@@ -496,3 +520,6 @@ def valueMatch(expectedAns,actualAns):
 
     matchScore = valueMatchActualTotal / valueMatchExpectedTotal
     return matchScore
+
+def addFeedback(data, category, categoryScore):
+    data['params']['feedback'] += f"{category} : {abs(round((categoryScore*100),2))}"+"%<br>"
