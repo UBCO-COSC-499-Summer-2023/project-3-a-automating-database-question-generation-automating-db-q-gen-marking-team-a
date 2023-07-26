@@ -579,6 +579,14 @@ def generateQuery(data, difficulty):
 
 
 
+    # Adds the subquery
+    if useSubquery:
+
+        # Removes the period
+        questionString = removeTrailingChars(questionString)
+
+
+
     # Adds the join types
     if joinTypes:
 
@@ -671,8 +679,6 @@ def generateQuery(data, difficulty):
 
 
     # Handles having clause
-    havingConnectors = {}
-    havingComparators = {}
     if having:
 
         # Removes the period
@@ -711,7 +717,7 @@ def generateQuery(data, difficulty):
     elif isDistinct:
         questionString += '.'
 
-    print(generateSubquery(database))
+
 
     # Loads database
     database.loadDatabase(data)
@@ -721,7 +727,7 @@ def generateQuery(data, difficulty):
     
     # Sets the correct answer
     data['correct_answers']['SQLEditor'] = queryStatement(database, selectedColumns, joinTypes, conditionalValues, orderByColumns, groupByColumns, havingColumns, withColumns, limit, isDistinct)
-
+    
 
 
 # Creates a query
@@ -799,7 +805,7 @@ def queryStatement(database, selectedColumns, joinTypes={}, conditionalValues={}
     # Adds the having clause
     if havingColumns:
         queryString += '\n'
-        queryString = statementConditionals(queryString, havingColumns, havingConnectors, havingComparators, 'HAVING')
+        queryString = statementConditionals(queryString, havingColumns, 'HAVING')
 
 
 
@@ -900,7 +906,9 @@ def generateSubquery(database):
 
         # Guarantees some conditional values
         conditionalValues = getConditionalValues(random.choices([1, 2, 3], [100, 10, 1])[0], database, columnList=[column for column in columnMap[selectedColumn].columns], restrictive=False)
-        return subqueryStatement(conditionalColumn, 'IN', selectedColumn, columnMap[selectedColumn].name, conditionalValues=conditionalValues)
+        statement = subqueryStatement(conditionalColumn, 'IN', selectedColumn, columnMap[selectedColumn].name, conditionalValues=conditionalValues)
+        questionString = subqueryQuestionString(database, conditionalColumn, 'IN', selectedColumn, queryFunction, conditionalValues=conditionalValues)
+        return statement, questionString
 
 
 
@@ -987,7 +995,59 @@ def generateSubquery(database):
         comparisonOperator = random.choices(['>', '>=', '<', '<=', '=', '!='], [1, 1, 1, 1, 0, 0])[0]
 
 
-    return subqueryStatement(conditionalColumn, comparisonOperator, selectedColumn, columnMap[selectedColumn].name, queryFunction, conditionalValues=conditionalValues)
+
+    # Gets the subquery statement
+    statement = subqueryStatement(conditionalColumn, comparisonOperator, selectedColumn, columnMap[selectedColumn].name, queryFunction, conditionalValues=conditionalValues)
+
+    # Gets the question string
+    questionString = subqueryQuestionString(database, conditionalColumn, comparisonOperator, selectedColumn, queryFunction, conditionalValues=conditionalValues)
+
+    return statement, questionString
+
+def subqueryQuestionString(database, conditionalColumn, comparisonOperator, selectedColumnName, queryFunction='', conditionalValues={}):
+
+    # Begins the question string
+    questionString = f"Use a subquery (if necessary) to get the values where"
+
+    # Prepares the string for an 'IN' clause
+    if comparisonOperator == 'IN':
+        questionString += ' the values of'
+
+    # Adds the conditional column
+    questionString += f" <b>{conditionalColumn}</b>"
+
+    # Adds the comparison operator
+    match comparisonOperator:
+        case '>': questionString += ' <em>is greater than</em>'
+        case '>=': questionString += ' <em>is greater than or equal to</em>'
+        case '<': questionString += ' <em>is less than</em>'
+        case '<=': questionString += ' <em>is less than or equal to</em>'
+        case '=': questionString += ' <em>is equals to</em>'
+        case '!=': questionString += ' <em>is not equal to</em>'
+        case 'IN': questionString += ' <em>are in</em>'
+
+    questionString += ' the'
+
+    # Adds the query function
+    if queryFunction:
+        match queryFunction:
+            case 'COUNT': questionString += ' <em>count of</em>'
+            case 'MAX': questionString += ' <em>maximum value of</em>>'
+            case 'MIN': questionString += ' <em>minimum value of</em>'
+            case 'LENGTH': questionString += ' <em>length of</em>'
+            case '': questionString += ' <em>set of</em>'
+    
+    # Adds the selected column
+    questionString += f" <b>{selectedColumnName}</b>"
+
+    # If present, adds the conditional values
+    if conditionalValues:
+        questionString = questionConditionals(conditionalValues, questionString, database)
+    
+    # Finishes the sentence
+    questionString += '.'
+
+    return questionString
 
 def subqueryStatement(conditionalColumn, comparisonOperator, selectedColumnName, tableName, queryFunction='', conditionalValues={}):
 
