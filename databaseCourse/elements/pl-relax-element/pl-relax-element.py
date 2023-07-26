@@ -9,6 +9,7 @@ import RelaXElementSharedLibrary.RelaXAutogenerator as autogen
 
 # This allows DroneCI to see the RASQLib module
 import sys
+sys.path.append('/databaseCourse/serverFilesCourse/RASQLib')
 sys.path.append('/drone/src/databaseCourse/serverFilesCourse/')
 
 from RASQLib import textDatabaseHandler as db

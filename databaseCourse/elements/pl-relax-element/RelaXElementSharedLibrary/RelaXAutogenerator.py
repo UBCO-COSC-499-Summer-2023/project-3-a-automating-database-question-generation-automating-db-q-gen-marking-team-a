@@ -2,6 +2,7 @@ import random as rand
 
 # This allows DroneCI to see the RASQLib module
 import sys
+sys.path.append('databaseCourse/serverFilesCourse/')
 sys.path.append('/drone/src/databaseCourse/serverFilesCourse/')
 
 from RASQLib import textDatabaseHandler as db
@@ -22,11 +23,10 @@ def autogenerate(data):
     
     # Generates a random database
     columns = rand.randint(4, 7)
-    joins = rand.randint(2, 5) #! Change to joins/rand -> whichever is bigger
+    joins = returnGreater(rand.randint(2,5), (data['params']['attrib_dict']['numJoins'])) #! Change to joins/rand -> whichever is bigger
     rows = rand.randint(5, 15)
     
-
-    database = db.Database(isSQL=False, columns=columns, joins=returnGreater(joins, data['params']['attrib_dict']['numJoins']), rows=rows)
+    database = db.Database(isSQL=False, columns=columns, joins=joins, rows=rows)
 
     question = Question(dataset=database, attribDict=data['params']['attrib_dict'])
     # Loads the database into the data variable
@@ -34,6 +34,8 @@ def autogenerate(data):
 
 class Question:
     Query = "π "
+
+    joinSection = ""
 
     selectStatement = "σ"
     ClauseArray = { "∧", "∨", "¬", "=", "≠", "≥", "≤", ">", "<"}
@@ -48,32 +50,159 @@ class Question:
     outerFullJoins="⟗"
     semiRightJoins="⋉"
     semiLeftJoins="⋊"
-    antiJoins="▷" 
+    antiJoins="▷"
 
     def  __init__(self, dataset, attribDict) -> None:
         
 
-        # Join first -- may need recursive function
-
-        
-        table = rand.choice(list(dataset.tableSet.keys()))
-        table = dataset.tableSet[table]
-        tableDict = {}
+        #* Join first -- may need recursive function
+        # number of joins for the question
+        numJoins = attribDict['numJoins']
+        graph = {}
         for table in dataset.tableSet:
+            print(table)
+            connections = []
             for column in dataset.tableSet[table].columns:
                 if dataset.tableSet[table].columns[column]['references']:
-                    if column not in tableDict or column not in tableDict.keys():
-                        #print(table)
-                        tableDict[dataset.tableSet[table].columns[column]['references']] = []
-                        tableDict[dataset.tableSet[table].columns[column]['references']].append(table)
-        print(tableDict)
+                    print(f"    {dataset.tableSet[table].columns[column]['references']}")
+                    connections.append(dataset.tableSet[table].columns[column]['references'])
+            graph[table] = connections
+        table = rand.choice(list(dataset.tableSet.keys()))
+        #randomWalk(graph=graph, startNode=table, numConn=3)
+        subgraph = randomSubgraph(graph=graph, n=numJoins)
+        print(list(subgraph.keys()))
 
-        keys_list = list(tableDict.keys())
-        selected_key = rand.choice(keys_list)
-        output = tableDict.pop(selected_key)
-        # Project Second
+        usableColumns = []
+        for table in list(subgraph.keys()):
+            for column in dataset.tableSet[table].columns:
+                usableColumns.append(dataset.tableSet[table].columns[column]['name'])
+        #* Projection
 
-        # Select third 
+        projectedColumns = projection(usableColumns)
+        print(projectedColumns)
 
-        # order by / Group by last
+        #* Selection
+        selectedColumns = []
+        for i in range(rand.randint(1,3)):
+            randColumn = rand.choice(usableColumns)
+            while randColumn in selectedColumns:
+                randColumn =  rand.choice(usableColumns)
+            selectedColumns.append(selection(usableColumns, randColumn, subgraph, dataset))
 
+        print(selectedColumns)                        
+
+def projection(usableColumns):
+    projectedColumns = []
+    for i in range(rand.randint(2,5)):
+        randColumn = rand.choice(usableColumns)
+        while randColumn in projectedColumns:
+            randColumn =  rand.choice(usableColumns)
+        projectedColumns.append(randColumn)
+
+    return projectedColumns
+
+
+        
+def selection(usableColumns, randColumn,subgraph, dataset):
+    for table in subgraph.keys():
+        for column in dataset.tableSet[table].columns:
+            print(f"{table}: {randColumn}//{randColumn == dataset.tableSet[table].columns[column]['name']}")
+            
+            if randColumn == dataset.tableSet[table].columns[column]['name']:
+                print('ifStatementPass')
+                match(dataset.tableSet[table].columns[column]['unit']):
+                    case 'STRING': return f"{randColumn} = '{rand.choice(dataset.tableSet[table].rows[column])}'" 
+                    case 'NUMBER': return f"{randColumn} {rand.choice([ '≥', '≤', '>', '<'])} {rand.choice(dataset.tableSet[table].rows[column])}"
+                    case 'DATE': return f"{randColumn} {rand.choice([ '≥', '≤', '>', '<'])} Date({rand.choice(dataset.tableSet[table].rows[column])})"
+                #print(f"Selection string '{rand.choice(dataset.tableSet[table].rows[column])}'")
+                #selectedColumns.append(randColumn)
+
+
+def dfs(graph, startNode, visited=set(), n=1):
+    visited.add(startNode)
+    if len(visited) > n:
+        return visited
+    for child in graph[startNode]:
+        if child not in visited:
+            dfs(graph, child, visited, n)
+            if len(visited) > n:
+                return visited
+    return visited
+
+def randomSubgraph(graph, n):
+    startNode = rand.choice(list(graph.keys()))
+    connectedNodes = dfs(graph, startNode, n=n)
+    return {node: graph[node] for node in connectedNodes}
+
+
+
+#         table = rand.choice(list(dataset.tableSet.keys()))
+#         table = dataset.tableSet[table]
+#         tableDict = {}
+#         for table in dataset.tableSet:
+#             for column in dataset.tableSet[table].columns:
+#                 if dataset.tableSet[table].columns[column]['references']:
+#                     if column not in tableDict:
+#                         #print(table)
+#                         tableDict[dataset.tableSet[table].columns[column]['references']] = []
+#                         tableDict[dataset.tableSet[table].columns[column]['references']].append(table)
+#         print(tableDict)
+#         keysList = list(tableDict.keys())
+#         selectedKey = rand.choice(keysList)
+#         joinedTables = []
+
+#         randomWalk(tableDict, selectedKey)
+
+#         for name in tableDict:
+#             print(name)
+#         for i in range(numJoins):
+#             # keysList = list(tableDict.keys())
+#             # selectedKey = rand.choice(keysList)
+#             # keysList.remove(selectedKey)
+#             if selectedKey in tableDict.keys():
+#                 output = tableDict.pop(selectedKey)
+#             else:
+#                 for tableName in joinedTables:
+#                     if tableName is tableDict.keys():
+#                         output = tableDict.pop(tableName)
+#                         print(f"hello: {tableName}")
+
+
+#             if i == 0:
+#                 self.joinSection = selectedKey + self.naturalJoin + output[0]
+#             # else:
+#                 self.joinSection = self.joinSection + self.naturalJoin + output[0]
+#             selectedKey = output[0]
+#             joinedTables.append(output[0])
+
+#         print(self.joinSection)
+#         # Project Second
+
+#         # Select third 
+
+#         # order by / Group by last
+
+
+# # Function to perform a random walk on the tree
+# def randomWalk(tree, startNode):
+#     visited = set()
+#     current_node = startNode
+
+#     while current_node is not None:
+#         visited.add(current_node)
+#         print(current_node, end=" -> ")
+
+#         # Get the children nodes of the current node
+#         children = tree.get(current_node)
+
+#         # Filter children to exclude previously visited nodes
+#         unvisitedChildren = [child for child in children if child not in visited]
+
+#         if unvisitedChildren:
+#             # Choose a random unvisited child node
+#             current_node = rand.choice(unvisitedChildren)
+#         else:
+#             # No unvisited children, end the walk
+#             break
+
+#     print("END")
