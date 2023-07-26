@@ -159,15 +159,14 @@ def gradeQuery(data, feedback):
 # scores the difference in the number of rows between both outputs
 def rowMatch(rowsSA, rowsCA):
     
+    #taken from SQL customgrader
+
+    
     totalRowsSA = 0
     totalRowsCA = 0
     
     expectedRowsCA = len(rowsCA)
     totalRowsCA += expectedRowsCA
-    
-    #taken from SQL customgrader
-    if not (rowsCA or rowsSA): return 1
-    if not rowsSA or not rowsSA[0]: return 0
     
     rowCountSA = len(rowsSA)
     totalRowsSA += rowCountSA
@@ -175,6 +174,9 @@ def rowMatch(rowsSA, rowsCA):
     missingRows = abs(totalRowsCA - totalRowsSA)
     correctRows = totalRowsCA - missingRows
     rowScore = correctRows / totalRowsCA
+    
+    if not (rowsCA or rowsSA): rowScore = 1
+    if not rowsSA or not rowsSA[0]: rowScore = 0
     
     rowData = {
         'score': rowScore,
@@ -194,11 +196,11 @@ def colMatch(colsSA, colsCA):
     missingColsList = []
     
     #+1 point for each correct column
-    for x in colsCA:
-        if x in colsSA:
+    for col in colsCA:
+        if col in colsSA:
             totalColsSA += 1
         else:
-            missingColsList.append(x)
+            missingColsList.append(col)
             
     
     missingCols = abs(totalColsCA - totalColsSA)
@@ -218,29 +220,18 @@ def colMatch(colsSA, colsCA):
 def valueMatch(valueSA, valueCA):
     
     totalValuesSA = 0
-    totalValuesCA = 0
+    totalValuesCA = len(valueCA)
     commonValues = 0
     
-    
-    # Calculate totalValuesCA - count all values in all lists of valueCA
-    for row in valueCA:
-        totalValuesCA += len(row)
-        
     for row in valueSA:
-        totalValuesSA += len(row)
-    
-    #+1 point for each correct value
-    # Calculate totalValuesSA - count the number of valueSA that exist in the rows of valueCA
-    for rowCA in valueCA:
-        for valueCA in rowCA:
-            if any(valueCA in rowSA for rowSA in valueSA):
-                commonValues += 1
-                
-    totalValuesSA = max(totalValuesSA, commonValues)
+        if row in valueCA:
+            commonValues += 1
             
-    missingVals = abs(totalValuesCA - totalValuesSA)
+    missingVals = abs(totalValuesCA - commonValues)
     correctVals = totalValuesCA - missingVals
     valueScore = correctVals / totalValuesCA
+    
+    totalValuesSA = commonValues
     
     valueData = {
         'score': valueScore,
@@ -257,27 +248,29 @@ def orderMatch(valueSA, valueCA):
     numRowsCA = len(valueCA)
     
     # if either list is empty, return 1
-    if numRowsSA or numRowsCA == 0: return 1
-    
-    # if either list has 1 row, return 1
-    if numRowsSA or numRowsCA == 1:
+    if numRowsSA == 0 or numRowsCA == 0:
+        return 1
+
+    # if either list has 1 row, return 1 if it's a match, otherwise 0
+    if numRowsSA == 1 or numRowsCA == 1:
         for rowCA in valueCA:
             if rowCA in valueSA:
                 return 1
+        return 0
     
     return checkOrder(valueSA, valueCA)
 
 #helper function for ordermatch
 def checkOrder(valueSA, valueCA):
     # if ascending
-    if valueCA[0] < valueCA[:-1]:
-        if valueSA[0] < valueSA[:-1]:
+    if valueCA[0] < valueCA[-1]:
+        if valueSA[0] < valueSA[-1]:
             return 1
         else:
             return 0
     # if descending
-    elif valueCA[0] > valueCA[:-1]:
-        if valueSA[0] > valueSA[:-1]:
+    elif valueCA[0] > valueCA[-1]:
+        if valueSA[0] > valueSA[-1]:
             return 1
         else :
             return 0
