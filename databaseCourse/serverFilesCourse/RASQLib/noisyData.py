@@ -6,7 +6,7 @@ from string import ascii_uppercase
 import os
 
 # Generates random data based on the unit type
-def generateNoisyData(table, key, qty=1, unqiue=None):
+def generateNoisyData(table, key, qty=1, unique=None):
 
     # Checks whether this colomn is unique
     if not unique:
