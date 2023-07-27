@@ -2,11 +2,29 @@ id,INTEGER
 inventory,INTEGER
 quantity,INTEGER
 num,INTEGER
+userId,INTEGER
+orderId,INTEGER
+age,INTEGER
+score,INTEGER
+rank,INTEGER
+level,INTEGER
+distance,INTEGER
+duration,INTEGER
 
 price,DECIMAL,3-9,2
+salary,DECIMAL,6-10,2
+height,DECIMAL,4-6,2
+temperature,DECIMAL,3-4,2
+latitude,DECIMAL,8-12,4
+longitude,DECIMAL,8-12,4
+rating,DECIMAL,4-5,2
+percentage,DECIMAL,4-5,2
 
 identifier,CHAR,3-6
 state,CHAR,2
+postalCode,CHAR,6
+status,CHAR,1
+licensePlate,CHAR,6
 
 name,VARCHAR,20-40-5
 city,VARCHAR,25-50-5
@@ -20,7 +38,14 @@ lastName,VARCHAR,25-35-5
 
 birthdate,DATE
 manufactureDate,DATE
+startDate,DATE
+endDate,DATE
+lastLogin,DATE
+expiration,DATE
 
 arrivalDate,DATETIME
 departureDate,DATETIME
-shipdate, DATETIME
+shipdate,DATETIME
+paymetDue,DATETIME
+appointment,DATETIME
+reservation,DATETIME
