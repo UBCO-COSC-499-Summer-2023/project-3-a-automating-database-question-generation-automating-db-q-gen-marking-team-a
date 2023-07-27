@@ -4,11 +4,22 @@ name: default
 
 steps:
 
-  - name: Run Autogenerator tests
+  - name: Run SQL Autogenerator + Autograder tests
     image: prairielearn/prairielearn
     commands: 
       - pip install -r requirements.txt --quiet
       - cd databaseCourse/elements/pl-sql-element
+  # just run all test files
+      - python -m unittest discover -p "*_test.py"
+  # detailed run of one file
+  #     - python -m unittest -v autogenerator_test.py
+  #     - py -m unittest discover -p "*_test.py"
+
+  - name: Run Relax Autogenerator + Autograder tests
+    image: prairielearn/prairielearn
+    commands: 
+      - pip install -r requirements.txt --quiet
+      - cd databaseCourse/elements/pl-relax-element
   # just run all test files
       - python -m unittest discover -p "*_test.py"
   # detailed run of one file
@@ -22,10 +33,3 @@ steps:
       - cd databaseCourse/serverFilesCourse/RASQLib
   # just run all test files
       - python -m unittest discover -p "*_test.py"
-
-  # - name: Run UI tests
-  #   image: prairielearn/prairielearn
-  #   commands:
-  #     - pip install -r requirements.txt --quiet
-  #     - cd tests/ui
-  #     - python -m unittest discover -p "*_test.py"
