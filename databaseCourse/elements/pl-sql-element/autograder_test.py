@@ -11,7 +11,7 @@ class CustomGraderTest(unittest.TestCase):
         
         result = customGrader(data)
 
-        self.assertEqual(result,inputScoreWeight)
+        self.assertEqual(result, 100)
 
     # 0%
     def testCustomGraderReturnsZeroWhenNoStringMatch(self):
