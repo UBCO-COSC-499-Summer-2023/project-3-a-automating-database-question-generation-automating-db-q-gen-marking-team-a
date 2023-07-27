@@ -95,9 +95,6 @@ $(document).ready(function () {
     var italicWords = applyHTMLTagsToWords('i');
     var emphWords = applyHTMLTagsToWords('em');
     var strongWords = applyHTMLTagsToWords('strong');
-    
-    console.log(boldedWords);
-
 
     /*
     //
