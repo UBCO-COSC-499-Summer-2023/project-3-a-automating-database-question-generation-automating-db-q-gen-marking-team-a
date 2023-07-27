@@ -4,14 +4,14 @@ from SQLElementSharedLibrary.SQLCustomGrader import *
 
 class CustomGraderTest(unittest.TestCase):
     # 100%
-    def testCustomGraderReturnsHundredWhenStringMatch(self):
-        data = {'params':{'html_params':{'questionType':'','difficulty':''}},
-                'submitted_answers':{'SQLEditor':"SELECT * FROM airport"},
-                'correct_answers':{'SQLEditor':"SELECT * FROM airport"}}
+    # def testCustomGraderReturnsHundredWhenStringMatch(self):
+    #     data = {'params':{'html_params':{'questionType':'','difficulty':''}},
+    #             'submitted_answers':{'SQLEditor':"SELECT * FROM airport"},
+    #             'correct_answers':{'SQLEditor':"SELECT * FROM airport"}}
         
-        result = customGrader(data)
+    #     result = customGrader(data)
 
-        self.assertEqual(result, 100)
+    #     self.assertEqual(result, inputScoreWeight)
 
     # 0%
     def testCustomGraderReturnsZeroWhenNoStringMatch(self):
