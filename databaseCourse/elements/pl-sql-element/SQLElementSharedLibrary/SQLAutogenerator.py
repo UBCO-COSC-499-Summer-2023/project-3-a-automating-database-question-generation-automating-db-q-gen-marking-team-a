@@ -288,10 +288,11 @@ def updateStatement(table, updateColumn, updateValue, conditionalValues=None, su
     statement = statementConditionals(statement, conditionalValues)
 
     # Adds the subquery
-    if 'WHERE' in statement:
-        statement += " AND" + subquery
-    else:
-        statement += " WHERE" + subquery
+    if subquery:
+        if 'WHERE' in statement:
+            statement += " AND" + subquery
+        else:
+            statement += " WHERE" + subquery
     
     # Add finishing touches and returns
     statement += ';\n'
@@ -381,10 +382,11 @@ def deleteStatement(table, conditionalValues=None, subquery=''):
     statement = statementConditionals(statement, conditionalValues)
 
     # Adds the subquery
-    if 'WHERE' in statement:
-        statement += " AND" + subquery
-    else:
-        statement += " WHERE" + subquery
+    if subquery:
+        if 'WHERE' in statement:
+            statement += " AND" + subquery
+        else:
+            statement += " WHERE" + subquery
     
     # Add finishing touches and returns
     statement += ';\n'
