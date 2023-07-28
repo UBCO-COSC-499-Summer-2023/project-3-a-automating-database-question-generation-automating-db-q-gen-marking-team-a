@@ -260,8 +260,12 @@ def generateUpdate(data, difficulty):
     # Generates a bunch of rows
     database.generateRows(random.randint(15, 25))
 
-    # Selects a random column to affect
-    updateColumn = random.choice(list(table.columns.keys()))
+    # Selects a random column to affect. Ensures that it cannot
+    # select a unique column so ensure that the update won't
+    # violate unique constrains
+    updateColumn = None
+    while not updateColumn or not nd.isUnique(table, updateColumn):
+        updateColumn = random.choice(list(table.columns.keys()))
 
     # Generates the updated valued
     updateValue = nd.generateNoisyData(table, updateColumn)[0]
