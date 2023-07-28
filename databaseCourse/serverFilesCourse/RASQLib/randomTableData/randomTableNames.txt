@@ -18,3 +18,15 @@ student
 university
 enrolled
 professor
+participant
+character
+player
+tenant
+listing
+reservation
+hotel
+patient
+appointment
+candidate
+interview
+budget
