@@ -656,7 +656,9 @@ class Table:
             # Only matters if unique is True.
             if self.columns[key]['references'] not in tableSet:
 
-                columns = randint(3, 6)
+                # Chooses the number of columns to exist in the random
+                # referenced tables
+                columns = randint(4, 6)
 
                 # Ensures foreign key consistency across generated tables
                 #   name of the column in the foreign table: {
