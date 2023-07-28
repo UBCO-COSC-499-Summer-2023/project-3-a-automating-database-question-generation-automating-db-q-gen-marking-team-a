@@ -15,8 +15,8 @@ price,DECIMAL,3-9,2
 salary,DECIMAL,6-10,2
 height,DECIMAL,4-6,2
 temperature,DECIMAL,3-4,2
-latitude,DECIMAL,8-12,4
-longitude,DECIMAL,8-12,4
+latitude,DECIMAL,8-12,2
+longitude,DECIMAL,8-12,2
 rating,DECIMAL,4-5,2
 percentage,DECIMAL,4-5,2
 

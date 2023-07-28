@@ -120,7 +120,10 @@ def generateNoisyInteger(unique, qty):
     return values
 
 
-# Generates a random decimal, as specified by the unit
+# Generates a random decimal, as specified by the unit.
+# As a note, the decimal portion is guaranteed to be at
+# most two. This is because if it was any larger, it
+# would be rounded to two decimal places when displayed.
 def generateRandomDecimal(unique, qty, unitOther):
 
     # Grabs the whole and decimal portions of the string
@@ -130,43 +133,17 @@ def generateRandomDecimal(unique, qty, unitOther):
     whole = int(whole)
     decimal = int(decimal)
 
-    # Creates a random decimal values
-    # Ensures the final digit is either a 0 or a 5,
-    # since it looks better than a purely random number.
-    # Plus, decimals are mostly used for currency.
-    randomDecimal = str(random.randint(0, 10 ** (decimal - 1) - 1)) + random.choice(['0', '5'])
-    
-
-    
-    # Gives an exponentially greater likelihood that
-    # smaller numbers are returned. Otherwise, it
-    # would be linearly more likely that large
-    # numbers appear. In other words, increases the
-    # odds the random number looks good.
-    choices = []
-    weights = []
-    for i in range(whole - decimal):
-        choices.append(i + 1)
-        weights.append(2 ** (whole - i))
-
-
-
-    # Holds the values
+    # Fills the array with values
     values = []
-
-    # Keeps populating values
     while len(values) < qty:
 
-        # Chooses a max order of magnitude for the size
-        # of the whole number, where small orders of
-        # magnitude are preferred
-        randomPower = random.choices(choices, weights)
-
-        # Creates the whole number
-        randomWhole = random.randint(5, 10 ** randomPower[0])
+        # Chooses a random whole portion and random
+        # decimal portion
+        randomWhole = random.randint(1, 10 ** (whole - decimal))
+        randomDecimal = random.randint(0, 10 ** decimal)
 
         # Ensures no duplicated, if necessary
-        tryValue = float(f"{randomWhole}.{randomDecimal}")
+        tryValue = float(f"{randomWhole}.{str(randomDecimal).ljust(decimal, '0')}")
         if not (unique and tryValue in values):
             values.append(tryValue)
 
