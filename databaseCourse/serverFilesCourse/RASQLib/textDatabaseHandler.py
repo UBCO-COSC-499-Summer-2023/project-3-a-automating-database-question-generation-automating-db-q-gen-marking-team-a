@@ -46,7 +46,6 @@ class Database:
         else:
             tableNames = getRandomTableNames()
             columnNames = parseColumnsFromFile('randomColumnsRelaX')
-            print(columnNames)
             self.generateTableSet(columns=columns, joins=joins, depth=depth, rows=rows, tableNames=tableNames ,columnNames=columnNames)
             
         
@@ -84,7 +83,7 @@ class Database:
             if i == len(self.tableSet):
                 break
             randIndex = randint(0,depth-1)
-            print(f"{randIndex}/ {depth-1}/ {i}\n{joins+1}/ {len(keyList)}/ {len(self.tableSet)}")
+            #print(f"{randIndex}/ {depth-1}/ {i}\n{joins+1}/ {len(keyList)}/ {len(self.tableSet)}")
             self.tableSet[keyList[randIndex]].link(self.tableSet[keyList[i]])
 
 
@@ -573,7 +572,7 @@ class Table:
 
             # Chooses a random column to add
             # Pops the column to ensure no duplicates
-            print(columnNames)
+            #print(columnNames)
             addColumn = columnNames.pop(choice(range(len(columnNames))))
 
             # Checks if the column would override an existing 
