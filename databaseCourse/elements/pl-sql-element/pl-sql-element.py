@@ -45,11 +45,13 @@ def prepare(element_html, data):
     databaseFilePath = pl.get_string_attrib(element, 'database', '')
 
     # If there is a database file, read and loads its contents
-    data['params']['db_initialize'] = ''
+    data['params']['db_initialize_create'] = ''
     if databaseFilePath:
         with open(databaseFilePath,"r") as databaseFile:
-           data['params']['db_initialize'] = databaseFile.read()
+           data['params']['db_initialize_create'] = databaseFile.read()
         
+    data['params']['db_initialize_insert_frontend'] = ''
+    data['params']['db_initialize_insert_backend'] = ''
 
 
     # Loads quesiton parameters into data
@@ -123,6 +125,8 @@ def prepare(element_html, data):
         'isDistinct': questionIsDistinct
     }
 
+    data['params']['feedback']=""
+
     # If if is a randomised question, generate the question
     if questionRandom:
         autogen.autogenerate(data)
@@ -147,11 +151,15 @@ def render(element_html, data):
     
     # Grabs the correct answer from the data variable
     correctAnswer = data['correct_answers']['SQLEditor']
+
+    # feedback
+    feedback = data['params']['feedback']
     
     # Grabs the string to initialize the database.
     # The join command turns an array of strings into a single string.
     # The get returns the entry if it exists or an empty string otherwise.
-    dbInit = ''.join(data['params'].get('db_initialize', ''))
+    dbInit = ''.join(data['params'].get('db_initialize_create', ''))
+    dbInit += ''.join(data['params'].get('db_initialize_insert_frontend', ''))
      
     # This renders the question into PL
     if data['panel'] == 'question':  
@@ -172,7 +180,8 @@ def render(element_html, data):
         
         html_params = {
             'submission': True,
-            'studentSubmission': submittedAnswer
+            'studentSubmission': submittedAnswer,
+            'feedback':feedback
         }
         
 
