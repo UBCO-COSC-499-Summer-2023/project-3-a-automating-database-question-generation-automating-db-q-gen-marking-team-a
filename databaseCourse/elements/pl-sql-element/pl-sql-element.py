@@ -75,9 +75,22 @@ def prepare(element_html, data):
     questionIsOnUpdateCascade = pl.get_integer_attrib(element, 'isonupdatecascade', None)
     questionIsOnDeleteSetNull = pl.get_integer_attrib(element, 'isondeletesetnull', None)
 
-    questionUseConditional = pl.get_integer_attrib(element, 'useconditional', 0)
+    questionConditional = pl.get_integer_attrib(element, 'conditional', 0)
     questionUseSubquery = pl.get_boolean_attrib(element, 'usesubquery', False)
-    questionUseAndInsteadOfOr = pl.get_boolean_attrib(element, 'useandinsteadofor', False)
+
+    questionColumnsToSelect = pl.get_integer_attrib(element, "columnstoselect", 0)
+    questionOrderBy = pl.get_integer_attrib(element, "orderby", 0)
+    questionGroupBy = pl.get_integer_attrib(element, "groupby", 0)
+    questionHaving = pl.get_integer_attrib(element, 'having', 0)
+    questionLimit = pl.get_integer_attrib(element, 'limit', 0)
+    questionWith = pl.get_integer_attrib(element, 'with', 0)
+    questionIsDistinct = pl.get_boolean_attrib(element, 'isdistinct', False)
+
+    # Notice that there is no "LIKE" clause included.
+    # This is becuase SQLite does not have a LIKE clause,
+    # rather it uses "WHERE $col GLOB $val". While this
+    # is similar, testing on a 'gotcha' between SQL and
+    # SQLite is a poor idea
 
     data['params']['html_params'] = {
         'random': questionRandom,
@@ -97,16 +110,23 @@ def prepare(element_html, data):
         'isOnUpdateCascade': questionIsOnUpdateCascade,
         'isOnDeleteSetNull': questionIsOnDeleteSetNull
     }
-
+    
     data['params']['html_query_clauses'] = {
-        'useConditional': questionUseConditional,
+        'conditional': questionConditional,
         'useSubquery': questionUseSubquery,
-        'useAndInsteadOfOr': questionUseAndInsteadOfOr
+        'columnsToSelect': questionColumnsToSelect,
+        'orderBy': questionOrderBy,
+        'groupBy': questionGroupBy,
+        'having': questionHaving,
+        'limit': questionLimit,
+        'with': questionWith,
+        'isDistinct': questionIsDistinct
     }
 
     # If if is a randomised question, generate the question
     if questionRandom:
         autogen.autogenerate(data)
+
 
 
 # Renders the element
