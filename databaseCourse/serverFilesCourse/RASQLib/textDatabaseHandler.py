@@ -156,7 +156,7 @@ class Database:
         if not qty:
             # Generates plenty of rows for the backend
             # database
-            if self.rows:
+            if self.primaryTable.rows:
                 qty = len(list(self.primaryTable.rows.values())[0]) * 2
 
             # If we shouldn't generate rows, just return
