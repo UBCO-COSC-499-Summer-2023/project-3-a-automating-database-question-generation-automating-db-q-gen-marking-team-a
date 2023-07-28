@@ -21,6 +21,8 @@ def generate(element_html, data):
 
 def prepare(element_html, data):
     data['params']['grader'] = 'RelaXEditor'
+
+    data['params']['db_initialize_create'] = ''
     element = lxml.html.fragment_fromstring(element_html)
     
     # If there is a database file, read and loads its contents
@@ -38,7 +40,7 @@ def prepare(element_html, data):
     
     # storing the actual feedback
     data['params']['queryFeedback'] = ''
-    data['params']['db_initialize_create'] = ''
+
     #get the url to execute relax from backend
     url = pl.get_string_attrib(element, 'url', '')
     data['params']['url'] = url
@@ -111,7 +113,7 @@ def render(element_html, data):
     if data['panel'] == 'question':
         # setting the paramaters
         html_params = {
-            'database' : data['params']['db_initialize'],
+            'database' : data['params']['db_initialize_create'],
             'previousSubmission' : submittedAnswer
         }
             # Opens and renders mustache file into the question html

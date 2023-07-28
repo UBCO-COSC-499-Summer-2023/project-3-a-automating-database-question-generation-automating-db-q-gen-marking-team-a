@@ -91,8 +91,8 @@ class Database:
         # This insures that only desired columns are foreign keys
         for key in keyList:
             for column in self.tableSet[key].columns:
-                if self.tableSet[key].columns[column]['references'] is None:
-                    self.tableSet[key].columns[column]['name'] = key + column
+                if self.tableSet[key].columns[column]['references'] is None and (self.tableSet[key].columns[column]['name'] == "id" or self.tableSet[key].columns[column]['name'] == "num"):
+                    self.tableSet[key].columns[column]['name'] = key[:3] + column
 
     # Populates the database with rows of data
     #
@@ -551,7 +551,7 @@ class Table:
                 # If the default contraint, then choose
                 # an applicable name for an INTEGER
                 if not key:
-                    constraints[key]['name'] = choice(['num', 'id', f"{self.name[:1].lower()}id"])
+                    constraints[key]['name'] = choice(['num', 'id'])
 
                 self.columns[constraints[key]['name']] = {
                     'name': constraints[key]['name'],
