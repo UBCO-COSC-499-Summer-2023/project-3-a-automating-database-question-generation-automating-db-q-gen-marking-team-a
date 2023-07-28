@@ -513,6 +513,11 @@ def valueMatch(expectedAns,actualAns):
     valueMatchExpectedTotal = len(expectedAns)
     valueMatchActualTotal = 0
 
+    if valueMatchExpectedTotal == 0 and len(actualAns) == 0:
+        return 1
+    if valueMatchExpectedTotal == 0 and len(actualAns) != 0:
+        return 0
+
     # +1 point per row of exact values matched
     for x in actualAns:
         if x in expectedAns:
