@@ -48,7 +48,8 @@
         {
             "title": "Random Update",
             "questions": [
-                {"id": "DDL_Questions/updateTables/randomParameterized",          "points": 1}
+                {"id": "DDL_Questions/updateTables/randomParameterized",          "points": 1},
+                {"id": "DDL_Questions/updateTables/randomParameterizedSubquery",          "points": 1}
             ]
         },
         {
@@ -62,7 +63,8 @@
         {
             "title": "Random Delete",
             "questions": [
-                {"id": "DDL_Questions/deleteTables/randomParameterized",          "points": 1}
+                {"id": "DDL_Questions/deleteTables/randomParameterized",          "points": 1},
+                {"id": "DDL_Questions/deleteTables/randomParameterizedSubquery",          "points": 1}
             ]
         }
     ]

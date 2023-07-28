@@ -19,9 +19,13 @@ class Database:
         
 
         self.isSQL = isSQL
+        
+
 
         # For SQL databases
         if isSQL:
+
+            columnNames = parseColumnsFromFile('randomColumnsSQL')
 
             # When columns are set to zero, it indicates that
             # a table is being pased in (used to support old
@@ -30,28 +34,30 @@ class Database:
             if columns == 0:
                 self.primaryTable = file
             else:
-                self.primaryTable = Table(file=file, columns=columns, joins=joins, clauses=clauses, constraints=constraints, rows=rows, database=self, isSQL=isSQL, random=random)
+                self.primaryTable = Table(file=file, columns=columns, joins=joins, clauses=clauses, constraints=constraints, rows=rows, database=self, isSQL=isSQL, random=random, columnNames=columnNames)
             
             # Gets the referenced tables
-            self.referencedTables = self.primaryTable.getReferencedTables(static=not random)
+            self.referencedTables = self.primaryTable.getReferencedTables(static=not random, columnNames=columnNames)
+        
+
         
         # For RelaX databases
         else:
-            tableNames = getRandomTableNames()
-            self.generateTableSet(columns=columns, joins=joins, depth=depth, rows=rows, tableNames=tableNames)
+            tableNames = getRandomTableNames
+            columnNames = parseColumnsFromFile('randomColumnsRelaX')
+            self.generateTableSet(columns=columns, joins=joins, depth=depth, rows=rows, tableNames=tableNames ,columnNames=columnNames)
             
         
 
     # Generates a table set for RelaX
-    def generateTableSet(self, columns=5, joins=5, depth=3, rows=0, tableNames=None) -> dict:
+    def generateTableSet(self, columns=5, joins=5, depth=3, rows=0, tableNames=[], columnNames=[]) -> dict:
 
         # Gets a list of possible table names
-        #possibleColumns = self.parseColumnsFromFile('randomColumns')
         self.tableSet = {}
         
         # The primary table should have more columns
         for i in range(joins + 1):
-            table = Table(columns=columns, joins=0, isSQL=False, tableNames=tableNames)
+            table = Table(columns=columns, joins=0, isSQL=False, tableNames=tableNames, columnNames=columnNames)
             self.tableSet[table.name] = table 
 
         # Populates the table with data
@@ -122,6 +128,79 @@ class Database:
         # The list() performs a deep copy rather than a shallow one.
         for key in keyMap:
             self.referencedTables[keyMap[key]['references']].rows[keyMap[key]['foreignKey']] = list(self.primaryTable.rows[key])
+    
+    # This adds all rows from conditionalValues into
+    # the appropriate table's backend rows
+    def addRowsBackend(self, conditionalValues):
+        
+        # Gets a list of all tables.
+        # The list comprehension allows for a deep copy of
+        # the dictionary (but not its values)
+        allTables = {self.referencedTables[key].name: self.referencedTables[key] for key in self.referencedTables}
+        allTables[self.primaryTable.name] = self.primaryTable
+        
+        for table in allTables:
+
+            # Each conditional value will get their own row
+            for key in conditionalValues:
+
+                # Check if the value should be associated with
+                # this table
+                if key in allTables[table].columns:
+                    row = {}
+
+                    keyMap = self.primaryTable.getKeyMap()
+                    for mKey in keyMap:
+                        if keyMap[mKey]['foreignKey'] == key:
+                            table = self.primaryTable
+
+                    # Fills in the entire row
+                    for column in allTables[table].columns:
+                        if key == column:
+                            row[column] = [conditionalValues[key]]
+                        else:
+                            row[column] = nd.generateNoisyData(allTables[table], column)
+
+                    # Adds the row to the appropriate table
+                    allTables[table].addRowBackend(row)
+    
+    # Generates backend rows such that each table will have
+    # a number of rows equal to qty; it does not necessarily
+    # generate qty number of rows.
+    def generateRowsBackend(self, qty=0):
+
+        if not qty:
+            # Generates plenty of rows for the backend
+            # database
+            if self.primaryTable.rows:
+                qty = len(list(self.primaryTable.rows.values())[0]) * 2
+
+            # If we shouldn't generate rows, just return
+            else:
+                return
+
+        # Subtracts the current amount of backend rows
+        # from the amount needed to be generated
+        amount = qty if not self.primaryTable.rowsBackend else qty - len(list(self.primaryTable.rowsBackend.values())[0])
+        self.primaryTable.generateRowsBackend(amount)
+
+        for table in self.referencedTables:
+
+            # Subtracts the current amount of backend rows
+            # from the amount needed to be generated
+            amount = qty if not self.referencedTables[table].rowsBackend else qty - len(list(self.referencedTables[table].rowsBackend.values())[0])
+            self.referencedTables[table].generateRowsBackend(amount)
+        
+        # Gets the primary's key map for easy references
+        keyMap = self.primaryTable.getKeyMap()
+
+        # Overrides the foreign column in the referenced table
+        # to be the foreign key's column in the primary table.
+        # The list() performs a deep copy rather than a shallow one.
+        for key in keyMap:
+            self.referencedTables[keyMap[key]['references']].rowsBackend[keyMap[key]['foreignKey']] = list(self.primaryTable.rowsBackend[key])
+
+
 
     # Ensuring consistency across FKs is done in Table.link(),
     # but does require the rows to be generated BEFORE the
@@ -139,14 +218,14 @@ class Database:
         # Add their schema to the initialize string
         if self.referencedTables:
             for table in self.referencedTables:
-                data['params']['db_initialize'] += f"{self.referencedTables[table].getSQLSchema()}\n"
+                data['params']['db_initialize_create'] += f"{self.referencedTables[table].getSQLSchema()}\n"
         
         # Adds the primary table afterwards.
         # Since the primary table may reference the foreign
         # tables but NOT vice versa, it is required that the
         # primary table is loaded after such that foreign
         # key constrains are satisfied.
-        data['params']['db_initialize'] += self.primaryTable.getSQLSchema()
+        data['params']['db_initialize_create'] += self.primaryTable.getSQLSchema()
     
     # Adds the tables' rows to the data
     def loadRows(self, data):
@@ -156,31 +235,80 @@ class Database:
         if self.referencedTables:
             for table in self.referencedTables:
                 if self.referencedTables[table].rows:
-                    data['params']['db_initialize'] += self.referencedTables[table].getInserts()
+                    data['params']['db_initialize_insert_frontend'] += self.referencedTables[table].getInserts()
         
         # Adds the primary table afterwards.
         # Since the primary table may reference the foreign
         # tables but NOT vice versa, it is required that the
         # primary table is loaded after such that foreign
         # key constrains are satisfied.
-        data['params']['db_initialize'] += self.primaryTable.getInserts()
+        data['params']['db_initialize_insert_frontend'] += self.primaryTable.getInserts()
     
+    def loadRowsBackend(self, data):
 
+        # Iterate over tables, if there are any
+        # Add their inserts to the initialize string
+        if self.referencedTables:
+            for table in self.referencedTables:
+                if self.referencedTables[table].rowsBackend:
+                    data['params']['db_initialize_insert_backend'] += self.referencedTables[table].getInsertsBackend()
+        
+        # Adds the primary table afterwards.
+        # Since the primary table may reference the foreign
+        # tables but NOT vice versa, it is required that the
+        # primary table is loaded after such that foreign
+        # key constrains are satisfied.
+        data['params']['db_initialize_insert_backend'] += self.primaryTable.getInsertsBackend()
+    
     def loadRelaX(self, data):
         for table in self.tableSet:
-            data['params']['db_initialize'] += self.tableSet[table].getRelaXSchema()
-        data['params']['db_initialize'] = data['params']['db_initialize'][:-1]
+            data['params']['db_initialize_create'] += self.tableSet[table].getRelaXSchema()
+        data['params']['db_initialize_create'] = data['params']['db_initialize_create'][:-1]
         #with open("./RelaXElementSharedLibrary/ShipmemtDatabase.txt") as f:
         #    data['params']['db_initialize'] = f.read()
     
     # Adds everything necessary for each table to the data variable
     def loadDatabase(self, data):
         if self.isSQL:
+            # CREATE statement
             self.loadColumns(data)
+
+            # INSERT statements for the frontend DB
             self.loadRows(data)
+
+
+
+            # Fills in the backend rows
+            self.generateRowsBackend()
+
+            # INSERT statement for the backend DB
+            self.loadRowsBackend(data)
         else:
             self.loadRelaX(data)
     
+
+
+    def getTableMap(self):
+        keyMap = self.primaryTable.getKeyMap()
+        tableMap = {key: self.referencedTables[keyMap[key]['references']] for key in keyMap}
+        tableMap[self.primaryTable.name] = self.primaryTable
+        return tableMap
+
+    # Column map is the opposite of tableMap. Given a column,
+    # it returns the table it originated from.
+    #   columnMap {
+    #       $columnName: $table
+    #   }
+    def getColumnMap(self, tableNames=True):
+        tableMap = self.getTableMap()
+        columnMap = {}
+        for key in tableMap:
+            for column in tableMap[key].columns:
+                if tableNames:
+                    columnMap[column] = tableMap[key].name
+                else:
+                    columnMap[column] = tableMap[key]
+        return columnMap
 
 
     # Prints the schema of all tables in the database
@@ -199,11 +327,12 @@ class Table:
     # File name and table name are equivalent.
     #   File: the name of the text file if it exists OR the name of the random table
     #   Columns: the number of columns in the table
-    def __init__(self, file='', columns=5, joins=0, clauses={}, constraints={}, rows=0, database=None, isSQL=True, random=True, tableNames=None):
+    def __init__(self, file='', columns=5, joins=0, clauses={}, constraints={}, rows=0, database=None, isSQL=True, random=True, tableNames=[], columnNames=[]):
         self.name = file
         self.database = database
         self.columns = {}
         self.rows = {}
+        self.rowsBackend = {}
         self.isSQL = isSQL
 
         # If no constrains are present, guarantees the
@@ -215,8 +344,10 @@ class Table:
             else:
                 constraints = {'': {'name': '', 'unit': 'NUMBER', 'unitOther': None}}
 
-        # Adds columns
-        self.load(file, columns, joins, clauses, constraints, random, tableNames)
+        # Adds columns.
+        # Also passes in column names from the file if they
+        # were not supplied, which only happens for testing.
+        self.load(file, columns, joins, clauses, constraints, random, tableNames, columnNames if columnNames else parseColumnsFromFile('randomColumnsSQL'))
 
         # Adds data
         self.generateRows(rows)
@@ -228,13 +359,13 @@ class Table:
     # random tables, not static tables; for random tables.
     # f"{file}" will become the table name if it is
     # provided, otherwise a random name will be chosen
-    def load(self, file, columns, joins, clauses, constraints, random, tableNames):
+    def load(self, file, columns, joins, clauses, constraints, random, tableNames, columnNames):
 
         if not random:
             self.loadFromText(file)
         else:
-            self.loadRandom(self.name, columns, joins, clauses, constraints, tableNames)
-
+            self.loadRandom(self.name, columns, joins, clauses, constraints, tableNames, columnNames)
+            
     # Given the path to a text file, loads its data
     def loadFromText(self, file):
 
@@ -339,7 +470,7 @@ class Table:
 
 
     # Creates a random table
-    def loadRandom(self, name, columns, joins, clauses, constraints, tableNames):
+    def loadRandom(self, name, columns, joins, clauses, constraints, tableNames, columnNames):
 
         # Checks whether the parameters are legal
         #
@@ -404,13 +535,6 @@ class Table:
 
 
 
-        # Gets the columns used to build a table
-        possibleColumns = None
-        if self.isSQL:
-            possibleColumns = self.parseColumnsFromFile('randomColumnsSQL')
-        else:
-            possibleColumns = self.parseColumnsFromFile('randomColumnsRelaX')
-
 
         # Adds foreign key constraints
         if constraints:
@@ -440,7 +564,7 @@ class Table:
 
             # Chooses a random column to add
             # Pops the column to ensure no duplicates
-            addColumn = possibleColumns.pop(choice(range(len(possibleColumns))))
+            addColumn = columnNames.pop(choice(range(len(columnNames))))
 
             # Checks if the column would override an existing 
             # column. This could only occur due to foreign key
@@ -448,7 +572,7 @@ class Table:
             # giving the same column. Requires at most one more
             # pop() to fix
             if addColumn[0] in self.columns.keys():
-                addColumn = possibleColumns.pop(choice(range(len(possibleColumns))))
+                addColumn = columnNames.pop(choice(range(len(columnNames))))
 
             # Grabs parameters
             columnName = addColumn[0]
@@ -592,6 +716,7 @@ class Table:
                         assert False, f"Clause {clause} is invalid"
 
 
+
     # Links one table to another
     # Used with RelaX
     def link(self, foreignTable):     
@@ -698,7 +823,7 @@ class Table:
     # table to the referenced tables. If the unique parameter is true,
     # this dictionary contains a set of tables: no duplicated. Otherwise,
     # there may be duplicate tables with unique foreign keys.
-    def getReferencedTables(self, unique=True, static=False):
+    def getReferencedTables(self, unique=True, static=False, columnNames=[]):
         
         # Uses a dictionary to store the tables and a set to keep track
         # of unique table names
@@ -728,7 +853,7 @@ class Table:
                 }
 
                 # Loads an approrpiate table into the dictionary
-                tables[self.columns[key]['references']] = Table(file=self.columns[key]['references'], columns=columns, constraints=constraints, database=self.database, isSQL=True, random=not static)
+                tables[self.columns[key]['references']] = Table(file=self.columns[key]['references'], columns=columns, constraints=constraints, database=self.database, isSQL=True, random=not static, columnNames=columnNames)
 
                 # Adds the table name to the set if unique is True
                 if unique:
@@ -756,12 +881,56 @@ class Table:
     # Populates the table's rows    
     def generateRows(self, qty):
         if qty:
-            self.rows = nd.generateColumns(self, qty)
+
+            # Generates the data
+            columns = nd.generateColumns(self, qty)
+
+            for key in columns:
+
+                # Creates the column if it does not already exist
+                if not key in self.rows:
+                    self.rows[key] = []
+
+                # Adds the column
+                self.rows[key] += columns[key]
+    
+    def generateRowsBackend(self, qty=0):
+        if not qty:
+
+            # Generates plenty of rows for the backend
+            # database
+            if self.rows:
+                qty = len(list(self.rows.values())[0]) * 2
+
+            # If we shouldn't generate rows, just return
+            else:
+                return
+
+        # Generates the data
+        columns = nd.generateColumns(self, qty)
+
+        for key in columns:
+
+            # Creates the column if it does not already exist
+            if not key in self.rowsBackend:
+                self.rowsBackend[key] = []
+
+            # Adds the column
+            self.rowsBackend[key] += columns[key]
+
     
     # Adds a row to this table
     def addRow(self, row, index=0):
         for key in self.columns.keys():
+            if key not in self.rows:
+                self.rows[key] = []
             self.rows[key].append(row[key][index])
+    
+    def addRowBackend(self, row, index=0):
+        for key in self.columns.keys():
+            if key not in self.rowsBackend:
+                self.rowsBackend[key] = []
+            self.rowsBackend[key].append(row[key][index])
 
 
 
@@ -835,6 +1004,9 @@ class Table:
     # Returns insert statements for this table's rows
     def getInserts(self):
         return ''.join([f"INSERT INTO {self.name} VALUES ({str([self.rows[key][i] for key in self.rows])[1:-1]});\n" for i in range(len(list(self.rows.values())[0]))]) if self.rows else ''
+    
+    def getInsertsBackend(self):
+        return ''.join([f"INSERT INTO {self.name} VALUES ({str([self.rowsBackend[key][i] for key in self.rowsBackend])[1:-1]});\n" for i in range(len(list(self.rowsBackend.values())[0]))]) if self.rowsBackend else ''
 
 
 
@@ -936,3 +1108,84 @@ def getRandomTableNames(path=relativeTableDataFilePath('randomTableNames')):
             return [line.strip() for line in file.readlines() if not line.isspace()]
     except:
        return []
+    
+
+# Given a marked-up textfile, return an array
+# of possible columns for random table generation.
+# A helper function for loadRandom
+def parseColumnsFromFile(file):
+
+    # Holds all the columns that can be selected
+    columnNames = []
+
+    # Reads the text file
+    with open(relativeTableDataFilePath(file)) as columnsFile:
+
+        # Iterates over each line
+        for line in columnsFile:
+
+            # Only cares about non-whitespace lines
+            if line and not line.isspace():
+
+                # Formats the line correctly.
+                # Removes leading and trailing whitespace from
+                # each word, as deliminated by ',' in the line
+                words = [word.strip() for word in line.split(',')]
+
+                # Grabs the parameters
+                name = words[0]
+                unit = words[1]
+                unitOther = None
+
+
+
+                # Handles the cases where the unitOther is not none
+                if 'DECIMAL' == unit or 'CHAR' == unit or 'VARCHAR' == unit:
+                    unitOther = parseRange(words[2])
+                    
+                    # Decimal needs two bits of data to
+                    # describe its unitOther; hence length of 4
+                    if unit == 'DECIMAL':
+                        columnNames.append([name, unit, unitOther, parseRange(words[3])])
+                    # The other columns with uniOther only require 3
+                    else:
+                        columnNames.append([name, unit, unitOther])
+                
+                # Adds columns without unitOther
+                else:
+                    columnNames.append([name, unit])
+        
+    # Returns the populated array
+    return columnNames
+
+# Given a range in the form of `xx-yy-zz` or
+# `xx-yy`, returns a range. If there is no `-`,
+# then return it unchanged as a string.
+# A helper funciton of parseColumnsFromFile()
+def parseRange(string):
+
+    # Checks if it is a range
+    if '-' in string:
+
+        # Split over '-'
+        split = string.split('-')
+
+        # The format is:
+        #   First item is the start
+        #   Second item is the stop (inclusive!)
+        #   Third item is the step (optional)
+        start = int(split[0])
+        stop = int(split[1]) + 1
+
+        # Obtains the step, if it is included.
+        # otherwise it defualts to 1
+        step = 1
+        if len(split) > 2:
+            step = int(split[2])
+        
+        # Returns the range
+        return range(start, stop, step)
+    
+    # If it is not a range, return as a string
+    else:
+        return f"{string}"

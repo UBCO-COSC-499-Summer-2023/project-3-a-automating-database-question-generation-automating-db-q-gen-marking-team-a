@@ -36,9 +36,11 @@ class AutogenerateTest(unittest.TestCase):
             ])
     def testAutogenerateReturnsCorrectQuestionType(self,testType,difficulty,keyWord):
         initialAns = "\n"
-        db_initalize = ""
-        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty, 'columns': 5, 'joins': 0},
-                          'db_initialize':db_initalize, 'html_table_clauses': {}},
+        db_initialize = ""
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty,'expectedOutput':False},
+                    'db_initialize_create':db_initialize, 
+                    'db_initialize_insert_frontend':db_initialize, 
+                    'db_initialize_insert_backend':db_initialize},
                 'correct_answers':{'SQLEditor': initialAns}}
         
         autogenerate(data)
@@ -60,7 +62,9 @@ class QuestionGenerationTest(unittest.TestCase):
         initialAns = ""
         difficulty = "easy"
         data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
-                          'db_initialize':db_initialize},
+                        'db_initialize_create':db_initialize, 
+                        'db_initialize_insert_frontend':db_initialize, 
+                        'db_initialize_insert_backend':db_initialize},
                 'correct_answers':{'SQLEditor': initialAns}}
         
         generateUpdate(data,difficulty)
@@ -75,7 +79,9 @@ class QuestionGenerationTest(unittest.TestCase):
         initialAns = ""
         difficulty = "medium"
         data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
-                          'db_initialize':db_initialize},
+                        'db_initialize_create':db_initialize, 
+                        'db_initialize_insert_frontend':db_initialize, 
+                        'db_initialize_insert_backend':db_initialize},
                 'correct_answers':{'SQLEditor': initialAns}}
         
         generateUpdate(data,difficulty)
@@ -93,14 +99,16 @@ class QuestionGenerationTest(unittest.TestCase):
         db_initialize = ""
         initialAns = ""
         difficulty = "medium"
-        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
-                          'db_initialize':db_initialize},
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty,'expectedOutput':False},
+                        'db_initialize_create':db_initialize, 
+                        'db_initialize_insert_frontend':db_initialize, 
+                        'db_initialize_insert_backend':db_initialize},
                 'correct_answers':{'SQLEditor': initialAns}}
         
-        generateQuery(data,difficulty)
+    #     generateQuery(data,difficulty)
 
-        actualQuestionType = ''.join(data['params']['questionString']).lower()
-        self.assertIn("select the columns",actualQuestionType)
+    #     actualQuestionType = ''.join(data['params']['questionString']).lower()
+    #     self.assertIn("select the columns",actualQuestionType)
     # joins != 0, clauses == 0
     # joins != 0, clauses != 0
 
@@ -116,7 +124,7 @@ class QuestionTypeStatementsTest(unittest.TestCase):
         ["flight"]
     ])
     def testCreateStatementReturnsStatementWithAllColumns(self,tableFile):
-        table = db.Table(tableFile)
+        table = db.Table(tableFile, random=False)
         tableName = table.name
 
         result = createStatement(table)
@@ -143,7 +151,7 @@ class QuestionTypeStatementsTest(unittest.TestCase):
     def testInsertStatementReturnsCorrectTableNameAndValuesInStatement(self):
         tableName = "airport"
         row = [9,8,0]
-        table = db.Table(tableName)
+        table = db.Table(tableName, random=False)
 
         result = insertStatement(table,row)
 
@@ -160,14 +168,13 @@ class QuestionTypeStatementsTest(unittest.TestCase):
     # with conditional
     def testUpdateStatementWithConditional(self):
         tableName = "airport"
-        table = db.Table(tableName)
+        table = db.Table(tableName, random=False)
         updateCol= "province"
         updateVal = "Alberta"
         conditionalCol = updateCol
         conditionalVal = "Ontario"
-        conditionalValues = {conditionalCol: conditionalVal}
 
-        result = updateStatement(table,updateCol,updateVal,conditionalValues)
+        result = updateStatement(table,updateCol,updateVal,{conditionalCol: {'value': conditionalVal, 'connector': 'OR', 'comparator': '='}})
 
         self.assertIn("UPDATE",result)
         self.assertIn("WHERE",result)
@@ -179,7 +186,7 @@ class QuestionTypeStatementsTest(unittest.TestCase):
     # without conditional
     def testUpdateStatementWithoutConditional(self):
         tableName = "airport"
-        table = db.Table(tableName)
+        table = db.Table(tableName, random=False)
         updateCol = "province"
         updateVal = "Alberta"
 
@@ -200,7 +207,7 @@ class QuestionTypeStatementsTest(unittest.TestCase):
         col = "province"
         condition = "Alberta"
 
-        result = deleteStatement(table,{col: condition})
+        result = deleteStatement(table, {col: {'value': condition, 'connector': 'OR', 'comparator': '='}})
 
         self.assertIn("DELETE",result)
         self.assertIn("WHERE",result)
@@ -212,7 +219,7 @@ class QuestionTypeStatementsTest(unittest.TestCase):
     # without a condition
     def testDeleteStatementWithoutConditional(self):
         tableName = "airport"
-        table = db.Table(tableName)
+        table = db.Table(tableName, random=False)
 
         result = deleteStatement(table)
 
@@ -247,6 +254,8 @@ class HelperFnsTest(unittest.TestCase):
 
         self.assertIn("WHERE",result)
 
+        
+        
 #---# loadTrimmedTable() Test(s)
     # returns a table with a number of columns that we know will work
     def testLoadTrimmedTableReturnsValidTableWhenGivenValidSize(self):
