@@ -22,6 +22,27 @@ def prepare(element_html, data):
     data['params']['grader'] = 'RelaXEditor'
     element = lxml.html.fragment_fromstring(element_html)
     
+    # If there is a database file, read and loads its contents
+    databaseFilePath = pl.get_string_attrib(element, 'database', '')
+    database = ''
+    if databaseFilePath:
+        with open(databaseFilePath,"r") as databaseFile:
+           database += databaseFile.read()
+    
+    data['params']['database'] = database
+    
+    # parameter whether to show feedback or not
+    feedback = pl.get_boolean_attrib(element, 'feedback', False)
+    data['params']['feedback'] = feedback
+    
+    # storing the actual feedback
+    data['params']['queryFeedback'] = ''
+    
+    #get the url to execute relax from backend
+    url = pl.get_string_attrib(element, 'url', '')
+    data['params']['url'] = url
+    
+    #get the correct answer from question.html
     correctAnswer = lxml.html.fromstring(pl.inner_html(element[0])).text_content()
     data['correct_answers']['RelaXEditor'] = correctAnswer
 
@@ -67,7 +88,6 @@ def render(element_html, data):
     correctAnswer = data['correct_answers'].get('RelaXEditor', '')
 
 
-
     # NOTE: the database is loaded into the data
     # variable during the `prepare()` function,
     # when it called `autogenerate()`
@@ -90,7 +110,8 @@ def render(element_html, data):
   
         html_params = {
             'submission': True,
-            'submissionAnswer': submittedAnswer
+            'submissionAnswer': submittedAnswer,
+            'feedback' : data['params']['queryFeedback']
         }
         
         with open('pl-relax-submission.mustache', 'r', encoding='utf-8') as f:
@@ -121,12 +142,14 @@ def grade(element_html, data):
     # rather it must be placed within partial scores.
     # Updating final score is done automatically by PrairieLearn
     # based upon the partial scores.
+    
     data['partial_scores']['RelaXEditor'] = {
         'score': studentScore,
         'weight': 1,
         'feedback': "",
         'marker_feedback': ""
     }
+    
 
 def test(element_html, data):
     pass

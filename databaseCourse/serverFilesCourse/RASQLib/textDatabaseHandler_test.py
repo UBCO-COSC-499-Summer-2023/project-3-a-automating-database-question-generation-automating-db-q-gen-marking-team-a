@@ -8,11 +8,15 @@ class DatabaseTest(unittest.TestCase):
     # all tables are added to db init 
     def testLoadSchemasAddsTablesToDbInit(self):
         testType = "Update"
-        db_initialize = ""
+        db_initialize_create = ""
+        db_initialize_insert_frontend = ""
+        db_initialize_insert_backend = ""
         initialAns = ""
         difficulty = "easy"
         data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
-                          'db_initialize':db_initialize},
+                          'db_initialize_create':db_initialize_create,
+                          'db_initialize_insert_frontend':db_initialize_insert_frontend,
+                          'db_initialize_insert_backend':db_initialize_insert_backend},
                 'correct_answers':{'SQLEditor': initialAns}}
         
         tableOne = "flight"
@@ -20,13 +24,13 @@ class DatabaseTest(unittest.TestCase):
         tableTwo = "airport"
         tableThree = "airplane"
 
-        self.assertEqual(len(data['params']['db_initialize']),0)
+        self.assertEqual(len(data['params']['db_initialize_create']),0)
 
         database.loadDatabase(data)
 
-        self.assertIn(tableOne,data['params']['db_initialize'])
-        self.assertIn(tableTwo,data['params']['db_initialize'])
-        self.assertIn(tableThree,data['params']['db_initialize'])
+        self.assertIn(tableOne,data['params']['db_initialize_create'])
+        self.assertIn(tableTwo,data['params']['db_initialize_create'])
+        self.assertIn(tableThree,data['params']['db_initialize_create'])
 
     # no tables are added to db init when input is empty
     ''' This test was removed since there cannot exist a
@@ -54,92 +58,50 @@ class DatabaseTest(unittest.TestCase):
     # table with no other referenced tables
     def testLoadAllSchemaAddsTableWithNoReferencesToDbInit(self):
         testType = "Update"
-        db_initialize = ""
+        db_initialize_create = ""
+        db_initialize_insert_frontend = ""
+        db_initialize_insert_backend = ""
         initialAns = ""
         difficulty = "easy"
         data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
-                          'db_initialize':db_initialize},
+                          'db_initialize_create':db_initialize_create,
+                          'db_initialize_insert_frontend':db_initialize_insert_frontend,
+                          'db_initialize_insert_backend':db_initialize_insert_backend},
                 'correct_answers':{'SQLEditor': initialAns}}
         
         tableOne = "airport"
         database = Database(file=tableOne, random=False)
 
-        self.assertEqual(len(data['params']['db_initialize']),0)
+        self.assertEqual(len(data['params']['db_initialize_create']),0)
 
         database.loadDatabase(data)
 
-        self.assertIn(tableOne,data['params']['db_initialize'])
+        self.assertIn(tableOne,data['params']['db_initialize_create'])
     
     # table with other referenced tables
     def testLoadAllSchemaAddsTableWithReferencesToDbInit(self):
         testType = "Update"
-        db_initialize = ""
+        db_initialize_create = ""
+        db_initialize_insert_frontend = ""
+        db_initialize_insert_backend = ""
         initialAns = ""
         difficulty = "easy"
         data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty},
-                          'db_initialize':db_initialize},
+                          'db_initialize_create':db_initialize_create,
+                          'db_initialize_insert_frontend':db_initialize_insert_frontend,
+                          'db_initialize_insert_backend':db_initialize_insert_backend},
                 'correct_answers':{'SQLEditor': initialAns}}
         
         tableOne = "flight"
         database = Database(file=tableOne, random=False)
 
-        self.assertEqual(len(data['params']['db_initialize']),0)
+        self.assertEqual(len(data['params']['db_initialize_create']),0)
 
         database.loadDatabase(data)
 
-        self.assertIn(tableOne,data['params']['db_initialize'])
-        self.assertIn("airplane",data['params']['db_initialize'])
-        self.assertIn("airport",data['params']['db_initialize'])
-
-
-# Tests the helper functions
-class TableHelperFunctionsTest(unittest.TestCase):
-    
-    #---# relativeFilePath() Test(s)
-    def testRelativeFilePathReturnsFilePathWithFileName(self):
-        file = "random"
-
-        result = relativeTableFilePath(file)
-        absolutePath = absoluteDirectoryPath()
-
-        self.assertEqual(f"{absolutePath}/randomTables/{file}.txt",result)
-
-
-
-    # Tests getStaticSchema()
-    # Case: file is found
-    def testGetStaticSchemaFileIsFound(self):
-        tableName = 'airport'
-        schema = getStaticSchema(tableName)
-
-        self.assertIsNotNone(schema)
-
-    # Case: file is not found
-    def testGetStaticSchemaFileIsNotFound(self):
-        tableName = 'noSuchTable'
-        schema = getStaticSchema(tableName)
-
-        self.assertIsNone(schema)
-
-
-
-    # Tests the getAllTableFiles() function
-    # This test isn't really needed since it is implicitly
-    # tested through other test functions
-    def testGetAllTableFiles(self):
-        tableList = getAllTableFiles()
-
-        self.assertGreater(len(tableList), 0)
-
-    
-
-    # Tests the getRandomTableNames() function
-    # This test isn't really needed since it is implicitly
-    # tested through other test functions
-    def testGetRandomTableNames(self):
-        randomNames = getRandomTableNames()
-
-        self.assertGreater(len(randomNames), 0)
+        self.assertIn(tableOne,data['params']['db_initialize_create'])
+        self.assertIn("airplane",data['params']['db_initialize_create'])
+        self.assertIn("airport",data['params']['db_initialize_create'])
 
 
 
@@ -218,55 +180,6 @@ class TableTest(unittest.TestCase):
         table = Table(tableName, columns, joins)
 
         self.assertEqual(len(list(table.columns)), 0)
-
-
-
-    # Tests parseColumnsFromFile()
-    # This one does not need to be tested since it is
-    # integration tested with Table instantiation
-
-
-
-    # Tests parseRange()
-    # Case: a string, not a range, is provided
-    def testParseRangeStringNotRange(self):
-        table = Table('randomTable')
-        
-        string = 'this is not a range'
-        returnedRange = table.parseRange(string)
-
-        self.assertEqual(string, returnedRange)
-
-    # Case: range has two components
-    def testParseRangeTwoComponents(self):
-        table = Table('randomTable')
-        
-        string = '3-5'
-        trueRange = range(3, 6)
-        returnedRange = table.parseRange(string)
-
-        self.assertEqual(trueRange, returnedRange)
-
-    # Case: range has three components
-    def testParseRangeThreeComponents(self):
-        table = Table('randomTable')
-        
-        string = '20-30-5'
-        trueRange = range(20, 31, 5)
-        returnedRange = table.parseRange(string)
-
-        self.assertEqual(trueRange, returnedRange)
-
-    # Case: range has four components
-    # The fourth component should be ignored
-    def testParseRangeThreeComponents(self):
-        table = Table('randomTable')
-        
-        string = '7-10-3-1'
-        trueRange = range(7, 11, 3)
-        returnedRange = table.parseRange(string)
-
-        self.assertEqual(trueRange, returnedRange)
 
 
 
@@ -375,6 +288,105 @@ class TableTest(unittest.TestCase):
                 fks += 1
 
         self.assertEqual(fks, 2)
+
+
+
+# Tests the helper functions
+class TableHelperFunctionsTest(unittest.TestCase):
+    
+    #---# relativeFilePath() Test(s)
+    def testRelativeFilePathReturnsFilePathWithFileName(self):
+        file = "random"
+
+        result = relativeTableFilePath(file)
+        absolutePath = absoluteDirectoryPath()
+
+        self.assertEqual(f"{absolutePath}/randomTables/{file}.txt",result)
+
+
+
+    # Tests getStaticSchema()
+    # Case: file is found
+    def testGetStaticSchemaFileIsFound(self):
+        tableName = 'airport'
+        schema = getStaticSchema(tableName)
+
+        self.assertIsNotNone(schema)
+
+    # Case: file is not found
+    def testGetStaticSchemaFileIsNotFound(self):
+        tableName = 'noSuchTable'
+        schema = getStaticSchema(tableName)
+
+        self.assertIsNone(schema)
+
+
+
+    # Tests the getAllTableFiles() function
+    # This test isn't really needed since it is implicitly
+    # tested through other test functions
+    def testGetAllTableFiles(self):
+        tableList = getAllTableFiles()
+
+        self.assertGreater(len(tableList), 0)
+
+    
+
+    # Tests the getRandomTableNames() function
+    # This test isn't really needed since it is implicitly
+    # tested through other test functions
+    def testGetRandomTableNames(self):
+        randomNames = getRandomTableNames()
+
+        self.assertGreater(len(randomNames), 0)
+
+
+
+    # Tests parseColumnsFromFile()
+    # This one does not need to be tested since it is
+    # integration tested with Table instantiation
+
+
+
+    # Tests parseRange()
+    # Case: a string, not a range, is provided
+    def testParseRangeStringNotRange(self):
+        string = 'this is not a range'
+
+        returnedRange = parseRange(string)
+
+        self.assertEqual(string, returnedRange)
+
+    # Case: range has two components
+    def testParseRangeTwoComponents(self):
+        string = '3-5'
+        trueRange = range(3, 6)
+
+        returnedRange = parseRange(string)
+
+        self.assertEqual(trueRange, returnedRange)
+
+    # Case: range has three components
+    def testParseRangeThreeComponents(self):
+        string = '20-30-5'
+        trueRange = range(20, 31, 5)
+
+        returnedRange = parseRange(string)
+
+        self.assertEqual(trueRange, returnedRange)
+
+    # Case: range has four components
+    # The fourth component should be ignored
+    def testParseRangeThreeComponents(self):
+        string = '7-10-3-1'
+        trueRange = range(7, 11, 3)
+
+        returnedRange = parseRange(string)
+
+        self.assertEqual(trueRange, returnedRange)
+
+
+
 
 
 

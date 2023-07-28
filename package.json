@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "acorn": "^8.10.0",
     "jest": "^29.5.0"
   },
   "scripts": {

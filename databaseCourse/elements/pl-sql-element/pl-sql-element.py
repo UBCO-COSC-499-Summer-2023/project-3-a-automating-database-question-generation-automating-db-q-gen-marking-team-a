@@ -45,11 +45,13 @@ def prepare(element_html, data):
     databaseFilePath = pl.get_string_attrib(element, 'database', '')
 
     # If there is a database file, read and loads its contents
-    data['params']['db_initialize'] = ''
+    data['params']['db_initialize_create'] = ''
     if databaseFilePath:
         with open(databaseFilePath,"r") as databaseFile:
-           data['params']['db_initialize'] = databaseFile.read()
+           data['params']['db_initialize_create'] = databaseFile.read()
         
+    data['params']['db_initialize_insert_frontend'] = ''
+    data['params']['db_initialize_insert_backend'] = ''
 
 
     # Loads quesiton parameters into data
@@ -75,9 +77,22 @@ def prepare(element_html, data):
     questionIsOnUpdateCascade = pl.get_integer_attrib(element, 'isonupdatecascade', None)
     questionIsOnDeleteSetNull = pl.get_integer_attrib(element, 'isondeletesetnull', None)
 
-    questionUseConditional = pl.get_integer_attrib(element, 'useconditional', 0)
+    questionConditional = pl.get_integer_attrib(element, 'conditional', 0)
     questionUseSubquery = pl.get_boolean_attrib(element, 'usesubquery', False)
-    questionUseAndInsteadOfOr = pl.get_boolean_attrib(element, 'useandinsteadofor', False)
+
+    questionColumnsToSelect = pl.get_integer_attrib(element, "columnstoselect", 0)
+    questionOrderBy = pl.get_integer_attrib(element, "orderby", 0)
+    questionGroupBy = pl.get_integer_attrib(element, "groupby", 0)
+    questionHaving = pl.get_integer_attrib(element, 'having', 0)
+    questionLimit = pl.get_integer_attrib(element, 'limit', 0)
+    questionWith = pl.get_integer_attrib(element, 'with', 0)
+    questionIsDistinct = pl.get_boolean_attrib(element, 'isdistinct', False)
+
+    # Notice that there is no "LIKE" clause included.
+    # This is becuase SQLite does not have a LIKE clause,
+    # rather it uses "WHERE $col GLOB $val". While this
+    # is similar, testing on a 'gotcha' between SQL and
+    # SQLite is a poor idea
 
     data['params']['html_params'] = {
         'random': questionRandom,
@@ -97,16 +112,25 @@ def prepare(element_html, data):
         'isOnUpdateCascade': questionIsOnUpdateCascade,
         'isOnDeleteSetNull': questionIsOnDeleteSetNull
     }
-
+    
     data['params']['html_query_clauses'] = {
-        'useConditional': questionUseConditional,
+        'conditional': questionConditional,
         'useSubquery': questionUseSubquery,
-        'useAndInsteadOfOr': questionUseAndInsteadOfOr
+        'columnsToSelect': questionColumnsToSelect,
+        'orderBy': questionOrderBy,
+        'groupBy': questionGroupBy,
+        'having': questionHaving,
+        'limit': questionLimit,
+        'with': questionWith,
+        'isDistinct': questionIsDistinct
     }
+
+    data['params']['feedback']=""
 
     # If if is a randomised question, generate the question
     if questionRandom:
         autogen.autogenerate(data)
+
 
 
 # Renders the element
@@ -127,11 +151,15 @@ def render(element_html, data):
     
     # Grabs the correct answer from the data variable
     correctAnswer = data['correct_answers']['SQLEditor']
+
+    # feedback
+    feedback = data['params']['feedback']
     
     # Grabs the string to initialize the database.
     # The join command turns an array of strings into a single string.
     # The get returns the entry if it exists or an empty string otherwise.
-    dbInit = ''.join(data['params'].get('db_initialize', ''))
+    dbInit = ''.join(data['params'].get('db_initialize_create', ''))
+    dbInit += ''.join(data['params'].get('db_initialize_insert_frontend', ''))
      
     # This renders the question into PL
     if data['panel'] == 'question':  
@@ -153,7 +181,8 @@ def render(element_html, data):
         
         html_params = {
             'submission': True,
-            'studentSubmission': submittedAnswer
+            'studentSubmission': submittedAnswer,
+            'feedback':feedback
         }
         
 
