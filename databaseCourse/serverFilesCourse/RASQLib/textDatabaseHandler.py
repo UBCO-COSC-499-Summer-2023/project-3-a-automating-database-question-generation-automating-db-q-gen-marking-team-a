@@ -645,11 +645,20 @@ class Table:
             # be the name fo their respective table. Otherwise,
             # the column names will be the same.
 
+            # Gets the letters to prepend
+            selfPrepend = self.name[0:1].lower()
+            referencedPrepend = self.columns[foreignColumn]['references'][0:1].lower()
+
+            # If they would be the same, instead the referenced
+            # table prepends the entire column name
+            if selfPrepend == referencedPrepend:
+                referencedPrepend = self.columns[foreignColumn]['references']
+
             # Changes the foreign key's name
-            self.columns[foreignColumn]['foreignKey'] = f"{self.columns[foreignColumn]['references'][0:1].lower()}{foreignColumn}"
+            self.columns[foreignColumn]['foreignKey'] = f"{referencedPrepend}{foreignColumn}"
 
             # Changes this table's column name
-            self.columns[foreignColumn]['name'] = f"{self.name[0:1].lower()}{foreignColumn}"
+            self.columns[foreignColumn]['name'] = f"{selfPrepend}{foreignColumn}"
 
             # Removes the old column while updateting the new
             self.columns[f"{self.name[0:1].lower()}{foreignColumn}"] = self.columns.pop(foreignColumn)
