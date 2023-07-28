@@ -23,7 +23,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
         }
         table = Table('', constraints=constraint)
 
-        data = generateNoisyData(table, key, qty)
+        data = generateNoisyData(table, key, qty, unique=True)
 
         # Checks quantity
         self.assertEqual(len(data), qty)
@@ -61,7 +61,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
         }
         table = Table('', constraints=constraint)
 
-        data = generateNoisyData(table, key, qty)
+        data = generateNoisyData(table, key, qty, unique=True)
 
         # Checks quantity
         self.assertEqual(len(data), qty)
@@ -99,7 +99,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
         }
         table = Table('', constraints=constraint)
 
-        data = generateNoisyData(table, key, qty)
+        data = generateNoisyData(table, key, qty, unique=True)
 
         # Checks quantity
         self.assertEqual(len(data), qty)
@@ -135,7 +135,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
         }
         table = Table('', constraints=constraint)
 
-        data = generateNoisyData(table, key, qty)
+        data = generateNoisyData(table, key, qty, unique=True)
 
         # Checks quantity
         self.assertEqual(len(data), qty)
@@ -170,7 +170,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
         }
         table = Table('', constraints=constraint)
 
-        data = generateNoisyData(table, key, qty)
+        data = generateNoisyData(table, key, qty, unique=True)
 
         # Checks quantity
         self.assertEqual(len(data), qty)
@@ -202,7 +202,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
         }
         table = Table('', constraints=constraint)
 
-        data = generateNoisyData(table, key, qty)
+        data = generateNoisyData(table, key, qty, unique=True)
 
         # Checks quantity
         self.assertEqual(len(data), qty)
@@ -235,7 +235,7 @@ class NoisyDataGenerationTests(unittest.TestCase):
         }
         table = Table('', constraints=constraint)
 
-        data = generateNoisyData(table, key, qty)
+        data = generateNoisyData(table, key, qty, unique=True)
         firstNames = readLines('firstNames')
 
         # Checks quantity

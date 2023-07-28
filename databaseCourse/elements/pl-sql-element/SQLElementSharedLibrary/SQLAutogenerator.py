@@ -33,8 +33,6 @@ def autogenerate(data):
         case 'delete': generateDelete(data, difficulty)
         case 'query': generateQuery(data, difficulty)
 
-
-
 '''
     Begin create-style question
 '''
@@ -48,6 +46,8 @@ def generateCreate(data, difficulty):
     # Creates an appropriate table
     database = None
     match difficulty:
+
+        # This is the only question type that uses static tables still
         case 'easy': database = db.Database(file=random.choice(['airport', 'airplane', 'product', 'customer']), random=False)
         case 'medium': database = db.Database(file=random.choice(['passenger', 'shipment']), random=False)
         case 'hard': database = db.Database(file=random.choice(['flight', 'shippedproduct']), random=False)
@@ -155,16 +155,29 @@ def generateInsert(data, difficulty):
     # If no difficulty is specified, uses question parameters instead
     database = None
     match difficulty:
-        case 'easy': database = db.Database(file=loadTrimmedTable(random.randint(3, 4), 0), columns=0)
-        case 'medium': database = db.Database(file=loadTrimmedTable(random.randint(4, 6), 0), columns=0)
-        case 'hard': database = db.Database(file=loadTrimmedTable(random.randint(5, 8), 0), columns=0)
-        case _: database = db.Database(columns=columns, joins=joins, clauses=tableClauses)
+        case 'easy': 
+            columns = random.randint(4, 5)
+            joins = 1
+            database = db.Database(columns=columns, joins=joins)
+
+        case 'medium': 
+            columns = random.randint(5, 6)
+            joins = random.randint(1, 2)
+            database = db.Database(columns=columns, joins=joins)
+
+        case 'hard': 
+            columns = random.randint(6, 7)
+            joins = random.randint(1, 2)
+            database = db.Database(columns=columns, joins=joins)
+
+        case _: 
+            database = db.Database(columns=columns, joins=joins, clauses=tableClauses)
 
     # Grabs the primary table for easy referencing
     table = database.primaryTable
 
     # Generates some data
-    database.generateRows(random.randint(3, 7))
+    database.generateRows(random.randint(15, 25))
 
 
 
@@ -208,18 +221,26 @@ def generateUpdate(data, difficulty):
     # Chooses a table to load based on quesiton difficulty
     database = None
     match difficulty:
+
         case 'easy': 
-            database = db.Database(file=loadTrimmedTable(random.randint(3, 4)), columns=0, random=False)
+            columns = random.randint(4, 5)
+            joins = 1
+            database = db.Database(columns=columns, joins=joins)
             queryClauses['conditional'] = 0
             queryClauses['useSubquery'] = False
 
         case 'medium': 
-            database = db.Database(file=loadTrimmedTable(random.randint(4, 6)), columns=0, random=False)
+            columns = random.randint(4, 5)
+            joins = random.randint(1, 2)
+            database = db.Database(columns=columns, joins=joins)
+            queryClauses['conditional'] = random.randint(1, 3)
             queryClauses['conditional'] = random.randint(1, 3)
             queryClauses['useSubquery'] = False
 
         case 'hard': 
-            database = db.Database(file=loadTrimmedTable(random.randint(5, 8)), columns=0, random=False)
+            columns = random.randint(4, 5)
+            joins = random.randint(1, 2)
+            database = db.Database(columns=columns, joins=joins)
             queryClauses['conditional'] = 0
             queryClauses['useSubquery'] = True
         
@@ -237,7 +258,7 @@ def generateUpdate(data, difficulty):
         print(f"UPDATE question cannot have more conditional clauses than foreign keys that do not cascade on update (was supplied with {queryClauses['conditional']} conditionals and {nonCascadingForeignKeys} non-cascading foreign keys)")
 
     # Generates a bunch of rows
-    database.generateRows(random.randint(6, 10))
+    database.generateRows(random.randint(15, 25))
 
     # Selects a random column to affect
     updateColumn = random.choice(list(table.columns.keys()))
@@ -321,17 +342,24 @@ def generateDelete(data, difficulty):
     database = None
     match difficulty:
         case 'easy': 
-            database = db.Database(file=loadTrimmedTable(random.randint(3, 4)), columns=0, random=False)
+            columns = random.randint(4, 5)
+            joins = 1
+            database = db.Database(columns=columns, joins=joins)
             queryClauses['conditional'] = 0
             queryClauses['useSubquery'] = False
 
         case 'medium': 
-            database = db.Database(file=loadTrimmedTable(random.randint(4, 6)), columns=0, random=False)
+            columns = random.randint(4, 5)
+            joins = random.randint(1, 2)
+            database = db.Database(columns=columns, joins=joins)
+            queryClauses['conditional'] = random.randint(1, 3)
             queryClauses['conditional'] = random.randint(1, 3)
             queryClauses['useSubquery'] = False
 
         case 'hard': 
-            database = db.Database(file=loadTrimmedTable(random.randint(5, 8)), columns=0, random=False)
+            columns = random.randint(4, 5)
+            joins = random.randint(1, 2)
+            database = db.Database(columns=columns, joins=joins)
             queryClauses['conditional'] = 0
             queryClauses['useSubquery'] = True
         
@@ -342,7 +370,7 @@ def generateDelete(data, difficulty):
     table = database.primaryTable
 
     # Generates a bunch of bogus rows
-    database.generateRows(random.randint(3, 7))
+    database.generateRows(random.randint(15, 25))
 
     # If the quesiton should use a condition, set parameters
     conditionalValues = getConditionalValues(queryClauses['conditional'], database, list(table.columns.keys()))
@@ -417,19 +445,22 @@ def generateQuery(data, difficulty):
     database = None
     match difficulty:
         case 'easy': 
-            columns = random.randint(3, 4)
+            columns = random.randint(5, 6)
+            columnsToSelect = random.randint(1, 2)
             joins = 1
             database = db.Database(columns=columns, joins=joins)
             queryClauses['conditional'] = 0
 
         case 'medium': 
-            columns = random.randint(4, 6)
+            columns = random.randint(6, 7)
+            columnsToSelect = random.randint(2, 4)
             joins = random.randint(1, 2)
             database = db.Database(columns=columns, joins=joins)
             queryClauses['conditional'] = random.randint(1, 3)
 
         case 'hard': 
-            columns = random.randint(5, 8)
+            columns = random.randint(7, 8)
+            columnsToSelect = random.randint(4, 6)
             joins = random.randint(1, 2)
             database = db.Database(columns=columns, joins=joins)
             queryClauses['useSubquery'] = True
@@ -437,11 +468,8 @@ def generateQuery(data, difficulty):
         case _:
             database = db.Database(columns=columns, joins=joins, clauses=tableClauses)
     
-    # Generates a bunch of rows.
-    # This is more rows than other questions, since we
-    # want to increase the liklihood that a query will
-    # return more than a few rows
-    database.generateRows(random.randint(10, 15))
+    # Generates a bunch of rows
+    database.generateRows(random.randint(15, 25))
 
 
 
