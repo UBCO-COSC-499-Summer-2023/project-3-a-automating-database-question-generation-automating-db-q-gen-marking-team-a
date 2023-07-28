@@ -30,6 +30,8 @@ def autogenerate(data):
 
     question = Question(dataset=database, attribDict=data['params']['attrib_dict'])
     # Loads the database into the data variable
+    # print(question.getText())
+    print(question.getQuery())
     database.loadDatabase(data)
 
 class Question:
@@ -70,7 +72,7 @@ class Question:
         table = rand.choice(list(dataset.tableSet.keys()))
         #randomWalk(graph=graph, startNode=table, numConn=3)
         subgraph = randomSubgraph(graph=graph, n=numJoins)
-        print(list(subgraph.keys()))
+        #print(list(subgraph.keys()))
 
         usableColumns = []
         for table in list(subgraph.keys()):
@@ -80,7 +82,7 @@ class Question:
 
         projectedColumns = projection(usableColumns)
         print(projectedColumns)
-
+        
         #* Selection
         selectedColumns = []
         for i in range(rand.randint(1,3)):
@@ -89,7 +91,13 @@ class Question:
                 randColumn =  rand.choice(usableColumns)
             selectedColumns.append(selection(usableColumns, randColumn, subgraph, dataset))
 
-        print(selectedColumns)                        
+        print(selectedColumns)
+        #! SOMETIMES JOINS ARE BAD< MUST FIX
+        # place tables that have keys newxt to eachother                       
+        self.Query = f"{self.Query} {','.join(projectedColumns)} ({self.selectStatement} {' ∨ '.join(selectedColumns)} ({self.naturalJoin.join(subgraph.keys())}))"
+
+    def getQuery(self):
+        return self.Query
 
 def projection(usableColumns):
     projectedColumns = []
@@ -106,14 +114,11 @@ def projection(usableColumns):
 def selection(usableColumns, randColumn,subgraph, dataset):
     for table in subgraph.keys():
         for column in dataset.tableSet[table].columns:
-            print(f"{table}: {randColumn}//{randColumn == dataset.tableSet[table].columns[column]['name']}")
-            
             if randColumn == dataset.tableSet[table].columns[column]['name']:
-                print('ifStatementPass')
                 match(dataset.tableSet[table].columns[column]['unit']):
                     case 'STRING': return f"{randColumn} = '{rand.choice(dataset.tableSet[table].rows[column])}'" 
                     case 'NUMBER': return f"{randColumn} {rand.choice([ '≥', '≤', '>', '<'])} {rand.choice(dataset.tableSet[table].rows[column])}"
-                    case 'DATE': return f"{randColumn} {rand.choice([ '≥', '≤', '>', '<'])} Date({rand.choice(dataset.tableSet[table].rows[column])})"
+                    case 'DATE': return f"{randColumn} {rand.choice([ '≥', '≤', '>', '<'])} Date('{rand.choice(dataset.tableSet[table].rows[column])}')"
                 #print(f"Selection string '{rand.choice(dataset.tableSet[table].rows[column])}'")
                 #selectedColumns.append(randColumn)
 
