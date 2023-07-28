@@ -46,6 +46,8 @@ def generateCreate(data, difficulty):
     # Creates an appropriate table
     database = None
     match difficulty:
+
+        # This is the only question type that uses static tables still
         case 'easy': database = db.Database(file=random.choice(['airport', 'airplane', 'product', 'customer']), random=False)
         case 'medium': database = db.Database(file=random.choice(['passenger', 'shipment']), random=False)
         case 'hard': database = db.Database(file=random.choice(['flight', 'shippedproduct']), random=False)
