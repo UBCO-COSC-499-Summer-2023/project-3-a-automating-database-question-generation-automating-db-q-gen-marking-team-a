@@ -72,7 +72,15 @@ class Question:
         table = rand.choice(list(dataset.tableSet.keys()))
         #randomWalk(graph=graph, startNode=table, numConn=3)
         subgraph = randomSubgraph(graph=graph, n=numJoins)
-        #print(list(subgraph.keys()))
+        joinList = []
+        while not set(joinList) == set(subgraph.keys()):
+            for node in subgraph:
+                if len(joinList) == 0:
+                    joinList.append(node)
+                for connection in subgraph[node]:
+                    if connection in joinList and node not in joinList:
+                        joinList.append(node)
+
 
         usableColumns = []
         for table in list(subgraph.keys()):
@@ -92,9 +100,8 @@ class Question:
             selectedColumns.append(selection(usableColumns, randColumn, subgraph, dataset))
 
         print(selectedColumns)
-        #! SOMETIMES JOINS ARE BAD< MUST FIX
         # place tables that have keys newxt to eachother                       
-        self.Query = f"{self.Query} {','.join(projectedColumns)} ({self.selectStatement} {' ∨ '.join(selectedColumns)} ({self.naturalJoin.join(subgraph.keys())}))"
+        self.Query = f"{self.Query} {','.join(projectedColumns)} ({self.selectStatement} {' ∨ '.join(selectedColumns)} ({self.naturalJoin.join(joinList)}))"
 
     def getQuery(self):
         return self.Query
