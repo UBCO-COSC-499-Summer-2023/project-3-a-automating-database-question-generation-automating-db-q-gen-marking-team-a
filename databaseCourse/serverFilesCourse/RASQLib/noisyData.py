@@ -8,10 +8,6 @@ import os
 # Generates random data based on the unit type
 def generateNoisyData(table, key, qty=1):
 
-    # Grabs the important information
-    unit = table.columns[key]['unit']
-    unitOther = table.columns[key]['unitOther']
-
     # Checks whether this colomn is unique
     unique = isUnique(table, key)
     
@@ -39,53 +35,68 @@ def generateNoisyData(table, key, qty=1):
     # due to table aliasing
     if  key[1:] in getColumnToFileMap().keys():
         return generateFromFile(qty, readLines(getColumnToFileMap()[key[1:]]), choose)
+    
 
+    # If the column does not correspond to a file,
+    # then generete the data randomly
+    return generateNoisyDataNoFile(table, key, qty, unique)
 
-    # Return values befitting of SQL datatypes
+# Returns data if there is no corresponding file
+def generateNoisyDataNoFile(table, key, qty=1, unique=False):
     if table.isSQL:
-
-        # Match on the unit type if the key is not
-        # found in the file map
-        match unit:
-            # Integers
-            case 'INTEGER': return generateNoisyInteger(unique, qty)
-
-            # Decimals require total digits plus decimal precision
-            case 'DECIMAL': return generateRandomDecimal(unique, qty, unitOther)
-
-            # CHARs require the number of characters
-            case 'CHAR': return generateNoisyChar(unique, qty, int(unitOther))
-
-            # VARCHARs are capped at a length of 8 to prevent
-            # a string of 50 random characters
-            case 'VARCHAR': return generateNoisyVarchar(unique, qty, min(int(unitOther), 8))
-
-            # DATE and DATETIME
-            case 'DATE': return generateRandomDate(unique, qty)
-            case 'DATETIME': return generateRandomDateTime(unique, qty)
-
-            # Crash if the datatype is not correct
-            case _: return None
-        
-    # Return values befitting of RelaX datatypes
+        return generateNoisyDataNoFileSQL(table, key, qty, unique)
     else:
+        return generateNoisyDataNoFileRelaX(table, key, qty, unique)
 
-        # Match on the unit type if the key is not
-        # found in the file map
-        match unit:
-            case 'NUMBER':
-                
-                # We don't have decimals in RelaX so check on the
-                # key name instead
-                if key == 'price':
-                    return generateRandomDecimal(unique, qty, '6,2')
-                
-                else:
-                    return generateNoisyInteger(unique, qty)
+def generateNoisyDataNoFileSQL(table, key, qty=1, unique=False):
+    
+    # Grabs the important information
+    unit = table.columns[key]['unit']
+    unitOther = table.columns[key]['unitOther']
+    
+    # Match on the unit type if the key is not
+    # found in the file map
+    match unit:
+        # Integers
+        case 'INTEGER': return generateNoisyInteger(unique, qty)
 
-            case 'DATE': return generateRandomDate(unique, qty)
-            case 'STRING': return generateNoisyVarchar(unique, qty, 6)
+        # Decimals require total digits plus decimal precision
+        case 'DECIMAL': return generateRandomDecimal(unique, qty, unitOther)
 
+        # CHARs require the number of characters
+        case 'CHAR': return generateNoisyChar(unique, qty, int(unitOther))
+
+        # VARCHARs are capped at a length of 8 to prevent
+        # a string of 50 random characters
+        case 'VARCHAR': return generateNoisyVarchar(unique, qty, min(int(unitOther), 8))
+
+        # DATE and DATETIME
+        case 'DATE': return generateRandomDate(unique, qty)
+        case 'DATETIME': return generateRandomDateTime(unique, qty)
+
+        # Crash if the datatype is not correct
+        case _: return None
+        
+def generateNoisyDataNoFileRelaX(table, key, qty=1, unique=False):
+
+    # Grabs the important information
+    unit = table.columns[key]['unit']
+
+    # Match on the unit type if the key is not
+    # found in the file map
+    match unit:
+        case 'NUMBER':
+            
+            # We don't have decimals in RelaX so check on the
+            # key name instead
+            if key == 'price':
+                return generateRandomDecimal(unique, qty, '6,2')
+            
+            else:
+                return generateNoisyInteger(unique, qty)
+
+        case 'DATE': return generateRandomDate(unique, qty)
+        case 'STRING': return generateNoisyVarchar(unique, qty, 6)
 
 
 
@@ -318,10 +329,26 @@ def isUnique(table, key):
 
 # Given a list, pops and returns a random item
 # Repeated calls on the same unique list will not return duplicate values
-def popRandom(values):
-    return values.pop(random.choice(range(len(list(values)))))
+def popRandom(values, weights=[]):
+    
+    # If weigths are not supplied, pop a random item and return it
+    if not weights:
+        return values.pop(random.choice(range(len(list(values)))))
+    
+    # Chooses a random index
+    randomIndex = random.choice(range(len(list(values))))
+
+    # Remove that item from the weights list, in case this method is called
+    # again with the same weights list
+    weights.pop(randomIndex)
+
+    # Return the corresponding value
+    return values.pop()
 
 # Given a list, returns a random values.
 # Repeated calls on the same unique list may return duplicate values
-def selectRandom(values):
-    return random.choice(list(values))
+def selectRandom(values, weights=[]):
+    if not weights:
+        return random.choice(list(values))
+    
+    return random.choices(list(values), weights)[0]

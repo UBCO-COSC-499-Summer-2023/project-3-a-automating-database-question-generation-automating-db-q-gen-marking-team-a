@@ -124,7 +124,7 @@ class QuestionTypeStatementsTest(unittest.TestCase):
         ["flight"]
     ])
     def testCreateStatementReturnsStatementWithAllColumns(self,tableFile):
-        table = db.Table(tableFile)
+        table = db.Table(tableFile, random=False)
         tableName = table.name
 
         result = createStatement(table)
@@ -151,7 +151,7 @@ class QuestionTypeStatementsTest(unittest.TestCase):
     def testInsertStatementReturnsCorrectTableNameAndValuesInStatement(self):
         tableName = "airport"
         row = [9,8,0]
-        table = db.Table(tableName)
+        table = db.Table(tableName, random=False)
 
         result = insertStatement(table,row)
 
@@ -168,14 +168,13 @@ class QuestionTypeStatementsTest(unittest.TestCase):
     # with conditional
     def testUpdateStatementWithConditional(self):
         tableName = "airport"
-        table = db.Table(tableName)
+        table = db.Table(tableName, random=False)
         updateCol= "province"
         updateVal = "Alberta"
         conditionalCol = updateCol
         conditionalVal = "Ontario"
-        conditionalValues = {conditionalCol: conditionalVal}
 
-        result = updateStatement(table,updateCol,updateVal,conditionalValues)
+        result = updateStatement(table,updateCol,updateVal,{conditionalCol: {'value': conditionalVal, 'connector': 'OR', 'comparator': '='}})
 
         self.assertIn("UPDATE",result)
         self.assertIn("WHERE",result)
@@ -187,7 +186,7 @@ class QuestionTypeStatementsTest(unittest.TestCase):
     # without conditional
     def testUpdateStatementWithoutConditional(self):
         tableName = "airport"
-        table = db.Table(tableName)
+        table = db.Table(tableName, random=False)
         updateCol = "province"
         updateVal = "Alberta"
 
@@ -208,7 +207,7 @@ class QuestionTypeStatementsTest(unittest.TestCase):
         col = "province"
         condition = "Alberta"
 
-        result = deleteStatement(table,{col: condition})
+        result = deleteStatement(table, {col: {'value': condition, 'connector': 'OR', 'comparator': '='}})
 
         self.assertIn("DELETE",result)
         self.assertIn("WHERE",result)
@@ -220,7 +219,7 @@ class QuestionTypeStatementsTest(unittest.TestCase):
     # without a condition
     def testDeleteStatementWithoutConditional(self):
         tableName = "airport"
-        table = db.Table(tableName)
+        table = db.Table(tableName, random=False)
 
         result = deleteStatement(table)
 
