@@ -157,7 +157,17 @@ class Database:
     # Generates backend rows such that each table will have
     # a number of rows equal to qty; it does not necessarily
     # generate qty number of rows.
-    def generateRowsBackend(self, qty):
+    def generateRowsBackend(self, qty=0):
+
+        if not qty:
+            # Generates plenty of rows for the backend
+            # database
+            if self.primaryTable.rows:
+                qty = len(list(self.primaryTable.rows.values())[0]) * 2
+
+            # If we shouldn't generate rows, just return
+            else:
+                return
 
         # Subtracts the current amount of backend rows
         # from the amount needed to be generated
@@ -259,7 +269,7 @@ class Database:
 
 
             # Fills in the backend rows
-            self.generateRowsBackend(len(list(self.primaryTable.rows.values())[0]))
+            self.generateRowsBackend()
 
             # INSERT statement for the backend DB
             self.loadRowsBackend(data)
@@ -787,20 +797,29 @@ class Table:
                 # Adds the column
                 self.rows[key] += columns[key]
     
-    def generateRowsBackend(self, qty):
-        if qty:
+    def generateRowsBackend(self, qty=0):
+        if not qty:
 
-            # Generates the data
-            columns = nd.generateColumns(self, qty)
+            # Generates plenty of rows for the backend
+            # database
+            if self.rows:
+                qty = len(list(self.rows.values())[0]) * 2
 
-            for key in columns:
+            # If we shouldn't generate rows, just return
+            else:
+                return
 
-                # Creates the column if it does not already exist
-                if not key in self.rowsBackend:
-                    self.rowsBackend[key] = []
+        # Generates the data
+        columns = nd.generateColumns(self, qty)
 
-                # Adds the column
-                self.rowsBackend[key] += columns[key]
+        for key in columns:
+
+            # Creates the column if it does not already exist
+            if not key in self.rowsBackend:
+                self.rowsBackend[key] = []
+
+            # Adds the column
+            self.rowsBackend[key] += columns[key]
 
     
     # Adds a row to this table

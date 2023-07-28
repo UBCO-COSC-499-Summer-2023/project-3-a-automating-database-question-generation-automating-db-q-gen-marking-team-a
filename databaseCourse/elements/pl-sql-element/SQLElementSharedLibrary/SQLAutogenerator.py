@@ -250,7 +250,6 @@ def generateUpdate(data, difficulty):
 
 
 
-
     # Generates the question string
     questionString = f"From the table <b>{table.name}</b> and in the column <b>{updateColumn}</b>, change all values to be <b>{updateValue}</b>"
 
@@ -269,6 +268,11 @@ def generateUpdate(data, difficulty):
         questionString += f" {subqueryString}"
 
 
+
+
+
+    # Adds the important rows to the backend DB
+    database.addRowsBackend(conditionalValues)
 
     # Loads data
     database.loadDatabase(data)

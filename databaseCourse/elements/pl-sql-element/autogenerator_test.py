@@ -94,16 +94,16 @@ class QuestionGenerationTest(unittest.TestCase):
     # TODO
 #---# generateQuery() Test(s)
     # joins == 0, clauses == 0
-    # def testGenerateQueryReturnsEasyQuestion(self):
-    #     testType = "query"
-    #     db_initialize = ""
-    #     initialAns = ""
-    #     difficulty = "medium"
-    #     data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty,'expectedOutput':True},
-    #                     'db_initialize_create':db_initialize, 
-    #                     'db_initialize_insert_frontend':db_initialize, 
-    #                     'db_initialize_insert_backend':db_initialize},
-    #             'correct_answers':{'SQLEditor': initialAns}}
+    def testGenerateQueryReturnsEasyQuestion(self):
+        testType = "query"
+        db_initialize = ""
+        initialAns = ""
+        difficulty = "medium"
+        data = {'params':{'html_params':{'questionType':testType,'difficulty':difficulty,'expectedOutput':False},
+                        'db_initialize_create':db_initialize, 
+                        'db_initialize_insert_frontend':db_initialize, 
+                        'db_initialize_insert_backend':db_initialize},
+                'correct_answers':{'SQLEditor': initialAns}}
         
     #     generateQuery(data,difficulty)
 
