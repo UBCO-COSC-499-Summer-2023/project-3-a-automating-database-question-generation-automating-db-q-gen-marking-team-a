@@ -85,7 +85,6 @@ def prepare(element_html, data):
             "numJoins": pl.get_integer_attrib(element, "numjoins", 0),
             "AntiJoin": pl.get_boolean_attrib(element, "numantijoins", False)
         }
-        print(f"elem: {attribDict['numJoins']}")
         data['params']['attrib_dict'] = attribDict
 
     # If if is a randomised question, generate the question
@@ -114,6 +113,7 @@ def render(element_html, data):
         # setting the paramaters
         html_params = {
             'database' : data['params']['db_initialize_create'],
+            'questionText' : data['params']['questionText'],
             'previousSubmission' : submittedAnswer
         }
             # Opens and renders mustache file into the question html

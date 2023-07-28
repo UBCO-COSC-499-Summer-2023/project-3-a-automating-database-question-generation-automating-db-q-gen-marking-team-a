@@ -30,10 +30,8 @@ def autogenerate(data):
 
     question = Question(dataset=database, attribDict=data['params']['attrib_dict'])
     # Loads the database into the data variable
-    # print(question.getText())
-    print(question.getQuery())
-    print(question.getText())
     database.loadDatabase(data)
+    question.loadQuestion(data)
 
 class Question:
     Query = "π "
@@ -44,7 +42,7 @@ class Question:
     ClauseArray = { "∧", "∨", "¬", "=", "≠", "≥", "≤", ">", "<"}
 
     orderByStatement = "τ"
-    groupByStatement = " γ"
+    groupByStatement = "γ"
 
     crossJoin = "⨯"
     naturalJoin = "⨝"
@@ -56,69 +54,106 @@ class Question:
     antiJoins="▷"
 
     def  __init__(self, dataset, attribDict) -> None:
-        
+        #* Load all attribs from data
+        self.numJoins = attribDict['numJoins']
+        self.numClauses = attribDict['numClauses']
+        self.orderByBool = attribDict['orderBy']
+        self.groupByBool = attribDict['groupBy']
+        self.AntiJoinBool = attribDict['AntiJoin']
 
         #* Join first -- may need recursive function
         # number of joins for the question
-        numJoins = attribDict['numJoins']
-        graph = {}
-        for table in dataset.tableSet:
-            print(table)
-            connections = []
-            for column in dataset.tableSet[table].columns:
-                if dataset.tableSet[table].columns[column]['references']:
-                    print(f"    {dataset.tableSet[table].columns[column]['references']}")
-                    connections.append(dataset.tableSet[table].columns[column]['references'])
-            graph[table] = connections
-        table = rand.choice(list(dataset.tableSet.keys()))
-        #randomWalk(graph=graph, startNode=table, numConn=3)
-        subgraph = randomSubgraph(graph=graph, n=numJoins)
-        joinList = []
-        while not set(joinList) == set(subgraph.keys()):
+        graph = dataset.toGraph()
+        subgraph = randomSubgraph(graph=graph, n=self.numJoins)
+        
+        self.JoinList = []
+        while not set(self.JoinList) == set(subgraph.keys()):
             for node in subgraph:
-                if len(joinList) == 0:
-                    joinList.append(node)
+                if len(self.JoinList) == 0:
+                    self.JoinList.append(node)
                 for connection in subgraph[node]:
-                    if connection in joinList and node not in joinList:
-                        joinList.append(node)
+                    if connection in self.JoinList and node not in self.JoinList:
+                        self.JoinList.append(node)
 
-        self.tableListText = ", ".join(joinList)
+        self.tableListText = ", ".join(self.JoinList)
         parts = self.tableListText.rsplit(",", 1)  # Split the string from the right side only once
         self.tableListText = " and".join(parts)
-        print(joinList)
+
+
         usableColumns = []
         for table in list(subgraph.keys()):
             for column in dataset.tableSet[table].columns:
                 usableColumns.append(dataset.tableSet[table].columns[column]['name'])
-        #* Projection
-
-        projectedColumns = projection(usableColumns)
-        self.projectedColumnText = ", ".join(projectedColumns)
-        parts = self.projectedColumnText.rsplit(",", 1)  # Split the string from the right side only once
-        self.projectedColumnText = " and".join(parts)
-        print(self.projectedColumnText)
         
-        #* Selection
-        #! ensure Uniqueness in selectedColumns
-        selectedColumns = []
-        for i in range(rand.randint(1,3)):  
+        
+        #* Projection
+        projectedColumns = projection(usableColumns)
+        if not self.groupByBool:
+            self.projectedColumnText = ", ".join(projectedColumns)
+            parts = self.projectedColumnText.rsplit(",", 1)  # Split the string from the right side only once
+            self.projectedColumnText = " and".join(parts)
+            print(self.projectedColumnText)
+            self.queryStatement = f"{self.Query} {', '.join(projectedColumns)}"
+        
+        #* Group By - Replaces Projection
+        # γ columnA; count(columnB) → newColumnName(tableName)
+        if self.groupByBool:
+            projectedColumns = projectedColumns[:3]
+            groupByText = []
+            for i, column in enumerate(projectedColumns):
+                if i == 0:
+                    self.groupByStatement = f"{self.groupByStatement} {column};"
+                else:
+                    func = groupBy(column, subgraph=subgraph, dataset=dataset)
+                    groupByText.append(f" the {func} of {column}, mapped to a column named {func}{column}")
+                    self.groupByStatement = f"{self.groupByStatement} {func}({column}) → {func}{column}"
+            self.queryStatement = self.groupByStatement
+            self.projectedColumnText = f"{projectedColumns[0]} grouped by {' and'.join(groupByText)}"
+        
+        #* Order By
+        if self.orderByBool:
             randColumn = rand.choice(usableColumns)
-            while randColumn in selectedColumns:
-                randColumn =  rand.choice(usableColumns)
-            selectedColumns.append(selection(usableColumns, randColumn, subgraph, dataset))
-        selected = ' ∨ '.join(selectedColumns)
-        self.selectStatementText = selected.replace("∨", "or").replace(">", "is greater than").replace("<", "is less than").replace("≥", "is greater than or equal to").replace("≤", "is less than or equal to").replace("=", "is").replace("≠", "is not")
-        print(self.selectStatementText)                    
-        self.Query = f"{self.Query} {','.join(projectedColumns)} ({self.selectStatement} {selected} ({self.naturalJoin.join(joinList)}))"
+            randColumn = randColumn + (rand.choice([' desc', ' asc']))
+            self.orderByStatement = f"{self.orderByStatement} {randColumn}"
+            self.orderByText = f" ordered by {randColumn.replace('desc', 'in descending order').replace('asc', 'in ascending order')}"
+
+        #* Selection
+        selectedColumns = []
+        if self.numClauses != 0:
+            for i in range(self.numClauses):  
+                randColumn = rand.choice(usableColumns)
+                while randColumn in selectedColumns:
+                    randColumn =  rand.choice(usableColumns)
+                selectedColumns.append(selection(usableColumns, randColumn, subgraph, dataset))
+            selected = ' ∨ '.join(selectedColumns)
+            self.selectStatement =  f"{self.selectStatement} {selected}"
+            self.selectStatementText = selected.replace("∨", "or").replace(">", "is greater than").replace("<", "is less than").replace("≥", "is greater than or equal to").replace("≤", "is less than or equal to").replace("=", "is").replace("≠", "is not")
+
 
     def getQuery(self):
+        self.Query = f"{self.naturalJoin.join(self.JoinList)}"
+        if self.numClauses !=0:
+            self.Query = f"{self.selectStatement} ({self.Query})"
+        if self.orderByBool:
+            self.Query = f"{self.orderByStatement} ({self.Query})"
+        self.Query = f"{self.queryStatement} ({self.Query})"
         return self.Query
 
     def getText(self):
 
-        text = f"Return a table of {self.projectedColumnText} where {self.selectStatementText} from the tables {self.tableListText}"
+        text = f"Return a table of {self.projectedColumnText}"
+        if self.orderByBool:
+            text += self.orderByText
+        text += f" where {self.selectStatementText} from the tables {self.tableListText}"
 
         return text
+
+    
+    def loadQuestion(self, data):
+        data['correct_answers']['RelaXEditor'] = self.getQuery()
+        data['params']['questionText'] = self.getText()
+
+
 
     # def symbolsToWords(self):
 
@@ -134,6 +169,14 @@ def projection(usableColumns):
 
     return projectedColumns
 
+def groupBy(randColumn, subgraph, dataset):
+    for table in subgraph.keys():
+        for column in dataset.tableSet[table].columns:
+            if randColumn == dataset.tableSet[table].columns[column]['name']:
+                match(dataset.tableSet[table].columns[column]['unit']):
+                    case 'STRING': return "count" 
+                    case 'NUMBER': return f"{rand.choice(['count','avg','sum'])}"
+                    case 'DATE': return "count"
 
         
 def selection(usableColumns, randColumn,subgraph, dataset):

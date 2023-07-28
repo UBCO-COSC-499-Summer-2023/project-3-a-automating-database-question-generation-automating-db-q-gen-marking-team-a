@@ -326,6 +326,15 @@ class Database:
         else:
             return f"{''.join([self.tableSet[table].getRelaXSchema() for table in self.tableSet])}"
 
+    def toGraph(self):
+        graph = {}
+        for table in self.tableSet:
+            connections = []
+            for column in self.tableSet[table].columns:
+                if self.tableSet[table].columns[column]['references']:
+                    connections.append(self.tableSet[table].columns[column]['references'])
+            graph[table] = connections
+        return graph
 
 
 # Models a table for easy question generation

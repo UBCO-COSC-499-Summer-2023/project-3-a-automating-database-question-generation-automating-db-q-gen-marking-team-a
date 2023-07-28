@@ -90,7 +90,7 @@ def generateNoisyDataNoFileRelaX(table, key, qty=1, unique=False):
             
             # We don't have decimals in RelaX so check on the
             # key name instead
-            if key == 'price':
+            if key in 'price':
                 return generateRandomDecimal(unique, qty, '6,2')
             
             else:
