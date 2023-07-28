@@ -151,7 +151,17 @@ class Database:
     # Generates backend rows such that each table will have
     # a number of rows equal to qty; it does not necessarily
     # generate qty number of rows.
-    def generateRowsBackend(self, qty):
+    def generateRowsBackend(self, qty=0):
+
+        if not qty:
+            # Generates plenty of rows for the backend
+            # database
+            if self.rows:
+                qty = len(list(self.primaryTable.rows.values())[0]) * 2
+
+            # If we shouldn't generate rows, just return
+            else:
+                return
 
         # Subtracts the current amount of backend rows
         # from the amount needed to be generated
