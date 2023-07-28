@@ -292,8 +292,11 @@ def generateUpdate(data, difficulty):
 
 
 
-    # Adds the important rows to the backend DB
-    database.addRowsBackend(conditionalValues)
+    # Adds the important rows to the backend DB.
+    # Removed for now due to uniqueness constraint.
+    #   Add back end row after loading data but only if item doesn't exist.
+    #   This should prevent rare uniqueness failures
+    # database.addRowsBackend(conditionalValues)
 
     # Loads data
     database.loadDatabase(data)

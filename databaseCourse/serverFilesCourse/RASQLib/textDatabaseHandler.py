@@ -148,7 +148,7 @@ class Database:
                     # Fills in the entire row
                     for column in allTables[table].columns:
                         if key == column:
-                            row[column] = [conditionalValues[key]]
+                            row[column] = [conditionalValues[key]['value']]
                         else:
                             row[column] = nd.generateNoisyData(allTables[table], column)
 
