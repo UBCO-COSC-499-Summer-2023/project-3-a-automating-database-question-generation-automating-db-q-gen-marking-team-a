@@ -1,10 +1,29 @@
 id,NUMBER
 inventory,NUMBER
 quantity,NUMBER
+num,NUMBER
+userId,NUMBER
+orderId,NUMBER
+age,NUMBER
+score,NUMBER
+rank,NUMBER
+level,NUMBER
+distance,NUMBER
+duration,NUMBER
 
 price,NUMBER,3-9,2
+salary,NUMBER,6-10,2
+height,NUMBER,4-6,2
+temperature,NUMBER,3-4,2
+latitude,NUMBER,8-12,4
+longitude,NUMBER,8-12,4
+rating,NUMBER,4-5,2
+percentage,NUMBER,4-5,2
 
 state,STRING,2
+postalCode,STRING,6
+status,STRING,1
+licensePlate,STRING,6
 
 name,STRING,20-40-5
 city,STRING,25-50-5
@@ -18,7 +37,14 @@ lastName,STRING,25-35-5
 
 birthdate,DATE
 manufactureDate,DATE
+startDate,DATE
+endDate,DATE
+lastLogin,DATE
+expiration,DATE
 
 arrivalDate,DATE
 departureDate,DATE
-shipdate, DATE
+shipdate,DATE
+paymetDue,DATE
+appointment,DATE
+reservation,DATE

@@ -6,10 +6,11 @@ from string import ascii_uppercase
 import os
 
 # Generates random data based on the unit type
-def generateNoisyData(table, key, qty=1):
+def generateNoisyData(table, key, qty=1, unique=None):
 
     # Checks whether this colomn is unique
-    unique = isUnique(table, key)
+    if not unique:
+        unique = isUnique(table, key)
     
     # Chooses the random selection procedure
     choose = None

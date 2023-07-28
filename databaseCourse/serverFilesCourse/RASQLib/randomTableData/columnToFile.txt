@@ -7,6 +7,7 @@ departAirport:airports
 arriveAirport:airports
 firstName:firstNames
 lastName:lastNames
+name:lastNames
 street:addresses
 address:addresses
 country:countries

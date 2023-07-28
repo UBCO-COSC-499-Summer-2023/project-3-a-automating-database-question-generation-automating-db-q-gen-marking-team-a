@@ -17,6 +17,7 @@ class Database:
     def __init__(self, isSQL=True, file='', columns=5, joins=0, depth=3, clauses={}, constraints={'': {'name': '', 'unit': 'INTEGER', 'unitOther': None}}, rows=0, random=True):
 
         self.isSQL = isSQL
+        self.random = random
         
 
 
@@ -159,7 +160,14 @@ class Database:
     # generate qty number of rows.
     def generateRowsBackend(self, qty=0):
 
+        # If the table is static, then backend rows are
+        # never used; thus, don't generate them
+        if not self.random:
+            return
+
+        # Specifies quantity, if not provided
         if not qty:
+            
             # Generates plenty of rows for the backend
             # database
             if self.primaryTable.rows:
@@ -600,8 +608,24 @@ class Table:
         # Keeps adding joins until there are enough
         while len(self.getKeyMap()) < joins:
 
-            # Chooses a random column to become foreign
-            foreignColumn = columnsCopy.pop(choice(range(len(columnsCopy))))
+            # Chooses a random column to become foreign.
+            # Prevents certain columns from becoming FKs
+            # due to uniqueness causing issues when
+            # later creating random data for the rows
+            foreignColumn = None
+            while not foreignColumn or 'Airport' in foreignColumn or 'province' in foreignColumn:
+
+                # Breaks out of the loop if there are no
+                # fitting columns. This will assaing a 
+                # 'bad' column to the FK, but there is
+                # still only a small chance of a crash
+                if len(columnsCopy) == 0:
+                    break
+
+                # Grabs a random column
+                foreignColumn = columnsCopy.pop(choice(range(len(columnsCopy))))
+
+
 
             # Selects a random table to reference
             self.columns[foreignColumn]['references'] = randomTables.pop(choice(range(len(randomTables))))
@@ -740,7 +764,9 @@ class Table:
             # Only matters if unique is True.
             if self.columns[key]['references'] not in tableSet:
 
-                columns = randint(3, 6)
+                # Chooses the number of columns to exist in the random
+                # referenced tables
+                columns = randint(4, 6)
 
                 # Ensures foreign key consistency across generated tables
                 #   name of the column in the foreign table: {
