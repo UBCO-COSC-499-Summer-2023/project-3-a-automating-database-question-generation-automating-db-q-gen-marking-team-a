@@ -14,8 +14,15 @@
 - started working on feedback
 
 ## Wednesday , July 26:
+-meeting with TA
+- fixed local issues
+- fixed autograding feedback
+- team meeting about next steps
 
 ## Thursday , July 27:
+- selenium documentation complete
+- testorama survey draft complete
+- worked on testorama list of things to do
 
 ## Friday , July 28:
 
