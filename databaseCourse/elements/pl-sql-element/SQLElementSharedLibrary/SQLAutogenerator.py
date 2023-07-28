@@ -164,7 +164,7 @@ def generateInsert(data, difficulty):
     table = database.primaryTable
 
     # Generates some data
-    database.generateRows(random.randint(3, 7))
+    database.generateRows(random.randint(15, 25))
 
 
 
@@ -237,7 +237,7 @@ def generateUpdate(data, difficulty):
         print(f"UPDATE question cannot have more conditional clauses than foreign keys that do not cascade on update (was supplied with {queryClauses['conditional']} conditionals and {nonCascadingForeignKeys} non-cascading foreign keys)")
 
     # Generates a bunch of rows
-    database.generateRows(random.randint(6, 10))
+    database.generateRows(random.randint(15, 25))
 
     # Selects a random column to affect
     updateColumn = random.choice(list(table.columns.keys()))
@@ -337,7 +337,7 @@ def generateDelete(data, difficulty):
     table = database.primaryTable
 
     # Generates a bunch of bogus rows
-    database.generateRows(random.randint(3, 7))
+    database.generateRows(random.randint(15, 25))
 
     # If the quesiton should use a condition, set parameters
     conditionalValues = getConditionalValues(queryClauses['conditional'], database, list(table.columns.keys()))
@@ -432,11 +432,8 @@ def generateQuery(data, difficulty):
         case _:
             database = db.Database(columns=columns, joins=joins, clauses=tableClauses)
     
-    # Generates a bunch of rows.
-    # This is more rows than other questions, since we
-    # want to increase the liklihood that a query will
-    # return more than a few rows
-    database.generateRows(random.randint(10, 15))
+    # Generates a bunch of rows
+    database.generateRows(random.randint(15, 25))
 
 
 
