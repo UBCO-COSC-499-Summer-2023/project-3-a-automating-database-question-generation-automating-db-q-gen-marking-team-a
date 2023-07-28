@@ -17,6 +17,7 @@ class Database:
     def __init__(self, isSQL=True, file='', columns=5, joins=0, depth=3, clauses={}, constraints={'': {'name': '', 'unit': 'INTEGER', 'unitOther': None}}, rows=0, random=True):
 
         self.isSQL = isSQL
+        self.random = random
         
 
 
@@ -159,7 +160,14 @@ class Database:
     # generate qty number of rows.
     def generateRowsBackend(self, qty=0):
 
+        # If the table is static, then backend rows are
+        # never used; thus, don't generate them
+        if not self.random:
+            return
+
+        # Specifies quantity, if not provided
         if not qty:
+            
             # Generates plenty of rows for the backend
             # database
             if self.primaryTable.rows:
