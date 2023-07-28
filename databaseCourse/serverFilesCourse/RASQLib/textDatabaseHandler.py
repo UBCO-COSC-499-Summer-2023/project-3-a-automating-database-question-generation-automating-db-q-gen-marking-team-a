@@ -43,8 +43,9 @@ class Database:
         
         # For RelaX databases
         else:
-            tableNames = getRandomTableNames
+            tableNames = getRandomTableNames()
             columnNames = parseColumnsFromFile('randomColumnsRelaX')
+            print(columnNames)
             self.generateTableSet(columns=columns, joins=joins, depth=depth, rows=rows, tableNames=tableNames ,columnNames=columnNames)
             
         
@@ -564,6 +565,7 @@ class Table:
 
             # Chooses a random column to add
             # Pops the column to ensure no duplicates
+            print(columnNames)
             addColumn = columnNames.pop(choice(range(len(columnNames))))
 
             # Checks if the column would override an existing 

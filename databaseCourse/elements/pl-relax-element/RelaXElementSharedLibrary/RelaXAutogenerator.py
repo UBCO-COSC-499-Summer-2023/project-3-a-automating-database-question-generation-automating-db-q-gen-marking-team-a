@@ -32,6 +32,7 @@ def autogenerate(data):
     # Loads the database into the data variable
     # print(question.getText())
     print(question.getQuery())
+    print(question.getText())
     database.loadDatabase(data)
 
 class Question:
@@ -81,7 +82,10 @@ class Question:
                     if connection in joinList and node not in joinList:
                         joinList.append(node)
 
-
+        self.tableListText = ", ".join(joinList)
+        parts = self.tableListText.rsplit(",", 1)  # Split the string from the right side only once
+        self.tableListText = " and".join(parts)
+        print(joinList)
         usableColumns = []
         for table in list(subgraph.keys()):
             for column in dataset.tableSet[table].columns:
@@ -89,22 +93,36 @@ class Question:
         #* Projection
 
         projectedColumns = projection(usableColumns)
-        print(projectedColumns)
+        self.projectedColumnText = ", ".join(projectedColumns)
+        parts = self.projectedColumnText.rsplit(",", 1)  # Split the string from the right side only once
+        self.projectedColumnText = " and".join(parts)
+        print(self.projectedColumnText)
         
         #* Selection
+        #! ensure Uniqueness in selectedColumns
         selectedColumns = []
-        for i in range(rand.randint(1,3)):
+        for i in range(rand.randint(1,3)):  
             randColumn = rand.choice(usableColumns)
             while randColumn in selectedColumns:
                 randColumn =  rand.choice(usableColumns)
             selectedColumns.append(selection(usableColumns, randColumn, subgraph, dataset))
-
-        print(selectedColumns)
-        # place tables that have keys newxt to eachother                       
-        self.Query = f"{self.Query} {','.join(projectedColumns)} ({self.selectStatement} {' ∨ '.join(selectedColumns)} ({self.naturalJoin.join(joinList)}))"
+        selected = ' ∨ '.join(selectedColumns)
+        self.selectStatementText = selected.replace("∨", "or").replace(">", "is greater than").replace("<", "is less than").replace("≥", "is greater than or equal to").replace("≤", "is less than or equal to").replace("=", "is").replace("≠", "is not")
+        print(self.selectStatementText)                    
+        self.Query = f"{self.Query} {','.join(projectedColumns)} ({self.selectStatement} {selected} ({self.naturalJoin.join(joinList)}))"
 
     def getQuery(self):
         return self.Query
+
+    def getText(self):
+
+        text = f"Return a table of {self.projectedColumnText} where {self.selectStatementText} from the tables {self.tableListText}"
+
+        return text
+
+    # def symbolsToWords(self):
+
+
 
 def projection(usableColumns):
     projectedColumns = []

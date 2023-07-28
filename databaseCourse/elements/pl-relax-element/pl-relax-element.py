@@ -38,7 +38,7 @@ def prepare(element_html, data):
     
     # storing the actual feedback
     data['params']['queryFeedback'] = ''
-    
+    data['params']['db_initalize_create'] = ''
     #get the url to execute relax from backend
     url = pl.get_string_attrib(element, 'url', '')
     data['params']['url'] = url
