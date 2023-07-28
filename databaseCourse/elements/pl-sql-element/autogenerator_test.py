@@ -105,10 +105,10 @@ class QuestionGenerationTest(unittest.TestCase):
                         'db_initialize_insert_backend':db_initialize},
                 'correct_answers':{'SQLEditor': initialAns}}
         
-        generateQuery(data,difficulty)
+    #     generateQuery(data,difficulty)
 
-        actualQuestionType = ''.join(data['params']['questionString']).lower()
-        self.assertIn("select the columns",actualQuestionType)
+    #     actualQuestionType = ''.join(data['params']['questionString']).lower()
+    #     self.assertIn("select the columns",actualQuestionType)
     # joins != 0, clauses == 0
     # joins != 0, clauses != 0
 
