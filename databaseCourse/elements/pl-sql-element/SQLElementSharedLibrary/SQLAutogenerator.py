@@ -318,14 +318,17 @@ def updateStatement(table, updateColumn, updateValue, conditionalValues=None, su
     statement = f"UPDATE {table.name} SET {updateColumn} = '{updateValue}'"
 
     # Adds the conditionals
-    statement = statementConditionals(statement, conditionalValues)
+    conditionalStatement = statementConditionals('', conditionalValues)
 
+    # Removes the leading space, adding a newline in its place
+    statement += '\n' + conditionalStatement[1:]
+ 
     # Adds the subquery
     if subquery:
         if 'WHERE' in statement:
             statement += " AND" + subquery
         else:
-            statement += " WHERE" + subquery
+            statement += "\nWHERE" + subquery
     
     # Add finishing touches and returns
     statement += ';\n'
@@ -419,7 +422,10 @@ def deleteStatement(table, conditionalValues=None, subquery=''):
     statement = f"DELETE FROM {table.name}"
 
     # Adds the conditionals
-    statement = statementConditionals(statement, conditionalValues)
+    conditionalStatement = statementConditionals('', conditionalValues)
+
+    # Removes the leading space, adding a newline in its place
+    statement += '\n' + conditionalStatement[1:]
 
     # Adds the subquery
     if subquery:
