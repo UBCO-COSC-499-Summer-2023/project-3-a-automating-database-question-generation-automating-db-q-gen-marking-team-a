@@ -415,19 +415,22 @@ def generateQuery(data, difficulty):
     database = None
     match difficulty:
         case 'easy': 
-            columns = random.randint(3, 4)
+            columns = random.randint(5, 6)
+            columnsToSelect = random.randint(1, 2)
             joins = 1
             database = db.Database(columns=columns, joins=joins)
             queryClauses['conditional'] = 0
 
         case 'medium': 
-            columns = random.randint(4, 6)
+            columns = random.randint(6, 7)
+            columnsToSelect = random.randint(2, 4)
             joins = random.randint(1, 2)
             database = db.Database(columns=columns, joins=joins)
             queryClauses['conditional'] = random.randint(1, 3)
 
         case 'hard': 
-            columns = random.randint(5, 8)
+            columns = random.randint(7, 8)
+            columnsToSelect = random.randint(4, 6)
             joins = random.randint(1, 2)
             database = db.Database(columns=columns, joins=joins)
             queryClauses['useSubquery'] = True
