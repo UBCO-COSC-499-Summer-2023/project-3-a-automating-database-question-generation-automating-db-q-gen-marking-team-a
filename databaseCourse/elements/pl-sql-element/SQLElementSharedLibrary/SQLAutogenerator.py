@@ -33,8 +33,6 @@ def autogenerate(data):
         case 'delete': generateDelete(data, difficulty)
         case 'query': generateQuery(data, difficulty)
 
-
-
 '''
     Begin create-style question
 '''
