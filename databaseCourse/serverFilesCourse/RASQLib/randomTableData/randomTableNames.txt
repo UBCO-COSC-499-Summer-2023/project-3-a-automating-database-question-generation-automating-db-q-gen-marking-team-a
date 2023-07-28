@@ -30,4 +30,3 @@ appointment
 candidate
 interview
 budget
-user
