@@ -137,6 +137,8 @@ def gradeQueryQuestion(data,correctAnswer,submittedAnswer):
 
     # order matching
     orderScore = 0
+    if len(expectedAns) == 0 or len(actualAns) == 0:
+        return 1
     if rowScore == 1 and colScore ==1:
         if expectedAns[0] == actualAns[0] and expectedAns[-1] == actualAns[-1]:
             orderScore = 1
