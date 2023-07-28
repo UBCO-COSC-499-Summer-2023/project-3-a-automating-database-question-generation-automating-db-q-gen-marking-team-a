@@ -40,6 +40,9 @@ $(document).ready(function () {
     var execBtn = $("#execute");
     execBtn.on("click", executeEditorContents);
 
+    // setup editor with previous submission
+    
+
 
 
     //* FUNCTION DEFINITIONS
@@ -76,6 +79,18 @@ $(document).ready(function () {
     var emphWords = applyHTMLTagsToWords('em');
     var strongWords = applyHTMLTagsToWords('strong');
 
+    // element for previous submission div
+    var previousSubmissionElm = $("#previousSubmission");
+
+    // insert previous submission into editor
+    function updateCodeMirrorPreviousSubmission() {
+        var doc = editor.getDoc(); //gets the information of the editor
+        doc.setValue(previousSubmissionElm.text().trim());
+        previousSubmissionElm.remove();
+    }
+    // calls update code mirror with previous submission
+    updateCodeMirrorPreviousSubmission();
+
     //* FUNCTIONS - USER ACTIONS
     // adds functionality for onclick
     function updateCodeMirror(data) {
@@ -99,8 +114,8 @@ $(document).ready(function () {
             var key = dataset.at(i)._schema._relAliases.at(0);
             dataStuff[key] = dataset[i];
         }
-        
-        
+
+
         try {
             activeNode = null;
 
@@ -209,28 +224,28 @@ $(document).ready(function () {
         return header;
     }
 
-    function createTableRows(rows){
-    var tbody = $("<tbody></tbody>");
-    var rowElements = [];
-    // reads each row in rows and adds them to the row element array.
-    rows.forEach(function (row) {
-        var tr = $("<tr></tr>");
-        for (var i = 0; i < row.length; i++) {
-            if (ifDateChecker.includes(i)) {
-                const date = new Date(row[i]);
-                const year = date.getFullYear();
-                const month = String(date.getMonth() + 1).padStart(2, '0');
-                const day = String(date.getDate()).padStart(2, '0');
+    function createTableRows(rows) {
+        var tbody = $("<tbody></tbody>");
+        var rowElements = [];
+        // reads each row in rows and adds them to the row element array.
+        rows.forEach(function (row) {
+            var tr = $("<tr></tr>");
+            for (var i = 0; i < row.length; i++) {
+                if (ifDateChecker.includes(i)) {
+                    const date = new Date(row[i]);
+                    const year = date.getFullYear();
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const day = String(date.getDate()).padStart(2, '0');
 
-                var td = $("<td></td>").text(`${year}-${month}-${day}`);
-            } else {
-                var td = $("<td></td>").text(row[i]);
+                    var td = $("<td></td>").text(`${year}-${month}-${day}`);
+                } else {
+                    var td = $("<td></td>").text(row[i]);
+                }
+
+                tr.append(td);
             }
-
-            tr.append(td);
-        }
-        rowElements.push(tr);
-    });
+            rowElements.push(tr);
+        });
         tbody.append(rowElements);
         return tbody;
     }
