@@ -320,12 +320,12 @@ def updateStatement(table, updateColumn, updateValue, conditionalValues=None, su
     # Removes the leading space, adding a newline in its place
     statement += '\n' + conditionalStatement[1:]
  
-    # Adds the subquery
+    # Adds the subquery and formats the 'WHERE'
     if subquery:
         if 'WHERE' in statement:
-            statement += " AND" + subquery
+            statement += ' AND' + subquery
         else:
-            statement += "\nWHERE" + subquery
+            statement += 'WHERE' + subquery
     
     # Add finishing touches and returns
     statement += ';\n'
@@ -424,12 +424,12 @@ def deleteStatement(table, conditionalValues=None, subquery=''):
     # Removes the leading space, adding a newline in its place
     statement += '\n' + conditionalStatement[1:]
 
-    # Adds the subquery
+    # Adds the subquery and formats the 'WHERE'
     if subquery:
         if 'WHERE' in statement:
-            statement += " AND" + subquery
+            statement += ' AND' + subquery
         else:
-            statement += " WHERE" + subquery
+            statement += 'WHERE' + subquery
     
     # Add finishing touches and returns
     statement += ';\n'
@@ -840,7 +840,7 @@ def queryStatement(database, selectedColumns, joinTypes={}, conditionalValues={}
                 queryString += f" {table.name}.{key} = {keyMap[key]['references']}.{keyMap[key]['foreignKey']} AND"
 
         # Removes the final 'AND' if necessary
-        if not conditionalValues:
+        if 'AND' in queryString[-4:]:
             queryString = queryString[:-4]
     
 
@@ -849,18 +849,13 @@ def queryStatement(database, selectedColumns, joinTypes={}, conditionalValues={}
     if conditionalValues:
         queryString = statementConditionals(queryString, conditionalValues, clauseType='')
 
-    # Adds the subquery
-    if subquery:
-        if 'WHERE' in queryString:
-            queryString += ' AND' + subquery
-        else:
-            queryString += ' WHERE' + subquery
-    
-    # Removes the WHERE clause if necessary
-    if 'WHERE' in queryString[-6:]:
-        queryString = queryString[:-6]
-
-    
+    # Adds the subquery and formats the 'WHERE'
+    if 'WHERE' in queryString[-7:] and subquery:
+        queryString += subquery
+    elif 'WHERE' in queryString[-7:]:
+        queryString = queryString[:queryString.find('WHERE')]
+    elif subquery:
+        queryString += ' AND' + subquery
 
     # Adds the group by clause
     if groupByColumns:
