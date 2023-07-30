@@ -242,6 +242,83 @@ class QuestionTypeStatementsTest(unittest.TestCase):
     #     clauses = None
 
     #     result = queryStatement(table,keyMap,foreignKeyMap,selectedColumns,clauses)
+
+
+
+    # Parameterized CREATE Tests------------------------------------------------------------------------------------------------------------------
+class ParameterizedCreateTests(unittest.TestCase):
+    
+    # Describes how many times each test should be run.
+    # Since we're testing random generation, we need
+    # a sufficient sample size to catch edge cases
+    sampleSize = 25
+
+    # Declares and sets defaults
+    data = {}
+    data['params'] = {}
+
+    data['params']['html_params'] = {
+        'random': True,
+        'questionType': 'create',
+        'difficulty': None,
+        'maxGrade': 3,
+        'markerFeedback': True,
+        'expectedOutput': False
+    }
+
+
+    # Parameters for CREATE to test various cases
+    @parameterized.expand([
+            # columns, joins, primaryKeys, notNulls, uniques, cascades, nullOnDeletes
+            [5, 2, 1, 1, 1, 1, 1],  # A bit of everything
+            [3, 0, 0, 0, 0, 0, 0],  # Minimum values
+            [5, 1, 4, 0, 0, 0, 0],
+            [5, 4, 1, 0, 0, 0, 0],
+            [5, 5, 0, 0, 0, 5, 5],  # Max foreign clauses
+            [5, 0, 1, 4, 4, 0, 0],  # Max other clauses
+            [9, 9, 0, 0, 0, 0, 0]   # Lots of column and tables
+            ])
+    
+    def testParameterizedCreate(self,data,columns,joins,primaryKeys,isNotNull,isUnique,isOnUpdateCascade,isOnDeleteSetNull,sampleSize):
+        data = {}
+        data['params'] = {}
+        
+        data['params']['html_params']['columns'] = columns
+        data['params']['html_params']['joins'] = joins
+
+        data['params']['html_table_clauses'] = {
+            'primaryKeys': primaryKeys,
+            'isNotNull': isNotNull,
+            'isUnique': isUnique,
+            'isOnUpdateCascade': isOnUpdateCascade,
+            'isOnDeleteSetNull': isOnDeleteSetNull
+        }
+
+        for i in range(sampleSize):
+
+            # Sets values to be empty
+            data['params']['questionString'] = ''
+            data['params']['db_initialize_create'] = ''
+            data['params']['db_initialize_insert_frontend'] = ''
+            data['params']['db_initialize_insert_backend'] = ''
+
+            autogenerate(data)
+
+            result = data['params']['db_initialize_create'] + data['params']['db_initialize_insert_frontend'] + data['params']['db_initialize_insert_backend']
+
+            self.assertIn("CREATE",result)
+            self.assertNotIn("WHERE",result)
+            self.assertNotIn("DELETE",result)
+            self.assertNotIn("INSERT",result)
+            self.assertNotIn("UPDATE",result)
+            self.assertNotIn("SELECT",result)
+
+            self.assertGreater(len(data['params']['questionString']), 0)
+            self.assertGreater(len(data['params']['db_initialize_create']), 0)
+
+            self.assertEqual(len(data['params']['db_initialize_insert_frontend']), 0)
+            self.assertEqual(len(data['params']['db_initialize_insert_backend']), 0)
+
         
     # helper functions Tests------------------------------------------------------------------------------------------------------------------
 class HelperFnsTest(unittest.TestCase):
