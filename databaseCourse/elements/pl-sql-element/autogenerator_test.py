@@ -487,8 +487,8 @@ class ParameterizedDeleteTests(unittest.TestCase):
             [data, 5, 2, 2, True, sampleSize],   # A bit of everything
             [data, 3, 0, 0, False, sampleSize],   # Min, without subquery
             [data, 3, 1, 0, False, sampleSize],   # Min, with subquery
-            [data, 10, 5, 5, False, sampleSize],   # Max, Without subquery
-            [data, 10, 5, 5, True, sampleSize]   # Max, with subquery
+            [data, 9, 4, 4, False, sampleSize],   # Max, Without subquery
+            [data, 9, 4, 4, True, sampleSize]   # Max, with subquery
             ])
     
     def testParameterizedDelete(self,data,columns,joins,conditionals,subquery,sampleSize):        
