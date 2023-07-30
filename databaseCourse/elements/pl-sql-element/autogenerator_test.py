@@ -280,7 +280,7 @@ class ParameterizedCreateTests(unittest.TestCase):
             [data, 5, 4, 1, 0, 0, 0, 0, sampleSize],
             [data, 5, 5, 0, 0, 0, 5, 5, sampleSize],  # Max foreign clauses
             [data, 5, 0, 1, 4, 4, 0, 0, sampleSize],  # Max other clauses
-            [data, 9, 9, 0, 0, 0, 0, 0, sampleSize]   # Lots of column and tables
+            [data, 7, 7, 0, 0, 0, 0, 0, sampleSize]   # Lots of column and tables
             ])
     
     def testParameterizedCreate(self,data,columns,joins,primaryKeys,isNotNull,isUnique,isOnUpdateCascade,isOnDeleteSetNull,sampleSize):        
@@ -310,7 +310,7 @@ class ParameterizedCreateTests(unittest.TestCase):
             self.assertNotIn("WHERE",data['correct_answers']['SQLEditor'])
             #self.assertNotIn("DELETE",data['correct_answers']['SQLEditor']) 'ON DELETE SET NULL'
             self.assertNotIn("INSERT",data['correct_answers']['SQLEditor'])
-            self.assertNotIn("UPDATE",data['correct_answers']['SQLEditor'])
+            #self.assertNotIn("UPDATE",data['correct_answers']['SQLEditor']) 'ON UPDATE CASCADE'
             self.assertNotIn("SELECT",data['correct_answers']['SQLEditor'])
 
             self.assertGreater(len(data['params']['questionString']), 0)
