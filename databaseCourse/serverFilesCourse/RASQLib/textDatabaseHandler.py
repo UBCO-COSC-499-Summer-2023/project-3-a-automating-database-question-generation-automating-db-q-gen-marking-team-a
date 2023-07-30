@@ -612,18 +612,23 @@ class Table:
             # Prevents certain columns from becoming FKs
             # due to uniqueness causing issues when
             # later creating random data for the rows
+            index = 0
             foreignColumn = None
             while not foreignColumn or 'Airport' in foreignColumn or 'province' in foreignColumn:
 
                 # Breaks out of the loop if there are no
-                # fitting columns. This will assaing a 
-                # 'bad' column to the FK, but there is
-                # still only a small chance of a crash
-                if len(columnsCopy) == 0:
+                # fitting columns, selecting the bad column
+                # as the choice
+                if index > joins * 5:
                     break
 
                 # Grabs a random column
-                foreignColumn = columnsCopy.pop(choice(range(len(columnsCopy))))
+                foreignColumn = choice(range(len(columnsCopy)))
+
+                # Prevents an infinite loop
+                i += 1
+
+            columnsCopy.pop(columnsCopy.index(foreignColumn))
 
 
 

@@ -308,7 +308,7 @@ class ParameterizedCreateTests(unittest.TestCase):
 
             self.assertIn("CREATE",data['correct_answers']['SQLEditor'])
             self.assertNotIn("WHERE",data['correct_answers']['SQLEditor'])
-            self.assertNotIn("DELETE",data['correct_answers']['SQLEditor'])
+            #self.assertNotIn("DELETE",data['correct_answers']['SQLEditor']) 'ON DELETE SET NULL'
             self.assertNotIn("INSERT",data['correct_answers']['SQLEditor'])
             self.assertNotIn("UPDATE",data['correct_answers']['SQLEditor'])
             self.assertNotIn("SELECT",data['correct_answers']['SQLEditor'])
