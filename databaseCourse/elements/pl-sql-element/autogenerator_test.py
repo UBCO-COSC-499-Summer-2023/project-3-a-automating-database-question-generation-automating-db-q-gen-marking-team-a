@@ -271,6 +271,7 @@ class ParameterizedCreateTests(unittest.TestCase):
     }
 
 
+
     # Parameters for CREATE to test various cases
     @parameterized.expand([
             # columns, joins, primaryKeys, notNulls, uniques, cascades, nullOnDeletes
