@@ -623,7 +623,7 @@ class Table:
                     break
 
                 # Grabs a random column
-                foreignColumn = choice(range(len(columnsCopy)))
+                foreignColumn = columnsCopy[choice(range(len(columnsCopy)))]
 
                 # Prevents an infinite loop
                 index += 1
