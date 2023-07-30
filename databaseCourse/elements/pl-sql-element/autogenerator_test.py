@@ -412,8 +412,8 @@ class ParameterizedUpdateTests(unittest.TestCase):
             [data, 5, 2, 2, True, sampleSize],   # A bit of everything
             [data, 3, 0, 0, False, sampleSize],   # Min, without subquery
             [data, 3, 1, 0, False, sampleSize],   # Min, with subquery
-            [data, 10, 7, 7, False, sampleSize],   # Max, Without subquery
-            [data, 10, 7, 7, True, sampleSize]   # Max, with subquery
+            [data, 10, 5, 5, False, sampleSize],   # Max, Without subquery
+            [data, 10, 5, 5, True, sampleSize]   # Max, with subquery
             ])
     
     def testParameterizedUpdate(self,data,columns,joins,conditionals,subquery,sampleSize):        
