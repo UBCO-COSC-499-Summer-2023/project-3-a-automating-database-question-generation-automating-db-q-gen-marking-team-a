@@ -470,6 +470,8 @@ class Table:
     # Creates a random table
     def loadRandom(self, name, columns, joins, clauses, constraints, columnNames):
 
+        ti = 0
+
         # Checks whether the parameters are legal
         #
         # Columns must be at least three otherwise there is
@@ -558,6 +560,10 @@ class Table:
         # Keeps adding columns until there are enough
         while len(self.columns) < columns:
 
+            ti += 1
+            if ti > 1000:
+                print('Timeout!', 'Adding columns (565)')
+
             # Chooses a random column to add
             # Pops the column to ensure no duplicates
             addColumn = columnNames.pop(choice(range(len(columnNames))))
@@ -608,6 +614,10 @@ class Table:
         # Keeps adding joins until there are enough
         while len(self.getKeyMap()) < joins:
 
+            ti += 1
+            if ti > 1000:
+                print('Timeout!', 'Adding joins (619)')
+
             # Chooses a random column to become foreign.
             # Prevents certain columns from becoming FKs
             # due to uniqueness causing issues when
@@ -615,6 +625,10 @@ class Table:
             index = 0
             foreignColumn = None
             while not foreignColumn or 'Airport' in foreignColumn or 'province' in foreignColumn:
+
+                ti += 1
+                if ti > 1000:
+                    print('Timeout!', 'Bad columns (631)')
 
                 # Breaks out of the loop if there are no
                 # fitting columns, selecting the bad column
@@ -693,6 +707,11 @@ class Table:
                         # Keeps choosing columns until one is valid
                         column = None
                         while not column or self.columns[column]['references'] or self.columns[column]['isPrimary']:
+
+                            ti += 1
+                            if ti > 1000:
+                                print('Timeout!', 'Primary keys (713)')
+
                             column = choice(list(self.columns.keys()))
 
                         self.columns[column]['isPrimary'] = True
@@ -703,6 +722,11 @@ class Table:
                         # Keeps choosing columns until one is valid
                         column = None
                         while not column or self.columns[column]['references'] or self.columns[column]['isPrimary']:
+                            
+                            ti += 1
+                            if ti > 1000:
+                                print('Timeout!', 'Is not null (728)')
+
                             column = choice(list(self.columns.keys()))
 
                         self.columns[column]['isNotNull'] = True
@@ -713,6 +737,11 @@ class Table:
                         # Keeps choosing columns until one is valid
                         column = None
                         while not column or self.columns[column]['references'] or self.columns[column]['isPrimary']:
+
+                            ti += 1
+                            if ti > 1000:
+                                print('Timeout!', 'Is unique (743)')
+
                             column = choice(list(self.columns.keys()))
 
                         self.columns[column]['isUnique'] = True
@@ -723,6 +752,11 @@ class Table:
                         # Keeps choosing columns until one is valid
                         column = None
                         while not column or not self.columns[column]['references'] or self.columns[column]['isOnUpdateCascade']:
+
+                            ti += 1
+                            if ti > 1000:
+                                print('Timeout!', 'Update cascade (758)')
+
                             column = choice(list(self.columns.keys()))
 
                         self.columns[column]['isOnUpdateCascade'] = True
@@ -733,6 +767,11 @@ class Table:
                         # Keeps choosing columns until one is valid
                         column = None
                         while not column or not self.columns[column]['references'] or self.columns[column]['isOnDeleteSetNull']:
+
+                            ti += 1
+                            if ti > 1000:
+                                print('Timeout!', 'Delete null (773)')
+
                             column = choice(list(self.columns.keys()))
 
                         self.columns[column]['isOnDeleteSetNull'] = True
