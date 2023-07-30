@@ -25,6 +25,8 @@ def autogenerate(data):
     if difficulty not in ['easy', 'medium', 'hard', None]:
         return None
 
+    print('Autogenerate, prior to question load')
+
     # Generates the appropriate question
     match questionType:
         case 'create':  generateCreate(data, difficulty)
@@ -43,6 +45,8 @@ def generateCreate(data, difficulty):
     # Obtains question specific parameters
     columns, joins, tableClauses, queryClauses = getQuestionParameters(data)
 
+    print('CREATE, prior to load database')
+
     # Creates an appropriate table
     database = None
     match difficulty:
@@ -56,7 +60,7 @@ def generateCreate(data, difficulty):
     # Grabs the primary table for easy referencing
     table = database.primaryTable
 
-
+    print('CREATE, after load database')
 
     # Creates a string to tell the student what they need
     # to do for the qestion
