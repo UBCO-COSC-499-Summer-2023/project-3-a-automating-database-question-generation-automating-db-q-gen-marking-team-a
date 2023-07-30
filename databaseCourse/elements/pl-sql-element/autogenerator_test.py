@@ -302,6 +302,7 @@ class ParameterizedCreateTests(unittest.TestCase):
             data['params']['db_initialize_create'] = ''
             data['params']['db_initialize_insert_frontend'] = ''
             data['params']['db_initialize_insert_backend'] = ''
+            data['correct_answers']['SQLEditor'] = ''
 
             autogenerate(data)
 
