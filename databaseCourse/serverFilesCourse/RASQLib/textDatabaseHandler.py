@@ -560,10 +560,6 @@ class Table:
         # Keeps adding columns until there are enough
         while len(self.columns) < columns:
 
-            ti += 1
-            if ti > 1000:
-                print('Timeout!', 'Adding columns (565)')
-
             # Chooses a random column to add
             # Pops the column to ensure no duplicates
             addColumn = columnNames.pop(choice(range(len(columnNames))))
@@ -614,10 +610,6 @@ class Table:
         # Keeps adding joins until there are enough
         while len(self.getKeyMap()) < joins:
 
-            ti += 1
-            if ti > 1000:
-                print('Timeout!', 'Adding joins (619)')
-
             # Chooses a random column to become foreign.
             # Prevents certain columns from becoming FKs
             # due to uniqueness causing issues when
@@ -625,10 +617,6 @@ class Table:
             index = 0
             foreignColumn = None
             while not foreignColumn or 'Airport' in foreignColumn or 'province' in foreignColumn:
-
-                ti += 1
-                if ti > 1000:
-                    print('Timeout!', 'Bad columns (631)')
 
                 # Breaks out of the loop if there are no
                 # fitting columns, selecting the bad column
@@ -718,10 +706,6 @@ class Table:
                             if cindex > 50:
                                 timeout = True
 
-                            ti += 1
-                            if ti > 1000:
-                                print('Timeout!', 'Primary keys (723)')
-
                             column = choice(list(self.columns.keys()))
 
                         if not timeout:
@@ -740,10 +724,6 @@ class Table:
                             if cindex > 50:
                                 timeout = True
 
-                            ti += 1
-                            if ti > 1000:
-                                print('Timeout!', 'Not null (745)')
-
                             column = choice(list(self.columns.keys()))
 
                         if not timeout:
@@ -760,11 +740,7 @@ class Table:
                             # ingore this clause
                             cindex += 1
                             if cindex > 50:
-                                timeout = True
-
-                            ti += 1
-                            if ti > 1000:
-                                print('Timeout!', 'Unique (767)')                            
+                                timeout = True                         
 
                             column = choice(list(self.columns.keys()))
 
@@ -782,11 +758,7 @@ class Table:
                             # ingore this clause
                             cindex += 1
                             if cindex > 50:
-                                timeout = True
-
-                            ti += 1
-                            if ti > 1000:
-                                print('Timeout!', 'Cascade (789)')                            
+                                timeout = True                   
 
                             column = choice(list(self.columns.keys()))
 
@@ -804,11 +776,7 @@ class Table:
                             # ingore this clause
                             cindex += 1
                             if cindex > 50:
-                                timeout = True
-
-                            ti += 1
-                            if ti > 1000:
-                                print('Timeout!', 'Delete (811)')                            
+                                timeout = True                         
 
                             column = choice(list(self.columns.keys()))
 
