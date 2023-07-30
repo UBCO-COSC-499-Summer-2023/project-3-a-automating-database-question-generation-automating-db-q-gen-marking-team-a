@@ -254,15 +254,21 @@ class ParameterizedCreateTests(unittest.TestCase):
     sampleSize = 25
 
     # Declares and sets defaults
-    data = {'params': {'html_params': {
-        'random': True,
-        'questionType': 'create',
-        'difficulty': None,
-        'maxGrade': 3,
-        'markerFeedback': True,
-        'expectedOutput': False
-    }}}
-
+    data = {
+        'params': {
+            'html_params': {
+                'random': True,
+                'questionType': 'create',
+                'difficulty': None,
+                'maxGrade': 3,
+                'markerFeedback': True,
+                'expectedOutput': False
+            }
+        },
+        'correct_answers': {
+            'SQLEditor': ''
+        }
+    }
 
 
     # Parameters for CREATE to test various cases
