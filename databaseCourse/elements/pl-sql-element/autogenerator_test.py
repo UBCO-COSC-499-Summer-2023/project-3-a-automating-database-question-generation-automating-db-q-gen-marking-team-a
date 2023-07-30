@@ -352,7 +352,7 @@ class ParameterizedInsertTests(unittest.TestCase):
             [data, 7, 7, sampleSize]  # Max values
             ])
     
-    def testParameterizedCreate(self,data,columns,joins,sampleSize):        
+    def testParameterizedInsert(self,data,columns,joins,sampleSize):        
         data['params']['html_params']['columns'] = columns
         data['params']['html_params']['joins'] = joins
 
