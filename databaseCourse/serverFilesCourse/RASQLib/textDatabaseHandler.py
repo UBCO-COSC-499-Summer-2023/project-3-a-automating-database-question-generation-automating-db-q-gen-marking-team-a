@@ -718,6 +718,10 @@ class Table:
                             if cindex > 50:
                                 timeout = True
 
+                            ti += 1
+                            if ti > 1000:
+                                print('Timeout!', 'Primary keys (723)')
+
                             column = choice(list(self.columns.keys()))
 
                         if not timeout:
@@ -735,6 +739,10 @@ class Table:
                             cindex += 1
                             if cindex > 50:
                                 timeout = True
+
+                            ti += 1
+                            if ti > 1000:
+                                print('Timeout!', 'Not null (745)')
 
                             column = choice(list(self.columns.keys()))
 
@@ -754,6 +762,10 @@ class Table:
                             if cindex > 50:
                                 timeout = True
 
+                            ti += 1
+                            if ti > 1000:
+                                print('Timeout!', 'Unique (767)')                            
+
                             column = choice(list(self.columns.keys()))
 
                         if not timeout:
@@ -772,6 +784,10 @@ class Table:
                             if cindex > 50:
                                 timeout = True
 
+                            ti += 1
+                            if ti > 1000:
+                                print('Timeout!', 'Cascade (789)')                            
+
                             column = choice(list(self.columns.keys()))
 
                         if not timeout:
@@ -789,6 +805,10 @@ class Table:
                             cindex += 1
                             if cindex > 50:
                                 timeout = True
+
+                            ti += 1
+                            if ti > 1000:
+                                print('Timeout!', 'Delete (811)')                            
 
                             column = choice(list(self.columns.keys()))
 
