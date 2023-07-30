@@ -254,18 +254,14 @@ class ParameterizedCreateTests(unittest.TestCase):
     sampleSize = 25
 
     # Declares and sets defaults
-    data = {}
-    data['params'] = {}
-
-    data['params']['html_params'] = {
+    data = {'params': {'html_params': {
         'random': True,
         'questionType': 'create',
         'difficulty': None,
         'maxGrade': 3,
         'markerFeedback': True,
         'expectedOutput': False
-    }
-
+    }}}
 
 
     # Parameters for CREATE to test various cases
@@ -280,10 +276,7 @@ class ParameterizedCreateTests(unittest.TestCase):
             [data, 9, 9, 0, 0, 0, 0, 0, sampleSize]   # Lots of column and tables
             ])
     
-    def testParameterizedCreate(self,data,columns,joins,primaryKeys,isNotNull,isUnique,isOnUpdateCascade,isOnDeleteSetNull,sampleSize):
-        data = {}
-        data['params'] = {}
-        
+    def testParameterizedCreate(self,data,columns,joins,primaryKeys,isNotNull,isUnique,isOnUpdateCascade,isOnDeleteSetNull,sampleSize):        
         data['params']['html_params']['columns'] = columns
         data['params']['html_params']['joins'] = joins
 
