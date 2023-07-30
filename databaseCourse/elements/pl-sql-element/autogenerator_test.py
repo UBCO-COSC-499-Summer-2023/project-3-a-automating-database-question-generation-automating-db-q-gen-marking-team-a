@@ -251,7 +251,7 @@ class ParameterizedCreateTests(unittest.TestCase):
     # Describes how many times each test should be run.
     # Since we're testing random generation, we need
     # a sufficient sample size to catch edge cases
-    sampleSize = 5
+    sampleSize = 50
 
     # Declares and sets defaults
     data = {
@@ -269,8 +269,6 @@ class ParameterizedCreateTests(unittest.TestCase):
             'SQLEditor': ''
         }
     }
-
-
 
     # Parameters for CREATE to test various cases
     @parameterized.expand([

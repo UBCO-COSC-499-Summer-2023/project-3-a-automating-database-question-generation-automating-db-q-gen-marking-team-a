@@ -685,6 +685,10 @@ class Table:
             # number of columns have been selected.
             for i in range(clauses[clause]):
 
+                # Used to prevent timeouts
+                cindex = 0
+                timeout = False
+
                 match clause:
 
                     # Selects primary keys
@@ -692,50 +696,90 @@ class Table:
 
                         # Keeps choosing columns until one is valid
                         column = None
-                        while not column or self.columns[column]['references'] or self.columns[column]['isPrimary']:
+                        while not column or self.columns[column]['references'] or self.columns[column]['isPrimary'] and not timeout:
+
+                            # If this is stuck in a loop, break and
+                            # ingore this clause
+                            cindex += 1
+                            if cindex > 50:
+                                timeout = True
+
                             column = choice(list(self.columns.keys()))
 
-                        self.columns[column]['isPrimary'] = True
+                        if not timeout:
+                            self.columns[column]['isPrimary'] = True
 
                     # NOT NULL constraint
                     case 'isNotNull':
                         
                         # Keeps choosing columns until one is valid
                         column = None
-                        while not column or self.columns[column]['references'] or self.columns[column]['isPrimary']:
+                        while not column or self.columns[column]['references'] or self.columns[column]['isPrimary'] and not timeout:
+                            
+                            # If this is stuck in a loop, break and
+                            # ingore this clause
+                            cindex += 1
+                            if cindex > 50:
+                                timeout = True
+
                             column = choice(list(self.columns.keys()))
 
-                        self.columns[column]['isNotNull'] = True
+                        if not timeout:
+                            self.columns[column]['isNotNull'] = True
 
                     # UNIQUE constraint
                     case 'isUnique':
 
                         # Keeps choosing columns until one is valid
                         column = None
-                        while not column or self.columns[column]['references'] or self.columns[column]['isPrimary']:
+                        while not column or self.columns[column]['references'] or self.columns[column]['isPrimary'] and not timeout:
+
+                            # If this is stuck in a loop, break and
+                            # ingore this clause
+                            cindex += 1
+                            if cindex > 50:
+                                timeout = True                         
+
                             column = choice(list(self.columns.keys()))
 
-                        self.columns[column]['isUnique'] = True
+                        if not timeout:
+                            self.columns[column]['isUnique'] = True
 
                     # CASCADE ON UPDATE clause
                     case 'isOnUpdateCascade':
                         
                         # Keeps choosing columns until one is valid
                         column = None
-                        while not column or not self.columns[column]['references'] or self.columns[column]['isOnUpdateCascade']:
+                        while not column or not self.columns[column]['references'] or self.columns[column]['isOnUpdateCascade'] and not timeout:
+
+                            # If this is stuck in a loop, break and
+                            # ingore this clause
+                            cindex += 1
+                            if cindex > 50:
+                                timeout = True                   
+
                             column = choice(list(self.columns.keys()))
 
-                        self.columns[column]['isOnUpdateCascade'] = True
+                        if not timeout:
+                            self.columns[column]['isOnUpdateCascade'] = True
 
                     # SET NULL ON DELETE clause
                     case 'isOnDeleteSetNull':
 
                         # Keeps choosing columns until one is valid
                         column = None
-                        while not column or not self.columns[column]['references'] or self.columns[column]['isOnDeleteSetNull']:
+                        while not column or not self.columns[column]['references'] or self.columns[column]['isOnDeleteSetNull'] and not timeout:
+
+                            # If this is stuck in a loop, break and
+                            # ingore this clause
+                            cindex += 1
+                            if cindex > 50:
+                                timeout = True                         
+
                             column = choice(list(self.columns.keys()))
 
-                        self.columns[column]['isOnDeleteSetNull'] = True
+                        if not timeout:
+                            self.columns[column]['isOnDeleteSetNull'] = True
 
                     # Crashes if the clause is not valid
                     case _:
