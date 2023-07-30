@@ -626,7 +626,7 @@ class Table:
                 foreignColumn = choice(range(len(columnsCopy)))
 
                 # Prevents an infinite loop
-                i += 1
+                index += 1
 
             columnsCopy.pop(columnsCopy.index(foreignColumn))
 
