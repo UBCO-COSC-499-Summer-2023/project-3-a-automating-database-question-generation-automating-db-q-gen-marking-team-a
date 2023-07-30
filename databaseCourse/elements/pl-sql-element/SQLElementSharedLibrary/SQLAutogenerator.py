@@ -1215,7 +1215,7 @@ def dictionaryQuestionString(dictionary, string='', iterations=None, index=0, ta
     
     # If there's nothing supplied, return the string
     if not dictionary:
-        return string
+        return string, 0
 
     # Sets a default value for iterations
     if not iterations:
