@@ -8,7 +8,7 @@ sys.path.append('/drone/src/databaseCourse/serverFilesCourse/')
 from RASQLib import textDatabaseHandler as db
 from RASQLib import noisyData as nd
 
-
+ti = 0
 
 # Automatically generates an SQL question based on the question's parameters
 def autogenerate(data):
@@ -263,8 +263,12 @@ def generateUpdate(data, difficulty):
     # Selects a random column to affect. Ensures that it cannot
     # select a unique column so ensure that the update won't
     # violate unique constrains
+
     updateColumn = None
     while not updateColumn or not nd.isUnique(table, updateColumn):
+        ti += 1
+        if ti > 1000:
+            print('Timeout!', 'Update column (272)')
         updateColumn = random.choice(list(table.columns.keys()))
 
     # Generates the updated valued
@@ -542,6 +546,9 @@ def generateQuery(data, difficulty):
     # ascending
     orderByColumns = {}
     while len(orderByColumns) < orderBy:
+        ti += 1
+        if ti > 1000:
+            print('Timeout!', 'Order by (552)')
         orderByColumns[columnList.pop(random.choice(range(len(columnList))))] = random.choice(['ASC', 'DESC'])
     
 
@@ -554,6 +561,9 @@ def generateQuery(data, difficulty):
     # Gets the columns to group
     groupByColumns = []
     while len(groupByColumns) < groupBy:
+        ti += 1
+        if ti > 1000:
+            print('Timeout!', 'Group by (567)')        
         groupByColumns.append(selectedColumnList.pop(random.choice(range(len(selectedColumnList)))))
 
     
@@ -953,6 +963,9 @@ def generateSubquery(database):
     # to the units of the referenced tables
     conditionalColumn = None
     while not conditionalColumn or table.columns[conditionalColumn]['unit'] not in unitsInReferenced:
+        ti += 1
+        if ti > 1000:
+            print('Timeout!', 'Conditional column (969)')
         conditionalColumn = random.choices(primaryColumnList, conditionalWeights)[0]
 
     # Creates a list of all columns from referenced tables that
@@ -1293,6 +1306,9 @@ def questionConditionals(conditionalValues, string=''):
     # where it also chopped off the trailing '>' and
     # cause a great-many rendering issues.
     while string[-1] != '>':
+        ti += 1
+        if ti > 1000:
+            print('Timeout!', 'Statement question string (1312)')
         string = string[:-1]
     
     return string
@@ -1354,6 +1370,10 @@ def getConditionalValues(conditionals, database, columnList=[], restrictive=True
 
     # Iterates over the amount of conditionals
     while len(conditionalValues) < conditionals:
+
+        ti += 1
+        if ti > 1000:
+            print('Timeout!', 'Get conditional values (1377)')
 
         # Selects a random column to affect.
         conditionalColumn = nd.popRandom(columnList, weights)
@@ -1496,6 +1516,10 @@ def loadTrimmedTable(columnCount, joinCount=0):
     table = None
     while not table or len(table.columns) < columnCount or len(table.getKeyMap()) < joinCount:
 
+        ti += 1
+        if ti > 1000:
+            print('Timeout!', 'Load trimmed table (1522)')
+
         # Checks to see if there are no possible tables left.
         # This will only occur if there are no tables with enough
         # columns to satisfy the requirements.
@@ -1509,6 +1533,10 @@ def loadTrimmedTable(columnCount, joinCount=0):
     # Removes columns until there is an appropriate amount left
     doomCounter = 10
     while len(table.columns) > columnCount:
+
+        ti += 1
+        if ti > 1000:
+            print('Timeout!', 'Load trimmed table but later (1540)')
 
         # If the doom counter reaches 0, it means that we are unable to remove
         # enough columns because they are PKs or necessary FKs. In that case,
