@@ -137,6 +137,8 @@ def gradeQueryQuestion(data,correctAnswer,submittedAnswer):
 
     # order matching
     orderScore = 0
+    if len(expectedAns) == 0 or len(actualAns) == 0:
+        return 1
     if rowScore == 1 and colScore ==1:
         if expectedAns[0] == actualAns[0] and expectedAns[-1] == actualAns[-1]:
             orderScore = 1
@@ -512,6 +514,11 @@ def colMatch(expectedAns,actualAns):
 def valueMatch(expectedAns,actualAns):
     valueMatchExpectedTotal = len(expectedAns)
     valueMatchActualTotal = 0
+
+    if valueMatchExpectedTotal == 0 and len(actualAns) == 0:
+        return 1
+    if valueMatchExpectedTotal == 0 and len(actualAns) != 0:
+        return 0
 
     # +1 point per row of exact values matched
     for x in actualAns:

@@ -3,9 +3,8 @@
 </div>
 <br>
 <div class="expectedOutput">
-<p>Expected Output:</p>
+
 {{ expectedOutput }}
-</div>
 
 <div id="db-schema">
   Database schema will be displayed here once tables have been created.
@@ -27,6 +26,10 @@
 
       <div id="db-init">
         {{db_initialize}}
+      </div>
+
+      <div id="previousSubmission">
+        {{previousSubmission}}
       </div>
   
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.1/mode/sql/sql.min.js"></script>

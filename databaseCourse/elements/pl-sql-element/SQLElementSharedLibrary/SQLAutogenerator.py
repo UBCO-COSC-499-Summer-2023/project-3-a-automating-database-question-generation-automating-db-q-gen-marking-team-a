@@ -1549,7 +1549,7 @@ def createPreview(data):
 
     columnNames = [description[0] for description in cur.description]
 
-    htmlTable = "<table class='output-tables'><thead>"
+    htmlTable = "<div class='expectedOutput'><b>Expected Output:</b><div class='scrollable'><table class='output-tables'><thead>"
 
     for column in columnNames:
         htmlTable += "<th>" + str(column) + "</th>"
@@ -1563,6 +1563,6 @@ def createPreview(data):
         rowString += "</tr>"
         htmlTable += rowString
 
-    htmlTable += "</table>"
+    htmlTable += "</table></div></div>"
 
     return htmlTable
