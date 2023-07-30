@@ -8,8 +8,6 @@ sys.path.append('/drone/src/databaseCourse/serverFilesCourse/')
 from RASQLib import textDatabaseHandler as db
 from RASQLib import noisyData as nd
 
-ti = 0
-
 # Automatically generates an SQL question based on the question's parameters
 def autogenerate(data):
     

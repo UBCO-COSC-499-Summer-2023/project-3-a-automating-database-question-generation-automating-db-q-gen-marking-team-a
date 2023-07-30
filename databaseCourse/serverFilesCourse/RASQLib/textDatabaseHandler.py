@@ -470,8 +470,6 @@ class Table:
     # Creates a random table
     def loadRandom(self, name, columns, joins, clauses, constraints, columnNames):
 
-        ti = 0
-
         # Checks whether the parameters are legal
         #
         # Columns must be at least three otherwise there is
