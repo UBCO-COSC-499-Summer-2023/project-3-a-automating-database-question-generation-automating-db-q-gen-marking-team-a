@@ -305,17 +305,14 @@ class ParameterizedCreateTests(unittest.TestCase):
 
             autogenerate(data)
 
-            result = data['params']['db_initialize_create'] + data['params']['db_initialize_insert_frontend'] + data['params']['db_initialize_insert_backend']
-
-            self.assertIn("CREATE",result)
-            self.assertNotIn("WHERE",result)
-            self.assertNotIn("DELETE",result)
-            self.assertNotIn("INSERT",result)
-            self.assertNotIn("UPDATE",result)
-            self.assertNotIn("SELECT",result)
+            self.assertIn("CREATE",data['correct_answers']['SQLEditor'])
+            self.assertNotIn("WHERE",data['correct_answers']['SQLEditor'])
+            self.assertNotIn("DELETE",data['correct_answers']['SQLEditor'])
+            self.assertNotIn("INSERT",data['correct_answers']['SQLEditor'])
+            self.assertNotIn("UPDATE",data['correct_answers']['SQLEditor'])
+            self.assertNotIn("SELECT",data['correct_answers']['SQLEditor'])
 
             self.assertGreater(len(data['params']['questionString']), 0)
-            self.assertGreater(len(data['params']['db_initialize_create']), 0)
 
             self.assertEqual(len(data['params']['db_initialize_insert_frontend']), 0)
             self.assertEqual(len(data['params']['db_initialize_insert_backend']), 0)
