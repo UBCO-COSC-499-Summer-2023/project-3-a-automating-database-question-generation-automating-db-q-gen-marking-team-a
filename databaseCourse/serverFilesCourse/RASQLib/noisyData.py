@@ -309,6 +309,11 @@ def isUnique(table, key):
 # Repeated calls on the same unique list will not return duplicate values
 def popRandom(values, weights=[]):
     
+    # If there are no more values to supply,
+    # instead return null
+    if not values:
+        return 'NULL'
+
     # If weigths are not supplied, pop a random item and return it
     if not weights:
         return values.pop(random.choice(range(len(list(values)))))
