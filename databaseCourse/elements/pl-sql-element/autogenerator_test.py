@@ -271,13 +271,13 @@ class ParameterizedCreateTests(unittest.TestCase):
     # Parameters for CREATE to test various cases
     @parameterized.expand([
             # columns, joins, primaryKeys, notNulls, uniques, cascades, nullOnDeletes
-            [5, 2, 1, 1, 1, 1, 1],  # A bit of everything
-            [3, 0, 0, 0, 0, 0, 0],  # Minimum values
-            [5, 1, 4, 0, 0, 0, 0],
-            [5, 4, 1, 0, 0, 0, 0],
-            [5, 5, 0, 0, 0, 5, 5],  # Max foreign clauses
-            [5, 0, 1, 4, 4, 0, 0],  # Max other clauses
-            [9, 9, 0, 0, 0, 0, 0]   # Lots of column and tables
+            [data, 5, 2, 1, 1, 1, 1, 1, sampleSize],  # A bit of everything
+            [data, 3, 0, 0, 0, 0, 0, 0, sampleSize],  # Minimum values
+            [data, 5, 1, 4, 0, 0, 0, 0, sampleSize],
+            [data, 5, 4, 1, 0, 0, 0, 0, sampleSize],
+            [data, 5, 5, 0, 0, 0, 5, 5, sampleSize],  # Max foreign clauses
+            [data, 5, 0, 1, 4, 4, 0, 0, sampleSize],  # Max other clauses
+            [data, 9, 9, 0, 0, 0, 0, 0, sampleSize]   # Lots of column and tables
             ])
     
     def testParameterizedCreate(self,data,columns,joins,primaryKeys,isNotNull,isUnique,isOnUpdateCascade,isOnDeleteSetNull,sampleSize):
