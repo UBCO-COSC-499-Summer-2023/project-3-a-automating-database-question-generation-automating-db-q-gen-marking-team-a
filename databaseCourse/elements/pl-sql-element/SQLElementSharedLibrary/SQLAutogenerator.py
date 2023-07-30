@@ -8,8 +8,6 @@ sys.path.append('/drone/src/databaseCourse/serverFilesCourse/')
 from RASQLib import textDatabaseHandler as db
 from RASQLib import noisyData as nd
 
-
-
 # Automatically generates an SQL question based on the question's parameters
 def autogenerate(data):
     
@@ -55,8 +53,6 @@ def generateCreate(data, difficulty):
 
     # Grabs the primary table for easy referencing
     table = database.primaryTable
-
-
 
     # Creates a string to tell the student what they need
     # to do for the qestion
@@ -263,8 +259,16 @@ def generateUpdate(data, difficulty):
     # Selects a random column to affect. Ensures that it cannot
     # select a unique column so ensure that the update won't
     # violate unique constrains
+
     updateColumn = None
+    tindex = 0
     while not updateColumn or not nd.isUnique(table, updateColumn):
+
+        # Helps prevent timeouts
+        tindex += 1
+        if tindex > 50:
+            break
+
         updateColumn = random.choice(list(table.columns.keys()))
 
     # Generates the updated valued
@@ -553,7 +557,7 @@ def generateQuery(data, difficulty):
 
     # Gets the columns to group
     groupByColumns = []
-    while len(groupByColumns) < groupBy:
+    while len(groupByColumns) < groupBy:  
         groupByColumns.append(selectedColumnList.pop(random.choice(range(len(selectedColumnList)))))
 
     
