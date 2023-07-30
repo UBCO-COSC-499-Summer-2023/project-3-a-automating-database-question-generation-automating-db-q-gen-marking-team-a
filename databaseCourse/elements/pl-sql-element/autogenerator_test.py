@@ -281,7 +281,7 @@ class ParameterizedCreateTests(unittest.TestCase):
             [data, 5, 4, 1, 0, 0, 0, 0, sampleSize],
             [data, 5, 5, 0, 0, 0, 5, 5, sampleSize],  # Max foreign clauses
             [data, 5, 0, 1, 4, 4, 0, 0, sampleSize],  # Max other clauses
-            [data, 7, 7, 0, 0, 0, 0, 0, sampleSize]   # Lots of column and tables
+            [data, 10, 7, 0, 0, 0, 0, 0, sampleSize]   # Lots of column and tables
             ])
     
     def testParameterizedCreate(self,data,columns,joins,primaryKeys,isNotNull,isUnique,isOnUpdateCascade,isOnDeleteSetNull,sampleSize):        
@@ -347,9 +347,9 @@ class ParameterizedInsertTests(unittest.TestCase):
     # Parameters for CREATE to test various cases
     @parameterized.expand([
             # columns, joins
-            [data, 5, 2, sampleSize],  # A bit of everything
-            [data, 3, 0, sampleSize],  # Minimum values
-            [data, 7, 7, sampleSize]  # Max values
+            [data, 5, 2, sampleSize],   # A bit of everything
+            [data, 3, 0, sampleSize],   # Minimum values
+            [data, 10, 7, sampleSize]    # Max values
             ])
     
     def testParameterizedInsert(self,data,columns,joins,sampleSize):        
