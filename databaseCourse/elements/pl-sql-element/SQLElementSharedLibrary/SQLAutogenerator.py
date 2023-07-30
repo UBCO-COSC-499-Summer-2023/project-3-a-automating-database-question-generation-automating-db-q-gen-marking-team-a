@@ -624,15 +624,20 @@ def generateQuery(data, difficulty):
 
 
     # Starts the column selection section
-    questionString += ' select the columns'
+    if selectedColumns:
+        questionString += ' select the columns'
 
-    # De-pluralizes if necessary
-    questionString = removeTrailingChars(questionString, condition=columnsToSelect == 1)
-    
-    # Lists all the columns to add
-    index = 0
-    for selectedTable in selectedColumns:
-        questionString, index = dictionaryQuestionString(selectedColumns[selectedTable], questionString, columnsToSelect, index, tag='b')
+        # De-pluralizes if necessary
+        questionString = removeTrailingChars(questionString, condition=columnsToSelect == 1)
+        
+        # Lists all the columns to add
+        index = 0
+        for selectedTable in selectedColumns:
+            questionString, index = dictionaryQuestionString(selectedColumns[selectedTable], questionString, columnsToSelect, index, tag='b')
+
+    # If there are no columns to select, instead select all '*'
+    else:
+        questionString += ' select all columns'
 
     # Removes the trailing comma
     questionString = removeTrailingChars(questionString)
@@ -824,6 +829,10 @@ def queryStatement(database, selectedColumns, joinTypes={}, conditionalValues={}
     for key in selectedColumns:
         for column in selectedColumns[key]:
             queryString += f" {column},"
+    
+    # Adds the star for select all
+    if not selectedColumns:
+        queryString += ' * '
     
     # Removes trailing comma
     queryString = queryString[:-1] + f"\nFROM {table.name}"
