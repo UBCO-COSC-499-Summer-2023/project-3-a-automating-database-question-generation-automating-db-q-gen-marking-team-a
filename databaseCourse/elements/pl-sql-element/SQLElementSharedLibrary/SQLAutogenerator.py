@@ -730,7 +730,7 @@ def generateQuery(data, difficulty):
     if orderBy and groupBy:
         questionString += ' and group'
     elif groupBy:
-        questionString += '. Group'
+        questionString += ' Group'
     elif orderBy:
         questionString += '.'
 
