@@ -127,8 +127,6 @@ def prepare(element_html, data):
 
     data['params']['feedback']=""
 
-    print('Pre question generate')
-
     # If if is a randomised question, generate the question
     if questionRandom:
         autogen.autogenerate(data)
