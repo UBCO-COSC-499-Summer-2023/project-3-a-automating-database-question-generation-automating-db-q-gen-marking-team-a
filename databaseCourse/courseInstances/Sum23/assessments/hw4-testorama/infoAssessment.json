@@ -1,0 +1,21 @@
+{
+    "uuid": "d90b6371-b1e4-49a0-bf2d-e46a2bb39547",
+    "type": "Homework",
+    "title": "Test-o-rama!",
+    "set": "Homework",
+    "number": "4",
+    "allowAccess": [
+        {
+            "credit": 0
+        }
+    ],
+    "zones": [
+        {
+            "questions": [
+                {"id": "DDL_Questions/deleteTables/randomTestorama",          "points": 0},
+                {"id": "SQL_Questions/randomTestorama",          "points": 0}
+
+            ]
+        }
+    ]
+}
