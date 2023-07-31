@@ -4,17 +4,53 @@ name: default
 
 steps:
 
-  - name: Run SQL Autogenerator + Autograder tests
-    image: prairielearn/prairielearn
-    commands: 
-      - pip install -r requirements.txt --quiet
-      - cd databaseCourse/elements/pl-sql-element
+  #- name: Run SQL Autogenerator + Autograder tests
+  #  image: prairielearn/prairielearn
+  #  commands: 
+  #    - pip install -r requirements.txt --quiet
+  #    - cd databaseCourse/elements/pl-sql-element
   # just run all test files
-      - python -m unittest discover -p "*_test.py"
+  #    - python -m unittest discover -p "*_test.py"
   # detailed run of one file
   #     - python -m unittest -v autogenerator_test.py
   #     - py -m unittest discover -p "*_test.py"
 
+  - name: Run SQL Parameterized CREATE tests
+    image: prairielearn/prairielearn
+    commands: 
+      - pip install -r requirements.txt --quiet
+      - cd databaseCourse/elements/pl-sql-element
+      - python -m unittest -v parameter_create_test.py
+    
+  - name: Run SQL Parameterized INSERT tests
+    image: prairielearn/prairielearn
+    commands: 
+      - pip install -r requirements.txt --quiet
+      - cd databaseCourse/elements/pl-sql-element
+      - python -m unittest -v parameter_insert_test.py      
+
+  - name: Run SQL Parameterized UPDATE tests
+    image: prairielearn/prairielearn
+    commands: 
+      - pip install -r requirements.txt --quiet
+      - cd databaseCourse/elements/pl-sql-element
+      - python -m unittest -v parameter_update_test.py      
+
+  - name: Run SQL Parameterized DELETE tests
+    image: prairielearn/prairielearn
+    commands: 
+      - pip install -r requirements.txt --quiet
+      - cd databaseCourse/elements/pl-sql-element
+      - python -m unittest -v parameter_delete_test.py      
+
+  - name: Run SQL Parameterized QUERY tests
+    image: prairielearn/prairielearn
+    commands: 
+      - pip install -r requirements.txt --quiet
+      - cd databaseCourse/elements/pl-sql-element
+      - python -m unittest -v parameter_query_test.py      
+
+  '''
   - name: Run Relax Autogenerator + Autograder tests
     image: prairielearn/prairielearn
     commands: 
@@ -33,3 +69,4 @@ steps:
       - cd databaseCourse/serverFilesCourse/RASQLib
   # just run all test files
       - python -m unittest discover -p "*_test.py"
+  '''
