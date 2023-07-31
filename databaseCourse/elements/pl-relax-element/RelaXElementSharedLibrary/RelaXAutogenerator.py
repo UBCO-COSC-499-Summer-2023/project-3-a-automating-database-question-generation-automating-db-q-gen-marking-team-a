@@ -77,7 +77,7 @@ class Question:
 
         self.tableListText = ", ".join(self.JoinList)
         parts = self.tableListText.rsplit(",", 1)  # Split the string from the right side only once
-        self.tableListText = " and".join(parts)
+        self.tableListText = f"<b>{' and'.join(parts)}</b>"
 
 
         usableColumns = []
@@ -91,8 +91,8 @@ class Question:
         if not self.groupByBool:
             self.projectedColumnText = ", ".join(projectedColumns)
             parts = self.projectedColumnText.rsplit(",", 1)  # Split the string from the right side only once
-            self.projectedColumnText = " and".join(parts)
-            print(self.projectedColumnText)
+            self.projectedColumnText = f'<b>{" and".join(parts)}</b>'
+            #print(self.projectedColumnText)
             self.queryStatement = f"{self.Query} {', '.join(projectedColumns)}"
         
         #* Group By - Replaces Projection
@@ -105,17 +105,17 @@ class Question:
                     self.groupByStatement = f"{self.groupByStatement} {column};"
                 else:
                     func = groupBy(column, subgraph=subgraph, dataset=dataset)
-                    groupByText.append(f" the {func} of {column}, mapped to a column named {func}{column}")
-                    self.groupByStatement = f"{self.groupByStatement} {func}({column}) → {func}{column}"
+                    groupByText.append(f" the <b>{func}</b> of <b>{column}</b>, <em>mapped</em> to a column named <b>{func}{column}</b>")
+                    self.groupByStatement = f"{self.groupByStatement}, {func}({column}) → {func}{column}"
             self.queryStatement = self.groupByStatement
-            self.projectedColumnText = f"{projectedColumns[0]} grouped by {' and'.join(groupByText)}"
+            self.projectedColumnText = f"<b>{projectedColumns[0]}</b> <em>grouped by</em> {' and'.join(groupByText)}"
         
         #* Order By
         if self.orderByBool:
             randColumn = rand.choice(usableColumns)
             randColumn = randColumn + (rand.choice([' desc', ' asc']))
             self.orderByStatement = f"{self.orderByStatement} {randColumn}"
-            self.orderByText = f" ordered by {randColumn.replace('desc', 'in descending order').replace('asc', 'in ascending order')}"
+            self.orderByText = f" <em>ordered by {randColumn.replace('desc', 'in <b>descending order</b>').replace('asc', 'in <b>ascending order</b>')}</em>"
 
         #* Selection
         selectedColumns = []
@@ -125,11 +125,17 @@ class Question:
                 while randColumn in selectedColumns:
                     randColumn =  rand.choice(usableColumns)
                 selectedColumns.append(selection(usableColumns, randColumn, subgraph, dataset))
-            selected = ' ∨ '.join(selectedColumns)
+            conditions = []
+            selectedColumnsArray = []
+            for item in selectedColumns:
+                randColumn, operator, value = item
+                selectedColumnsArray.append(f"{randColumn}{operator}{value}")
+
+                operator = operator.replace(">", "is greater than").replace("<", "is less than").replace("≥", "is greater than or equal to").replace("≤", "is less than or equal to").replace("=", "is").replace("≠", "is not")
+                conditions.append(f"<b>{randColumn}</b> <em>{operator}</em> <b>{value}</b>")
+            selected = ' ∨ '.join(selectedColumnsArray)
             self.selectStatement =  f"{self.selectStatement} {selected}"
-            self.selectStatementText = selected.replace("∨", "or").replace(">", "is greater than").replace("<", "is less than").replace("≥", "is greater than or equal to").replace("≤", "is less than or equal to").replace("=", "is").replace("≠", "is not")
-
-
+            self.selectStatementText = ' or '.join(conditions)
     def getQuery(self):
         self.Query = f"{self.naturalJoin.join(self.JoinList)}"
         if self.numClauses !=0:
@@ -155,8 +161,6 @@ class Question:
 
 
 
-    # def symbolsToWords(self):
-
 
 
 def projection(usableColumns):
@@ -175,7 +179,7 @@ def groupBy(randColumn, subgraph, dataset):
             if randColumn == dataset.tableSet[table].columns[column]['name']:
                 match(dataset.tableSet[table].columns[column]['unit']):
                     case 'STRING': return "count" 
-                    case 'NUMBER': return f"{rand.choice(['count','avg','sum'])}"
+                    case 'NUMBER': return f"{rand.choice(['avg','sum'])}"
                     case 'DATE': return "count"
 
         
@@ -184,9 +188,9 @@ def selection(usableColumns, randColumn,subgraph, dataset):
         for column in dataset.tableSet[table].columns:
             if randColumn == dataset.tableSet[table].columns[column]['name']:
                 match(dataset.tableSet[table].columns[column]['unit']):
-                    case 'STRING': return f"{randColumn} = '{rand.choice(dataset.tableSet[table].rows[column])}'" 
-                    case 'NUMBER': return f"{randColumn} {rand.choice([ '≥', '≤', '>', '<'])} {rand.choice(dataset.tableSet[table].rows[column])}"
-                    case 'DATE': return f"{randColumn} {rand.choice([ '≥', '≤', '>', '<'])} Date('{rand.choice(dataset.tableSet[table].rows[column])}')"
+                    case 'STRING': return (randColumn, " = ", f"'{rand.choice(dataset.tableSet[table].rows[column])}'")
+                    case 'NUMBER': return (randColumn,f" {rand.choice([ '≥', '≤', '>', '<'])} ", rand.choice(dataset.tableSet[table].rows[column]))
+                    case 'DATE': return (randColumn, f" {rand.choice([ '≥', '≤', '>', '<'])} ", f"Date('{rand.choice(dataset.tableSet[table].rows[column])}')")
                 #print(f"Selection string '{rand.choice(dataset.tableSet[table].rows[column])}'")
                 #selectedColumns.append(randColumn)
 
