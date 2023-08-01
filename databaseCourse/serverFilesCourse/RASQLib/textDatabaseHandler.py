@@ -473,9 +473,6 @@ class Table:
         sys.stdout.write("Loading table...\n")
         sys.stdout.flush()
 
-
-        columns = 10
-
         # Checks whether the parameters are legal
         #
         # Columns must be at least three otherwise there is
@@ -609,6 +606,9 @@ class Table:
             
             sys.stdout.write("Added column! (" + str(len(self.columns)) + " of " + str(columns) + ")\n")
             sys.stdout.flush()
+        
+        sys.stdout.write("Finished load columns!\n")
+        sys.stdout.flush()
 
 
 
