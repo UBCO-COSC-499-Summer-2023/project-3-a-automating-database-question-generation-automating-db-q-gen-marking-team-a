@@ -19,8 +19,47 @@ from RASQLib import noisyData as nd
 def returnGreater(num1, num2):
     return num1 if num1 > num2 else num2
 
+def createPreview(data):
+    #con = sqlite3.connect("preview.db")
+    #cur  = con.cursor()
+
+    commands = data['params']['db_initialize_create'].replace('\n', '').replace('\t', '')
+    commands += data['params']['db_initialize_insert_frontend'].replace('\n', '').replace('\t', '')
+
+    #cur.executescript(commands)
+    #con.commit()
+
+    correctAnswer = data['correct_answers']['RelaXEditor']
+    expectedCode = correctAnswer.replace('\n', ' ').replace('\t', ' ')
+
+    #expectedAns = cur.execute(expectedCode)
+    dataRows = expectedAns.fetchall()
+
+    columnNames = [description[0] for description in cur.description]
+
+    htmlTable = "<div class='expectedOutput'><b>Expected Output:</b><div class='scrollable'><table class='output-tables'><thead>"
+
+    for column in columnNames:
+        htmlTable += "<th>" + str(column) + "</th>"
+
+    htmlTable += "</thead>"
+
+    for row in dataRows:
+        rowString = "<tr>"
+        for x in row:
+            rowString+= "<th>" + str(x) + "</th>"
+        rowString += "</tr>"
+        htmlTable += rowString
+
+    htmlTable += "</table></div></div>"
+
+    return htmlTable
+
 def autogenerate(data):
-    
+
+    #expectedOutput = data['params']['html_params']['expectedOutput']
+    #if expectedOutput:
+    #    data['params']['expectedOutput'] = createPreview(data)
     # Generates a random database
     columns = rand.randint(4, 7)
     joins = returnGreater(rand.randint(2,5), (data['params']['attrib_dict']['numJoins'])) #! Change to joins/rand -> whichever is bigger
@@ -59,33 +98,88 @@ class Question:
         self.numClauses = attribDict['numClauses']
         self.orderByBool = attribDict['orderBy']
         self.groupByBool = attribDict['groupBy']
-        self.AntiJoinBool = attribDict['AntiJoin']
-
+        self.antiJoinBool = attribDict['AntiJoin']
+        self.outerJoinBool = False
+        self.semiJoinBool = False
         #* Join first -- may need recursive function
         # number of joins for the question
+        if self.semiJoinBool or self.outerJoinBool or self.antiJoinBool:
+            self.numJoins = 1
+
         graph = dataset.toGraph()
         subgraph = randomSubgraph(graph=graph, n=self.numJoins)
         
         self.JoinList = []
-        while not set(self.JoinList) == set(subgraph.keys()):
-            for node in subgraph:
-                if len(self.JoinList) == 0:
-                    self.JoinList.append(node)
-                for connection in subgraph[node]:
-                    if connection in self.JoinList and node not in self.JoinList:
+        #* Partial Outer Joins
+        #  for all rows from table1, null where not exist table2
+        #  More ⟕ Less where column less = null 
+        if self.outerJoinBool:
+            pass
+
+        #* Semi Joins
+        #  for row from table1 where match exists in table2
+        #  Less ⋊ More
+        elif self.semiJoinBool: 
+            pass
+        #* Anti Joins --> bigger ▷ smaller
+        #  for row from table1 not in table2
+        elif self.antiJoinBool:
+            node1 = rand.choice(list(subgraph.keys()))
+            print(node1)
+    
+            connections = subgraph[node1]
+            node2 = rand.choice(connections)
+
+            for column in dataset.tableSet[node1].columns: 
+                if dataset.tableSet[node1].columns[column]['references'] == node2:
+                    compareColumn = dataset.tableSet[node1].columns[column]["name"]
+            
+            print(compareColumn)
+            
+            print(f"node1 {len(set(dataset.tableSet[node1].rows[compareColumn]))}, node2 {len(set(dataset.tableSet[node2].rows[compareColumn]))}")
+            if len(set(dataset.tableSet[node1].rows[compareColumn])) > len(set(dataset.tableSet[node2].rows[compareColumn])):
+                self.joinStatement = f"{node1}{self.antiJoins}{node2}"
+                self.tableListText = f"where <b>{compareColumn}</b> is not in <b>{node2}</b>"
+                self.JoinList = [node1]
+            else:
+                self.joinStatement = f"{node2}{self.antiJoins}{node1}"
+                self.tableListText = f"where <b>{compareColumn}</b> is not in <b>{node1}</b>"
+                self.JoinList = [node2]
+        else:
+        
+            while not set(self.JoinList) == set(subgraph.keys()):
+                for node in subgraph:
+                    if len(self.JoinList) == 0:
                         self.JoinList.append(node)
+                    for connection in subgraph[node]:
+                        if connection in self.JoinList and node not in self.JoinList:
+                            self.JoinList.append(node)
 
-        self.tableListText = ", ".join(self.JoinList)
-        parts = self.tableListText.rsplit(",", 1)  # Split the string from the right side only once
-        self.tableListText = f"<b>{' and'.join(parts)}</b>"
+            self.joinStatement =f"{self.naturalJoin.join(self.JoinList)}"
 
+            self.tableListText = ", ".join(self.JoinList)
+            parts = self.tableListText.rsplit(",", 1)  # Split the string from the right side only once
+            self.tableListText = f"<b>{' and'.join(parts)}</b>"
 
+        # neededColumns are one random column from each joined graph 
+        # such that all joined tables are utilized in output
+        neededColumns = []
+        numArray = []
+        # usableColumns are all Columns from joined graphs.
         usableColumns = []
-        for table in list(subgraph.keys()):
+        for table in self.JoinList:
+            num = rand.randint(0, len(dataset.tableSet[table].columns)-1)
+            while num in numArray:
+                num = rand.randint(0, len(dataset.tableSet[table].columns))
+            numArray.append(num)
+            i = 0
             for column in dataset.tableSet[table].columns:
                 usableColumns.append(dataset.tableSet[table].columns[column]['name'])
-        
-        
+                if i == num:
+                   neededColumns.append(dataset.tableSet[table].columns[column]['name']) 
+                i+=1
+            
+        print(neededColumns)
         #* Projection
         projectedColumns = projection(usableColumns)
         if not self.groupByBool:
@@ -106,8 +200,8 @@ class Question:
                 else:
                     func = groupBy(column, subgraph=subgraph, dataset=dataset)
                     groupByText.append(f" the <b>{func}</b> of <b>{column}</b>, <em>mapped</em> to a column named <b>{func}{column}</b>")
-                    self.groupByStatement = f"{self.groupByStatement}, {func}({column}) → {func}{column}"
-            self.queryStatement = self.groupByStatement
+                    self.groupByStatement = f"{self.groupByStatement} {func}({column}) → {func}{column},"
+            self.queryStatement = self.groupByStatement[:-1]
             self.projectedColumnText = f"<b>{projectedColumns[0]}</b> <em>grouped by</em> {' and'.join(groupByText)}"
         
         #* Order By
@@ -137,7 +231,7 @@ class Question:
             self.selectStatement =  f"{self.selectStatement} {selected}"
             self.selectStatementText = ' or '.join(conditions)
     def getQuery(self):
-        self.Query = f"{self.naturalJoin.join(self.JoinList)}"
+        self.Query = self.joinStatement 
         if self.numClauses !=0:
             self.Query = f"{self.selectStatement} ({self.Query})"
         if self.orderByBool:

@@ -27,7 +27,7 @@ class Database:
         if isSQL:
 
             columnNames = parseColumnsFromFile('randomColumnsSQL')
-
+            tableNames = getRandomTableNames()
             # When columns are set to zero, it indicates that
             # a table is being pased in (used to support old
             # difficulty-class questions). Otherwise, create
@@ -35,7 +35,7 @@ class Database:
             if columns == 0:
                 self.primaryTable = file
             else:
-                self.primaryTable = Table(file=file, columns=columns, joins=joins, clauses=clauses, constraints=constraints, rows=rows, database=self, isSQL=isSQL, random=random, columnNames=columnNames)
+                self.primaryTable = Table(file=file, columns=columns, joins=joins, clauses=clauses, constraints=constraints, rows=rows, database=self, isSQL=isSQL, random=random, tableNames=tableNames, columnNames=columnNames)
             
             # Gets the referenced tables
             self.referencedTables = self.primaryTable.getReferencedTables(static=not random, columnNames=columnNames)
@@ -767,8 +767,12 @@ class Table:
         }
 
         self.columns[column]['references'] = foreignTable.name
+        print(f"{column}: {self.rows[column]}")
         if foreignTable.rows:
-            foreignTable.rows[column] = self.rows[column]
+            foreignTable.rows[column] = []
+            for i in range(len(self.rows[column])):
+                foreignTable.rows[column].append(choice(self.rows[column]))
+                print(f"{foreignTable.rows[column][i]} : {self.rows[column][i]}")
 
 
     # Given a marked-up textfile, return an array

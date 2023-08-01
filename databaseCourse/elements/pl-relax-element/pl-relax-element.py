@@ -74,8 +74,10 @@ def prepare(element_html, data):
     questionRandom = pl.get_boolean_attrib(element, 'random', False)
 
     data['params']['html_params'] = {
-        'random': questionRandom
+        'random': questionRandom,
+        'expectedOutput' : pl.get_boolean_attrib(element, "expectedoutput", True)
     }
+
 
     if questionRandom:
         attribDict = {
@@ -83,7 +85,7 @@ def prepare(element_html, data):
             "orderBy": pl.get_boolean_attrib(element, "orderby", False),
             "groupBy": pl.get_boolean_attrib(element, "groupby", False),
             "numJoins": pl.get_integer_attrib(element, "numjoins", 0),
-            "AntiJoin": pl.get_boolean_attrib(element, "numantijoins", False)
+            "AntiJoin": pl.get_boolean_attrib(element, "antijoin", False)
         }
         data['params']['attrib_dict'] = attribDict
 
@@ -114,7 +116,8 @@ def render(element_html, data):
         html_params = {
             'database' : data['params']['db_initialize_create'],
             'questionText' : data['params']['questionText'],
-            'previousSubmission' : submittedAnswer
+            'previousSubmission' : submittedAnswer,
+            'expectedOutput' : data['params']['html_params']['expectedOutput']
         }
             # Opens and renders mustache file into the question html
         with open('pl-relax-element.mustache', 'r', encoding='utf-8') as f:
