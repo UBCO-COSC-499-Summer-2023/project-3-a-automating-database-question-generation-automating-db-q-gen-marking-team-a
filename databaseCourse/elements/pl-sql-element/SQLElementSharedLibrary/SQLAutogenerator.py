@@ -1349,7 +1349,13 @@ def getConditionalValues(conditionals, database, columnList=[], restrictive=True
     # Gets a list of all columns present between
     # the provided tables, if it was not provided
     if not columnList:
+        sys.stdout.write(f"NULL column list: {columnList}")
+        sys.stdout.flush()
+
         columnList = getColumnList(database.getTableMap())
+        
+        sys.stdout.write(f"New column list: {columnList}")
+        sys.stdout.flush()
 
     # A list from 0 to n where n is the number of rows.
     # The `.values()` and `list()[0]` is to just get the
