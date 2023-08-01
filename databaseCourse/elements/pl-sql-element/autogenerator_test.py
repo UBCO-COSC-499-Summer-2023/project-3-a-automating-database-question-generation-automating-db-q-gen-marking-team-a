@@ -342,7 +342,7 @@ class ParameterizedInsertTests(unittest.TestCase):
         }
     }
 
-    # Parameters for CREATE to test various cases
+    # Parameters for INSERT to test various cases
     @parameterized.expand([
             # columns, joins
             [data, 5, 2, sampleSize],   # A bit of everything
@@ -403,7 +403,7 @@ class ParameterizedUpdateTests(unittest.TestCase):
         }
     }
 
-    # Parameters for CREATE to test various cases
+    # Parameters for UPDATE to test various cases
     @parameterized.expand([
             # columns, joins, conditionals, subquery
             [data, 5, 2, 2, False, sampleSize],   # A bit of everything
@@ -455,7 +455,7 @@ class ParameterizedUpdateTests(unittest.TestCase):
             self.assertGreater(len(data['params']['db_initialize_insert_backend']), 0)
 
 
-    # Parameterized UPDATE Tests------------------------------------------------------------------------------------------------------------------
+    # Parameterized DELETE Tests------------------------------------------------------------------------------------------------------------------
 class ParameterizedDeleteTests(unittest.TestCase):
     
     # Describes how many times each test should be run.
@@ -480,7 +480,7 @@ class ParameterizedDeleteTests(unittest.TestCase):
         }
     }
 
-    # Parameters for CREATE to test various cases
+    # Parameters for DELETE to test various cases
     @parameterized.expand([
             # columns, joins, conditionals, subquery
             [data, 5, 2, 2, False, sampleSize],   # A bit of everything
@@ -531,7 +531,7 @@ class ParameterizedDeleteTests(unittest.TestCase):
             self.assertGreater(len(data['params']['db_initialize_insert_frontend']), 0)
             self.assertGreater(len(data['params']['db_initialize_insert_backend']), 0)
 
-    # Parameterized UPDATE Tests------------------------------------------------------------------------------------------------------------------
+    # Parameterized QUERY Tests------------------------------------------------------------------------------------------------------------------
 class ParameterizedQueryTests(unittest.TestCase):
     
     # Describes how many times each test should be run.
@@ -556,7 +556,7 @@ class ParameterizedQueryTests(unittest.TestCase):
         }
     }
 
-    # Parameters for CREATE to test various cases
+    # Parameters for QUERY to test various cases
     @parameterized.expand([
             # columns, joins, conditional, useSubquery, columnsToSelect, orderBy, groupBy, having, limit, isDistinct
             [data, 5, 2, 2, False, 5, 1, 1, 1, 5, True, sampleSize],   # A bit of everything
