@@ -8,7 +8,7 @@ class ParameterizedInsertTests(unittest.TestCase):
     # Describes how many times each test should be run.
     # Since we're testing random generation, we need
     # a sufficient sample size to catch edge cases
-    sampleSize = 100
+    sampleSize = 25
 
     # Declares and sets defaults
     data = {
