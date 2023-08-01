@@ -470,6 +470,8 @@ class Table:
     # Creates a random table
     def loadRandom(self, name, columns, joins, clauses, constraints, columnNames):
 
+        sys.stdout.write("Loading table...")
+
         # Checks whether the parameters are legal
         #
         # Columns must be at least three otherwise there is
