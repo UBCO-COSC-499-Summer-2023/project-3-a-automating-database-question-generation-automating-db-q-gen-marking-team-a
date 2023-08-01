@@ -626,7 +626,7 @@ class Table:
         sys.stdout.flush()
 
         # Keeps adding joins until there are enough
-        while len(self.getKeyMap()) < joins:
+        while joins > 0:
 
             sys.stdout.write("Adding joins...\n")
             sys.stdout.flush()
@@ -655,6 +655,8 @@ class Table:
                 index += 1
 
             columnsCopy.pop(columnsCopy.index(foreignColumn))
+
+            joins -= 1
 
 
 
