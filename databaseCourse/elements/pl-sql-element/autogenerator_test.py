@@ -275,9 +275,9 @@ class ParameterizedCreateTests(unittest.TestCase):
             # columns, joins, primaryKeys, notNulls, uniques, cascades, nullOnDeletes
             [data, 5, 2, 1, 1, 1, 1, 1, sampleSize],  # A bit of everything
             [data, 3, 0, 0, 0, 0, 0, 0, sampleSize],  # Minimum values
-            [data, 5, 1, 4, 0, 0, 0, 0, sampleSize],
-            [data, 5, 4, 1, 0, 0, 0, 0, sampleSize],
-            [data, 5, 5, 0, 0, 0, 5, 5, sampleSize],  # Max foreign clauses
+            [data, 7, 1, 4, 0, 0, 0, 0, sampleSize],
+            [data, 7, 4, 1, 0, 0, 0, 0, sampleSize],
+            [data, 7, 5, 0, 0, 0, 5, 5, sampleSize],  # Max foreign clauses
             [data, 5, 0, 1, 4, 4, 0, 0, sampleSize],  # Max other clauses
             [data, 10, 7, 0, 0, 0, 0, 0, sampleSize]   # Lots of column and tables
             ])
