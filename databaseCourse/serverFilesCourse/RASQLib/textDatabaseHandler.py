@@ -622,7 +622,7 @@ class Table:
         # Gets a list of random tables
         randomTables = getRandomTableNames()
 
-        sys.stdout.write("Obtained random table names!\n")
+        sys.stdout.write("Obtained random table names for table " + self.name + "!\n")
         sys.stdout.flush()
 
         # Keeps adding joins until there are enough
@@ -901,7 +901,7 @@ class Table:
     #       'references': the table referenced
     #       'foreignKey': the column in the referenced table
     def getKeyMap(self):
-        sys.stdout.write("Generating keymap...\n")
+        sys.stdout.write("Generating keymap for" + self.name + "...\n")
         sys.stdout.flush()
         
         km = {key: {'references': self.columns[key]['references'], 'foreignKey': self.columns[key]['foreignKey']} for key in self.columns.keys() if self.columns[key]['references']}
