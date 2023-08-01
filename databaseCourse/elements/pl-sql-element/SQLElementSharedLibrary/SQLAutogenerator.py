@@ -38,6 +38,9 @@ def autogenerate(data):
 # Generates a 'create' style SQL question
 def generateCreate(data, difficulty):
 
+    sys.stdout.write("Generating CREATE-style question...\n")
+    sys.stdout.flush()
+
     # Obtains question specific parameters
     columns, joins, tableClauses, queryClauses = getQuestionParameters(data)
 
@@ -144,6 +147,10 @@ def createStatement(table):
 # Generates a 'insert' style SQL question
 def generateInsert(data, difficulty):
 
+
+    sys.stdout.write("Generating INSERT-style question...\n")
+    sys.stdout.flush()
+
     # Obtains question specific parameters
     columns, joins, tableClauses, queryClauses = getQuestionParameters(data)
 
@@ -211,6 +218,9 @@ def insertStatement(table, row):
 
 def generateUpdate(data, difficulty):
     
+    sys.stdout.write("Generating UPDATE-style question...\n")
+    sys.stdout.flush()
+
     # Obtains question specific parameters
     columns, joins, tableClauses, queryClauses = getQuestionParameters(data)
 
@@ -346,6 +356,9 @@ def updateStatement(table, updateColumn, updateValue, conditionalValues=None, su
 
 def generateDelete(data, difficulty):
     
+    sys.stdout.write("Generating DELETE-style question...\n")
+    sys.stdout.flush()
+
     # Obtains question specific parameters
     columns, joins, tableClauses, queryClauses = getQuestionParameters(data)
 
@@ -450,6 +463,9 @@ def deleteStatement(table, conditionalValues=None, subquery=''):
 
 def generateQuery(data, difficulty):
     
+    sys.stdout.write("Generating QUERY-style question...\n")
+    sys.stdout.flush()
+
     # Obtains question specific parameters
     columns, joins, tableClauses, queryClauses = getQuestionParameters(data)
 
@@ -624,20 +640,15 @@ def generateQuery(data, difficulty):
 
 
     # Starts the column selection section
-    if selectedColumns:
-        questionString += ' select the columns'
+    questionString += ' select the columns'
 
-        # De-pluralizes if necessary
-        questionString = removeTrailingChars(questionString, condition=columnsToSelect == 1)
-        
-        # Lists all the columns to add
-        index = 0
-        for selectedTable in selectedColumns:
-            questionString, index = dictionaryQuestionString(selectedColumns[selectedTable], questionString, columnsToSelect, index, tag='b')
-
-    # If there are no columns to select, instead select all '*'
-    else:
-        questionString += ' select all columns'
+    # De-pluralizes if necessary
+    questionString = removeTrailingChars(questionString, condition=columnsToSelect == 1)
+    
+    # Lists all the columns to add
+    index = 0
+    for selectedTable in selectedColumns:
+        questionString, index = dictionaryQuestionString(selectedColumns[selectedTable], questionString, columnsToSelect, index, tag='b')
 
     # Removes the trailing comma
     questionString = removeTrailingChars(questionString)
@@ -828,11 +839,10 @@ def queryStatement(database, selectedColumns, joinTypes={}, conditionalValues={}
     # All columns use a '$table.' to specify
     for key in selectedColumns:
         for column in selectedColumns[key]:
-            queryString += f" {column},"
-    
-    # Adds the star for select all
+            queryStatement += f" {column},"
+
     if not selectedColumns:
-        queryString += ' * '
+        queryStatement += ' * '
     
     # Removes trailing comma
     queryString = queryString[:-1] + f"\nFROM {table.name}"
