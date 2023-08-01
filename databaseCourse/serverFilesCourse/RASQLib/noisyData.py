@@ -186,10 +186,9 @@ def generateNoisyChar(unique, qty, unitOther):
         # Ensures no duplicated, if necessary
         if not (unique and tryValue in values):
             values.append(tryValue)
-
-        tindex += 1
-        if tindex > 50:
+        elif tindex > 100: # Prevents a timeouts
             values.append('NULL')
+        tindex += 1
     
     return values
 
