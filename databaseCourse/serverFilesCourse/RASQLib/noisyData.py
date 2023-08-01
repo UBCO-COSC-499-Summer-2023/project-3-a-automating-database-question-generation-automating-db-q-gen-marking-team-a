@@ -41,12 +41,12 @@ def generateNoisyData(table, key, qty=1, unique=None):
     if  key[1:] in getColumnToFileMap().keys():
         return generateFromFile(qty, readLines(getColumnToFileMap()[key[1:]]), choose)
     
-    
+
 
     sys.stdout.write("Generated from file!\n")
     sys.stdout.flush()
 
-    sys.stdout.write("About to generate from NOT file... (" + table.name + ":" + key + ", " + str(qty) + ")\n")
+    sys.stdout.write("About to generate from NOT file... (" + key + ": " + table.columns[key]['unit'] + ", " + table.columns[key]['unitOther'] + ")\n")
     sys.stdout.flush()
 
     # If the column does not correspond to a file,
