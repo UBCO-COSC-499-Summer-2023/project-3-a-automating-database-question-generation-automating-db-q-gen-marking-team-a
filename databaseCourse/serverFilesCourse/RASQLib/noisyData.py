@@ -137,9 +137,15 @@ def generateRandomDecimal(unique, qty, unitOther):
     values = []
     while len(values) < qty:
 
+        # Puts the value into an appropriate range; this
+        # helps ensure better queries
+        power = whole - decimal
+        if power > 3:
+            power = 3
+
         # Chooses a random whole portion and random
         # decimal portion
-        randomWhole = random.randint(1, 10 ** (whole - decimal))
+        randomWhole = random.randint(1, 10 ** power)
         randomDecimal = random.randint(0, 10 ** decimal)
 
         # Ensures no duplicated, if necessary
