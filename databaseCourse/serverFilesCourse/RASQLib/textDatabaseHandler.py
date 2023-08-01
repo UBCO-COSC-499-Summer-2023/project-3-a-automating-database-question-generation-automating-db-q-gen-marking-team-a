@@ -884,14 +884,15 @@ class Table:
     def generateRowsBackend(self, qty=0):
         if not qty:
 
-            # Generates plenty of rows for the backend
-            # database
-            if self.rows:
-                qty = len(list(self.rows.values())[0]) * 2
+            # Generates plenty of rows for the backend.
+            # 63 is the maximum value since the smallest noisy
+            # data file* that can be used is 63 lines long.
+            #
+            # *It's not actually the smallest, but rather the
+            # smallest that can likely be used with the unique 
+            # constraint
+            qty = 60
 
-            # If we shouldn't generate rows, just return
-            else:
-                return
 
         # Generates the data
         columns = nd.generateColumns(self, qty)
