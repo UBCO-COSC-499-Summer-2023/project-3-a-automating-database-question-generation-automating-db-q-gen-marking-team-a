@@ -526,7 +526,6 @@ def generateQuery(data, difficulty):
     # Gets the type of joins.
     # SQLite only supports the following joins:
     #   - JOIN or equivilently INNER JOIN: must specify join condition
-    #   - NATURAL JOIN: no join condition specified
     #   - CROSS JOIN: no join condition specified
     #   - LEFT OUTER JOIN: join condition specified
     #       * Right and full outer joins are not supported
@@ -535,7 +534,7 @@ def generateQuery(data, difficulty):
 
         # We don't want to join the table to itself
         if selectedTable != table.name:
-            joinTypes[selectedTable] = random.choices(['JOIN', 'INNER JOIN', 'NATURAL JOIN', 'CROSS JOIN', 'LEFT OUTER JOIN'], [2, 2, 4, 1, 1])[0]
+            joinTypes[selectedTable] = random.choices(['JOIN', 'INNER JOIN', 'CROSS JOIN', 'LEFT OUTER JOIN'], [4, 4, 1, 1])[0]
 
 
 
