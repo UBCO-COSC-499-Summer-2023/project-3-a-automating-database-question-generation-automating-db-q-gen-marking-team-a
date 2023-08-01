@@ -562,7 +562,7 @@ class Table:
         # Keeps adding columns until there are enough
         while len(self.columns) < columns:
 
-            sys.stdout.write("Adding column...\n")
+            sys.stdout.write("Adding column... (" + columns + ")\n")
             sys.stdout.flush()
 
             # Chooses a random column to add
@@ -797,7 +797,7 @@ class Table:
 
                             sys.stdout.write("Delete Null...\n")
                             sys.stdout.flush()
-                            
+
 
                             # If this is stuck in a loop, break and
                             # ingore this clause
