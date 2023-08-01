@@ -37,6 +37,9 @@ class Database:
             
             # Gets the referenced tables
             self.referencedTables = self.primaryTable.getReferencedTables(static=not random, columnNames=columnNames)
+
+            sys.stdout.write("Database loaded!\n")
+            sys.stdout.flush()
         
 
         
