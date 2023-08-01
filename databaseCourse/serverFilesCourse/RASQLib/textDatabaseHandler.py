@@ -696,7 +696,7 @@ class Table:
 
                         # Keeps choosing columns until one is valid
                         column = None
-                        while not column or self.columns[column]['references'] or self.columns[column]['isPrimary'] and not timeout:
+                        while (not column or self.columns[column]['references'] or self.columns[column]['isPrimary']) and not timeout:
 
                             # If this is stuck in a loop, break and
                             # ingore this clause
@@ -714,7 +714,7 @@ class Table:
                         
                         # Keeps choosing columns until one is valid
                         column = None
-                        while not column or self.columns[column]['references'] or self.columns[column]['isPrimary'] and not timeout:
+                        while (not column or self.columns[column]['references'] or self.columns[column]['isPrimary']) and not timeout:
                             
                             # If this is stuck in a loop, break and
                             # ingore this clause
@@ -732,7 +732,7 @@ class Table:
 
                         # Keeps choosing columns until one is valid
                         column = None
-                        while not column or self.columns[column]['references'] or self.columns[column]['isPrimary'] and not timeout:
+                        while (not column or self.columns[column]['references'] or self.columns[column]['isPrimary']) and not timeout:
 
                             # If this is stuck in a loop, break and
                             # ingore this clause
@@ -750,7 +750,7 @@ class Table:
                         
                         # Keeps choosing columns until one is valid
                         column = None
-                        while not column or not self.columns[column]['references'] or self.columns[column]['isOnUpdateCascade'] and not timeout:
+                        while (not column or not self.columns[column]['references'] or self.columns[column]['isOnUpdateCascade']) and not timeout:
 
                             # If this is stuck in a loop, break and
                             # ingore this clause
@@ -768,7 +768,7 @@ class Table:
 
                         # Keeps choosing columns until one is valid
                         column = None
-                        while not column or not self.columns[column]['references'] or self.columns[column]['isOnDeleteSetNull'] and not timeout:
+                        while (not column or not self.columns[column]['references'] or self.columns[column]['isOnDeleteSetNull']) and not timeout:
 
                             # If this is stuck in a loop, break and
                             # ingore this clause
