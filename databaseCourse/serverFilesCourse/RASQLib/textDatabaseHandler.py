@@ -562,8 +562,7 @@ class Table:
         # Keeps adding columns until there are enough
         while len(self.columns) < columns:
 
-            sys.stdout.write("Adding column... (" + str(len(self.columns)) + " of " + str(columns) + ")\n")
-            sys.stdout.flush()
+
 
             # Chooses a random column to add
             # Pops the column to ensure no duplicates
@@ -588,6 +587,9 @@ class Table:
                 case 'CHAR': columnUnitOther = f"{choice(addColumn[2])}"
                 case 'VARCHAR': columnUnitOther = f"{choice(addColumn[2])}"
 
+            sys.stdout.write("Adding column... (" + str(len(self.columns)) + " of " + str(columns) + ")\n")
+            sys.stdout.flush()
+
             # Adds the column.
             # (Usually) times-out if columns == 1 or 2
             self.columns[columnName] = {
@@ -602,6 +604,9 @@ class Table:
                     'isOnUpdateCascade': False,
                     'isOnDeleteSetNull': False
                 }
+            
+            sys.stdout.write("Added column! (" + str(len(self.columns)) + " of " + str(columns) + ")\n")
+            sys.stdout.flush()
 
 
 
