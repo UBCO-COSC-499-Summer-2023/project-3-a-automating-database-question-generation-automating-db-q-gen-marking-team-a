@@ -860,6 +860,9 @@ class Table:
         tables = {}
         tableSet = set()
 
+        sys.stdout.write("Getting referenced tables...\n")
+        sys.stdout.flush()        
+
         # Iterates over the table's foreign keys
         for key in self.getKeyMap().keys():
 
@@ -884,12 +887,21 @@ class Table:
                     }
                 }
 
+                sys.stdout.write("Referenced table about to load new table...\n")
+                sys.stdout.flush()
+
                 # Loads an approrpiate table into the dictionary
                 tables[self.columns[key]['references']] = Table(file=self.columns[key]['references'], columns=columns, constraints=constraints, database=self.database, isSQL=True, random=not static, columnNames=columnNames)
+
+                sys.stdout.write("Referenced table has beed loaded!\n")
+                sys.stdout.flush()
 
                 # Adds the table name to the set if unique is True
                 if unique:
                     tableSet.add(self.columns[key]['references'])
+
+        sys.stdout.write("Finished getting referenced tables!\n")
+        sys.stdout.flush()
 
         # Returns a dictionary of all referenced tables
         #   table name: respective Table object
@@ -902,7 +914,7 @@ class Table:
     #       'references': the table referenced
     #       'foreignKey': the column in the referenced table
     def getKeyMap(self):
-        sys.stdout.write("Generating keymap for" + self.name + "...\n")
+        sys.stdout.write("Generating keymap for " + self.name + "...\n")
         sys.stdout.flush()
         
         km = {key: {'references': self.columns[key]['references'], 'foreignKey': self.columns[key]['foreignKey']} for key in self.columns.keys() if self.columns[key]['references']}
