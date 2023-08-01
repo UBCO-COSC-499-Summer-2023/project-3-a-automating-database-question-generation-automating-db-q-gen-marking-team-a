@@ -46,9 +46,6 @@ def generateNoisyData(table, key, qty=1, unique=None):
     sys.stdout.write("Generated from file!\n")
     sys.stdout.flush()
 
-    sys.stdout.write("About to generate from NOT file... (" + key + ": " + table.columns[key]['unit'] + ", " + str(table.columns[key]['unitOther']) + ")\n")
-    sys.stdout.flush()
-
     # If the column does not correspond to a file,
     # then generete the data randomly
     someData = generateNoisyDataNoFile(table, key, qty, unique)

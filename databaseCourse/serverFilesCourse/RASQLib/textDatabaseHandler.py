@@ -573,6 +573,8 @@ class Table:
                     'isOnDeleteSetNull': False
                 }
 
+        sys.stdout.write("Finished loading constraints!\n")
+        sys.stdout.flush()
 
         # Keeps adding columns until there are enough
         while len(self.columns) < columns:
@@ -602,9 +604,6 @@ class Table:
                 case 'CHAR': columnUnitOther = f"{choice(addColumn[2])}"
                 case 'VARCHAR': columnUnitOther = f"{choice(addColumn[2])}"
 
-            sys.stdout.write("Adding column... (" + str(len(self.columns)) + " of " + str(columns) + ")\n")
-            sys.stdout.flush()
-
             # Adds the column.
             # (Usually) times-out if columns == 1 or 2
             self.columns[columnName] = {
@@ -619,11 +618,8 @@ class Table:
                     'isOnUpdateCascade': False,
                     'isOnDeleteSetNull': False
                 }
-            
-            sys.stdout.write("Added column! (" + str(len(self.columns)) + " of " + str(columns) + ")\n")
-            sys.stdout.flush()
         
-        sys.stdout.write("Finished load columns!\n")
+        sys.stdout.write("Finished loading columns!\n")
         sys.stdout.flush()
 
 
@@ -632,21 +628,12 @@ class Table:
         # Select a column
         columnsCopy = list(self.columns.keys())
 
-        sys.stdout.write("Obtained column keys!\n")
-        sys.stdout.flush()
-
         # Gets a list of random tables
         randomTables = getRandomTableNames()
-
-        sys.stdout.write("Obtained random table names for table " + self.name + "!\n")
-        sys.stdout.flush()
 
 
         # Keeps adding joins until there are enough
         while joins > 0:
-
-            sys.stdout.write("Adding joins...\n")
-            sys.stdout.flush()
 
             # Chooses a random column to become foreign.
             # Prevents certain columns from becoming FKs
@@ -655,9 +642,6 @@ class Table:
             index = 0
             foreignColumn = None
             while not foreignColumn or 'Airport' in foreignColumn or 'province' in foreignColumn:
-
-                sys.stdout.write("Fixing bad join column...\n")
-                sys.stdout.flush()
 
                 # Breaks out of the loop if there are no
                 # fitting columns, selecting the bad column
@@ -714,6 +698,8 @@ class Table:
             self.columns[f"{self.name[0:1].lower()}{foreignColumn}"] = self.columns.pop(foreignColumn)
 
 
+        sys.stdout.write("Finished loading joins!\n")
+        sys.stdout.flush()
 
         # Accounts for existing PKs due to table defaults
         try:
@@ -743,9 +729,6 @@ class Table:
                         column = None
                         while not column or self.columns[column]['references'] or self.columns[column]['isPrimary'] and not timeout:
 
-                            sys.stdout.write("Primary key...\n")
-                            sys.stdout.flush()
-
                             # If this is stuck in a loop, break and
                             # ingore this clause
                             cindex += 1
@@ -763,9 +746,6 @@ class Table:
                         # Keeps choosing columns until one is valid
                         column = None
                         while not column or self.columns[column]['references'] or self.columns[column]['isPrimary'] and not timeout:
-                            
-                            sys.stdout.write("Not null...\n")
-                            sys.stdout.flush()
 
                             # If this is stuck in a loop, break and
                             # ingore this clause
@@ -785,9 +765,6 @@ class Table:
                         column = None
                         while not column or self.columns[column]['references'] or self.columns[column]['isPrimary'] and not timeout:
 
-                            sys.stdout.write("Unique...\n")
-                            sys.stdout.flush()
-
                             # If this is stuck in a loop, break and
                             # ingore this clause
                             cindex += 1
@@ -805,9 +782,6 @@ class Table:
                         # Keeps choosing columns until one is valid
                         column = None
                         while not column or not self.columns[column]['references'] or self.columns[column]['isOnUpdateCascade'] and not timeout:
-
-                            sys.stdout.write("Cascade...\n")
-                            sys.stdout.flush()
 
                             # If this is stuck in a loop, break and
                             # ingore this clause
@@ -827,10 +801,6 @@ class Table:
                         column = None
                         while not column or not self.columns[column]['references'] or self.columns[column]['isOnDeleteSetNull'] and not timeout:
 
-                            sys.stdout.write("Delete Null...\n")
-                            sys.stdout.flush()
-
-
                             # If this is stuck in a loop, break and
                             # ingore this clause
                             cindex += 1
@@ -845,6 +815,9 @@ class Table:
                     # Crashes if the clause is not valid
                     case _:
                         assert False, f"Clause {clause} is invalid"
+        
+            sys.stdout.write("Finished loading clauses!\n")
+            sys.stdout.flush()
 
 
 
@@ -903,14 +876,10 @@ class Table:
                     }
                 }
 
-                sys.stdout.write("Referenced table about to load new table...\n")
-                sys.stdout.flush()
 
                 # Loads an approrpiate table into the dictionary
                 tables[self.columns[key]['references']] = Table(file=self.columns[key]['references'], columns=columns, constraints=constraints, database=self.database, isSQL=True, random=not static, columnNames=columnNames)
 
-                sys.stdout.write("Referenced table has beed loaded!\n")
-                sys.stdout.flush()
 
                 # Adds the table name to the set if unique is True
                 if unique:
@@ -930,14 +899,7 @@ class Table:
     #       'references': the table referenced
     #       'foreignKey': the column in the referenced table
     def getKeyMap(self):
-        sys.stdout.write("Generating keymap for " + self.name + "...\n")
-        sys.stdout.flush()
-        
-        km = {key: {'references': self.columns[key]['references'], 'foreignKey': self.columns[key]['foreignKey']} for key in self.columns.keys() if self.columns[key]['references']}
-        
-        sys.stdout.write("Obtained keymap!\n")
-        sys.stdout.flush()
-        return km
+        return {key: {'references': self.columns[key]['references'], 'foreignKey': self.columns[key]['foreignKey']} for key in self.columns.keys() if self.columns[key]['references']}
     
     
     # Returns all primary key columns
