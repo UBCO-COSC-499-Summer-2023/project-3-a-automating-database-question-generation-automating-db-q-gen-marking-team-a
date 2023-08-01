@@ -797,6 +797,7 @@ class Table:
 
                             sys.stdout.write("Delete Null...\n")
                             sys.stdout.flush()
+                            
 
                             # If this is stuck in a loop, break and
                             # ingore this clause
