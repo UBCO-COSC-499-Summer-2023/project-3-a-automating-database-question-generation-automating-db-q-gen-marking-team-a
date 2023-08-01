@@ -71,6 +71,9 @@ def generateNoisyDataNoFileSQL(table, key, qty=1, unique=False):
     unit = table.columns[key]['unit']
     unitOther = table.columns[key]['unitOther']
     
+    sys.stdout.write("Preparing to generate from NOT file... (" + key + ": " + table.columns[key]['unit'] + ", " + str(table.columns[key]['unitOther']) + ")\n")
+    sys.stdout.flush()
+
     # Match on the unit type if the key is not
     # found in the file map
     match unit:
@@ -171,6 +174,8 @@ def generateNoisyChar(unique, qty, unitOther):
 
     # Holds the values to be returned
     values = []
+
+    tindex = 0
     
     # Adds values until there are enough
     while len(values) < qty:
@@ -181,6 +186,10 @@ def generateNoisyChar(unique, qty, unitOther):
         # Ensures no duplicated, if necessary
         if not (unique and tryValue in values):
             values.append(tryValue)
+
+        tindex += 1
+        if tindex > 50:
+            values.append('NULL')
     
     return values
 
