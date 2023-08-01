@@ -275,16 +275,28 @@ class Database:
             # CREATE statement
             self.loadColumns(data)
 
+            sys.stdout.write("Loaded columns!\n")
+            sys.stdout.flush()
+
             # INSERT statements for the frontend DB
             self.loadRows(data)
+
+            sys.stdout.write("Loaded frontend rows!\n")
+            sys.stdout.flush()
 
 
 
             # Fills in the backend rows
             self.generateRowsBackend()
 
+            sys.stdout.write("Generated backend rows!\n")
+            sys.stdout.flush()
+
             # INSERT statement for the backend DB
             self.loadRowsBackend(data)
+
+            sys.stdout.write("Loaded backend rows!\n")
+            sys.stdout.flush()
         else:
             self.loadRelaX(data)
     
