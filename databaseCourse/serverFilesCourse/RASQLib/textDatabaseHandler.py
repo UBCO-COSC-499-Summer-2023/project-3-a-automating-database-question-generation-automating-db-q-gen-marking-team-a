@@ -469,7 +469,7 @@ class Table:
 
     # Creates a random table
     def loadRandom(self, name, columns, joins, clauses, constraints, columnNames):
-
+    
         sys.stdout.write("Loading table...\n")
         sys.stdout.flush()
 
@@ -562,6 +562,9 @@ class Table:
         # Keeps adding columns until there are enough
         while len(self.columns) < columns:
 
+            sys.stdout.write("Adding column...\n")
+            sys.stdout.flush()
+
             # Chooses a random column to add
             # Pops the column to ensure no duplicates
             addColumn = columnNames.pop(choice(range(len(columnNames))))
@@ -612,6 +615,9 @@ class Table:
         # Keeps adding joins until there are enough
         while len(self.getKeyMap()) < joins:
 
+            sys.stdout.write("Adding joins...\n")
+            sys.stdout.flush()
+
             # Chooses a random column to become foreign.
             # Prevents certain columns from becoming FKs
             # due to uniqueness causing issues when
@@ -619,6 +625,9 @@ class Table:
             index = 0
             foreignColumn = None
             while not foreignColumn or 'Airport' in foreignColumn or 'province' in foreignColumn:
+
+                sys.stdout.write("Fixing bad join column...\n")
+                sys.stdout.flush()
 
                 # Breaks out of the loop if there are no
                 # fitting columns, selecting the bad column
@@ -702,6 +711,9 @@ class Table:
                         column = None
                         while not column or self.columns[column]['references'] or self.columns[column]['isPrimary'] and not timeout:
 
+                            sys.stdout.write("Primary key...\n")
+                            sys.stdout.flush()
+
                             # If this is stuck in a loop, break and
                             # ingore this clause
                             cindex += 1
@@ -720,6 +732,9 @@ class Table:
                         column = None
                         while not column or self.columns[column]['references'] or self.columns[column]['isPrimary'] and not timeout:
                             
+                            sys.stdout.write("Not null...\n")
+                            sys.stdout.flush()
+
                             # If this is stuck in a loop, break and
                             # ingore this clause
                             cindex += 1
@@ -737,6 +752,9 @@ class Table:
                         # Keeps choosing columns until one is valid
                         column = None
                         while not column or self.columns[column]['references'] or self.columns[column]['isPrimary'] and not timeout:
+
+                            sys.stdout.write("Unique...\n")
+                            sys.stdout.flush()
 
                             # If this is stuck in a loop, break and
                             # ingore this clause
@@ -756,6 +774,9 @@ class Table:
                         column = None
                         while not column or not self.columns[column]['references'] or self.columns[column]['isOnUpdateCascade'] and not timeout:
 
+                            sys.stdout.write("Cascade...\n")
+                            sys.stdout.flush()
+
                             # If this is stuck in a loop, break and
                             # ingore this clause
                             cindex += 1
@@ -773,6 +794,9 @@ class Table:
                         # Keeps choosing columns until one is valid
                         column = None
                         while not column or not self.columns[column]['references'] or self.columns[column]['isOnDeleteSetNull'] and not timeout:
+
+                            sys.stdout.write("Delete Null...\n")
+                            sys.stdout.flush()
 
                             # If this is stuck in a loop, break and
                             # ingore this clause
