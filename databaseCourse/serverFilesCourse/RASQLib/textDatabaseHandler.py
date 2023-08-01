@@ -978,6 +978,9 @@ class Table:
             else:
                 return
 
+        sys.stdout.write("About to go to noisy data gen...\n")
+        sys.stdout.flush()
+
         # Generates the data
         columns = nd.generateColumns(self, qty)
 

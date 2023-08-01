@@ -4,6 +4,7 @@
 import random
 from string import ascii_uppercase
 import os
+import sys
 
 # Generates random data based on the unit type
 def generateNoisyData(table, key, qty=1, unique=None):
@@ -27,6 +28,9 @@ def generateNoisyData(table, key, qty=1, unique=None):
     else:
         choose = selectRandom
 
+    sys.stdout.write("Noisy data obtained parameters!\n")
+    sys.stdout.flush()
+
     # If the column passed has a clean data
     # file, then choose items from said file.
     if key in getColumnToFileMap().keys():
@@ -37,10 +41,17 @@ def generateNoisyData(table, key, qty=1, unique=None):
     if  key[1:] in getColumnToFileMap().keys():
         return generateFromFile(qty, readLines(getColumnToFileMap()[key[1:]]), choose)
     
+    sys.stdout.write("Generated from file!\n")
+    sys.stdout.flush()
 
     # If the column does not correspond to a file,
     # then generete the data randomly
-    return generateNoisyDataNoFile(table, key, qty, unique)
+    someData = generateNoisyDataNoFile(table, key, qty, unique)
+
+    sys.stdout.write("Generated from NOT files!\n")
+    sys.stdout.flush()
+
+    return someData
 
 # Returns data if there is no corresponding file
 def generateNoisyDataNoFile(table, key, qty=1, unique=False):
@@ -253,7 +264,15 @@ def generateFromFile(qty, choices, choose):
 
 # Generates one row's worth of noisy data
 def generateColumns(table, qty=1):
-    return {key: generateNoisyData(table, key, qty) for key in table.columns.keys()}
+
+    sys.stdout.write("Noisy data generating columns...\n")
+    sys.stdout.flush()
+    cols = {key: generateNoisyData(table, key, qty) for key in table.columns.keys()}
+
+    sys.stdout.write("Noisy data columns generated!!\n")
+    sys.stdout.flush()
+
+    return cols
 
 
 
