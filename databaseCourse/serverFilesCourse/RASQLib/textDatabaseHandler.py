@@ -625,6 +625,7 @@ class Table:
         sys.stdout.write("Obtained random table names for table " + self.name + "!\n")
         sys.stdout.flush()
 
+
         # Keeps adding joins until there are enough
         while joins > 0:
 
