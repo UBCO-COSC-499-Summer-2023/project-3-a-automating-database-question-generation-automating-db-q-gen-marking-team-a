@@ -729,6 +729,9 @@ class Table:
                         column = None
                         while not column or self.columns[column]['references'] or self.columns[column]['isPrimary'] and not timeout:
 
+                            sys.stdout.write("Primary key...\n")
+                            sys.stdout.flush()
+
                             # If this is stuck in a loop, break and
                             # ingore this clause
                             cindex += 1
@@ -746,6 +749,9 @@ class Table:
                         # Keeps choosing columns until one is valid
                         column = None
                         while not column or self.columns[column]['references'] or self.columns[column]['isPrimary'] and not timeout:
+                            
+                            sys.stdout.write("Not null...\n")
+                            sys.stdout.flush()
 
                             # If this is stuck in a loop, break and
                             # ingore this clause
@@ -765,6 +771,9 @@ class Table:
                         column = None
                         while not column or self.columns[column]['references'] or self.columns[column]['isPrimary'] and not timeout:
 
+                            sys.stdout.write("Unique...\n")
+                            sys.stdout.flush()
+
                             # If this is stuck in a loop, break and
                             # ingore this clause
                             cindex += 1
@@ -782,6 +791,9 @@ class Table:
                         # Keeps choosing columns until one is valid
                         column = None
                         while not column or not self.columns[column]['references'] or self.columns[column]['isOnUpdateCascade'] and not timeout:
+
+                            sys.stdout.write("Cascade...\n")
+                            sys.stdout.flush()
 
                             # If this is stuck in a loop, break and
                             # ingore this clause
@@ -801,6 +813,10 @@ class Table:
                         column = None
                         while not column or not self.columns[column]['references'] or self.columns[column]['isOnDeleteSetNull'] and not timeout:
 
+                            sys.stdout.write("Delete Null...\n")
+                            sys.stdout.flush()
+
+
                             # If this is stuck in a loop, break and
                             # ingore this clause
                             cindex += 1
@@ -815,10 +831,9 @@ class Table:
                     # Crashes if the clause is not valid
                     case _:
                         assert False, f"Clause {clause} is invalid"
-        
-            sys.stdout.write("Finished loading clauses!\n")
-            sys.stdout.flush()
 
+        sys.stdout.write("Finished loading clauses!\n")
+        sys.stdout.flush()
 
 
     # Links one table to another
