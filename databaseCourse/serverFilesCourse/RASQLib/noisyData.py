@@ -170,9 +170,7 @@ def generateNoisyChar(unique, qty, unitOther):
         # Ensures no duplicated, if necessary
         if not (unique and tryValue in values):
             values.append(tryValue)
-
-        # Prevents a timeouts
-        elif tindex > 100:
+        elif tindex > 100: # Prevents a timeouts
             values.append('NULL')
         tindex += 1
     
