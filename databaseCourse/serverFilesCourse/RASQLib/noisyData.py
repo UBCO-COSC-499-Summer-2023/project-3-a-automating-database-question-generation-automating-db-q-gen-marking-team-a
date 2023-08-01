@@ -155,6 +155,11 @@ def generateNoisyChar(unique, qty, unitOther):
 
     # Holds the values to be returned
     values = []
+
+    # Prevents timeout issues. This would otherwise
+    # occur for `qty` > 36, the 26 letters plus the
+    # 10 decimal digits
+    tindex = 0
     
     # Adds values until there are enough
     while len(values) < qty:
@@ -165,6 +170,11 @@ def generateNoisyChar(unique, qty, unitOther):
         # Ensures no duplicated, if necessary
         if not (unique and tryValue in values):
             values.append(tryValue)
+
+        # Prevents a timeouts
+        elif tindex > 100:
+            values.append('NULL')
+        tindex += 1
     
     return values
 
