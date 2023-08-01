@@ -1373,8 +1373,13 @@ def getConditionalValues(conditionals, database, columnList=[], restrictive=True
         
         # Prevents a selection of a column that is both foreign
         # and does not update on cascade, only if 'restrictive'
-        if restrictive and columnMap[conditionalColumn].columns[conditionalColumn]['references'] and not columnMap[conditionalColumn].columns[conditionalColumn]['isOnUpdateCascade']:
-            continue
+        try:
+            if restrictive and columnMap[conditionalColumn].columns[conditionalColumn]['references'] and not columnMap[conditionalColumn].columns[conditionalColumn]['isOnUpdateCascade']:
+                continue
+        except:
+            sys.stdout.write("Key error in conditional values: ")
+            sys.stdout.write(f"{conditionalColumn}, {columnList}")
+            sys.stdout.flush()
 
 
 
