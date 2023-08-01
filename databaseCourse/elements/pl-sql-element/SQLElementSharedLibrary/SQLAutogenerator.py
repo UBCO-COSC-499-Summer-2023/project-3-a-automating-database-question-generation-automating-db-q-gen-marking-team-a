@@ -176,7 +176,7 @@ def generateInsert(data, difficulty):
         case _: 
             database = db.Database(columns=columns, joins=joins, clauses=tableClauses)
 
-    sys.stdout.write("Database obtained in INSERT!\n")
+    sys.stdout.write("Database obtained in INSERT (" + database.primaryTable.name + ")!\n")
     sys.stdout.flush()
 
     # Grabs the primary table for easy referencing
@@ -197,8 +197,14 @@ def generateInsert(data, difficulty):
     # Creates the question string
     questionString = f"Insert the following values into the <b>{table.name}</b> table:\n({str(row)[1:-1]})"
 
+    sys.stdout.write("Added rows to question string!\n")
+    sys.stdout.flush()
+
     # Loads the database
     database.loadDatabase(data)
+
+    sys.stdout.write("Loaded database!\n")
+    sys.stdout.flush()
 
     # Adds the question string
     data['params']['questionString'] = questionString
