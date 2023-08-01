@@ -85,7 +85,9 @@ def prepare(element_html, data):
             "orderBy": pl.get_boolean_attrib(element, "orderby", False),
             "groupBy": pl.get_boolean_attrib(element, "groupby", False),
             "numJoins": pl.get_integer_attrib(element, "numjoins", 0),
-            "AntiJoin": pl.get_boolean_attrib(element, "antijoin", False)
+            "antiJoin": pl.get_boolean_attrib(element, "antijoin", False),
+            "semiJoin": pl.get_boolean_attrib(element, "semijoin", False),
+            "outerJoin": pl.get_boolean_attrib(element, "outerjoin", False)
         }
         data['params']['attrib_dict'] = attribDict
 

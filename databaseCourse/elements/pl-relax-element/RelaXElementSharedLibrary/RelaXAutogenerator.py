@@ -98,9 +98,9 @@ class Question:
         self.numClauses = attribDict['numClauses']
         self.orderByBool = attribDict['orderBy']
         self.groupByBool = attribDict['groupBy']
-        self.antiJoinBool = attribDict['AntiJoin']
-        self.outerJoinBool = False
-        self.semiJoinBool = False
+        self.antiJoinBool = attribDict['antiJoin']
+        self.outerJoinBool = attribDict['outerJoin']
+        self.semiJoinBool = attribDict['semiJoin']
         #* Join first -- may need recursive function
         # number of joins for the question
         if self.semiJoinBool or self.outerJoinBool or self.antiJoinBool:
@@ -119,11 +119,31 @@ class Question:
         #* Semi Joins
         #  for row from table1 where match exists in table2
         #  Less ⋊ More
-        elif self.semiJoinBool: 
-            pass
-        #* Anti Joins --> bigger ▷ smaller
-        #  for row from table1 not in table2
+        elif self.semiJoinBool:
+            node1 = rand.choice(list(subgraph.keys()))
+            print(node1)
+    
+            connections = subgraph[node1]
+            node2 = rand.choice(connections)
+
+            for column in dataset.tableSet[node1].columns: 
+                if dataset.tableSet[node1].columns[column]['references'] == node2:
+                    compareColumn = dataset.tableSet[node1].columns[column]["name"]
+            
+            print(compareColumn)
+            
+            print(f"node1 {len(set(dataset.tableSet[node1].rows[compareColumn]))}, node2 {len(set(dataset.tableSet[node2].rows[compareColumn]))}")
+            if len(set(dataset.tableSet[node1].rows[compareColumn])) > len(set(dataset.tableSet[node2].rows[compareColumn])):
+                self.joinStatement = f"{node1}{self.semiRightJoins}{node2}"
+                self.tableListText = f"where <b>{compareColumn}</b> exists in <b>{node2}</b>"
+                self.JoinList = [node1]
+            else:
+                self.joinStatement = f"{node1}{self.semiLeftJoins}{node2}"
+                self.tableListText = f"where <b>{compareColumn}</b> exists in <b>{node1}</b>"
+                self.JoinList = [node2] 
         elif self.antiJoinBool:
+            #* Anti Joins --> bigger ▷ smaller
+            #  for row from table1 not in table2
             node1 = rand.choice(list(subgraph.keys()))
             print(node1)
     
