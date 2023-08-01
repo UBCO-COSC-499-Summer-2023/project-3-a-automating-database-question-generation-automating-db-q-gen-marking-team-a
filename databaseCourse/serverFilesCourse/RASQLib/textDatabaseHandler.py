@@ -963,6 +963,10 @@ class Table:
                 self.rows[key] += columns[key]
     
     def generateRowsBackend(self, qty=0):
+        
+        sys.stdout.write("Beginning to load backend rows...\n")
+        sys.stdout.flush()
+        
         if not qty:
 
             # Generates plenty of rows for the backend
@@ -977,6 +981,9 @@ class Table:
         # Generates the data
         columns = nd.generateColumns(self, qty)
 
+        sys.stdout.write("Generated the rows themselves!\n")
+        sys.stdout.flush()
+
         for key in columns:
 
             # Creates the column if it does not already exist
@@ -985,6 +992,9 @@ class Table:
 
             # Adds the column
             self.rowsBackend[key] += columns[key]
+        
+        sys.stdout.write("Assigned rows!\n")
+        sys.stdout.flush()
 
     
     # Adds a row to this table
