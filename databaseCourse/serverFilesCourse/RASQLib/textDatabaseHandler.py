@@ -474,6 +474,8 @@ class Table:
         sys.stdout.flush()
 
 
+        columns = 10
+
         # Checks whether the parameters are legal
         #
         # Columns must be at least three otherwise there is
