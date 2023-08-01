@@ -616,8 +616,14 @@ class Table:
         # Select a column
         columnsCopy = list(self.columns.keys())
 
+        sys.stdout.write("Obtained column keys!\n")
+        sys.stdout.flush()
+
         # Gets a list of random tables
         randomTables = getRandomTableNames()
+
+        sys.stdout.write("Obtained random table names!\n")
+        sys.stdout.flush()
 
         # Keeps adding joins until there are enough
         while len(self.getKeyMap()) < joins:
