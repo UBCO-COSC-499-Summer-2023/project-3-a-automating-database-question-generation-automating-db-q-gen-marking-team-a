@@ -899,7 +899,15 @@ class Table:
     #       'references': the table referenced
     #       'foreignKey': the column in the referenced table
     def getKeyMap(self):
-        return {key: {'references': self.columns[key]['references'], 'foreignKey': self.columns[key]['foreignKey']} for key in self.columns.keys() if self.columns[key]['references']}
+        sys.stdout.write("Generating keymap...\n")
+        sys.stdout.flush()
+        
+        km = {key: {'references': self.columns[key]['references'], 'foreignKey': self.columns[key]['foreignKey']} for key in self.columns.keys() if self.columns[key]['references']}
+        
+        sys.stdout.write("Obtained keymap!\n")
+        sys.stdout.flush()
+        return km
+    
     
     # Returns all primary key columns
     def getPrimaryKeys(self):
