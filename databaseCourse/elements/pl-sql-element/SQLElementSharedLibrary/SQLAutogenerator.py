@@ -280,9 +280,9 @@ def generateUpdate(data, difficulty):
 
 
     # Generates the question string
-    questionString = f"From the table <b>{table.name}</b> and in the column <b>{updateColumn}</b>, change all values to be <b>{updateValue}</b>"
+    questionString = f"From the column <b>{updateColumn}</b>, update all values to be <b>{updateValue}</b>"
 
-    # Keeps track of when to use 'and' vs 'or'
+    # Adds the conditionals
     questionString = questionConditionals(conditionalValues, questionString)
 
     # Finishes the sentence
@@ -1538,7 +1538,8 @@ def getQuestionParameters(data):
     #   - having
     #   - limit
     #   - with
-    #   - distinct
+    #   - isDistinct
+    #   - useQueryFunctions
     queryClauses = {}
     try:
         for clause in data['params']['html_query_clauses']:
