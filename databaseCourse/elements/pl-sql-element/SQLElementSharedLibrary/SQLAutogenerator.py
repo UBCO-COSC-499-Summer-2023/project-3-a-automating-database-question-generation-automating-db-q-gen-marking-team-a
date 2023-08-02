@@ -873,12 +873,7 @@ def queryStatement(database, selectedColumns, joinTypes={}, conditionalValues={}
         for key in keyMap:
             if keyMap[key]['references'] in joinTypes and joinTypes[keyMap[key]['references']] in ['JOIN', 'INNER JOIN', 'FULL OUTER JOIN']:
                 queryString += f" {table.name}.{key} = {keyMap[key]['references']}.{keyMap[key]['foreignKey']} AND"
-
-        # Removes the final 'AND' if necessary
-        if 'AND' in queryString[-4:]:
-            queryString = queryString[:-4]
     
-
 
     # Adds the conditional values
     if conditionalValues:
@@ -891,6 +886,11 @@ def queryStatement(database, selectedColumns, joinTypes={}, conditionalValues={}
         queryString = queryString[:queryString.find('WHERE')]
     elif subquery:
         queryString += ' AND' + subquery
+
+
+    # Removes the final 'AND' if necessary
+    if 'AND' in queryString[-4:]:
+        queryString = queryString[:-4]
 
     # Adds the group by clause
     if groupByColumns:
