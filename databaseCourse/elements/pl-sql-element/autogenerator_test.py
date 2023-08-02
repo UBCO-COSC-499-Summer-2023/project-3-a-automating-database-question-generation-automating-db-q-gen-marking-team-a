@@ -19,18 +19,18 @@ class AutogenerateTest(unittest.TestCase):
             # questionType , difficulty, keyword to check in question, 
             ["create","easy","create"],
             ["insert","easy","insert"],
-            ["update","easy","change"],
+            ["update","easy","update"],
             ["delete","easy","delete"],
             ["query","easy","select"],
             ["create","medium","create"],
             ["insert","medium","insert"],
-            ["update","medium","change"],
+            ["update","medium","update"],
             ["delete","medium","delete"],
             ["query","medium","select"],
             ["create","hard","create"],
             ["insert","hard","insert"],
             # TODO: needs to be implemented
-            # ["update","hard","change"], #not implemented yet
+            # ["update","hard","update"], #not implemented yet
             # ["delete","hard","delete"], #not implemented yet
             # ["query","hard","select"]
             ])
