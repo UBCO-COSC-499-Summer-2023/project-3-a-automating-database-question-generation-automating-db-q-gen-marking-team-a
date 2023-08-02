@@ -1551,10 +1551,13 @@ def createPreview(data):
 
     htmlTable += "</thead>"
 
+    if len(dataRows) > 1000:
+        dataRows = dataRows[0:999]
+
     for row in dataRows:
         rowString = "<tr>"
         for x in row:
-            rowString+= "<th>" + str(x) + "</th>"
+            rowString+= "<td>" + str(x) + "</td>"
         rowString += "</tr>"
         htmlTable += rowString
 

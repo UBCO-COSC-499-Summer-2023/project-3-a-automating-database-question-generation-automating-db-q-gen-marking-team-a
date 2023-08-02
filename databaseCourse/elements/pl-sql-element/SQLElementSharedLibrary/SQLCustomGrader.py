@@ -30,6 +30,9 @@ def customGrader(data):
     outputScore = 0
     inputScore = 0
 
+    if wordsSA == "":
+        return 0
+
     if os.path.exists("ans.db"):
         os.remove("ans.db")
     if os.path.exists("ans2.db"):
@@ -80,6 +83,11 @@ def customGrader(data):
             if "syntax error" in str(e).lower():
                 outputScoreWeight = 0.15
                 inputScoreWeight = 0.85
+        except Exception as e:
+            print(e)
+            if str(e).lower() == "expected and actual empty":
+                outputScoreWeight = 0
+                inputScoreWeight = 1
 
 
     # Uses the sequence checker to check similatiry between
@@ -128,9 +136,11 @@ def gradeQueryQuestion(data,correctAnswer,submittedAnswer):
     expectedAns = arr[0]
     actualAns = arr[1]
 
+    print("here")
     # row matching + column matching
     rowScore = rowMatch(expectedAns,actualAns)
     colScore = colMatch(expectedAns,actualAns)
+    print("here")
 
     # value matching
     valueMatchScore = valueMatch(expectedAns,actualAns)
@@ -170,10 +180,15 @@ def getExpectedAndActualQueryResults(data,correctAnswer,submittedAnswer):
     # format solution from string to code and execute + fetch results
     expectedCode = correctAnswer.replace('\n', ' ').replace('\t', ' ')
     expectedAns = cur.execute(expectedCode).fetchall()
+
+    print(expectedAns)
     
     # format submission from string to code and execute + fetch results
     studentCode = submittedAnswer.replace('\n', ' ').replace('\t', ' ')
     actualAns = cur.execute(studentCode).fetchall()
+
+    if not (actualAns or expectedAns):
+        raise Exception("expected and actual empty")
     
     return (expectedAns,actualAns)
 
@@ -477,7 +492,9 @@ def rowMatch(expectedAns,actualAns):
     expectedTotal = 0
     actualTotal = 0
 
-    if not (actualAns or expectedAns): return 1
+    if not (actualAns or expectedAns): 
+        print("here")
+        return 1
     if not actualAns or not actualAns[0]: return 0
 
     expectedRowCount = len(expectedAns)
@@ -487,8 +504,10 @@ def rowMatch(expectedAns,actualAns):
     actualTotal += actualRowCount
 
     # for each row that the submitted answer has that is more or less than the expected answer, a point is deducted
-    rowGrade = abs(expectedTotal - actualTotal)
-    rowScore = (expectedTotal - rowGrade)/expectedTotal
+    rowGrade = (expectedTotal - actualTotal)
+    if rowGrade < -actualTotal : return 0
+    rowScore = (expectedTotal - abs(rowGrade))/expectedTotal
+    print(rowScore)
     return rowScore
 
 # scores the difference in the number of columns between both outputs
