@@ -607,46 +607,9 @@ def generateQuery(data, difficulty):
     
 
 
-    # Begins the question string
-    questionString = 'From the tables'
-
-    # De-pluralizes if necessary
-    questionString = removeTrailingChars(questionString, condition=len(selectedColumns) == 1)
-
-
-
-    # Lists all the tables to add
-    questionString, index = dictionaryQuestionString(selectedColumns, questionString, tag='b')
-    ''' Aliasing is works but is not currently used
-    index = 0
-    for key in selectedColumns:
-        
-        # Adds the and, if necessary.
-        if index == len(selectedColumns) - 1 and index > 0:
-            # Removes the comma if there are only two tables
-            if index == 1:
-                questionString = questionString[:-1]
-
-            questionString += ' and'
-
-        
-        # Adds the table
-        questionString += f" <b>{key}</b>"
-
-        # Includes aliasing if necessary
-        if key in withColumns:
-            questionString += f" <em>with the alias {withColumns[key]}</em>"
-        
-        questionString += ','
-
-        index += 1
-    '''
-    
-
-
-    # Starts the column selection section
+    # Starts the question string and the column selection section
     if selectedColumns:
-        questionString += ' select the columns'
+        questionString = 'Select'
 
         # De-pluralizes if necessary
         questionString = removeTrailingChars(questionString, condition=columnsToSelect == 1)
@@ -668,11 +631,11 @@ def generateQuery(data, difficulty):
                 # Adds the function, if necessary
                 if column in functionColumns:
                     match functionColumns[column]:
-                        case 'COUNT': questionString += ' <em>count of</em>'
-                        case 'MAX': questionString += ' <em>maximum value of</em>'
-                        case 'MIN': questionString += ' <em>minimum value of</em>'
-                        case 'LENGTH': questionString += ' <em>length of</em>'
-                        case 'AVG': questionString += ' <em>average of</em>'
+                        case 'COUNT': questionString += ' the <em>count of</em>'
+                        case 'MAX': questionString += ' the <em>maximum value of</em>'
+                        case 'MIN': questionString += ' the <em>minimum value of</em>'
+                        case 'LENGTH': questionString += ' the <em>length of</em>'
+                        case 'AVG': questionString += ' the <em>average of</em>'
                 
                 # Adds the column
                 questionString += f" <b>{column}</b>,"
@@ -680,13 +643,13 @@ def generateQuery(data, difficulty):
                 # Increments the interations
                 index += 1
 
+        # Removes the trailing comma
+        questionString = removeTrailingChars(questionString)
 
-    # If there are no columns to select, instead select all '*'
+    # If there are no columns to select, instead select all
     else:
-        questionString += ' select all columns'
+        questionString = 'Select all columns'
 
-    # Removes the trailing comma
-    questionString = removeTrailingChars(questionString)
 
 
 
@@ -712,9 +675,6 @@ def generateQuery(data, difficulty):
         # Used to keep track of when and if to add the 'and'
         index = 0
 
-        # Starts the string
-        questionString += f" Use"
-
         # Iterates over all joins
         for key in joinTypes:
 
@@ -726,15 +686,27 @@ def generateQuery(data, difficulty):
 
                 questionString += ' and'
 
-            # Makes sure to use 'an' when they're a leading vowel
-            questionString += ' a' if joinTypes[key] not in ['INNER JOIN'] else ' an'
+            # Creates the string based on the join type
+            match joinTypes[key]:
+                case 'INNER JOIN':
+                    joinString = f" Only matching rows from <b>{key}</b> are included,"
 
-            # Reduces ambiguity for the unspecified join
-            if joinTypes[key] == 'JOIN':
-                questionString += ' regular'
+                case 'JOIN': 
+                    joinString = f" Rows from <b>{key}</b> are joined to their matching row,"
+
+                case 'LEFT OUTER JOIN': 
+                    joinString = f" All rows from <b>{key}</b> are matched to their single corresponding row,"
+
+                case 'CROSS JOIN':
+                    joinString = f" Each row from <b>{key}</b> should be paired with every possible row,"
             
-            # Adds the join and table to the question string
-            questionString += f" <em>{joinTypes[key].lower()}</em> for the table <b>{key}</b>,"
+            # Sets the join string to lower case, except when it
+            # is the first join and thus starting the sentence
+            if not index == 0:
+                joinString = joinString.lower()
+            
+            # Adds the string
+            questionString += joinString
 
             index += 1
         
