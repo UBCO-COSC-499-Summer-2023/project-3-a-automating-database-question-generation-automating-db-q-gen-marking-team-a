@@ -505,6 +505,7 @@ def generateQuery(data, difficulty):
     limit = queryClauses['limit']
     withClause = queryClauses['with']
     isDistinct = queryClauses['isDistinct']
+    useQueryFunctions = queryClauses['useQueryFunctions']
 
 
 
@@ -516,6 +517,24 @@ def generateQuery(data, difficulty):
     #   }
     selectedColumns = selectColumns(columnsToSelect, database)
 
+
+
+    # Randomly selects some columns to perform a query on
+    #   functionColumns {
+    #       $columnName = '$fxn'
+    # }
+    functionColumns = {}
+    for key in selectedColumns:
+        for column in selectedColumns[key]:
+
+            # The first one is guaranteed. Pas that, there's 
+            # a one in five chance per column for that
+            # column to have a function performed on it
+            if useQueryFunctions and not functionColumns:
+                functionColumns[column] = getQueryFunction(database, column, useIn=False)
+            elif random.random() * 5 < 1 and useQueryFunctions:
+                functionColumns[column] = getQueryFunction(database, column, useIn=False)
+ 
 
 
     # Obtains the conditional values
@@ -631,8 +650,33 @@ def generateQuery(data, difficulty):
         
         # Lists all the columns to add
         index = 0
-        for selectedTable in selectedColumns:
-            questionString, index = dictionaryQuestionString(selectedColumns[selectedTable], questionString, columnsToSelect, index, tag='b')
+
+        for key in selectedColumns:
+            for column in selectedColumns[key]:
+
+                # Adds the and, if necessary
+                if index == columnsToSelect - 1 and index > 0:
+                    # Removes the comma if there are only two tables
+                    if index == 1:
+                        questionString = questionString[:-1]
+
+                    questionString += ' and'
+
+                # Adds the function, if necessary
+                if column in functionColumns:
+                    match functionColumns[column]:
+                        case 'COUNT': questionString += ' <em>count of</em>'
+                        case 'MAX': questionString += ' <em>maximum value of</em>'
+                        case 'MIN': questionString += ' <em>minimum value of</em>'
+                        case 'LENGTH': questionString += ' <em>length of</em>'
+                        case 'AVG': questionString += ' <em>average of</em>'
+                
+                # Adds the column
+                questionString += f" <b>{column}</b>,"
+
+                # Increments the interations
+                index += 1
+
 
     # If there are no columns to select, instead select all '*'
     else:
@@ -798,7 +842,7 @@ def generateQuery(data, difficulty):
     data['params']['questionString'] = questionString
     
     # Sets the correct answer
-    data['correct_answers']['SQLEditor'] = queryStatement(database, selectedColumns, joinTypes, conditionalValues, orderByColumns, groupByColumns, havingColumns, withColumns, limit, isDistinct, subquery)
+    data['correct_answers']['SQLEditor'] = queryStatement(database, selectedColumns, joinTypes, conditionalValues, orderByColumns, groupByColumns, havingColumns, withColumns, limit, isDistinct, functionColumns, subquery)
 
     if os.path.exists("preview.db"):
         os.remove("preview.db")
@@ -807,7 +851,7 @@ def generateQuery(data, difficulty):
         data['params']['expectedOutput'] = createPreview(data)
 
 # Creates a query
-def queryStatement(database, selectedColumns, joinTypes={}, conditionalValues={}, orderByColumns={}, groupByColumns={}, havingColumns={}, withColumns={}, limit=0, isDistinct=False, subquery=''):
+def queryStatement(database, selectedColumns, joinTypes={}, conditionalValues={}, orderByColumns={}, groupByColumns={}, havingColumns={}, withColumns={}, limit=0, isDistinct=False, functionColumns={}, subquery=''):
     
     table = database.primaryTable
     keyMap = table.getKeyMap()
@@ -827,7 +871,11 @@ def queryStatement(database, selectedColumns, joinTypes={}, conditionalValues={}
     # All columns use a '$table.' to specify
     for key in selectedColumns:
         for column in selectedColumns[key]:
-            queryString += f" {column},"
+
+            if functionColumns and column in functionColumns:
+                queryString += f" {functionColumns[column]}({column}),"
+            else:
+                queryString += f" {column},"
     
     # Adds the star for select all
     if not selectedColumns:
@@ -1001,53 +1049,7 @@ def generateSubquery(database):
         conditionalValues = getConditionalValues(random.choices([1, 2, 3], [100, 10, 1])[0], database, columnList=[column for column in columnMap[selectedColumn].columns], restrictive=False)
 
 
-
-    # INTEGERs and DECIMALs
-    if columnMap[selectedColumn].columns[selectedColumn]['unit'] in ['INTEGER', 'DECIMAL']:
-
-        # Selects an appropraite function.
-        # Prefers AVG since it compares the best to noisy data's
-        # randomly generated integers. Comparing to MAX, MIN, or
-        # COUNT could easily lead to an empty or near-empty query.
-        # If there are conditional values, then all are weighted
-        # the same except for COUNT since that one is still bad
-        # for our noisy data
-        queryFunction = random.choices(['AVG', 'COUNT', 'MAX', 'MIN'], [4, 1, 1, 1] if not conditionalValues else [2, 1, 2, 2])[0]
-
-
-
-    # DATEs and DATETIMEs
-    if columnMap[selectedColumn].columns[selectedColumn]['unit'] in ['DATE', 'DATETIME']:
-        
-        # Selects an appropraite function.
-        # Without conditional values, they're all about as bad
-        # in terms of their output. With conditional values, 
-        # MIN and MAX are prefered since then they'll have
-        # better outputs
-        queryFunction = random.choices(['COUNT', 'MAX', 'MIN'], [1, 1, 1] if not conditionalValues else [1, 3, 3])[0]
-
-
-
-    # VARCHARs
-    if columnMap[selectedColumn].columns[selectedColumn]['unit'] in ['VARCHAR']:
-        
-        # Selects an appropraite function.
-        # LENGTH will produce good queries relative to the data
-        # that the noisy data gen create, so we give it a big
-        # weight. Conditional values doesn't affect either 
-        # function much
-        queryFunction = random.choices(['COUNT', 'LENGTH'], [1, 6])[0]
-
-    
-
-    # CHARs
-    if columnMap[selectedColumn].columns[selectedColumn]['unit'] in ['CHAR']:
-
-        # Selects an appropraite function.
-        # Either it's the count, or we do an 'IN' subquery.
-        # The latter is a better option
-        queryFunction = random.choices(['COUNT', ''], [1, 3])[0]
-
+    queryFunction = getQueryFunction(database, selectedColumn, conditionalValues)
 
 
     # Selects an appropriate operator.
@@ -1115,6 +1117,7 @@ def subqueryQuestionString(database, conditionalColumn, comparisonOperator, sele
             case 'MAX': questionString += ' the <em>maximum value of</em>'
             case 'MIN': questionString += ' the <em>minimum value of</em>'
             case 'LENGTH': questionString += ' the <em>length of</em>'
+            case 'AVG': questionString += ' the <em>average of</em>'
             case '': questionString += ' the <em>set of</em>'
     
     # Adds the selected column
@@ -1209,6 +1212,64 @@ def selectColumns(columnsToSelect, database):
         selectedColumns[tableName].append(column)
     
     return selectedColumns
+
+# Returns an appropriate query function based up the column's
+# datatype. Weights functions such that functions that tend
+# to produce good output are favoured
+def getQueryFunction(database, key, conditionalValues={}, useIn=True):
+
+    columnMap = database.getColumnMap(tableNames=False)
+
+    # INTEGERs and DECIMALs
+    if columnMap[key].columns[key]['unit'] in ['INTEGER', 'DECIMAL']:
+
+        # Selects an appropraite function.
+        # Prefers AVG since it compares the best to noisy data's
+        # randomly generated integers. Comparing to MAX, MIN, or
+        # COUNT could easily lead to an empty or near-empty query.
+        # If there are conditional values, then all are weighted
+        # the same except for COUNT since that one is still bad
+        # for our noisy data
+        queryFunction = random.choices(['AVG', 'COUNT', 'MAX', 'MIN'], [4, 1, 1, 1] if not conditionalValues else [2, 1, 2, 2])[0]
+
+
+
+    # DATEs and DATETIMEs
+    if columnMap[key].columns[key]['unit'] in ['DATE', 'DATETIME']:
+        
+        # Selects an appropraite function.
+        # Without conditional values, they're all about as bad
+        # in terms of their output. With conditional values, 
+        # MIN and MAX are prefered since then they'll have
+        # better outputs
+        queryFunction = random.choices(['COUNT', 'MAX', 'MIN'], [1, 1, 1] if not conditionalValues else [1, 3, 3])[0]
+
+
+
+    # VARCHARs
+    if columnMap[key].columns[key]['unit'] in ['VARCHAR']:
+        
+        # Selects an appropraite function.
+        # LENGTH will produce good queries relative to the data
+        # that the noisy data gen create, so we give it a big
+        # weight. Conditional values doesn't affect either 
+        # function much
+        queryFunction = random.choices(['COUNT', 'LENGTH'], [1, 6])[0]
+
+    
+
+    # CHARs
+    if columnMap[key].columns[key]['unit'] in ['CHAR']:
+
+        # Selects an appropraite function.
+        # Either it's the count, or we do an 'IN' subquery.
+        # The latter is a better option
+        if useIn:
+            queryFunction = random.choices(['COUNT', ''], [1, 3])[0]
+        else:
+            queryFunction = 'COUNT'
+
+    return queryFunction
 
 # Removes the last character of a string 
 def removeTrailingChars(string, qty=1, condition=True):
@@ -1492,7 +1553,8 @@ def getQuestionParameters(data):
             'having': 0,
             'limit': 0,
             'with': 0,
-            'isDistinct': 0
+            'isDistinct': 0,
+            'useQueryFunctions': False
         }
     
     return numberOfColumns, numberOfJoins, tableClauses, queryClauses
