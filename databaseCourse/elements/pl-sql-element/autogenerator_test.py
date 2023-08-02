@@ -559,15 +559,15 @@ class ParameterizedQueryTests(unittest.TestCase):
     # Parameters for QUERY to test various cases
     @parameterized.expand([
             # columns, joins, conditional, useSubquery, columnsToSelect, orderBy, groupBy, having, limit, isDistinct
-            [data, 5, 2, 2, False, 5, 1, 1, 1, 5, True, sampleSize],   # A bit of everything
-            [data, 5, 2, 2, True, 5, 1, 1, 1, 5, True, sampleSize],   # A bit of everything, and a subquery
-            [data, 3, 1, 0, False, 0, 0, 0, 0, 0, False, sampleSize],   # Min, without subquery
-            [data, 3, 1, 0, True, 0, 0, 0, 0, 0, False, sampleSize],   # Min, with subquery
-            [data, 10, 4, 4, False, 10, 4, 4, 4, 5, False, sampleSize], # Max, without subquery
-            [data, 10, 4, 4, True, 10, 4, 4, 4, 5, False, sampleSize],    # Max, with subquery
+            [data, 5, 2, 2, False, 5, 1, 1, 1, 5, True, True, sampleSize],   # A bit of everything
+            [data, 5, 2, 2, True, 5, 1, 1, 1, 5, True, True, sampleSize],   # A bit of everything, and a subquery
+            [data, 3, 1, 0, False, 0, 0, 0, 0, 0, False, False, sampleSize],   # Min, without subquery
+            [data, 3, 1, 0, True, 0, 0, 0, 0, 0, False, False, sampleSize],   # Min, with subquery
+            [data, 10, 4, 4, False, 10, 4, 4, 4, 5, False, True, sampleSize], # Max, without subquery
+            [data, 10, 4, 4, True, 10, 4, 4, 4, 5, False, True, sampleSize],    # Max, with subquery
             ])
     
-    def testParameterizedQuery(self,data,columns,joins,conditionals,subquery,columnsToSelect,orderBy,groupBy,having,limit,isDistinct,sampleSize):        
+    def testParameterizedQuery(self,data,columns,joins,conditionals,subquery,columnsToSelect,orderBy,groupBy,having,limit,isDistinct,useQueryFunctions,sampleSize):        
         data['params']['html_params']['columns'] = columns
         data['params']['html_params']['joins'] = joins
 
@@ -580,7 +580,8 @@ class ParameterizedQueryTests(unittest.TestCase):
             'having': having,
             'limit': limit,
             'with': 0,
-            'isDistinct': isDistinct
+            'isDistinct': isDistinct,
+            'useQueryFunctions': useQueryFunctions
         }
 
 
