@@ -387,9 +387,11 @@ def generateDelete(data, difficulty):
     conditionalValues = getConditionalValues(queryClauses['conditional'], database, list(table.columns.keys()))
 
 
-
-    # Generates the question string
-    questionString = f"From the table <b>{table.name}</b>, delete all values"
+    # If there are no
+    if conditionalValues:
+        questionString = f"Delete all values"
+    else:
+        questionString = f"Delete all values from the table {table.name}"
 
     # Adds the 'WHERE's and such
     questionString = questionConditionals(conditionalValues, questionString)
@@ -426,7 +428,8 @@ def deleteStatement(table, conditionalValues=None, subquery=''):
     conditionalStatement = statementConditionals('', conditionalValues)
 
     # Removes the leading space, adding a newline in its place
-    statement += '\n' + conditionalStatement[1:]
+    if conditionalValues:
+        statement += '\n' + conditionalStatement[1:]
 
     # Adds the subquery and formats the 'WHERE'
     if subquery:
