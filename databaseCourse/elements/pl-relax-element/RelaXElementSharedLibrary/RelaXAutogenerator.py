@@ -114,12 +114,34 @@ class Question:
         #  for all rows from table1, null where not exist table2
         #  More ⟕ Less where column less = null 
         if self.outerJoinBool:
-            pass
+            node1 = rand.choice(list(subgraph.keys()))
+            print(node1)
+    
+            connections = subgraph[node1]
+            node2 = rand.choice(connections)
 
-        #* Semi Joins
-        #  for row from table1 where match exists in table2
-        #  Less ⋊ More
+            for column in dataset.tableSet[node1].columns: 
+                if dataset.tableSet[node1].columns[column]['references'] == node2:
+                    compareColumn = dataset.tableSet[node1].columns[column]["name"]
+            
+            print(compareColumn)
+            
+            print(f"node1 {len(set(dataset.tableSet[node1].rows[compareColumn]))}, node2 {len(set(dataset.tableSet[node2].rows[compareColumn]))}")
+            if len(set(dataset.tableSet[node1].rows[compareColumn])) > len(set(dataset.tableSet[node2].rows[compareColumn])):
+                self.joinStatement = f"{node1}{self.outerLeftJoins}{node2}"
+                self.tableListText = f"where <b>{compareColumn}</b> is null in <b>{node2}</b>"
+                self.selectStatement =  f"{self.selectStatement} {compareColumn} = null ∨"
+                self.JoinList = [node1]
+            else:
+                self.joinStatement = f"{node1}{self.outerRightJoins}{node2}"
+                self.selectStatement =  f"{self.selectStatement} {compareColumn} = null ∨"
+                self.tableListText = f"where <b>{compareColumn}</b> is null in <b>{node1}</b>"
+                self.JoinList = [node2]
+
         elif self.semiJoinBool:
+            #* Semi Joins
+            #  for row from table1 where match exists in table2
+            #  Less ⋊ More
             node1 = rand.choice(list(subgraph.keys()))
             print(node1)
     
@@ -135,11 +157,11 @@ class Question:
             print(f"node1 {len(set(dataset.tableSet[node1].rows[compareColumn]))}, node2 {len(set(dataset.tableSet[node2].rows[compareColumn]))}")
             if len(set(dataset.tableSet[node1].rows[compareColumn])) > len(set(dataset.tableSet[node2].rows[compareColumn])):
                 self.joinStatement = f"{node1}{self.semiRightJoins}{node2}"
-                self.tableListText = f"where <b>{compareColumn}</b> exists in <b>{node2}</b>"
+                self.tableListText = f"or where <b>{compareColumn}</b> exists in <b>{node2}</b>"
                 self.JoinList = [node1]
             else:
                 self.joinStatement = f"{node1}{self.semiLeftJoins}{node2}"
-                self.tableListText = f"where <b>{compareColumn}</b> exists in <b>{node1}</b>"
+                self.tableListText = f"or where <b>{compareColumn}</b> exists in <b>{node1}</b>"
                 self.JoinList = [node2] 
         elif self.antiJoinBool:
             #* Anti Joins --> bigger ▷ smaller
@@ -250,6 +272,7 @@ class Question:
             selected = ' ∨ '.join(selectedColumnsArray)
             self.selectStatement =  f"{self.selectStatement} {selected}"
             self.selectStatementText = ' or '.join(conditions)
+    
     def getQuery(self):
         self.Query = self.joinStatement 
         if self.numClauses !=0:
@@ -275,7 +298,7 @@ class Question:
 
 
 
-
+# def antiJoin
 
 def projection(usableColumns):
     projectedColumns = []
@@ -303,8 +326,8 @@ def selection(usableColumns, randColumn,subgraph, dataset):
             if randColumn == dataset.tableSet[table].columns[column]['name']:
                 match(dataset.tableSet[table].columns[column]['unit']):
                     case 'STRING': return (randColumn, " = ", f"'{rand.choice(dataset.tableSet[table].rows[column])}'")
-                    case 'NUMBER': return (randColumn,f" {rand.choice([ '≥', '≤', '>', '<'])} ", rand.choice(dataset.tableSet[table].rows[column]))
-                    case 'DATE': return (randColumn, f" {rand.choice([ '≥', '≤', '>', '<'])} ", f"Date('{rand.choice(dataset.tableSet[table].rows[column])}')")
+                    case 'NUMBER': return (randColumn, f" {rand.choice([ '≥', '≤', '>', '<'])} ", rand.choice(dataset.tableSet[table].rows[column]))
+                    case 'DATE':   return (randColumn, f" {rand.choice([ '≥', '≤', '>', '<'])} ", f"Date('{rand.choice(dataset.tableSet[table].rows[column])}')")
                 #print(f"Selection string '{rand.choice(dataset.tableSet[table].rows[column])}'")
                 #selectedColumns.append(randColumn)
 
