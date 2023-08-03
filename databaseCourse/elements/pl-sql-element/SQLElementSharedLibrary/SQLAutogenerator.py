@@ -819,6 +819,7 @@ def generateQuery(data, difficulty):
     # Sets the correct answer
     data['correct_answers']['SQLEditor'] = queryStatement(database, selectedColumns, joinTypes, conditionalValues, orderByColumns, groupByColumns, havingColumns, withColumns, limit, isDistinct, functionColumns, subquery)
 
+
     if os.path.exists("preview.db"):
         os.remove("preview.db")
     expectedOutput = data['params']['html_params']['expectedOutput']
@@ -884,8 +885,11 @@ def queryStatement(database, selectedColumns, joinTypes={}, conditionalValues={}
         queryString += subquery
     elif 'WHERE' in queryString[-7:]:
         queryString = queryString[:queryString.find('WHERE')]
-    elif subquery:
+    elif subquery and 'AND' not in queryString[-4:]:
         queryString += ' AND' + subquery
+    elif subquery:
+        queryString += subquery
+        
 
 
     # Removes the final 'AND' if necessary
