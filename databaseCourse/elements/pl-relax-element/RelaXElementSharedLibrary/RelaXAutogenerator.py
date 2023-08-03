@@ -9,6 +9,11 @@ from RASQLib import textDatabaseHandler as db
 from RASQLib import noisyData as nd
 
 
+#! change Random number of projected and selected columns to always include 1 column from each table
+# do this by creating array first. then pop out whats needed. should be easy
+
+
+
 # A very basic autogenerate function.
 # At the moment, all it does is create a database
 # and load it into the data variable.
@@ -75,7 +80,7 @@ def autogenerate(data):
 class Question:
     Query = "π "
 
-    joinSection = ""
+    joinStatement = ""
 
     selectStatement = "σ"
     ClauseArray = { "∧", "∨", "¬", "=", "≠", "≥", "≤", ">", "<"}
@@ -103,105 +108,58 @@ class Question:
         self.semiJoinBool = attribDict['semiJoin']
         #* Join first -- may need recursive function
         # number of joins for the question
-        if self.semiJoinBool or self.outerJoinBool or self.antiJoinBool:
-            self.numJoins = 1
+        self.offLimitsTable = None
 
         graph = dataset.toGraph()
+        print(graph)
         subgraph = randomSubgraph(graph=graph, n=self.numJoins)
         
         self.JoinList = []
-        #* Partial Outer Joins
-        #  for all rows from table1, null where not exist table2
-        #  More ⟕ Less where column less = null 
-        if self.outerJoinBool:
-            node1 = rand.choice(list(subgraph.keys()))
-            print(node1)
-    
-            connections = subgraph[node1]
-            node2 = rand.choice(connections)
-
-            for column in dataset.tableSet[node1].columns: 
-                if dataset.tableSet[node1].columns[column]['references'] == node2:
-                    compareColumn = dataset.tableSet[node1].columns[column]["name"]
-            
-            print(compareColumn)
-            
-            print(f"node1 {len(set(dataset.tableSet[node1].rows[compareColumn]))}, node2 {len(set(dataset.tableSet[node2].rows[compareColumn]))}")
-            if len(set(dataset.tableSet[node1].rows[compareColumn])) > len(set(dataset.tableSet[node2].rows[compareColumn])):
-                self.joinStatement = f"{node1}{self.outerLeftJoins}{node2}"
-                self.tableListText = f"where <b>{compareColumn}</b> is null in <b>{node2}</b>"
-                self.selectStatement =  f"{self.selectStatement} {compareColumn} = null ∨"
-                self.JoinList = [node1]
+        neededColumns = []
+        loopNum = 0
+        while loopNum != (self.numJoins):
+            if len(self.JoinList) == 0:
+                joinChoice = rand.choice(['natural', 'outer', 'semi', 'anti'])
+                match joinChoice:
+                    case 'natural':
+                        print(joinChoice)
+                        self.naturalJoinGeneration(subgraph=graph)
+                    case 'outer':
+                        print(joinChoice)
+                        self.outerJoinGeneration(subgraph=graph,dataset=dataset)
+                    case 'semi':
+                        print(joinChoice)
+                        self.semiJoinGeneration(subgraph=graph,dataset=dataset)
+                    case 'anti':
+                        print(joinChoice)
+                        self.antiJoinGeneration(subgraph=graph,dataset=dataset)
             else:
-                self.joinStatement = f"{node1}{self.outerRightJoins}{node2}"
-                self.selectStatement =  f"{self.selectStatement} {compareColumn} = null ∨"
-                self.tableListText = f"where <b>{compareColumn}</b> is null in <b>{node1}</b>"
-                self.JoinList = [node2]
+                self.naturalJoinGeneration(subgraph=graph)
+            loopNum+=1
+        # self.outerJoinGeneration(subgraph=graph, dataset=dataset)
+        # self.naturalJoinGeneration(subgraph=graph)
+        print(self.joinStatement)
 
-        elif self.semiJoinBool:
-            #* Semi Joins
-            #  for row from table1 where match exists in table2
-            #  Less ⋊ More
-            node1 = rand.choice(list(subgraph.keys()))
-            print(node1)
-    
-            connections = subgraph[node1]
-            node2 = rand.choice(connections)
 
-            for column in dataset.tableSet[node1].columns: 
-                if dataset.tableSet[node1].columns[column]['references'] == node2:
-                    compareColumn = dataset.tableSet[node1].columns[column]["name"]
-            
-            print(compareColumn)
-            
-            print(f"node1 {len(set(dataset.tableSet[node1].rows[compareColumn]))}, node2 {len(set(dataset.tableSet[node2].rows[compareColumn]))}")
-            if len(set(dataset.tableSet[node1].rows[compareColumn])) > len(set(dataset.tableSet[node2].rows[compareColumn])):
-                self.joinStatement = f"{node1}{self.semiRightJoins}{node2}"
-                self.tableListText = f"or where <b>{compareColumn}</b> exists in <b>{node2}</b>"
-                self.JoinList = [node1]
-            else:
-                self.joinStatement = f"{node1}{self.semiLeftJoins}{node2}"
-                self.tableListText = f"or where <b>{compareColumn}</b> exists in <b>{node1}</b>"
-                self.JoinList = [node2] 
-        elif self.antiJoinBool:
-            #* Anti Joins --> bigger ▷ smaller
-            #  for row from table1 not in table2
-            node1 = rand.choice(list(subgraph.keys()))
-            print(node1)
-    
-            connections = subgraph[node1]
-            node2 = rand.choice(connections)
 
-            for column in dataset.tableSet[node1].columns: 
-                if dataset.tableSet[node1].columns[column]['references'] == node2:
-                    compareColumn = dataset.tableSet[node1].columns[column]["name"]
-            
-            print(compareColumn)
-            
-            print(f"node1 {len(set(dataset.tableSet[node1].rows[compareColumn]))}, node2 {len(set(dataset.tableSet[node2].rows[compareColumn]))}")
-            if len(set(dataset.tableSet[node1].rows[compareColumn])) > len(set(dataset.tableSet[node2].rows[compareColumn])):
-                self.joinStatement = f"{node1}{self.antiJoins}{node2}"
-                self.tableListText = f"where <b>{compareColumn}</b> is not in <b>{node2}</b>"
-                self.JoinList = [node1]
-            else:
-                self.joinStatement = f"{node2}{self.antiJoins}{node1}"
-                self.tableListText = f"where <b>{compareColumn}</b> is not in <b>{node1}</b>"
-                self.JoinList = [node2]
-        else:
+
+
+        # if self.outerJoinBool:
+        #     #* Partial Outer Joins
+        #     #  for all rows from table1, null where not exist table2
+        #     #  More ⟕ Less where column less = null
+        #     self.outerJoinGeneration(subgraph=subgraph, dataset=dataset)
+        # elif self.semiJoinBool:
+        #     #* Semi Joins
+        #     #  for row from table1 where match exists in table2
+        #     #  Less ⋊ More
+        #     self.semiJoinGeneration(subgraph=subgraph, dataset=dataset)
+        # elif self.antiJoinBool:
+        #     #* Anti Joins --> bigger ▷ smaller
+        #     #  for row from table1 not in table2
+        #     self.antiJoinGeneration(subgraph=subgraph, dataset=dataset)
+        # else:
         
-            while not set(self.JoinList) == set(subgraph.keys()):
-                for node in subgraph:
-                    if len(self.JoinList) == 0:
-                        self.JoinList.append(node)
-                    for connection in subgraph[node]:
-                        if connection in self.JoinList and node not in self.JoinList:
-                            self.JoinList.append(node)
-
-            self.joinStatement =f"{self.naturalJoin.join(self.JoinList)}"
-
-            self.tableListText = ", ".join(self.JoinList)
-            parts = self.tableListText.rsplit(",", 1)  # Split the string from the right side only once
-            self.tableListText = f"<b>{' and'.join(parts)}</b>"
 
         # neededColumns are one random column from each joined graph 
         # such that all joined tables are utilized in output
@@ -210,6 +168,7 @@ class Question:
         # usableColumns are all Columns from joined graphs.
         usableColumns = []
         for table in self.JoinList:
+            #print(F"Hello form Useable Columns: {table}")
             num = rand.randint(0, len(dataset.tableSet[table].columns)-1)
             while num in numArray:
                 num = rand.randint(0, len(dataset.tableSet[table].columns))
@@ -264,6 +223,7 @@ class Question:
             conditions = []
             selectedColumnsArray = []
             for item in selectedColumns:
+                print(item)
                 randColumn, operator, value = item
                 selectedColumnsArray.append(f"{randColumn}{operator}{value}")
 
@@ -273,10 +233,186 @@ class Question:
             self.selectStatement =  f"{self.selectStatement} {selected}"
             self.selectStatementText = ' or '.join(conditions)
     
+
+
+
+
+
+    #* Join Generation========================================================
+    def outerJoinGeneration(self, subgraph, dataset):
+        #* Partial Outer Joins
+        #  for all rows from table1, null where not exist table2
+        #  More ⟕ Less where column less = null
+        node1 = rand.choice(list(subgraph.keys()))
+        print(node1)
+
+        connections = subgraph[node1]
+        node2 = rand.choice(connections)
+
+        for column in dataset.tableSet[node1].columns: 
+            if dataset.tableSet[node1].columns[column]['references'] == node2:
+                compareColumn = dataset.tableSet[node1].columns[column]["name"]
+        
+        print(compareColumn)
+        
+        print(f"node1 {len(set(dataset.tableSet[node1].rows[compareColumn]))}, node2 {len(set(dataset.tableSet[node2].rows[compareColumn]))}")
+
+        if len(set(dataset.tableSet[node1].rows[compareColumn])) > len(set(dataset.tableSet[node2].rows[compareColumn])):
+            self.joinStatement = f"{node1}{self.outerLeftJoins}{node2}"
+            qColumn = rand.choice(list(dataset.tableSet[node2].columns.keys()))
+            querryColumn = dataset.tableSet[node2].columns[qColumn]['name']
+            while querryColumn is compareColumn:
+                qColumn = rand.choice(list(dataset.tableSet[node2].columns.keys()))
+                querryColumn = dataset.tableSet[node2].columns[qColumn]['name']
+            self.tableListText = f"where <b>{querryColumn}</b> <em>is null</em> in <b>{node2}</b>"
+            self.selectStatement =  f"{self.selectStatement} {querryColumn} = null ∨"
+            self.JoinList = [node1]
+        else:
+            self.joinStatement = f"{node1}{self.outerRightJoins}{node2}"
+            qColumn = rand.choice(list(dataset.tableSet[node1].columns.keys()))
+            querryColumn = dataset.tableSet[node1].columns[qColumn]['name']
+            while querryColumn is compareColumn:
+                qColumn = rand.choice(list(dataset.tableSet[node1].columns.keys()))
+                querryColumn = dataset.tableSet[node1].columns[qColumn]['name']
+            self.selectStatement =  f"{self.selectStatement} {querryColumn} = null ∨"
+            self.tableListText = f"where <b>{querryColumn}</b> <em>is null</em> in <b>{node1}</b>"
+            self.JoinList = [node2, node1]
+        
+        if self.numClauses > 0:
+            self.tableListText = f"and {self.tableListText}"
+
+    def semiJoinGeneration(self, subgraph, dataset):
+        #* Semi Joins
+        #  for row from table1 where match exists in table2
+        #  Less ⋊ More
+
+        # Select node with most connections
+        mcNode = list(subgraph.keys())[0]
+        for column in dataset.tableSet[subgraph[mcNode][0]].columns:
+            if dataset.tableSet[subgraph[mcNode][0]].columns[column]['references'] == mcNode:
+                compareColumn = dataset.tableSet[subgraph[mcNode][0]].columns[column]["name"]
+        if len(set(dataset.tableSet[subgraph[mcNode][0]].rows[compareColumn])) > len(set(dataset.tableSet[mcNode].rows[compareColumn])):
+            print("We got a winner")
+        else:
+            print("had to loop")
+            for node in subgraph.keys():
+                print(f"BIG {node}: {subgraph[node]}")
+                if len(subgraph[node]) <= len(subgraph[mcNode]):
+                    mcNode = node
+                    print(f"small {mcNode}: {subgraph[mcNode]}")
+                    for column in dataset.tableSet[subgraph[mcNode][0]].columns:
+                        if dataset.tableSet[subgraph[mcNode][0]].columns[column]['references'] == mcNode:
+                            compareColumn = dataset.tableSet[subgraph[mcNode][0]].columns[column]["name"]
+                    if len(set(dataset.tableSet[subgraph[mcNode][0]].rows[compareColumn])) > len(set(dataset.tableSet[mcNode].rows[compareColumn])):
+                        print("We got a winner")
+                        break
+        print(mcNode)
+        
+        # select connecting node
+        node1 = subgraph[mcNode][0]
+        node2 = mcNode
+
+        for column in dataset.tableSet[node1].columns:
+            if dataset.tableSet[node1].columns[column]['references'] == node2:
+                compareColumn = dataset.tableSet[node1].columns[column]["name"]
+        
+        #print(compareColumn)
+        # Render Outputs
+        self.joinStatement = f"{node1}{self.semiRightJoins}{node2}"
+        self.tableListText = f"or where <b>{compareColumn}</b> exists in <b>{node2}</b>"
+        self.JoinList = [node1]
+        self.offLimitsTable = node2
+        # else:
+        #     self.joinStatement = f"{node1}{self.semiLeftJoins}{node2}"
+        #     self.tableListText = f"or where <b>{compareColumn}</b> exists in <b>{node1}</b>"
+        #     self.JoinList = [node1]
+        #     self.offLimitsTable = node2
+        
+        print(f"{self.JoinList}: {subgraph[self.JoinList[0]]}")
+        print(self.joinStatement)
+        print(self.offLimitsTable)
+    
+    def antiJoinGeneration(self, subgraph, dataset):
+        #* Anti Joins --> bigger ▷ smaller
+        #  for row from table1 not in table2
+
+        # Select node with most connections
+        mcNode = list(subgraph.keys())[0]
+        for column in dataset.tableSet[subgraph[mcNode][0]].columns:
+            if dataset.tableSet[subgraph[mcNode][0]].columns[column]['references'] == mcNode:
+                compareColumn = dataset.tableSet[subgraph[mcNode][0]].columns[column]["name"]
+        if len(set(dataset.tableSet[subgraph[mcNode][0]].rows[compareColumn])) > len(set(dataset.tableSet[mcNode].rows[compareColumn])):
+            print("We got a winner")
+        else:
+            print("had to loop")
+            for node in subgraph.keys():
+                print(f"BIG {node}: {subgraph[node]}")
+                if len(subgraph[node]) <= len(subgraph[mcNode]):
+                    mcNode = node
+                    print(f"small {mcNode}: {subgraph[mcNode]}")
+                    for column in dataset.tableSet[subgraph[mcNode][0]].columns:
+                        if dataset.tableSet[subgraph[mcNode][0]].columns[column]['references'] == mcNode:
+                            compareColumn = dataset.tableSet[subgraph[mcNode][0]].columns[column]["name"]
+                    if len(set(dataset.tableSet[subgraph[mcNode][0]].rows[compareColumn])) > len(set(dataset.tableSet[mcNode].rows[compareColumn])):
+                        print("We got a winner")
+                        break
+        print(mcNode)
+        
+        # select connecting node
+        node1 = subgraph[mcNode][0]
+        node2 = mcNode
+
+        for column in dataset.tableSet[node1].columns: 
+            if dataset.tableSet[node1].columns[column]['references'] == node2:
+                compareColumn = dataset.tableSet[node1].columns[column]["name"]
+        
+        print(compareColumn)
+        
+        print(f"node1 {len(set(dataset.tableSet[node1].rows[compareColumn]))}, node2 {len(set(dataset.tableSet[node2].rows[compareColumn]))}")
+
+        self.joinStatement = f"{node1}{self.antiJoins}{node2}"
+        self.tableListText = f"where <b>{compareColumn}</b> is not in <b>{node2}</b>"
+        self.JoinList = [node1]
+        self.offLimitsTable = node2
+
+    def naturalJoinGeneration(self, subgraph):
+        jList=[]
+        key = False
+        for node in subgraph:
+            print(f"NJG:{node}")
+            if len(self.JoinList) == 0:
+                jList.append(node)
+            for connection in subgraph[node]:
+                print(connection)
+                if connection in self.JoinList and node not in self.JoinList:
+                    if node is not self.offLimitsTable:
+                        jList.append(node)
+                        print("Joined")
+                        key = True
+                        break
+            if key:
+                print("successful break")
+                break
+        
+        print(jList)
+
+        if self.joinStatement == "":
+            self.joinStatement =f"{jList[0]}{self.naturalJoin}{jList[1]}"
+        else:
+            self.joinStatement = f"({self.joinStatement}){self.naturalJoin}{jList[0]}"
+        print(self.JoinList)
+        self.tableListText = ", ".join(self.JoinList)
+        parts = self.tableListText.rsplit(",", 1)  # Split the string from the right side only once
+        self.tableListText = f"<b>{' and'.join(parts)}</b>"
+        for node in jList:
+            self.JoinList.append(node)
+
+
+
+    #* getters=======================================================
     def getQuery(self):
         self.Query = self.joinStatement 
-        if self.numClauses !=0:
-            self.Query = f"{self.selectStatement} ({self.Query})"
+        self.Query = f"{self.selectStatement} ({self.Query})"
         if self.orderByBool:
             self.Query = f"{self.orderByStatement} ({self.Query})"
         self.Query = f"{self.queryStatement} ({self.Query})"
@@ -287,7 +423,10 @@ class Question:
         text = f"Return a table of {self.projectedColumnText}"
         if self.orderByBool:
             text += self.orderByText
-        text += f" where {self.selectStatementText} from the tables {self.tableListText}"
+        if self.numClauses == 0:
+            text += f" {self.tableListText}"
+        else:
+            text += f" where {self.selectStatementText} {self.tableListText}"
 
         return text
 
@@ -298,7 +437,6 @@ class Question:
 
 
 
-# def antiJoin
 
 def projection(usableColumns):
     projectedColumns = []

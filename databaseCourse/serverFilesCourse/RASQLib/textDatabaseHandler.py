@@ -767,12 +767,12 @@ class Table:
         }
 
         self.columns[column]['references'] = foreignTable.name
-        print(f"{column}: {self.rows[column]}")
+        # print(f"{column}: {self.rows[column]}")
         if foreignTable.rows:
             foreignTable.rows[column] = []
             for i in range(len(self.rows[column])):
                 foreignTable.rows[column].append(choice(self.rows[column]))
-                print(f"{foreignTable.rows[column][i]} : {self.rows[column][i]}")
+                # print(f"{foreignTable.rows[column][i]} : {self.rows[column][i]}")
 
 
     # Given a marked-up textfile, return an array
