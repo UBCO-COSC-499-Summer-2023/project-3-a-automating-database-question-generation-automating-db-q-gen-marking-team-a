@@ -262,7 +262,7 @@ def generateUpdate(data, difficulty):
 
     updateColumn = None
     tindex = 0
-    while not updateColumn or not nd.isUnique(table, updateColumn):
+    while not updateColumn or nd.isUnique(table, updateColumn):
 
         # Helps prevent timeouts
         tindex += 1
