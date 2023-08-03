@@ -436,7 +436,7 @@ def deleteStatement(table, conditionalValues=None, subquery=''):
         if 'WHERE' in statement:
             statement += ' AND' + subquery
         else:
-            statement += 'WHERE' + subquery
+            statement += '\nWHERE' + subquery
     
     # Add finishing touches and returns
     statement += ';\n'
