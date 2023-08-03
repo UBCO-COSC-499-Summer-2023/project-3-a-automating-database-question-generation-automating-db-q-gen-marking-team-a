@@ -62,7 +62,7 @@ def generateNoisyDataNoFileSQL(table, key, qty=1, unique=False):
         case 'INTEGER': return generateNoisyInteger(unique, qty)
 
         # Decimals require total digits plus decimal precision
-        case 'DECIMAL': return generateRandomDecimal(unique, qty, unitOther)
+        case 'DECIMAL': return generateNoisyDecimal(unique, qty, unitOther)
 
         # CHARs require the number of characters
         case 'CHAR': return generateNoisyChar(unique, qty, int(unitOther))
@@ -72,8 +72,8 @@ def generateNoisyDataNoFileSQL(table, key, qty=1, unique=False):
         case 'VARCHAR': return generateNoisyVarchar(unique, qty, min(int(unitOther), 8))
 
         # DATE and DATETIME
-        case 'DATE': return generateRandomDate(unique, qty)
-        case 'DATETIME': return generateRandomDateTime(unique, qty)
+        case 'DATE': return generateNoisyDate(unique, qty)
+        case 'DATETIME': return generateNoisyDateTime(unique, qty)
 
         # Crash if the datatype is not correct
         case _: return None
@@ -91,12 +91,12 @@ def generateNoisyDataNoFileRelaX(table, key, qty=1, unique=False):
             # We don't have decimals in RelaX so check on the
             # key name instead
             if key == 'price':
-                return generateRandomDecimal(unique, qty, '6,2')
+                return generateNoisyDecimal(unique, qty, '6,2')
             
             else:
                 return generateNoisyInteger(unique, qty)
 
-        case 'DATE': return generateRandomDate(unique, qty)
+        case 'DATE': return generateNoisyDate(unique, qty)
         case 'STRING': return generateNoisyVarchar(unique, qty, 6)
 
 
@@ -124,7 +124,7 @@ def generateNoisyInteger(unique, qty):
 # As a note, the decimal portion is guaranteed to be at
 # most two. This is because if it was any larger, it
 # would be rounded to two decimal places when displayed.
-def generateRandomDecimal(unique, qty, unitOther):
+def generateNoisyDecimal(unique, qty, unitOther):
 
     # Grabs the whole and decimal portions of the string
     whole, decimal = unitOther.split(',')
@@ -204,7 +204,7 @@ def generateNoisyVarchar(unique, qty, unitOther):
         
 
 # Generates a random date between 1955 and 2023
-def generateRandomDate(unique, qty):
+def generateNoisyDate(unique, qty):
 
     # Holds the values to be returned
     values = []
@@ -238,7 +238,7 @@ def generateRandomDate(unique, qty):
     return values
 
 # Generates a random date time between 1955 and now
-def generateRandomDateTime(unique, qty):
+def generateNoisyDateTime(unique, qty):
 
     # Holds the values to be returned
     values = []
@@ -250,7 +250,7 @@ def generateRandomDateTime(unique, qty):
         # the ':02' formatting ensures that the length of the
         # string is a minimum of 2, padded left with zeroes.
         # The array indexing removes the value from the array
-        tryValue = f"{generateRandomDate(unique, 1)[0]} {random.randint(0, 23):02}:{random.randint(0, 11) * 5:02}:00"
+        tryValue = f"{generateNoisyDate(unique, 1)[0]} {random.randint(0, 23):02}:{random.randint(0, 11) * 5:02}:00"
 
         # Ensures no duplicated, if necessary
         if not (unique and tryValue in values):
