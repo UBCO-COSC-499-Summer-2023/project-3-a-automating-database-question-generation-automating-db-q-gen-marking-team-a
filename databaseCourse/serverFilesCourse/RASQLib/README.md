@@ -140,7 +140,75 @@ This file contains a suite of tests for the `noisyData.py` file.
 
 ## textDatabaseHandler
 
-The text database handler models a simplified database and table system, used to assist random question generation. Its functionality focuses on a group table as a set of columns and a set of rows as well as converting text file-stored values into memory. It is also responsible for calling functions to generate data to populate the various table's rows, ensuring the rows conform to foreign key constraints, providing dictionaries that allow easy parsing on the structure of the databse, and loading the database's tables' columns and rows into memory.
+The text database handler models a simplified database and table system, used to assist random question generation. Its functionality focuses on a group table as a set of columns and a set of rows as well as converting text file-stored values into memory. It is also responsible for calling methods to generate data to populate the various table's rows, ensuring the rows conform to foreign key constraints, providing dictionaries that allow easy parsing on the structure of the databse, and loading the database's tables' columns and rows into memory.
+
+
+### Database class
+
+This class is responsible for keeping track of all the tables as well as performing operations on all tables. It also keeps track whether they are RelaX or SQL tables.  
+The connections between RelaX tables are structured as a tree with a depth of `depth`. SQL tables are a tree with a depth of one; in other words, the root table is the only table to contain references.
+
+
+#### generateRows(self, qty)
+
+This method determines whether the database contains RelaX or SQL tables and then call the appropirate method. After this method is called, the tables are all filled with rows of randomly generated data.
+
+
+#### generateRowsSQL(self, qty)
+
+This method first generates for the root table (a.k.a. the primary table) by calling the table's `generateRows()` method then it calls the same method on all the referenced tables. At this point, foreign key constraints are violated. The method then iterates over all rows in the primary table that are a foreign key and override the referenced column in the referenced table to match the column of the primary table, thereby enforcing foreign key constraints.
+
+
+#### addRowsBackend(self, conditionalValues)
+
+This method adds the values from `conditionalValues` into the backend rows of the tables. `conditionalValues` is a dictionary whose key is a column and whose value is some random data whose data-type matches the column's unit. For each value in `conditionalValues`, this method will create a row that includes the value and the other columns of the row contain random data; each row is added to the appropriate table's backend rows.
+
+
+#### generateRowsBackend(self, qty=0)
+
+This method generates a number of rows for each table's backend rows equal to `qty` minus that table's current count of backend rows such that each table will have `qty` number of rows regardless of how many starting rows the table had. For each table, this funciton calls the table's `generateRowsBackend()` method with a `qty` a previously determined. After all the backend rows are generated, it enforces foreign key constraints by overriding foreign columns.
+
+
+#### loadColumns(self, data)
+
+This method loads each table's CREATE statement into the data variable. The CREATE statements are placed in `data['params']['db_initialize_create']`.  
+This method first loads the referenced tables and then the root (a.k.a primary) table. This order prevents foreign key constraint violations.
+
+
+#### loadRows(self, data)
+
+This method loads each table's INSERT statements for all its rows into the data variable. The INSERT statements are placed in `data['params']['db_initialize_insert_frontend']`. This method only loads the rows for the frontend database, the one the users will directly access.  
+This method first loads the referenced tables and then the root (a.k.a primary) table. This order prevents foreign key constraint violations.
+
+
+#### loadRowsBackend(self, data)
+
+This method loads each table's INSERT statements for all its rows into the data variable. The INSERT statements are placed in `data['params']['db_initialize_insert_backend']`. This method only loads the rows for the backend database, the one the users will not directly access but their results will be graded against.  
+This method first loads the referenced tables and then the root (a.k.a primary) table. This order prevents foreign key constraint violations.
+
+
+#### loadDatabase(self, data)
+
+This method calls all the necessary functions to load each table and all their rows, both rows for the frontend and the backend.
+
+
+#### getTableMap(self)
+
+The table map returned is a dictionary whose key is the name of the foreign key column and whose value is the referenced table. There is also a key that is the root (a.k.a primary) table's name and whose value is the root table.
+
+
+#### getColumnMap(self, tableName=True)
+
+The column map returned is a dictionary whose key is a column name and whose value is the table to which that column belongs.  
+Is `tableNames` is set to true, then the dictionary's value is the string name of the table. If `tableNames` is false, then the value is the table object.
+
+
+#### __str__(self)
+
+The database's to-string method returns a string of each table's CREATE statement. This function should not be used to load the databases into the data variable since the order of the CREATE statements will cause a foreign key constraint error.
+
+
+### Table class
 
 
 ## textDatabaseHandler_test
