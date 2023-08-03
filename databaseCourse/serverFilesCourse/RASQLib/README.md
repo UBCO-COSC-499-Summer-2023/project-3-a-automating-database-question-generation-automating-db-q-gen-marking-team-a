@@ -94,6 +94,7 @@ This function returns a dictionary where each key is a column of the table and t
 ### relativeFilePath(file)
 
 This function returns the path the file called `file` in the `noisyData` folder. To obtain the path, this function calls `absoluteDirectoryPath()`.
+The `fileName` should not include an extension. The extension is assumed to be `.txt`.
 
 
 ### absoluteDirectoryPath()
@@ -209,6 +210,133 @@ The database's to-string method returns a string of each table's CREATE statemen
 
 
 ### Table class
+
+The table object is responsible for tracking a table's columns, rows (for both the frontend and the backend), as well as methods to create and load the table.  
+Frontend rows are loaded into the database the user will see on the question, thus the user can query and manipulate this database. The backend rows are loaded into a seperate database and are used to compare the user's answer to the solution. The data in these rows are different from one another and this is to prevent students from creating an answer that matches the expected output rather than creating an answer that matches the question.
+
+#### load(self, file, columns, joins, clauses, constraints, random, columnNames)
+
+The load method is called upon the initialisation of the table and it determines whether to call the method to create a random or a static table (as defined by the `random` parameter). It will either call `loadFromText()` or `loadRandom()`.
+
+
+#### loadFromText(file)
+
+If the table is a static table (that is to say that `random` is false), then this method will read the file provided to and use it to create the table. The file is open and each line is read. The lines are parsed through to determine and set the table's metadata.  
+The layout of the file is of the form of a simple DDL file, so it contains the CREATE statement for a single table.
+
+
+#### loadRandom(slef, name, columns, joins, clauses, constraints, columnNames)
+
+If the table is a static table (that is to say that `random` is false), then this method will generate a table as specified by the parameters passed to the method. It first checks if the parameters are valid and if not, it exits and prints the issue.  
+If the `name` parameter was not specified or is an empty string, then it the table will randomly choose a name from the array returned by the function `getRandomTableNames()`.  
+`constraints` are used to ensure that specific columns appear in the table and are used to ensure that the primary table has at least one column with the integer unit (which helps create better queries) and to ensure that referenced tables contain specified columns. Each provided constraint is iterated over and an appropriate column is added to the table. Column created through these constraints are assumed to be primary keys.  
+This method next adds columns until there is an amount equal to what was specified by `columns`. It first pops a column from the provided `columnNames` array; the pop ensures that column names are unique. There is a chance that due to contraints specifying a column, there exists a duplicate column so a sinlge check if performed to fix this issue. The data contained in `columnNames`–which is limited to a name, a data-type, and data-type infomration–is then used to create the column.  
+The next step is to add joins until there are an amount of joins equal to the `joins` parameter. A random column from the table is selected without replacement (and this selection heavily prefers to avoid columns that contain 'Airport' or 'province' due to uniqueness issues during data generation). It them selects a random table name without replacement and specifies that this column is a foreign key to newly obtained table name. It them adjusts the two column names, both the foreign key column and the referenced column, to ensure that the names are unqiue.  
+Finally the method iterates over `clauses`. The `clauses` specify how many primary keys, NOT NULL, UNIQUE, ON UPDATE CASCADE, and ON DELETE SET NULL clauses are in this table. For each clause in `clauses`, a valid column is selected and set to match the clause. On each check, there is a counter that ensures there is no timeout in the case there is not a valid column; if there would be a timeout, the clause is ignored.
+
+
+#### getReferencedTables(self, unique=True, static=False, columnNames=[])
+
+This method is called during the instantiation of a `Database` object after the primary (a.k.a root) table is created. It iterates over all the columns of the table and for each foreign key column it will create an appropriate table by specifying constraints. A dictionary is returned where the key is the name of the foreign key column and the value is the table object.  
+If `unique` is false then, if the table has multiple foreign key columns that reference the same same table, that table may appear multiples times as values in the dictionary. Otherwise, if `unique` is true, a given table may only appear once.  
+If `static` is false then the generated tables are random. Otherwise, if `static` is true, then the tables will not be random.
+
+
+#### getKeyMap(self)
+
+The key map is a dictionary whose keys are foreign key columns and whose values are another dictionary. This secon dictionary has keys `'references'` which is the name of the referenced table and `'foreignKey'` which is the column referenced.
+
+
+#### getPrimaryKeys(self)
+
+This method returns a dictionary whose keys are the names of all primary key columns and whose values are the columns.
+
+
+#### generateRows(self, qty)
+
+This method will generate rows and set its rows using `noisyData.generateColumns()`.
+
+
+#### generateRowsBackend(self, qty)
+
+This method will generate rows and set its backend rows using `noisyData.generateColumns()`.
+
+
+#### addRows(self, row, index=0)
+
+This method will add the `index`-th row from `row` to the table's rows.
+
+
+#### addRows(self, row, index=0)
+
+This method will add the `index`-th row from `row` to the table's backend rows.
+
+
+#### getSQLSchema(self)
+
+This method will return a string of the table's DDL CREATE statement.
+
+
+#### getInserts(self)
+
+This method will return a string of the table's DDL INSERT statements for all its rows.
+
+
+#### getInsertsBackend(self)
+
+This method will return a string of the table's DDL INSERT statements for all its backend rows.
+
+
+#### __str__(self)
+
+This to-string method will return the table's schema as a string.
+
+
+### Helper functions for textDatabaseHandler
+
+#### relativeTableFilePath(file)
+
+This function returns the path the file called `file` in the `/randomTables` folder. To obtain the path, this function calls `absoluteDirectoryPath()`.
+The `file` should not include an extension. The extension is assumed to be `.txt`.
+
+
+#### relativeTableDataFilePath(file)
+
+This function returns the path the file called `file` in the `/randomTableData` folder. To obtain the path, this function calls `absoluteDirectoryPath()`.
+The `file` should not include an extension. The extension is assumed to be `.txt`.
+
+
+#### absoluteDirecotryPath()
+
+This function obtains the path to the current directory. If the `/RASQLib` is in this path, the path is returned. Otherwise the path is travelled up to the parent of the `/elements` directory then down into `/RASQLib`; this new path is returned.  
+This function is necessary since PrairieLearn changes the directory layout at runtime. In order to run test on DroneCI, the filepath needs to be changed from what it would be on PrairieLearn.
+
+
+#### getStaticSchema(file)
+
+This function returns the DDL CREATE statement from the specified file in `/randomTables`.
+The `file` should not include an extension. The extension is assumed to be `.txt`.
+
+
+#### getAllTableFiles(path=f"{absoluteDirectoryPath()}/randomTables")
+
+This function returns an array of all files in `/randomTables` without their extension.
+
+
+#### getRandomTableNames(path=relativeTableDataFilePath('randomTableNames'))
+
+This function returns an array of all random tables names as specified in the folder `randomTableNames`.
+
+
+#### parseColumnsFromFile(file)
+
+This function returns an array of column data of the form [name of the column, data-type of the column]. If the data-type metadata is specified, the form of the returned array's items are instead [name of the column, data-type of the column, data-type metadata of the column].  
+The file is a text file that follows the form of a CSV file that matches the arrays previously described.
+
+
+#### parseRange(string)
+
+Given a string, returns the range the string describes. The string is deliminated by en-dashes ('-'). If the string contains no dashes, then it is returned unchanged. Otherwise if the form of the string follows `x-y` it returns `range(x, y + 1)`. If the string follows the form `x-y-z` it returns `range(x, y + 1, z)`.
 
 
 ## textDatabaseHandler_test
