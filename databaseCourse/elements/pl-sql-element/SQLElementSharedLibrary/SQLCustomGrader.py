@@ -30,7 +30,8 @@ def customGrader(data):
     outputScore = 0
     inputScore = 0
 
-    if wordsSA == "":
+    if wordsSA == "" or wordsSA == []:
+        addFeedback(data,"Code :",0)
         return 0
 
     if os.path.exists("ans.db"):
@@ -47,6 +48,10 @@ def customGrader(data):
             if "syntax error" in str(e).lower():
                 outputScoreWeight = 0.15
                 inputScoreWeight = 0.85
+        except Exception as e:
+            if str(e).lower() == "expected and actual empty":
+                outputScoreWeight = 0
+                inputScoreWeight = 1
     
     # partial grading for lab 2 - Insert Questions
     if(questionType == "insert"):
@@ -56,6 +61,10 @@ def customGrader(data):
             if "syntax error" in str(e).lower():
                 outputScoreWeight = 0.15
                 inputScoreWeight = 0.85
+        except Exception as e:
+            if str(e).lower() == "expected and actual empty":
+                outputScoreWeight = 0
+                inputScoreWeight = 1
 
     # partial grading for lab 2 - Update Questions
     if(questionType == "update"):
@@ -65,6 +74,10 @@ def customGrader(data):
             if "syntax error" in str(e).lower():
                 outputScoreWeight = 0.15
                 inputScoreWeight = 0.85
+        except Exception as e:
+            if str(e).lower() == "expected and actual empty":
+                outputScoreWeight = 0
+                inputScoreWeight = 1
 
     # partial grading for lab 2 - Delete Questions
     if(questionType == "delete"):
@@ -74,6 +87,10 @@ def customGrader(data):
             if "syntax error" in str(e).lower():
                 outputScoreWeight = 0.15
                 inputScoreWeight = 0.85
+        except Exception as e:
+            if str(e).lower() == "expected and actual empty":
+                outputScoreWeight = 0
+                inputScoreWeight = 1
 
     # partial grading for lab 2 - Create Questions
     if(questionType == "query"):
@@ -84,7 +101,6 @@ def customGrader(data):
                 outputScoreWeight = 0.15
                 inputScoreWeight = 0.85
         except Exception as e:
-            print(e)
             if str(e).lower() == "expected and actual empty":
                 outputScoreWeight = 0
                 inputScoreWeight = 1
@@ -111,6 +127,8 @@ def customGrader(data):
     # similarity of 0 they recieve a score of 0. 
     else:
         inputScore = similarity / threshold
+    
+    addFeedback(data,"Code: ", inputScore)
     grade = (inputScoreWeight*inputScore) + (outputScoreWeight*outputScore)
     grade = round(grade,2)
     return grade
@@ -136,11 +154,9 @@ def gradeQueryQuestion(data,correctAnswer,submittedAnswer):
     expectedAns = arr[0]
     actualAns = arr[1]
 
-    print("here")
     # row matching + column matching
     rowScore = rowMatch(expectedAns,actualAns)
     colScore = colMatch(expectedAns,actualAns)
-    print("here")
 
     # value matching
     valueMatchScore = valueMatch(expectedAns,actualAns)
@@ -180,8 +196,6 @@ def getExpectedAndActualQueryResults(data,correctAnswer,submittedAnswer):
     # format solution from string to code and execute + fetch results
     expectedCode = correctAnswer.replace('\n', ' ').replace('\t', ' ')
     expectedAns = cur.execute(expectedCode).fetchall()
-
-    print(expectedAns)
     
     # format submission from string to code and execute + fetch results
     studentCode = submittedAnswer.replace('\n', ' ').replace('\t', ' ')
@@ -251,6 +265,9 @@ def getExpectedAndActualCreateResults(correctAnswer,submittedAnswer):
     for table in tablesCleaned:
         actualAns += curTwo.execute("PRAGMA table_info(" + table + ")").fetchall()
         actualAns += curTwo.execute("PRAGMA foreign_key_list(" + table + ")").fetchall()
+    
+    if not (actualAns or expectedAns):
+        raise Exception("expected and actual empty")
 
     return (expectedAns,actualAns)
 
@@ -312,6 +329,9 @@ def getExpectedAndActualInsertResults(data,correctAnswer,submittedAnswer):
     actualAns = []
     for table in tablesCleaned:
         actualAns += curTwo.execute("SELECT * FROM " + table).fetchall()
+    
+    if not (actualAns or expectedAns):
+        raise Exception("expected and actual empty")
         
     return (expectedAns,actualAns)
 
@@ -337,6 +357,10 @@ def updateMatch(data,expectedAns,actualAns,originalDb):
     expectedUpdatedRows = [row for row in expectedAns if row not in originalDb]
     # finds the rows that have been updated when running submission
     actualUpdatedRows = [row for row in actualAns if row not in originalDb]
+
+    if not (expectedUpdatedRows or actualUpdatedRows):
+        raise Exception("expected and actual empty")
+
     # row matching and value matching
     rowMatchScore = rowMatch(expectedUpdatedRows,actualUpdatedRows)
     valMatchScore = valueMatch(expectedUpdatedRows,actualUpdatedRows)
@@ -393,6 +417,9 @@ def getExpectedAndActualUpdateResults(data,correctAnswer,submittedAnswer):
     actualAns = []
     for table in tablesCleaned:
         actualAns += curTwo.execute("SELECT * FROM " + table).fetchall()
+    
+    if not (actualAns or expectedAns):
+        raise Exception("expected and actual empty")
         
     return (expectedAns,actualAns,originalDb)
 
@@ -423,6 +450,9 @@ def deleteMatch(data,dbAfterSolution,dbAfterSubmission,originalDb):
 
     # finds the rows that have been updated when running submission
     actualDeletedRows = [row for row in originalDb if row not in dbAfterSubmission]
+
+    if not (expectedDeletedRows or actualDeletedRows):
+        raise Exception("expected and actual empty")
 
     # row matching and value matching
     rowMatchScore = rowMatch(expectedDeletedRows,actualDeletedRows)
@@ -484,6 +514,10 @@ def getExpectedAndActualDeleteResults(data,correctAnswer,submittedAnswer):
     actualAns = []
     for table in tablesCleaned:
         actualAns += curTwo.execute("SELECT * FROM " + table).fetchall()
+    
+    if not (actualAns or expectedAns):
+        raise Exception("expected and actual empty")
+
     return (expectedAns,actualAns,originalDb)
 
 # HELPERS ----------------------------------------------------------------------------------------------------------------------
@@ -492,8 +526,7 @@ def rowMatch(expectedAns,actualAns):
     expectedTotal = 0
     actualTotal = 0
 
-    if not (actualAns or expectedAns): 
-        print("here")
+    if not (actualAns or expectedAns):
         return 1
     if not actualAns or not actualAns[0]: return 0
 
@@ -507,7 +540,7 @@ def rowMatch(expectedAns,actualAns):
     rowGrade = (expectedTotal - actualTotal)
     if rowGrade < -actualTotal : return 0
     rowScore = (expectedTotal - abs(rowGrade))/expectedTotal
-    print(rowScore)
+
     return rowScore
 
 # scores the difference in the number of columns between both outputs
