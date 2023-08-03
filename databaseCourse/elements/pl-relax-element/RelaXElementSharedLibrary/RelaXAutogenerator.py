@@ -380,11 +380,12 @@ class Question:
         key = False
         for node in subgraph:
             print(f"NJG:{node}")
-            if len(self.JoinList) == 0:
+            if len(self.JoinList) == 0 and len(jList) == 0:
                 jList.append(node)
+                print(jList)
             for connection in subgraph[node]:
                 print(connection)
-                if connection in self.JoinList and node not in self.JoinList:
+                if (connection in self.JoinList or connection in jList) and node not in self.JoinList:
                     if node is not self.offLimitsTable:
                         jList.append(node)
                         print("Joined")
@@ -395,17 +396,19 @@ class Question:
                 break
         
         print(jList)
+        print(self.joinStatement)
 
         if self.joinStatement == "":
             self.joinStatement =f"{jList[0]}{self.naturalJoin}{jList[1]}"
         else:
             self.joinStatement = f"({self.joinStatement}){self.naturalJoin}{jList[0]}"
-        print(self.JoinList)
         self.tableListText = ", ".join(self.JoinList)
         parts = self.tableListText.rsplit(",", 1)  # Split the string from the right side only once
         self.tableListText = f"<b>{' and'.join(parts)}</b>"
         for node in jList:
             self.JoinList.append(node)
+        print(self.JoinList)
+        print(self.joinStatement)
 
 
 
