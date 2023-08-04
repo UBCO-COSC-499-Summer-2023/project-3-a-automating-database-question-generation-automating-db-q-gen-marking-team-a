@@ -8,4 +8,12 @@ Question autogeneration and database bug fixing - index error 3, overwrite error
 Question autogeneration
 
 ### Wednesday, July 26th
-Question generation and database bug - overwrite error 2
+Question generation and database bug - overwrite errors 2 and 3
+Question Autogen Testing
+Communications
+
+### Thursday, July 27th
+Question Autogeneration - query string
+
+### Friday, July 29th
+Question Autogeneration - Question text
