@@ -62,7 +62,7 @@ def generateNoisyDataNoFileSQL(table, key, qty=1, unique=False):
         case 'INTEGER': return generateNoisyInteger(unique, qty)
 
         # Decimals require total digits plus decimal precision
-        case 'DECIMAL': return generateRandomDecimal(unique, qty, unitOther)
+        case 'DECIMAL': return generateNoisyDecimal(unique, qty, unitOther)
 
         # CHARs require the number of characters
         case 'CHAR': return generateNoisyChar(unique, qty, int(unitOther))
@@ -72,8 +72,8 @@ def generateNoisyDataNoFileSQL(table, key, qty=1, unique=False):
         case 'VARCHAR': return generateNoisyVarchar(unique, qty, min(int(unitOther), 8))
 
         # DATE and DATETIME
-        case 'DATE': return generateRandomDate(unique, qty)
-        case 'DATETIME': return generateRandomDateTime(unique, qty)
+        case 'DATE': return generateNoisyDate(unique, qty)
+        case 'DATETIME': return generateNoisyDateTime(unique, qty)
 
         # Crash if the datatype is not correct
         case _: return None
@@ -91,12 +91,12 @@ def generateNoisyDataNoFileRelaX(table, key, qty=1, unique=False):
             # We don't have decimals in RelaX so check on the
             # key name instead
             if key == 'price':
-                return generateRandomDecimal(unique, qty, '6,2')
+                return generateNoisyDecimal(unique, qty, '6,2')
             
             else:
                 return generateNoisyInteger(unique, qty)
 
-        case 'DATE': return generateRandomDate(unique, qty)
+        case 'DATE': return generateNoisyDate(unique, qty)
         case 'STRING': return generateNoisyVarchar(unique, qty, 6)
 
 
@@ -120,8 +120,11 @@ def generateNoisyInteger(unique, qty):
     return values
 
 
-# Generates a random decimal, as specified by the unit
-def generateRandomDecimal(unique, qty, unitOther):
+# Generates a random decimal, as specified by the unit.
+# As a note, the decimal portion is guaranteed to be at
+# most two. This is because if it was any larger, it
+# would be rounded to two decimal places when displayed.
+def generateNoisyDecimal(unique, qty, unitOther):
 
     # Grabs the whole and decimal portions of the string
     whole, decimal = unitOther.split(',')
@@ -130,43 +133,23 @@ def generateRandomDecimal(unique, qty, unitOther):
     whole = int(whole)
     decimal = int(decimal)
 
-    # Creates a random decimal values
-    # Ensures the final digit is either a 0 or a 5,
-    # since it looks better than a purely random number.
-    # Plus, decimals are mostly used for currency.
-    randomDecimal = str(random.randint(0, 10 ** (decimal - 1) - 1)) + random.choice(['0', '5'])
-    
-
-    
-    # Gives an exponentially greater likelihood that
-    # smaller numbers are returned. Otherwise, it
-    # would be linearly more likely that large
-    # numbers appear. In other words, increases the
-    # odds the random number looks good.
-    choices = []
-    weights = []
-    for i in range(whole - decimal):
-        choices.append(i + 1)
-        weights.append(2 ** (whole - i))
-
-
-
-    # Holds the values
+    # Fills the array with values
     values = []
-
-    # Keeps populating values
     while len(values) < qty:
 
-        # Chooses a max order of magnitude for the size
-        # of the whole number, where small orders of
-        # magnitude are preferred
-        randomPower = random.choices(choices, weights)
+        # Puts the value into an appropriate range; this
+        # helps ensure better queries
+        power = whole - decimal
+        if power > 3:
+            power = 3
 
-        # Creates the whole number
-        randomWhole = random.randint(5, 10 ** randomPower[0])
+        # Chooses a random whole portion and random
+        # decimal portion
+        randomWhole = random.randint(1, 10 ** power)
+        randomDecimal = random.randint(0, 10 ** decimal)
 
         # Ensures no duplicated, if necessary
-        tryValue = float(f"{randomWhole}.{randomDecimal}")
+        tryValue = float(f"{randomWhole}.{str(randomDecimal).ljust(decimal, '0')}")
         if not (unique and tryValue in values):
             values.append(tryValue)
 
@@ -178,6 +161,11 @@ def generateNoisyChar(unique, qty, unitOther):
 
     # Holds the values to be returned
     values = []
+
+    # Prevents timeout issues. This would otherwise
+    # occur for `qty` > 36, the 26 letters plus the
+    # 10 decimal digits
+    tindex = 0
     
     # Adds values until there are enough
     while len(values) < qty:
@@ -188,6 +176,9 @@ def generateNoisyChar(unique, qty, unitOther):
         # Ensures no duplicated, if necessary
         if not (unique and tryValue in values):
             values.append(tryValue)
+        elif tindex > 100: # Prevents a timeouts
+            values.append('NULL')
+        tindex += 1
     
     return values
 
@@ -213,7 +204,7 @@ def generateNoisyVarchar(unique, qty, unitOther):
         
 
 # Generates a random date between 1955 and 2023
-def generateRandomDate(unique, qty):
+def generateNoisyDate(unique, qty):
 
     # Holds the values to be returned
     values = []
@@ -229,12 +220,18 @@ def generateRandomDate(unique, qty):
         # whether or not it's a leapyear and thus
         # allow a 29th day in February
         day = -1
-        if month % 2 == 1:
-            day = random.randint(1, 31)
-        elif month == 2:
-            day = random.randint(1, 28)
+        if month < 8:
+            if month % 2 == 1:
+                day = random.randint(1, 31)
+            elif month == 2:
+                day = random.randint(1, 28)
+            else:
+                day = random.randint(1, 30)
         else:
-            day = random.randint(1, 30)
+            if month % 2 == 1:
+                day = random.randint(1, 30)
+            else:
+                day = random.randint(1, 31)
 
         # the ':02' formatting ensures that the length of the
         # string is a minimum of 2, padded left with zeroes
@@ -247,7 +244,7 @@ def generateRandomDate(unique, qty):
     return values
 
 # Generates a random date time between 1955 and now
-def generateRandomDateTime(unique, qty):
+def generateNoisyDateTime(unique, qty):
 
     # Holds the values to be returned
     values = []
@@ -259,7 +256,7 @@ def generateRandomDateTime(unique, qty):
         # the ':02' formatting ensures that the length of the
         # string is a minimum of 2, padded left with zeroes.
         # The array indexing removes the value from the array
-        tryValue = f"{generateRandomDate(unique, 1)[0]} {random.randint(0, 23):02}:{random.randint(0, 11) * 5:02}:00"
+        tryValue = f"{generateNoisyDate(unique, 1)[0]} {random.randint(0, 23):02}:{random.randint(0, 11) * 5:02}:00"
 
         # Ensures no duplicated, if necessary
         if not (unique and tryValue in values):
@@ -332,6 +329,11 @@ def isUnique(table, key):
 # Repeated calls on the same unique list will not return duplicate values
 def popRandom(values, weights=[]):
     
+    # If there are no more values to supply,
+    # instead return null
+    if not values:
+        return 'NULL'
+
     # If weigths are not supplied, pop a random item and return it
     if not weights:
         return values.pop(random.choice(range(len(list(values)))))

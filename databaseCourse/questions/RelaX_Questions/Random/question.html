@@ -1,12 +1,7 @@
-<pl-question-panel>
-  Return a list of all the <b>product</b> <b>id</b>, <b>name</b>, <b>price</b>, that have been in a shipment <b>before May 17, 2014</b>. The product <b>price must be less than $50</b>, and the <b>shipped amount < 5</b>.
-  <br>
-  <br>
-  Expected output:
-  <br>
-  </pl-question-panel>
-<pl-relax-element random="True" max-grade = "10" url="http://localhost:3000/ra_autoGrader" feedback="True">
 
-  <relax-answer>π pid,pname,price (σ price < 50 ∧ amount < 5 ∧ shipdate < Date('2014-05-17')(ShippedProduct⨝Product⨝Shipment))</relax-answer>
+<pl-relax-element random="True" numJoins="3" numClauses="1" outerJoin="True" max-grade = "10" url="http://localhost:3000/ra_autoGrader" feedback="True">
+
+  <relax-answer>emTy</relax-answer>
+
 
 </pl-relax-element>

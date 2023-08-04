@@ -16,6 +16,8 @@ from RASQLib import noisyData as nd
 class Database:
     def __init__(self, isSQL=True, file='', columns=5, joins=0, depth=3, clauses={}, constraints={'': {'name': '', 'unit': 'INTEGER', 'unitOther': None}}, rows=0, random=True):
 
+        
+
         self.isSQL = isSQL
         self.random = random
         
@@ -25,7 +27,7 @@ class Database:
         if isSQL:
 
             columnNames = parseColumnsFromFile('randomColumnsSQL')
-
+            tableNames = getRandomTableNames()
             # When columns are set to zero, it indicates that
             # a table is being pased in (used to support old
             # difficulty-class questions). Otherwise, create
@@ -33,7 +35,7 @@ class Database:
             if columns == 0:
                 self.primaryTable = file
             else:
-                self.primaryTable = Table(file=file, columns=columns, joins=joins, clauses=clauses, constraints=constraints, rows=rows, database=self, isSQL=isSQL, random=random, columnNames=columnNames)
+                self.primaryTable = Table(file=file, columns=columns, joins=joins, clauses=clauses, constraints=constraints, rows=rows, database=self, isSQL=isSQL, random=random, tableNames=tableNames, columnNames=columnNames)
             
             # Gets the referenced tables
             self.referencedTables = self.primaryTable.getReferencedTables(static=not random, columnNames=columnNames)
@@ -42,32 +44,22 @@ class Database:
         
         # For RelaX databases
         else:
+            tableNames = getRandomTableNames()
             columnNames = parseColumnsFromFile('randomColumnsRelaX')
-            self.generateTableSet(columns=columns, joins=joins, depth=depth, rows=rows, columnNames=columnNames)
+            self.generateTableSet(columns=columns, joins=joins, depth=depth, rows=rows, tableNames=tableNames ,columnNames=columnNames)
             
         
 
     # Generates a table set for RelaX
-    def generateTableSet(self, columns=5, joins=5, depth=3, rows=0, columnNames=[]) -> dict:
+    def generateTableSet(self, columns=5, joins=5, depth=3, rows=0, tableNames=[], columnNames=[]) -> dict:
 
         # Gets a list of possible table names
         self.tableSet = {}
         
         # The primary table should have more columns
         for i in range(joins + 1):
-            #dataset[i] = Table(columns=columns, columnNames=columnNames, joins=2, isSQL=False)
-            self.tableSet[i] = Table(columns=columns, joins=2, isSQL=False, columnNames=columnNames)
-            ''' Skyler here,
-                I'm getting rid of a random amount of tables
-                in favour of using the `columns` parameter.
-                Not to mention a table should NEVER have
-                less than 3 columns, as would be possible
-                in the `else` statement
-            if i == 0:
-                dataset[i] = Table(columns=randint(3,5), columnNames=columnNames, joins=2)
-            else:    
-                dataset[i] = Table(columns=randint(2,4), columnNames=columnNames, joins=2)
-            '''
+            table = Table(columns=columns, joins=0, isSQL=False, tableNames=tableNames, columnNames=columnNames)
+            self.tableSet[table.name] = table 
 
         # Populates the table with data
         if rows:
@@ -75,15 +67,32 @@ class Database:
 
         # Links tables such that there is a depth
         # of `d`
-        for i in range(depth-1):
-            self.tableSet[i].link(self.tableSet[i+1])
+        keyList = list(self.tableSet.keys())
 
+        # Ensures that index issue doesnt happen
+        if depth > joins:
+            depth = joins-1
+
+        for i in range(len(keyList[:depth-1])):
+           self.tableSet[keyList[i]].link(self.tableSet[keyList[i+1]])
         # The rest of the joins link the remaining
         # table to a random one in the depth chain
-        for i in range(depth, joins + 1):
-            self.tableSet[randint(0,depth-1)].link(self.tableSet[i])
+        if joins == len(keyList):
+            joins-=1
+        for i in range(depth, joins+1):
+            if i == len(self.tableSet):
+                break
+            randIndex = randint(0,depth-1)
+            #print(f"{randIndex}/ {depth-1}/ {i}\n{joins+1}/ {len(keyList)}/ {len(self.tableSet)}")
+            self.tableSet[keyList[randIndex]].link(self.tableSet[keyList[i]])
 
 
+        # For relax, Foreign keys are created by having the same column name
+        # This insures that only desired columns are foreign keys
+        for key in keyList:
+            for column in self.tableSet[key].columns:
+                if self.tableSet[key].columns[column]['references'] is None and (self.tableSet[key].columns[column]['name'] == "id" or self.tableSet[key].columns[column]['name'] == "num"):
+                    self.tableSet[key].columns[column]['name'] = key[:3] + column
 
     # Populates the database with rows of data
     #
@@ -94,6 +103,7 @@ class Database:
             self.generateRowsSQL(qty)
         else:
             self.generateRowsRelaX(qty)
+
 
     # Note: this CAN throw a "UNIQUE constraint failed" IF the
     # primary table has two references to the same table (such
@@ -316,6 +326,15 @@ class Database:
         else:
             return f"{''.join([self.tableSet[table].getRelaXSchema() for table in self.tableSet])}"
 
+    def toGraph(self):
+        graph = {}
+        for table in self.tableSet:
+            connections = []
+            for column in self.tableSet[table].columns:
+                if self.tableSet[table].columns[column]['references']:
+                    connections.append(self.tableSet[table].columns[column]['references'])
+            graph[table] = connections
+        return graph
 
 
 # Models a table for easy question generation
@@ -325,7 +344,7 @@ class Table:
     # File name and table name are equivalent.
     #   File: the name of the text file if it exists OR the name of the random table
     #   Columns: the number of columns in the table
-    def __init__(self, file='', columns=5, joins=0, clauses={}, constraints={}, rows=0, database=None, isSQL=True, random=True, columnNames=[]):
+    def __init__(self, file='', columns=5, joins=0, clauses={}, constraints={}, rows=0, database=None, isSQL=True, random=True, tableNames=[], columnNames=[]):
         self.name = file
         self.database = database
         self.columns = {}
@@ -345,7 +364,7 @@ class Table:
         # Adds columns.
         # Also passes in column names from the file if they
         # were not supplied, which only happens for testing.
-        self.load(file, columns, joins, clauses, constraints, random, columnNames if columnNames else parseColumnsFromFile('randomColumnsSQL'))
+        self.load(file, columns, joins, clauses, constraints, random, tableNames, columnNames if columnNames else parseColumnsFromFile('randomColumnsSQL'))
 
         # Adds data
         self.generateRows(rows)
@@ -357,13 +376,13 @@ class Table:
     # random tables, not static tables; for random tables.
     # f"{file}" will become the table name if it is
     # provided, otherwise a random name will be chosen
-    def load(self, file, columns, joins, clauses, constraints, random, columnNames):
+    def load(self, file, columns, joins, clauses, constraints, random, tableNames, columnNames):
 
         if not random:
             self.loadFromText(file)
         else:
-            self.loadRandom(self.name, columns, joins, clauses, constraints, columnNames)
-
+            self.loadRandom(self.name, columns, joins, clauses, constraints, tableNames, columnNames)
+            
     # Given the path to a text file, loads its data
     def loadFromText(self, file):
 
@@ -468,7 +487,7 @@ class Table:
 
 
     # Creates a random table
-    def loadRandom(self, name, columns, joins, clauses, constraints, columnNames):
+    def loadRandom(self, name, columns, joins, clauses, constraints, tableNames, columnNames):
 
         # Checks whether the parameters are legal
         #
@@ -529,7 +548,9 @@ class Table:
 
         # Selects a random name if none are provided
         if not name:
-            self.name = choice(getRandomTableNames())
+            self.name = tableNames.pop(choice(range(len(tableNames))))
+
+
 
 
         # Adds foreign key constraints
@@ -539,7 +560,7 @@ class Table:
                 # If the default contraint, then choose
                 # an applicable name for an INTEGER
                 if not key:
-                    constraints[key]['name'] = choice(['num', 'id', f"{self.name[:1].lower()}id"])
+                    constraints[key]['name'] = choice(['num', 'id'])
 
                 self.columns[constraints[key]['name']] = {
                     'name': constraints[key]['name'],
@@ -560,6 +581,7 @@ class Table:
 
             # Chooses a random column to add
             # Pops the column to ensure no duplicates
+            #print(columnNames)
             addColumn = columnNames.pop(choice(range(len(columnNames))))
 
             # Checks if the column would override an existing 
@@ -612,18 +634,23 @@ class Table:
             # Prevents certain columns from becoming FKs
             # due to uniqueness causing issues when
             # later creating random data for the rows
+            index = 0
             foreignColumn = None
             while not foreignColumn or 'Airport' in foreignColumn or 'province' in foreignColumn:
 
                 # Breaks out of the loop if there are no
-                # fitting columns. This will assaing a 
-                # 'bad' column to the FK, but there is
-                # still only a small chance of a crash
-                if len(columnsCopy) == 0:
+                # fitting columns, selecting the bad column
+                # as the choice
+                if index > joins * 5:
                     break
 
                 # Grabs a random column
-                foreignColumn = columnsCopy.pop(choice(range(len(columnsCopy))))
+                foreignColumn = columnsCopy[choice(range(len(columnsCopy)))]
+
+                # Prevents an infinite loop
+                index += 1
+
+            columnsCopy.pop(columnsCopy.index(foreignColumn))
 
 
 
@@ -645,11 +672,20 @@ class Table:
             # be the name fo their respective table. Otherwise,
             # the column names will be the same.
 
+            # Gets the letters to prepend
+            selfPrepend = self.name[0:1].lower()
+            referencedPrepend = self.columns[foreignColumn]['references'][0:1].lower()
+
+            # If they would be the same, instead the referenced
+            # table prepends the entire column name
+            if selfPrepend == referencedPrepend:
+                referencedPrepend = self.columns[foreignColumn]['references']
+
             # Changes the foreign key's name
-            self.columns[foreignColumn]['foreignKey'] = f"{self.columns[foreignColumn]['references'][0:1].lower()}{foreignColumn}"
+            self.columns[foreignColumn]['foreignKey'] = f"{referencedPrepend}{foreignColumn}"
 
             # Changes this table's column name
-            self.columns[foreignColumn]['name'] = f"{self.name[0:1].lower()}{foreignColumn}"
+            self.columns[foreignColumn]['name'] = f"{selfPrepend}{foreignColumn}"
 
             # Removes the old column while updateting the new
             self.columns[f"{self.name[0:1].lower()}{foreignColumn}"] = self.columns.pop(foreignColumn)
@@ -671,6 +707,10 @@ class Table:
             # number of columns have been selected.
             for i in range(clauses[clause]):
 
+                # Used to prevent timeouts
+                cindex = 0
+                timeout = False
+
                 match clause:
 
                     # Selects primary keys
@@ -678,50 +718,90 @@ class Table:
 
                         # Keeps choosing columns until one is valid
                         column = None
-                        while not column or self.columns[column]['references'] or self.columns[column]['isPrimary']:
+                        while (not column or self.columns[column]['references'] or self.columns[column]['isPrimary']) and not timeout:
+
+                            # If this is stuck in a loop, break and
+                            # ingore this clause
+                            cindex += 1
+                            if cindex > 50:
+                                timeout = True
+
                             column = choice(list(self.columns.keys()))
 
-                        self.columns[column]['isPrimary'] = True
+                        if not timeout:
+                            self.columns[column]['isPrimary'] = True
 
                     # NOT NULL constraint
                     case 'isNotNull':
                         
                         # Keeps choosing columns until one is valid
                         column = None
-                        while not column or self.columns[column]['references'] or self.columns[column]['isPrimary']:
+                        while (not column or self.columns[column]['references'] or self.columns[column]['isPrimary']) and not timeout:
+                            
+                            # If this is stuck in a loop, break and
+                            # ingore this clause
+                            cindex += 1
+                            if cindex > 50:
+                                timeout = True
+
                             column = choice(list(self.columns.keys()))
 
-                        self.columns[column]['isNotNull'] = True
+                        if not timeout:
+                            self.columns[column]['isNotNull'] = True
 
                     # UNIQUE constraint
                     case 'isUnique':
 
                         # Keeps choosing columns until one is valid
                         column = None
-                        while not column or self.columns[column]['references'] or self.columns[column]['isPrimary']:
+                        while (not column or self.columns[column]['references'] or self.columns[column]['isPrimary']) and not timeout:
+
+                            # If this is stuck in a loop, break and
+                            # ingore this clause
+                            cindex += 1
+                            if cindex > 50:
+                                timeout = True                         
+
                             column = choice(list(self.columns.keys()))
 
-                        self.columns[column]['isUnique'] = True
+                        if not timeout:
+                            self.columns[column]['isUnique'] = True
 
                     # CASCADE ON UPDATE clause
                     case 'isOnUpdateCascade':
                         
                         # Keeps choosing columns until one is valid
                         column = None
-                        while not column or not self.columns[column]['references'] or self.columns[column]['isOnUpdateCascade']:
+                        while (not column or not self.columns[column]['references'] or self.columns[column]['isOnUpdateCascade']) and not timeout:
+
+                            # If this is stuck in a loop, break and
+                            # ingore this clause
+                            cindex += 1
+                            if cindex > 50:
+                                timeout = True                   
+
                             column = choice(list(self.columns.keys()))
 
-                        self.columns[column]['isOnUpdateCascade'] = True
+                        if not timeout:
+                            self.columns[column]['isOnUpdateCascade'] = True
 
                     # SET NULL ON DELETE clause
                     case 'isOnDeleteSetNull':
 
                         # Keeps choosing columns until one is valid
                         column = None
-                        while not column or not self.columns[column]['references'] or self.columns[column]['isOnDeleteSetNull']:
+                        while (not column or not self.columns[column]['references'] or self.columns[column]['isOnDeleteSetNull']) and not timeout:
+
+                            # If this is stuck in a loop, break and
+                            # ingore this clause
+                            cindex += 1
+                            if cindex > 50:
+                                timeout = True                         
+
                             column = choice(list(self.columns.keys()))
 
-                        self.columns[column]['isOnDeleteSetNull'] = True
+                        if not timeout:
+                            self.columns[column]['isOnDeleteSetNull'] = True
 
                     # Crashes if the clause is not valid
                     case _:
@@ -733,16 +813,105 @@ class Table:
     # Used with RelaX
     def link(self, foreignTable):     
         column = (choice(list(self.columns.keys())))
+        while self.columns[column]['references']:
+            column = (choice(list(self.columns.keys())))
+    
         foreignTable.columns[column] = {
             'name' : column,
             'unit' : self.columns[column]['unit'],
-            'references' : None,
+            'references' : self.name,
             'foreignKey' : column,
             #'columnData' : {}
         }
 
+        self.columns[column]['references'] = foreignTable.name
+        # print(f"{column}: {self.rows[column]}")
         if foreignTable.rows:
-            foreignTable.rows[column] = self.rows[column]
+            foreignTable.rows[column] = []
+            for i in range(len(self.rows[column])):
+                foreignTable.rows[column].append(choice(self.rows[column]))
+                # print(f"{foreignTable.rows[column][i]} : {self.rows[column][i]}")
+
+
+    # Given a marked-up textfile, return an array
+    # of possible columns for random table generation.
+    # A helper function for loadRandom
+    def parseColumnsFromFile(self, file):
+
+        # Holds all the columns that can be selected
+        possibleColumns = []
+
+        # Reads the text file
+        with open(relativeTableDataFilePath(file)) as columnsFile:
+
+            # Iterates over each line
+            for line in columnsFile:
+
+                # Only cares about non-whitespace lines
+                if line and not line.isspace():
+
+                    # Formats the line correctly.
+                    # Removes leading and trailing whitespace from
+                    # each word, as deliminated by ',' in the line
+                    words = [word.strip() for word in line.split(',')]
+
+                    # Grabs the parameters
+                    name = words[0]
+                    unit = words[1]
+                    unitOther = None
+
+
+
+                    # Handles the cases where the unitOther is not none
+                    if 'DECIMAL' == unit or 'CHAR' == unit or 'VARCHAR' == unit:
+                        unitOther = self.parseRange(words[2])
+                        
+                        # Decimal needs two bits of data to
+                        # describe its unitOther; hence length of 4
+                        if unit == 'DECIMAL':
+                            possibleColumns.append([name, unit, unitOther, self.parseRange(words[3])])
+                        # The other columns with uniOther only require 3
+                        else:
+                            possibleColumns.append([name, unit, unitOther])
+                    
+                    # Adds columns without unitOther
+                    else:
+                        possibleColumns.append([name, unit])
+            
+        # Returns the populated array
+        return possibleColumns
+
+    # Given a range in the form of `xx-yy-zz` or
+    # `xx-yy`, returns a range. If there is no `-`,
+    # then return it unchanged as a string.
+    # A helper funciton of parseColumnsFromFile()
+    def parseRange(self, string):
+
+        # Checks if it is a range
+        if '-' in string:
+
+            # Split over '-'
+            split = string.split('-')
+
+            # The format is:
+            #   First item is the start
+            #   Second item is the stop (inclusive!)
+            #   Third item is the step (optional)
+            start = int(split[0])
+            stop = int(split[1]) + 1
+
+            # Obtains the step, if it is included.
+            # otherwise it defualts to 1
+            step = 1
+            if len(split) > 2:
+                step = int(split[2])
+            
+            # Returns the range
+            return range(start, stop, step)
+        
+        # If it is not a range, return as a string
+        else:
+            return f"{string}"
 
 
 
@@ -826,14 +995,15 @@ class Table:
     def generateRowsBackend(self, qty=0):
         if not qty:
 
-            # Generates plenty of rows for the backend
-            # database
-            if self.rows:
-                qty = len(list(self.rows.values())[0]) * 2
+            # Generates plenty of rows for the backend.
+            # 63 is the maximum value since the smallest noisy
+            # data file* that can be used is 63 lines long.
+            #
+            # *It's not actually the smallest, but rather the
+            # smallest that can likely be used with the unique 
+            # constraint
+            qty = 60
 
-            # If we shouldn't generate rows, just return
-            else:
-                return
 
         # Generates the data
         columns = nd.generateColumns(self, qty)
@@ -946,7 +1116,7 @@ class Table:
 
         # Iterates over all columns
         for key in self.columns:
-            schema += f"{self.name}.{key}:{self.columns[key]['unit'].lower()}, "
+            schema += f"{self.name}.{self.columns[key]['name']}:{self.columns[key]['unit'].lower()}, "
         schema = schema[:-2] + '\n'
 
 
@@ -992,6 +1162,7 @@ class Table:
 
 # Returns the file path to the table file
 def relativeTableFilePath(file):
+    print(f"{absoluteDirectoryPath()}/randomTables/{file}.txt")
     return f"{absoluteDirectoryPath()}/randomTables/{file}.txt"
 
 # Returns the file path to the table metadata file
@@ -1004,6 +1175,8 @@ def absoluteDirectoryPath():
 
     if 'RASQLib' in currentDirectory:
         return currentDirectory
+    elif 'home/matthewo' in currentDirectory:
+        return f"{currentDirectory}/databaseCourse/serverFilesCourse/RASQLib"
     else:
         courseFile = currentDirectory[:currentDirectory.find('/elements')]
         return f"{courseFile}/serverFilesCourse/RASQLib"

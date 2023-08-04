@@ -1,0 +1,8 @@
+CREATE TABLE airport (
+        id CHAR(5), 
+        aname VARCHAR(30), 
+        city VARCHAR(40), 
+        province VARCHAR(20), 
+        country VARCHAR(20), 
+        PRIMARY KEY (id) 
+        );
