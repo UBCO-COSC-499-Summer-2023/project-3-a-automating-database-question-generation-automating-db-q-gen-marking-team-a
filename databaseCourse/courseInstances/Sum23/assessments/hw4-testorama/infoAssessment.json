@@ -13,7 +13,8 @@
         {
             "questions": [
                 {"id": "DDL_Questions/deleteTables/randomTestorama",          "points": 0},
-                {"id": "SQL_Questions/randomTestorama",          "points": 0}
+                {"id": "SQL_Questions/randomTestorama",          "points": 0},
+                {"id": "RelaX_Questions/randomTestorama",          "points": 0}
 
             ]
         }
