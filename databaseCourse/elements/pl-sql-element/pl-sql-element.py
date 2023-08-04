@@ -87,6 +87,7 @@ def prepare(element_html, data):
     questionLimit = pl.get_integer_attrib(element, 'limit', 0)
     questionWith = pl.get_integer_attrib(element, 'with', 0)
     questionIsDistinct = pl.get_boolean_attrib(element, 'isdistinct', False)
+    questionUseQueryFunctions = pl.get_boolean_attrib(element, 'usequeryfunctions', False)
 
     # Notice that there is no "LIKE" clause included.
     # This is becuase SQLite does not have a LIKE clause,
@@ -122,7 +123,8 @@ def prepare(element_html, data):
         'having': questionHaving,
         'limit': questionLimit,
         'with': questionWith,
-        'isDistinct': questionIsDistinct
+        'isDistinct': questionIsDistinct,
+        'useQueryFunctions': questionUseQueryFunctions
     }
 
     data['params']['feedback']=""

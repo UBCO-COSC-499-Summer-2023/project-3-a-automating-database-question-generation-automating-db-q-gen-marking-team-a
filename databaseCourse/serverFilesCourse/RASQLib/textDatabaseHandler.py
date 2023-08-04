@@ -634,18 +634,23 @@ class Table:
             # Prevents certain columns from becoming FKs
             # due to uniqueness causing issues when
             # later creating random data for the rows
+            index = 0
             foreignColumn = None
             while not foreignColumn or 'Airport' in foreignColumn or 'province' in foreignColumn:
 
                 # Breaks out of the loop if there are no
-                # fitting columns. This will assaing a 
-                # 'bad' column to the FK, but there is
-                # still only a small chance of a crash
-                if len(columnsCopy) == 0:
+                # fitting columns, selecting the bad column
+                # as the choice
+                if index > joins * 5:
                     break
 
                 # Grabs a random column
-                foreignColumn = columnsCopy.pop(choice(range(len(columnsCopy))))
+                foreignColumn = columnsCopy[choice(range(len(columnsCopy)))]
+
+                # Prevents an infinite loop
+                index += 1
+
+            columnsCopy.pop(columnsCopy.index(foreignColumn))
 
 
 
@@ -667,11 +672,20 @@ class Table:
             # be the name fo their respective table. Otherwise,
             # the column names will be the same.
 
+            # Gets the letters to prepend
+            selfPrepend = self.name[0:1].lower()
+            referencedPrepend = self.columns[foreignColumn]['references'][0:1].lower()
+
+            # If they would be the same, instead the referenced
+            # table prepends the entire column name
+            if selfPrepend == referencedPrepend:
+                referencedPrepend = self.columns[foreignColumn]['references']
+
             # Changes the foreign key's name
-            self.columns[foreignColumn]['foreignKey'] = f"{self.columns[foreignColumn]['references'][0:1].lower()}{foreignColumn}"
+            self.columns[foreignColumn]['foreignKey'] = f"{referencedPrepend}{foreignColumn}"
 
             # Changes this table's column name
-            self.columns[foreignColumn]['name'] = f"{self.name[0:1].lower()}{foreignColumn}"
+            self.columns[foreignColumn]['name'] = f"{selfPrepend}{foreignColumn}"
 
             # Removes the old column while updateting the new
             self.columns[f"{self.name[0:1].lower()}{foreignColumn}"] = self.columns.pop(foreignColumn)
@@ -693,6 +707,10 @@ class Table:
             # number of columns have been selected.
             for i in range(clauses[clause]):
 
+                # Used to prevent timeouts
+                cindex = 0
+                timeout = False
+
                 match clause:
 
                     # Selects primary keys
@@ -700,50 +718,90 @@ class Table:
 
                         # Keeps choosing columns until one is valid
                         column = None
-                        while not column or self.columns[column]['references'] or self.columns[column]['isPrimary']:
+                        while (not column or self.columns[column]['references'] or self.columns[column]['isPrimary']) and not timeout:
+
+                            # If this is stuck in a loop, break and
+                            # ingore this clause
+                            cindex += 1
+                            if cindex > 50:
+                                timeout = True
+
                             column = choice(list(self.columns.keys()))
 
-                        self.columns[column]['isPrimary'] = True
+                        if not timeout:
+                            self.columns[column]['isPrimary'] = True
 
                     # NOT NULL constraint
                     case 'isNotNull':
                         
                         # Keeps choosing columns until one is valid
                         column = None
-                        while not column or self.columns[column]['references'] or self.columns[column]['isPrimary']:
+                        while (not column or self.columns[column]['references'] or self.columns[column]['isPrimary']) and not timeout:
+                            
+                            # If this is stuck in a loop, break and
+                            # ingore this clause
+                            cindex += 1
+                            if cindex > 50:
+                                timeout = True
+
                             column = choice(list(self.columns.keys()))
 
-                        self.columns[column]['isNotNull'] = True
+                        if not timeout:
+                            self.columns[column]['isNotNull'] = True
 
                     # UNIQUE constraint
                     case 'isUnique':
 
                         # Keeps choosing columns until one is valid
                         column = None
-                        while not column or self.columns[column]['references'] or self.columns[column]['isPrimary']:
+                        while (not column or self.columns[column]['references'] or self.columns[column]['isPrimary']) and not timeout:
+
+                            # If this is stuck in a loop, break and
+                            # ingore this clause
+                            cindex += 1
+                            if cindex > 50:
+                                timeout = True                         
+
                             column = choice(list(self.columns.keys()))
 
-                        self.columns[column]['isUnique'] = True
+                        if not timeout:
+                            self.columns[column]['isUnique'] = True
 
                     # CASCADE ON UPDATE clause
                     case 'isOnUpdateCascade':
                         
                         # Keeps choosing columns until one is valid
                         column = None
-                        while not column or not self.columns[column]['references'] or self.columns[column]['isOnUpdateCascade']:
+                        while (not column or not self.columns[column]['references'] or self.columns[column]['isOnUpdateCascade']) and not timeout:
+
+                            # If this is stuck in a loop, break and
+                            # ingore this clause
+                            cindex += 1
+                            if cindex > 50:
+                                timeout = True                   
+
                             column = choice(list(self.columns.keys()))
 
-                        self.columns[column]['isOnUpdateCascade'] = True
+                        if not timeout:
+                            self.columns[column]['isOnUpdateCascade'] = True
 
                     # SET NULL ON DELETE clause
                     case 'isOnDeleteSetNull':
 
                         # Keeps choosing columns until one is valid
                         column = None
-                        while not column or not self.columns[column]['references'] or self.columns[column]['isOnDeleteSetNull']:
+                        while (not column or not self.columns[column]['references'] or self.columns[column]['isOnDeleteSetNull']) and not timeout:
+
+                            # If this is stuck in a loop, break and
+                            # ingore this clause
+                            cindex += 1
+                            if cindex > 50:
+                                timeout = True                         
+
                             column = choice(list(self.columns.keys()))
 
-                        self.columns[column]['isOnDeleteSetNull'] = True
+                        if not timeout:
+                            self.columns[column]['isOnDeleteSetNull'] = True
 
                     # Crashes if the clause is not valid
                     case _:
@@ -937,14 +995,15 @@ class Table:
     def generateRowsBackend(self, qty=0):
         if not qty:
 
-            # Generates plenty of rows for the backend
-            # database
-            if self.rows:
-                qty = len(list(self.rows.values())[0]) * 2
+            # Generates plenty of rows for the backend.
+            # 63 is the maximum value since the smallest noisy
+            # data file* that can be used is 63 lines long.
+            #
+            # *It's not actually the smallest, but rather the
+            # smallest that can likely be used with the unique 
+            # constraint
+            qty = 60
 
-            # If we shouldn't generate rows, just return
-            else:
-                return
 
         # Generates the data
         columns = nd.generateColumns(self, qty)
