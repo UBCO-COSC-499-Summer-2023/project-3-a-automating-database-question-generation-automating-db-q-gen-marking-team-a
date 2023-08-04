@@ -1,7 +1,0 @@
-CREATE TABLE shipment (
-        sid integer,
-        cid integer,
-        shipdate datetime,	
-        primary key (sid),
-        foreign key (cid) REFERENCES customer (cid)
-        )

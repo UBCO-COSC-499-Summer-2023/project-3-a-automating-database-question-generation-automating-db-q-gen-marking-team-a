@@ -1,8 +1,0 @@
-CREATE TABLE shippedproduct (
-        sid integer,
-        pid integer,
-        amount integer,	
-        primary key (sid, pid),
-        foreign key (sid) REFERENCES shipment (sid),
-        foreign key (pid) REFERENCES product (pid)
-        )

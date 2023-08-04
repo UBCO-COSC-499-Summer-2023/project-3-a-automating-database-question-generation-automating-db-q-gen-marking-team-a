@@ -1,8 +1,0 @@
-CREATE TABLE customer (
-        cid integer,
-        cname varchar(30),
-        address varchar(50),
-        city varchar(30),
-        state varchar(2),
-        primary key (cid) 
-        )
