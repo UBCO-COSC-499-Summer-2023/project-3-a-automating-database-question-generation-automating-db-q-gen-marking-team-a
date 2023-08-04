@@ -30,10 +30,10 @@ def createPreview(data):
     
     db = data['params']['db_initialize_create']
     correctAnswer = data['correct_answers']['RelaXEditor']
-    print(correctAnswer)
+    #print(correctAnswer)
     #url = f"http://localhost:3000/ra_autoGrader"
     url = data['params']['url']
-    print(url)
+    #print(url)
     # Construct the data to be sent in the POST request
     data_to_send = {
     "database": db,
@@ -41,9 +41,8 @@ def createPreview(data):
     "correctAnswer": correctAnswer
     }
 
-    return None
     try:
-        print("hello from inside the try")
+        #print("hello from inside the try")
         response = requests.get(url, json=data_to_send)
 
         # Assuming the server returns JSON data containing the processed result
@@ -53,30 +52,32 @@ def createPreview(data):
         #queriedSA = response_data.get('queriedSA', None)
         queriedCA = response_data.get('queriedCA', None)
     
-        print(queriedCA)
+        #print(queriedCA)
     except Exception as e:
         print("Error:", str(e))
         return "error"
     
-#
-    return None
-    # htmlTable = "<div class='expectedOutput'><b>Expected Output:</b><div class='scrollable'><table class='output-tables'><thead>"
 
-    # for column in columnNames:
-    #     htmlTable += "<th>" + str(column) + "</th>"
+    htmlTable = "<div class='expectedOutput'><b>Expected Output:</b><div id='output' class='output-tables'><table><thead>"
+    
+    columnNames = queriedCA['schema']['_names']
+    dataRows = queriedCA['rows']
 
-    # htmlTable += "</thead>"
+    for column in columnNames:
+        htmlTable += "<th>" + str(column) + "</th>"
 
-    # for row in dataRows:
-    #     rowString = "<tr>"
-    #     for x in row:
-    #         rowString+= "<th>" + str(x) + "</th>"
-    #     rowString += "</tr>"
-    #     htmlTable += rowString
+    htmlTable += "</thead>"
 
-    # htmlTable += "</table></div></div>"
+    for row in dataRows:
+        rowString = "<tr>"
+        for x in row:
+            rowString+= "<td>" + str(x) + "</td>"
+        rowString += "</tr>"
+        htmlTable += rowString
 
-    #return htmlTable
+    htmlTable += "</table></div></div>"
+
+    return htmlTable
 
 def autogenerate(data):
     #expectedOutput = data['params']['html_params']['expectedOutput']
@@ -96,9 +97,8 @@ def autogenerate(data):
     database.loadDatabase(data)
     question.loadQuestion(data)
 
-    print(data['correct_answers']['RelaXEditor'])
 
-    createPreview(data)
+    data['params']['html_params']['expectedOutput'] = createPreview(data)
 
 class Question:
     Query = "π "

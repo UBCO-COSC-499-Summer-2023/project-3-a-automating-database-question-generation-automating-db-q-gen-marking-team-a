@@ -177,12 +177,15 @@ def rowMatch(rowsSA, rowsCA):
     rowCountSA = len(rowsSA)
     totalRowsSA += rowCountSA
     
-    missingRows = abs(totalRowsCA - totalRowsSA)
-    correctRows = totalRowsCA - missingRows
-    rowScore = correctRows / totalRowsCA
+    if (totalRowsCA != 0):
+        missingRows = abs(totalRowsCA - rowCountSA)
+        correctRows = totalRowsCA - missingRows
+        rowScore = correctRows / totalRowsCA
+    elif (totalRowsCA == 0 and totalRowsSA == 0):
+        rowScore = 1
     
-    if not (rowsCA or rowsSA): rowScore = 1
-    if not rowsSA or not rowsSA[0]: rowScore = 0
+    #if not (rowsCA or rowsSA): rowScore = 1
+    #if not rowsSA or not rowsSA[0]: rowScore = 0
     
     rowData = {
         'score': rowScore,
@@ -208,7 +211,6 @@ def colMatch(colsSA, colsCA):
         else:
             missingColsList.append(col)
             
-    
     missingCols = abs(totalColsCA - totalColsSA)
     correctCols = totalColsCA - missingCols
     colScore = correctCols / totalColsCA
@@ -232,10 +234,13 @@ def valueMatch(valueSA, valueCA):
     for row in valueSA:
         if row in valueCA:
             commonValues += 1
-            
-    missingVals = abs(totalValuesCA - commonValues)
-    correctVals = totalValuesCA - missingVals
-    valueScore = correctVals / totalValuesCA
+
+    if totalValuesCA != 0:
+        missingVals = abs(totalValuesCA - commonValues)
+        correctVals = totalValuesCA - missingVals
+        valueScore = correctVals / totalValuesCA
+    elif totalValuesCA == 0 and totalValuesSA == 0:
+        valueScore = 1
     
     totalValuesSA = commonValues
     
