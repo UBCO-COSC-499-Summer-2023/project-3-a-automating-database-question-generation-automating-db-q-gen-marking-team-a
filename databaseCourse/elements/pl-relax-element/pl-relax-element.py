@@ -32,7 +32,7 @@ def prepare(element_html, data):
         with open(databaseFilePath,"r") as databaseFile:
            database += databaseFile.read()
     
-    data['params']['database'] = database
+    data['params']['database'] = database    
     
     # parameter whether to show feedback or not
     feedback = pl.get_boolean_attrib(element, 'feedback', False)
@@ -62,7 +62,6 @@ def prepare(element_html, data):
            data['params']['db_initialize'] = databaseFile.read()
         
         
-
     
     # Loads quesiton parameters into data
     #
@@ -94,6 +93,9 @@ def prepare(element_html, data):
     # If if is a randomised question, generate the question
     if questionRandom:
         autogen.autogenerate(data)
+        database = data['params']['db_initialize_create']
+        # print(database)
+        data['params']['database'] = database
 
 
 
@@ -114,9 +116,11 @@ def render(element_html, data):
 
     # This renders the question into PL
     if data['panel'] == 'question':
+        if 'questionText' not in data['params'].keys():
+            data['params']['questionText'] = ""
         # setting the paramaters
         html_params = {
-            'database' : data['params']['db_initialize_create'],
+            'database' : data['params']['database'],
             'questionText' : data['params']['questionText'],
             'previousSubmission' : submittedAnswer,
             'expectedOutput' : data['params']['html_params']['expectedOutput']

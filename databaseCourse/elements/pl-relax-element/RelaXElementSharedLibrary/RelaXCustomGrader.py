@@ -82,8 +82,13 @@ def gradeQuery(data, feedback):
     rowWeight = 0.20
     colWeight = 0.25
     valueMatchWeight = 0.50
-    
+
+
+    # change to and test 'db_initialize_insert_backend'
+    #print(data['params']['database'])
+    #print(data['params']['db_initialize_create'])
     db = data['params']['database']
+
     submittedAnswer = data['submitted_answers']['RelaXEditor']
     correctAnswer = data['correct_answers']['RelaXEditor']
 
@@ -112,6 +117,7 @@ def gradeQuery(data, feedback):
         print("Error:", str(e))
         return "error"
     
+
     if ('error' in queriedSA or 'error' in queriedCA):
         return "error"
         

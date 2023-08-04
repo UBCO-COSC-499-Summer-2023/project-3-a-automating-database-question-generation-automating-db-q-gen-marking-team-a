@@ -1,5 +1,5 @@
 import random as rand
-
+import requests
 # This allows DroneCI to see the RASQLib module
 import sys
 sys.path.append('databaseCourse/serverFilesCourse/')
@@ -27,55 +27,78 @@ def returnGreater(num1, num2):
 def createPreview(data):
     #con = sqlite3.connect("preview.db")
     #cur  = con.cursor()
-
-    commands = data['params']['db_initialize_create'].replace('\n', '').replace('\t', '')
-    commands += data['params']['db_initialize_insert_frontend'].replace('\n', '').replace('\t', '')
-
-    #cur.executescript(commands)
-    #con.commit()
-
+    
+    db = data['params']['db_initialize_create']
     correctAnswer = data['correct_answers']['RelaXEditor']
-    expectedCode = correctAnswer.replace('\n', ' ').replace('\t', ' ')
+    print(correctAnswer)
+    #url = f"http://localhost:3000/ra_autoGrader"
+    url = data['params']['url']
+    print(url)
+    # Construct the data to be sent in the POST request
+    data_to_send = {
+    "database": db,
+    "submittedAnswer": correctAnswer,
+    "correctAnswer": correctAnswer
+    }
 
-    #expectedAns = cur.execute(expectedCode)
-    dataRows = expectedAns.fetchall()
+    return None
+    try:
+        print("hello from inside the try")
+        response = requests.get(url, json=data_to_send)
 
-    columnNames = [description[0] for description in cur.description]
+        # Assuming the server returns JSON data containing the processed result
+        response_data = response.json()
 
-    htmlTable = "<div class='expectedOutput'><b>Expected Output:</b><div class='scrollable'><table class='output-tables'><thead>"
+        # Process the response data as needed
+        #queriedSA = response_data.get('queriedSA', None)
+        queriedCA = response_data.get('queriedCA', None)
+    
+        print(queriedCA)
+    except Exception as e:
+        print("Error:", str(e))
+        return "error"
+    
+#
+    return None
+    # htmlTable = "<div class='expectedOutput'><b>Expected Output:</b><div class='scrollable'><table class='output-tables'><thead>"
 
-    for column in columnNames:
-        htmlTable += "<th>" + str(column) + "</th>"
+    # for column in columnNames:
+    #     htmlTable += "<th>" + str(column) + "</th>"
 
-    htmlTable += "</thead>"
+    # htmlTable += "</thead>"
 
-    for row in dataRows:
-        rowString = "<tr>"
-        for x in row:
-            rowString+= "<th>" + str(x) + "</th>"
-        rowString += "</tr>"
-        htmlTable += rowString
+    # for row in dataRows:
+    #     rowString = "<tr>"
+    #     for x in row:
+    #         rowString+= "<th>" + str(x) + "</th>"
+    #     rowString += "</tr>"
+    #     htmlTable += rowString
 
-    htmlTable += "</table></div></div>"
+    # htmlTable += "</table></div></div>"
 
-    return htmlTable
+    #return htmlTable
 
 def autogenerate(data):
-
     #expectedOutput = data['params']['html_params']['expectedOutput']
     #if expectedOutput:
-    #    data['params']['expectedOutput'] = createPreview(data)
+    #  data['params']['expectedOutput'] = createPreview(data)
     # Generates a random database
     columns = rand.randint(4, 7)
     joins = returnGreater(rand.randint(2,5), (data['params']['attrib_dict']['numJoins'])) #! Change to joins/rand -> whichever is bigger
-    rows = rand.randint(5, 15)
+    rows = rand.randint(7, 15)
     
     database = db.Database(isSQL=False, columns=columns, joins=joins, rows=rows)
 
     question = Question(dataset=database, attribDict=data['params']['attrib_dict'])
+
+
     # Loads the database into the data variable
     database.loadDatabase(data)
     question.loadQuestion(data)
+
+    print(data['correct_answers']['RelaXEditor'])
+
+    createPreview(data)
 
 class Question:
     Query = "π "
@@ -97,6 +120,8 @@ class Question:
     semiLeftJoins="⋊"
     antiJoins="▷"
 
+
+    tableListText = ""
     def  __init__(self, dataset, attribDict) -> None:
         #* Load all attribs from data
         self.numJoins = attribDict['numJoins']
@@ -111,8 +136,7 @@ class Question:
         self.offLimitsTable = None
 
         graph = dataset.toGraph()
-        print(graph)
-        subgraph = randomSubgraph(graph=graph, n=self.numJoins)
+#        subgraph = randomSubgraph(graph=graph, n=self.numJoins)
         
         self.JoinList = []
         neededColumns = []
@@ -121,45 +145,14 @@ class Question:
             if len(self.JoinList) == 0:
                 joinChoice = rand.choice(['natural', 'outer', 'semi', 'anti'])
                 match joinChoice:
-                    case 'natural':
-                        print(joinChoice)
-                        self.naturalJoinGeneration(subgraph=graph)
-                    case 'outer':
-                        print(joinChoice)
-                        self.outerJoinGeneration(subgraph=graph,dataset=dataset)
-                    case 'semi':
-                        print(joinChoice)
-                        self.semiJoinGeneration(subgraph=graph,dataset=dataset)
-                    case 'anti':
-                        print(joinChoice)
-                        self.antiJoinGeneration(subgraph=graph,dataset=dataset)
+                    case 'natural': self.naturalJoinGeneration(subgraph=graph)
+                    case 'outer': self.outerJoinGeneration(subgraph=graph,dataset=dataset)
+                    case 'semi': self.semiJoinGeneration(subgraph=graph,dataset=dataset)
+                    case 'anti': self.antiJoinGeneration(subgraph=graph,dataset=dataset)
             else:
                 self.naturalJoinGeneration(subgraph=graph)
             loopNum+=1
-        # self.outerJoinGeneration(subgraph=graph, dataset=dataset)
-        # self.naturalJoinGeneration(subgraph=graph)
-        print(self.joinStatement)
 
-
-
-
-
-        # if self.outerJoinBool:
-        #     #* Partial Outer Joins
-        #     #  for all rows from table1, null where not exist table2
-        #     #  More ⟕ Less where column less = null
-        #     self.outerJoinGeneration(subgraph=subgraph, dataset=dataset)
-        # elif self.semiJoinBool:
-        #     #* Semi Joins
-        #     #  for row from table1 where match exists in table2
-        #     #  Less ⋊ More
-        #     self.semiJoinGeneration(subgraph=subgraph, dataset=dataset)
-        # elif self.antiJoinBool:
-        #     #* Anti Joins --> bigger ▷ smaller
-        #     #  for row from table1 not in table2
-        #     self.antiJoinGeneration(subgraph=subgraph, dataset=dataset)
-        # else:
-        
 
         # neededColumns are one random column from each joined graph 
         # such that all joined tables are utilized in output
@@ -179,10 +172,8 @@ class Question:
                 if i == num:
                    neededColumns.append(dataset.tableSet[table].columns[column]['name']) 
                 i+=1
-            
-        print(neededColumns)
         #* Projection
-        projectedColumns = projection(usableColumns)
+        projectedColumns = projection(neededColumns, usableColumns)
         if not self.groupByBool:
             self.projectedColumnText = ", ".join(projectedColumns)
             parts = self.projectedColumnText.rsplit(",", 1)  # Split the string from the right side only once
@@ -215,15 +206,17 @@ class Question:
         #* Selection
         selectedColumns = []
         if self.numClauses != 0:
-            for i in range(self.numClauses):  
-                randColumn = rand.choice(usableColumns)
+            for i in range(self.numClauses):
+                if len(neededColumns) == 0:
+                    randColumn = rand.choice(usableColumns)
+                else:
+                    randColumn = neededColumns.pop(rand.choice(range(len(neededColumns))))
                 while randColumn in selectedColumns:
                     randColumn =  rand.choice(usableColumns)
-                selectedColumns.append(selection(usableColumns, randColumn, subgraph, dataset))
+                selectedColumns.append(selection(usableColumns, randColumn, graph, dataset))
             conditions = []
             selectedColumnsArray = []
             for item in selectedColumns:
-                print(item)
                 randColumn, operator, value = item
                 selectedColumnsArray.append(f"{randColumn}{operator}{value}")
 
@@ -244,7 +237,7 @@ class Question:
         #  for all rows from table1, null where not exist table2
         #  More ⟕ Less where column less = null
         node1 = rand.choice(list(subgraph.keys()))
-        print(node1)
+        # print(node1)
 
         connections = subgraph[node1]
         node2 = rand.choice(connections)
@@ -253,9 +246,9 @@ class Question:
             if dataset.tableSet[node1].columns[column]['references'] == node2:
                 compareColumn = dataset.tableSet[node1].columns[column]["name"]
         
-        print(compareColumn)
+        # print(compareColumn)
         
-        print(f"node1 {len(set(dataset.tableSet[node1].rows[compareColumn]))}, node2 {len(set(dataset.tableSet[node2].rows[compareColumn]))}")
+        # print(f"node1 {len(set(dataset.tableSet[node1].rows[compareColumn]))}, node2 {len(set(dataset.tableSet[node2].rows[compareColumn]))}")
 
         if len(set(dataset.tableSet[node1].rows[compareColumn])) > len(set(dataset.tableSet[node2].rows[compareColumn])):
             self.joinStatement = f"{node1}{self.outerLeftJoins}{node2}"
@@ -291,22 +284,20 @@ class Question:
         for column in dataset.tableSet[subgraph[mcNode][0]].columns:
             if dataset.tableSet[subgraph[mcNode][0]].columns[column]['references'] == mcNode:
                 compareColumn = dataset.tableSet[subgraph[mcNode][0]].columns[column]["name"]
-        if len(set(dataset.tableSet[subgraph[mcNode][0]].rows[compareColumn])) > len(set(dataset.tableSet[mcNode].rows[compareColumn])):
-            print("We got a winner")
-        else:
-            print("had to loop")
+        if len(set(dataset.tableSet[subgraph[mcNode][0]].rows[compareColumn])) <= len(set(dataset.tableSet[mcNode].rows[compareColumn])):
+            # print("had to loop")
             for node in subgraph.keys():
-                print(f"BIG {node}: {subgraph[node]}")
+                # print(f"BIG {node}: {subgraph[node]}")
                 if len(subgraph[node]) <= len(subgraph[mcNode]):
                     mcNode = node
-                    print(f"small {mcNode}: {subgraph[mcNode]}")
+                    # print(f"small {mcNode}: {subgraph[mcNode]}")
                     for column in dataset.tableSet[subgraph[mcNode][0]].columns:
                         if dataset.tableSet[subgraph[mcNode][0]].columns[column]['references'] == mcNode:
                             compareColumn = dataset.tableSet[subgraph[mcNode][0]].columns[column]["name"]
                     if len(set(dataset.tableSet[subgraph[mcNode][0]].rows[compareColumn])) > len(set(dataset.tableSet[mcNode].rows[compareColumn])):
-                        print("We got a winner")
+                        # print("We got a winner")
                         break
-        print(mcNode)
+        # print(mcNode)
         
         # select connecting node
         node1 = subgraph[mcNode][0]
@@ -328,9 +319,9 @@ class Question:
         #     self.JoinList = [node1]
         #     self.offLimitsTable = node2
         
-        print(f"{self.JoinList}: {subgraph[self.JoinList[0]]}")
-        print(self.joinStatement)
-        print(self.offLimitsTable)
+        # print(f"{self.JoinList}: {subgraph[self.JoinList[0]]}")
+        # print(self.joinStatement)
+        # print(self.offLimitsTable)
     
     def antiJoinGeneration(self, subgraph, dataset):
         #* Anti Joins --> bigger ▷ smaller
@@ -341,22 +332,20 @@ class Question:
         for column in dataset.tableSet[subgraph[mcNode][0]].columns:
             if dataset.tableSet[subgraph[mcNode][0]].columns[column]['references'] == mcNode:
                 compareColumn = dataset.tableSet[subgraph[mcNode][0]].columns[column]["name"]
-        if len(set(dataset.tableSet[subgraph[mcNode][0]].rows[compareColumn])) > len(set(dataset.tableSet[mcNode].rows[compareColumn])):
-            print("We got a winner")
-        else:
-            print("had to loop")
+        if len(set(dataset.tableSet[subgraph[mcNode][0]].rows[compareColumn])) <= len(set(dataset.tableSet[mcNode].rows[compareColumn])):
+            # print("had to loop")
             for node in subgraph.keys():
-                print(f"BIG {node}: {subgraph[node]}")
+                # print(f"BIG {node}: {subgraph[node]}")
                 if len(subgraph[node]) <= len(subgraph[mcNode]):
                     mcNode = node
-                    print(f"small {mcNode}: {subgraph[mcNode]}")
+                    # print(f"small {mcNode}: {subgraph[mcNode]}")
                     for column in dataset.tableSet[subgraph[mcNode][0]].columns:
                         if dataset.tableSet[subgraph[mcNode][0]].columns[column]['references'] == mcNode:
                             compareColumn = dataset.tableSet[subgraph[mcNode][0]].columns[column]["name"]
                     if len(set(dataset.tableSet[subgraph[mcNode][0]].rows[compareColumn])) > len(set(dataset.tableSet[mcNode].rows[compareColumn])):
-                        print("We got a winner")
+                        # print("We got a winner")
                         break
-        print(mcNode)
+        # print(mcNode)
         
         # select connecting node
         node1 = subgraph[mcNode][0]
@@ -366,9 +355,9 @@ class Question:
             if dataset.tableSet[node1].columns[column]['references'] == node2:
                 compareColumn = dataset.tableSet[node1].columns[column]["name"]
         
-        print(compareColumn)
+        # print(compareColumn)
         
-        print(f"node1 {len(set(dataset.tableSet[node1].rows[compareColumn]))}, node2 {len(set(dataset.tableSet[node2].rows[compareColumn]))}")
+        # print(f"node1 {len(set(dataset.tableSet[node1].rows[compareColumn]))}, node2 {len(set(dataset.tableSet[node2].rows[compareColumn]))}")
 
         self.joinStatement = f"{node1}{self.antiJoins}{node2}"
         self.tableListText = f"where <b>{compareColumn}</b> is not in <b>{node2}</b>"
@@ -379,36 +368,36 @@ class Question:
         jList=[]
         key = False
         for node in subgraph:
-            print(f"NJG:{node}")
+            # print(f"NJG:{node}")
             if len(self.JoinList) == 0 and len(jList) == 0:
                 jList.append(node)
-                print(jList)
+                # print(jList)
             for connection in subgraph[node]:
-                print(connection)
+                # print(connection)
                 if (connection in self.JoinList or connection in jList) and node not in self.JoinList:
                     if node is not self.offLimitsTable:
                         jList.append(node)
-                        print("Joined")
+                        # print("Joined")
                         key = True
                         break
             if key:
-                print("successful break")
+                # print("successful break")
                 break
         
-        print(jList)
-        print(self.joinStatement)
+        # print(jList)
+        # print(self.joinStatement)
 
         if self.joinStatement == "":
             self.joinStatement =f"{jList[0]}{self.naturalJoin}{jList[1]}"
         else:
             self.joinStatement = f"({self.joinStatement}){self.naturalJoin}{jList[0]}"
-        self.tableListText = ", ".join(self.JoinList)
+        #self.tableListText = ", ".join(self.JoinList)
         parts = self.tableListText.rsplit(",", 1)  # Split the string from the right side only once
-        self.tableListText = f"<b>{' and'.join(parts)}</b>"
+        #self.tableListText = f"<b>{' and'.join(parts)}</b>"
         for node in jList:
             self.JoinList.append(node)
-        print(self.JoinList)
-        print(self.joinStatement)
+        # print(self.JoinList)
+        # print(self.joinStatement)
 
 
 
@@ -441,10 +430,13 @@ class Question:
 
 
 
-def projection(usableColumns):
+def projection(neededColumns, usableColumns):
     projectedColumns = []
     for i in range(rand.randint(2,5)):
-        randColumn = rand.choice(usableColumns)
+        if len(neededColumns) == 0:
+            randColumn = rand.choice(usableColumns)
+        else:
+            randColumn = neededColumns.pop(rand.choice(range(len(neededColumns))))
         while randColumn in projectedColumns:
             randColumn =  rand.choice(usableColumns)
         projectedColumns.append(randColumn)
@@ -461,8 +453,8 @@ def groupBy(randColumn, subgraph, dataset):
                     case 'DATE': return "count"
 
         
-def selection(usableColumns, randColumn,subgraph, dataset):
-    for table in subgraph.keys():
+def selection(usableColumns, randColumn, graph, dataset):
+    for table in graph.keys():
         for column in dataset.tableSet[table].columns:
             if randColumn == dataset.tableSet[table].columns[column]['name']:
                 match(dataset.tableSet[table].columns[column]['unit']):
