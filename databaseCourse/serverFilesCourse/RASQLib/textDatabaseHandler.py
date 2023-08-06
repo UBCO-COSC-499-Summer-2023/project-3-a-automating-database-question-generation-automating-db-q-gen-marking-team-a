@@ -887,6 +887,32 @@ class Table:
         # Generates the data
         columns = nd.generateColumns(self, qty)
 
+        # Enforced uniqueness on generated values
+        if self.rowsBackend:
+            for key in columns:
+
+                # Only continue if the column is unique
+                if nd.isUnique(self, key):
+                    for value in self.rowsBackend[key]:
+
+                        # If it finds a non-unique value
+                        if value in columns[key]:
+
+                            # Removes the value
+                            columns[key].pop(columns[key].index(value))
+
+                            # Keeps generating values until
+                            # it is unique to both the current
+                            # backend rows or the rows in the
+                            # generated columns
+                            newValue = None
+                            while not newValue or newValue in self.rowsBackend[key] or newValue in columns[key]:
+                                newValue = nd.generateNoisyDataNoFile(self, key)[0]
+
+                            # Adds the new value
+                            columns[key].append(newValue)
+
+        # Adds the set of rows to the backend rows
         for key in columns:
 
             # Creates the column if it does not already exist
@@ -895,7 +921,6 @@ class Table:
 
             # Adds the column
             self.rowsBackend[key] += columns[key]
-
     
     # Adds a row to this table
     def addRow(self, row, index=0):

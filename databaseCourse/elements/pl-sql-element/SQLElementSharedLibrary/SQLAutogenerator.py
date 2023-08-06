@@ -298,9 +298,7 @@ def generateUpdate(data, difficulty):
 
 
 
-
-
-    # Adds the important rows to the backend DB
+    # Adds the important rows to the backend database
     database.addRowsBackend(conditionalValues)
 
     # Loads data
