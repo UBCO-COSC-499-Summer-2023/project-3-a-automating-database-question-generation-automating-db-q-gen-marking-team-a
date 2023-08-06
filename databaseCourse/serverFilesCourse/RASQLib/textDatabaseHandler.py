@@ -490,6 +490,8 @@ class Table:
     # Creates a random table
     def loadRandom(self, name, columns, joins, clauses, constraints, tableNames, columnNames):
 
+        print(len(tableNames), tableNames)
+
         # Checks whether the parameters are legal
         #
         # Columns must be at least three otherwise there is
