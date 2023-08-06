@@ -38,4 +38,4 @@ class AutogenerateTest(unittest.TestCase):
                 if len(subgraph) != (numJoins+1):
                     print(f"Error: {len(subgraph)} != {numJoins+1}")
                     
-AutogenerateTest.testAutogenerateJoinedTablesCollection()
+#AutogenerateTest.testAutogenerateJoinedTablesCollection()
