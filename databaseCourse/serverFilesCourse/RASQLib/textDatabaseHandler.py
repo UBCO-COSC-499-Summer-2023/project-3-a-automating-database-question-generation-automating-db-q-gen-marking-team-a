@@ -1206,6 +1206,7 @@ def getRandomTableNames(path=relativeTableDataFilePath('randomTableNames')):
             print('Found file!', path)
             rn = [line.strip() for line in file.readlines() if not line.isspace()]
             print(len(rn), rn)
+            
             return rn
     except:
        print('Uh-oh!', path)
