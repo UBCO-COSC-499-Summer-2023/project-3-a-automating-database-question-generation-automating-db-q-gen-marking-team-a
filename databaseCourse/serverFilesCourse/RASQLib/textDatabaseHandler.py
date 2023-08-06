@@ -14,7 +14,7 @@ from RASQLib import noisyData as nd
 
 # Models a group of tables
 class Database:
-    def __init__(self, isSQL=True, file='', columns=5, joins=0, depth=3, clauses={}, constraints={'': {'name': '', 'unit': 'INTEGER', 'unitOther': None}}, rows=0, random=True):
+    def __init__(self, isSQL=True, file='', columns=5, joins=0, depth=3, clauses={}, constraints={}, rows=0, random=True):
 
         self.isSQL = isSQL
         self.random = random
@@ -336,11 +336,6 @@ class Table:
         # If no constrains are present, guarantees the
         # existance of a basic INTEGER/NUMBER type column.
         # Useful for generating random queries.
-        if not constraints:
-            if isSQL:
-                constraints = {'': {'name': '', 'unit': 'INTEGER', 'unitOther': None}}
-            else:
-                constraints = {'': {'name': '', 'unit': 'NUMBER', 'unitOther': None}}
 
         # Adds columns.
         # Also passes in column names from the file if they
@@ -535,12 +530,6 @@ class Table:
         # Adds foreign key constraints
         if constraints:
             for key in constraints.keys():
-
-                # If the default contraint, then choose
-                # an applicable name for an INTEGER
-                if not key:
-                    constraints[key]['name'] = choice(['num', 'id', f"{self.name[:1].lower()}id"])
-
                 self.columns[constraints[key]['name']] = {
                     'name': constraints[key]['name'],
                     'unit': constraints[key]['unit'],
@@ -666,7 +655,7 @@ class Table:
             self.columns[foreignColumn]['name'] = f"{selfPrepend}{foreignColumn}"
 
             # Removes the old column while updateting the new
-            self.columns[f"{self.name[0:1].lower()}{foreignColumn}"] = self.columns.pop(foreignColumn)
+            self.columns[f"{selfPrepend}{foreignColumn}"] = self.columns.pop(foreignColumn)
 
 
 

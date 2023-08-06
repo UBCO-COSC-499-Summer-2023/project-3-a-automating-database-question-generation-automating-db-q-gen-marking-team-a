@@ -1,4 +1,3 @@
-id,INTEGER
 inventory,INTEGER
 quantity,INTEGER
 num,INTEGER
