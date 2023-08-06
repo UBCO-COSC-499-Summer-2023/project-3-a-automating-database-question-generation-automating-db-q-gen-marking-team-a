@@ -22,7 +22,7 @@ percentage,DECIMAL,4-5,2
 identifier,CHAR,3-6
 state,CHAR,2
 postalCode,CHAR,6
-status,CHAR,1
+status,CHAR,2
 licensePlate,CHAR,6
 
 name,VARCHAR,20-40-5
