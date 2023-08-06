@@ -407,6 +407,9 @@ def generateDelete(data, difficulty):
 
 
 
+    # Adds the important rows to the backend database
+    database.addRowsBackend(conditionalValues)
+
     # Loads the database
     database.loadDatabase(data)
 
