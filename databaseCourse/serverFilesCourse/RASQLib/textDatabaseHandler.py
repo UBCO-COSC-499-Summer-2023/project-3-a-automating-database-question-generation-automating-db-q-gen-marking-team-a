@@ -547,16 +547,14 @@ class Table:
         # Keeps adding columns until there are enough
         while len(self.columns) < columns:
 
-            # Chooses a random column to add
-            # Pops the column to ensure no duplicates
-            addColumn = columnNames.pop(choice(range(len(columnNames))))
 
-            # Checks if the column would override an existing 
-            # column. This could only occur due to foreign key
-            # constraints adding a column then the pop() function
-            # giving the same column. Requires at most one more
-            # pop() to fix
-            if addColumn[0] in self.columns.keys():
+            # Gets a unique column name. The while should
+            # is not necessary, but there for safety
+            addColumn = None
+            while not addColumn or addColumn[0] in self.columns.keys():
+                
+                # Chooses a random column to add
+                # Pops the column to ensure no duplicates
                 addColumn = columnNames.pop(choice(range(len(columnNames))))
 
             # Grabs parameters
