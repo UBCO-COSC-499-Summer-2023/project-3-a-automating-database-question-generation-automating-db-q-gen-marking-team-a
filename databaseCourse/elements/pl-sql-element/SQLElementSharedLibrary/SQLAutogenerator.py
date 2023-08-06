@@ -493,12 +493,7 @@ def generateQuery(data, difficulty):
     # Unpacks variables for easy referencing
     table = database.primaryTable
     referenced = database.referencedTables
-
-    keyMap = table.getKeyMap()
-
-    tableMap = {key: referenced[keyMap[key]['references']] for key in keyMap}
-    tableMap[table.name] = table
-
+    
     conditionals = queryClauses['conditional']
     useSubquery = queryClauses['useSubquery']
     columnsToSelect = queryClauses['columnsToSelect']
@@ -509,6 +504,14 @@ def generateQuery(data, difficulty):
     withClause = queryClauses['with']
     isDistinct = queryClauses['isDistinct']
     useQueryFunctions = queryClauses['useQueryFunctions']
+
+    # Maps table names to the table itself
+    #   allTables {
+    #       $tableName: $table
+    #   }
+    allTables = {table.name: table}
+    for ref in referenced:
+        allTables[ref] = referenced[ref]
 
 
 
@@ -560,14 +563,17 @@ def generateQuery(data, difficulty):
 
 
 
-    # A list of all columns in the table.
-    columnList = getColumnList(tableMap)
+    # A list of all columns in the joined tables
+    joinedColumnList = []
+    for selectedTable in selectedColumns:
+        for column in allTables[selectedTable].columns.keys():
+            joinedColumnList.append(column)
 
     # Gets the columns to order and whether or not they're
     # ascending
     orderByColumns = {}
     while len(orderByColumns) < orderBy:
-        orderByColumns[columnList.pop(random.choice(range(len(columnList))))] = random.choice(['ASC', 'DESC'])
+        orderByColumns[joinedColumnList.pop(random.choice(range(len(joinedColumnList))))] = random.choice(['ASC', 'DESC'])
     
 
     # A list of *selected* columns

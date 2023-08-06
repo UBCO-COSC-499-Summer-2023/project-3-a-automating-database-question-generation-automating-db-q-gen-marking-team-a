@@ -840,9 +840,12 @@ class Table:
 
 
     # Returns a dictionary with the following mapping:
-    #   column: (if the column is a foreign key)
-    #       'references': the table referenced
-    #       'foreignKey': the column in the referenced table
+    #   keyMap {
+    #       $column: (if the column is a foreign key) {
+    #           'references': $referencedTableName
+    #           'foreignKey': $referencedColumnName
+    #       }
+    #   }
     def getKeyMap(self):
         return {key: {'references': self.columns[key]['references'], 'foreignKey': self.columns[key]['foreignKey']} for key in self.columns.keys() if self.columns[key]['references']}
     
