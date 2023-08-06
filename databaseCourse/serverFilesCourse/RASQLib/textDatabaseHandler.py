@@ -1162,7 +1162,6 @@ class Table:
 
 # Returns the file path to the table file
 def relativeTableFilePath(file):
-    print(f"{absoluteDirectoryPath()}/randomTables/{file}.txt")
     return f"{absoluteDirectoryPath()}/randomTables/{file}.txt"
 
 # Returns the file path to the table metadata file
@@ -1206,6 +1205,7 @@ def getRandomTableNames(path=relativeTableDataFilePath('randomTableNames')):
             # that aren't exclusively whitespace
             return [line.strip() for line in file.readlines() if not line.isspace()]
     except:
+       print(path)
        return []
     
 
