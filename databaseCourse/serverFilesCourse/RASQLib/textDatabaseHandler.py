@@ -29,6 +29,8 @@ class Database:
             columnNames = parseColumnsFromFile('randomColumnsSQL')
             tableNames = getRandomTableNames()
 
+            print("Database:", len(tableNames), tableNames)
+
             # When columns are set to zero, it indicates that
             # a table is being pased in (used to support old
             # difficulty-class questions). Otherwise, create
@@ -353,6 +355,8 @@ class Table:
         self.rowsBackend = {}
         self.isSQL = isSQL
 
+        print("Innit:", len(tableNames), tableNames)
+
         # If no constrains are present, guarantees the
         # existance of a basic INTEGER/NUMBER type column.
         # Useful for generating random queries.
@@ -378,6 +382,7 @@ class Table:
     # f"{file}" will become the table name if it is
     # provided, otherwise a random name will be chosen
     def load(self, file, columns, joins, clauses, constraints, random, tableNames, columnNames):
+        print("Load:", len(tableNames), tableNames)
 
         if not random:
             self.loadFromText(file)
@@ -490,7 +495,7 @@ class Table:
     # Creates a random table
     def loadRandom(self, name, columns, joins, clauses, constraints, tableNames, columnNames):
 
-        print(len(tableNames), tableNames)
+        print("Load random:", len(tableNames), tableNames)
 
         # Checks whether the parameters are legal
         #
