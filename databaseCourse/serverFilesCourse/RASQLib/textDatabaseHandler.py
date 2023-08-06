@@ -28,6 +28,7 @@ class Database:
 
             columnNames = parseColumnsFromFile('randomColumnsSQL')
             tableNames = getRandomTableNames()
+
             # When columns are set to zero, it indicates that
             # a table is being pased in (used to support old
             # difficulty-class questions). Otherwise, create
@@ -38,7 +39,7 @@ class Database:
                 self.primaryTable = Table(file=file, columns=columns, joins=joins, clauses=clauses, constraints=constraints, rows=rows, database=self, isSQL=isSQL, random=random, tableNames=tableNames, columnNames=columnNames)
             
             # Gets the referenced tables
-            self.referencedTables = self.primaryTable.getReferencedTables(static=not random, columnNames=columnNames)
+            self.referencedTables = self.primaryTable.getReferencedTables(static=not random, tableNames=tableNames, columnNames=columnNames)
         
 
         
@@ -919,7 +920,7 @@ class Table:
     # table to the referenced tables. If the unique parameter is true,
     # this dictionary contains a set of tables: no duplicated. Otherwise,
     # there may be duplicate tables with unique foreign keys.
-    def getReferencedTables(self, unique=True, static=False, columnNames=[]):
+    def getReferencedTables(self, unique=True, static=False, tableNames=[], columnNames=[]):
         
         # Uses a dictionary to store the tables and a set to keep track
         # of unique table names
@@ -951,7 +952,7 @@ class Table:
                 }
 
                 # Loads an approrpiate table into the dictionary
-                tables[self.columns[key]['references']] = Table(file=self.columns[key]['references'], columns=columns, constraints=constraints, database=self.database, isSQL=True, random=not static, columnNames=columnNames)
+                tables[self.columns[key]['references']] = Table(file=self.columns[key]['references'], columns=columns, constraints=constraints, database=self.database, isSQL=True, random=not static, tableNames=tableNames, columnNames=columnNames)
 
                 # Adds the table name to the set if unique is True
                 if unique:
@@ -1203,13 +1204,8 @@ def getRandomTableNames(path=relativeTableDataFilePath('randomTableNames')):
         with open(path) as file:
             # Strips out whitespace and only considers lines
             # that aren't exclusively whitespace
-            print('Found file!', path)
-            rn = [line.strip() for line in file.readlines() if not line.isspace()]
-            print(len(rn), rn)
-            
-            return rn
+            return [line.strip() for line in file.readlines() if not line.isspace()]
     except:
-       print('Uh-oh!', path)
        return []
     
 
