@@ -8,16 +8,16 @@ class CustomGraderTest(unittest.TestCase):
     # rowmatch
     # 0 due to empty
     def testRowMatchReturnsZeroWhenEmpty(self):
-        submittedAns = [()]
-        correctAns = [(1,2,3)]
+        submittedAns = []
+        correctAns = [[1,2,3]]
 
         result = rowMatch(submittedAns, correctAns)
 
         self.assertEqual(result['score'],0)
     # 0.5
     def testRowMatchReturnsHalfWhenHalfMatches(self):
-        submittedAns = [(1,2,3)]
-        correctAns = [(1,2,3),(4,5,6)]
+        submittedAns = [[1,2,3]]
+        correctAns = [[1,2,3],[4,5,6]]
 
         result = rowMatch(submittedAns, correctAns)
 

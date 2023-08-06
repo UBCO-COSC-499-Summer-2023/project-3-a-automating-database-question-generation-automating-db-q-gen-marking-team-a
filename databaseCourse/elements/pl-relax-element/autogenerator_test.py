@@ -15,7 +15,7 @@ class AutogenerateTest(unittest.TestCase):
                 print("Error: database is None")
 
     
-    def testAutogenerateJoinedTablesCollection():
+    def testAutogenerateJoinedTablesCollection(self):
         for i in range(10):
             columns = rand.randint(4, 7)
             joins = rand.randint(2, 5)
