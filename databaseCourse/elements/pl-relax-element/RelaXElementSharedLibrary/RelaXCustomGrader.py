@@ -87,8 +87,9 @@ def gradeQuery(data, feedback):
     submittedAnswer = data['submitted_answers']['RelaXEditor']
     correctAnswer = data['correct_answers']['RelaXEditor']
 
-    #url = f"http://localhost:3000/ra_autoGrader"
+    #url = f"http://relaxAPI:3001/index"
     url = data['params']['url']
+    #print(url)
 
     # Construct the data to be sent in the POST request
     data_to_send = {
