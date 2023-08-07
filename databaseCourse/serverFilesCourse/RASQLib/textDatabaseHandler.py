@@ -29,8 +29,6 @@ class Database:
             columnNames = parseColumnsFromFile('randomColumnsSQL')
             tableNames = getRandomTableNames()
 
-            print("Database:", len(tableNames), tableNames)
-
             # When columns are set to zero, it indicates that
             # a table is being pased in (used to support old
             # difficulty-class questions). Otherwise, create
