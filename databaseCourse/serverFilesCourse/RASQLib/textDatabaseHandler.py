@@ -554,6 +554,10 @@ class Table:
                     
 
 
+        # Gets random table names if they were not provided
+        if not tableNames:
+            tableNames = getRandomTableNames()
+
         # Selects a random name if none are provided
         if not name:
             self.name = tableNames.pop(choice(range(len(tableNames))))
