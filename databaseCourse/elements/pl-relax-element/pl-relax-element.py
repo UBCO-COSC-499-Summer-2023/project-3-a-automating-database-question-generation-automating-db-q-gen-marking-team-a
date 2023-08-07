@@ -23,6 +23,7 @@ def prepare(element_html, data):
     data['params']['grader'] = 'RelaXEditor'
 
     data['params']['db_initialize_create'] = ''
+    data['params']['db_initialize_create_backend'] = ''
     element = lxml.html.fragment_fromstring(element_html)
     
     # If there is a database file, read and loads its contents

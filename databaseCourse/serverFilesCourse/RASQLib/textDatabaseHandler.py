@@ -272,7 +272,9 @@ class Database:
     def loadRelaX(self, data):
         for table in self.tableSet:
             data['params']['db_initialize_create'] += self.tableSet[table].getRelaXSchema()
+            data['params']['db_initialize_create_backend'] += self.tableSet[table].getRelaXSchemaBackend()
         data['params']['db_initialize_create'] = data['params']['db_initialize_create'][:-1]
+        data['params']['db_initialize_create_backend'] = data['params']['db_initialize_create_backend'][:-1]
         #with open("./RelaXElementSharedLibrary/ShipmemtDatabase.txt") as f:
         #    data['params']['db_initialize'] = f.read()
     
@@ -1113,6 +1115,44 @@ class Table:
     def getInsertsBackend(self):
         return ''.join([f"INSERT INTO {self.name} VALUES ({str([self.rowsBackend[key][i] for key in self.rowsBackend])[1:-1]});\n" for i in range(len(list(self.rowsBackend.values())[0]))]) if self.rowsBackend else ''
 
+
+        # Returns the entire schema for RelaX
+    def getRelaXSchemaBackend(self):
+        
+        schema = ''
+
+        # Iterates over all columns
+        for key in self.columns:
+            schema += f"{self.name}.{self.columns[key]['name']}:{self.columns[key]['unit'].lower()}, "
+        schema = schema[:-2] + '\n'
+
+
+        # Iterates over rows and columns
+        for row in range(len(list(self.rowsBackend.values())[0])):
+            for key in self.rowsBackend:
+
+                # Adds the line, with quotes.
+                # Strings will break the editor if they do
+                # not have quotes. All other data types will
+                # break the editor if they do have quotes.
+                #
+                # Notice that, unlike most string formating,
+                # the single quotes are on the outside. It is
+                # important that the double quotes are on the
+                # inside due to apostrophes in names like
+                # "St. John's"
+                if self.columns[key]['unit'].upper() == 'STRING':
+                    schema += f'"{self.rowsBackend[key][row]}", '
+
+                # Adds the line, without quotes
+                else:
+                    schema += f"{self.rowsBackend[key][row]}, "
+        
+            # Removes the trailing comma and adds a newline
+            schema = schema[:-2] + '\n'
+
+        # Wraps the output in braces
+        return "{\n"+schema+"};"
 
 
     # Returns the entire schema for RelaX
