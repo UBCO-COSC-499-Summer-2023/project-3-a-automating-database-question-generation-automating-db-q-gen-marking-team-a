@@ -31,7 +31,6 @@ def customGrader(data):
     inputScore = 0
 
     if wordsSA == "" or wordsSA == []:
-        addFeedback(data,"Code :",0)
         return 0
 
     if os.path.exists("ans.db"):
@@ -128,7 +127,6 @@ def customGrader(data):
     else:
         inputScore = similarity / threshold
     
-    addFeedback(data,"Code: ", inputScore)
     grade = (inputScoreWeight*inputScore) + (outputScoreWeight*outputScore)
     grade = round(grade,2)
     return grade
@@ -540,7 +538,8 @@ def rowMatch(expectedAns,actualAns):
     rowGrade = (expectedTotal - actualTotal)
     if rowGrade < -actualTotal : return 0
     rowScore = (expectedTotal - abs(rowGrade))/expectedTotal
-
+    if rowScore < 0:
+        return 0
     return rowScore
 
 # scores the difference in the number of columns between both outputs
@@ -560,6 +559,8 @@ def colMatch(expectedAns,actualAns):
     # for each column that the submitted answer has that is more or less than the expected answer, a point is deducted
     colGrade = abs(expectedTotal - actualTotal)
     colScore = (expectedTotal - colGrade)/expectedTotal
+    if colScore < 0:
+        return 0
     return colScore
 
 # scores how much the values match between the expected ans and the actual ans
@@ -578,6 +579,8 @@ def valueMatch(expectedAns,actualAns):
             valueMatchActualTotal += 1
 
     matchScore = valueMatchActualTotal / valueMatchExpectedTotal
+    if matchScore < 0:
+        return 0
     return matchScore
 
 def addFeedback(data, category, categoryScore):
