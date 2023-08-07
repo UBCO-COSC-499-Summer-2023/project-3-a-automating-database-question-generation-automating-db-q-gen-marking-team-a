@@ -11,6 +11,6 @@
     ],
     "zones": [  {
             "questions": [
-                {"id": "Pet_Daycare",        "points": 7, "triesPerVariant": 10}
+                {"id": "9_er_design/Pet_Daycare",        "points": 7, "triesPerVariant": 10}
                 ]}]
 }

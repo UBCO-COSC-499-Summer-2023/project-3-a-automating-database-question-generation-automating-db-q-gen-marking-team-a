@@ -11,6 +11,6 @@
     ],
     "zones": [  {
             "questions": [
-                {"id": "StockDB",        "points": 10, "triesPerVariant": 10},
-                {"id": "QuestionDatabank", "points": 10, "triesPerVariant": 10}]}]
+                {"id": "9_er_design/StockDB",        "points": 10, "triesPerVariant": 10},
+                {"id": "9_er_design/QuestionDatabank", "points": 10, "triesPerVariant": 10}]}]
 }

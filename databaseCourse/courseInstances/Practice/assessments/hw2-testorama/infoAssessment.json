@@ -12,8 +12,8 @@
     "zones": [
         {
             "questions": [
-                {"id": "randomUML",                "points": 10},
-                {"id": "Fish_Store",                "points": 10}
+                {"id": "9_er_design/randomUML",                "points": 10},
+                {"id": "9_er_design/Fish_Store",                "points": 10}
 
             ]
         }

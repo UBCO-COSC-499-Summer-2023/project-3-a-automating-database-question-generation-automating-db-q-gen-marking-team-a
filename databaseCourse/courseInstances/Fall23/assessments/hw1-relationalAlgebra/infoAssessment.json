@@ -12,12 +12,12 @@
     "zones": [
         {
             "questions": [
-                {"id": "RelaX_Questions/1",             "points": 2},
-                {"id": "RelaX_Questions/2",             "points": 2},
-                {"id": "RelaX_Questions/3",             "points": 2},
-                {"id": "RelaX_Questions/4",             "points": 2},
-                {"id": "RelaX_Questions/5",             "points": 2},
-                {"id": "RelaX_Questions/Random",        "points": 2}
+                {"id": "4_relational_algebra/1",             "points": 2},
+                {"id": "4_relational_algebra/2",             "points": 2},
+                {"id": "4_relational_algebra/3",             "points": 2},
+                {"id": "4_relational_algebra/4",             "points": 2},
+                {"id": "4_relational_algebra/5",             "points": 2},
+                {"id": "4_relational_algebra/Random",        "points": 2}
             ]
         }
     ]

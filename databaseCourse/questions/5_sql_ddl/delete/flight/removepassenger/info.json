@@ -1,0 +1,10 @@
+{
+    "uuid": "ada3b209-6346-4c2e-a5fc-ac877f3085b3",
+    "title": "Delete Passenger",
+    "topic": "SQLDDL",
+    "singleVariant": true,
+    "tags": [
+        "DELETE"        
+    ],
+    "type": "v3"
+}
