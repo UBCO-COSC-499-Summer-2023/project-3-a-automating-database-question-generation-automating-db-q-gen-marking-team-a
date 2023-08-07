@@ -89,7 +89,6 @@ def autogenerate(data):
     rows = rand.randint(7, 15)
     
     database = db.Database(isSQL=False, columns=columns, joins=joins, rows=rows)
-
     question = Question(dataset=database, attribDict=data['params']['attrib_dict'])
 
 
@@ -98,7 +97,7 @@ def autogenerate(data):
     question.loadQuestion(data)
 
 
-    data['params']['html_params']['expectedOutput'] = createPreview(data)
+    data['params']['html_params']['expectedOutput'] = "hello world"#createPreview(data) 
 
 class Question:
     Query = "π "

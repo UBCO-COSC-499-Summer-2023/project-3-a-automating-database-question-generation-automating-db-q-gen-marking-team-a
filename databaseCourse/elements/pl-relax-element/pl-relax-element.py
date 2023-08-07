@@ -117,6 +117,7 @@ def render(element_html, data):
 
     # This renders the question into PL
     if data['panel'] == 'question':
+        #data['params']['html_params']['expectedOutput'] = autogen.createPreview(data)
         if 'questionText' not in data['params'].keys():
             data['params']['questionText'] = ""
         # setting the paramaters

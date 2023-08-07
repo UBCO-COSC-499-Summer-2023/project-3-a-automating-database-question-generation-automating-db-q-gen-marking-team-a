@@ -61,7 +61,7 @@ class Database:
         # Populates the table with data
         if rows:
             self.generateRows(rows)
-
+            self.generateRowsBackendRelaX(30)
         # Links tables such that there is a depth
         # of `d`
         keyList = list(self.tableSet.keys())
@@ -74,6 +74,7 @@ class Database:
            self.tableSet[keyList[i]].link(self.tableSet[keyList[i+1]])
         # The rest of the joins link the remaining
         # table to a random one in the depth chain
+
         if joins == len(keyList):
             joins-=1
         for i in range(depth, joins+1):
@@ -82,6 +83,9 @@ class Database:
             randIndex = randint(0,depth-1)
             #print(f"{randIndex}/ {depth-1}/ {i}\n{joins+1}/ {len(keyList)}/ {len(self.tableSet)}")
             self.tableSet[keyList[randIndex]].link(self.tableSet[keyList[i]])
+        
+
+        # self.generateRowsBackendRelaX(rows)
 
 
         # For relax, Foreign keys are created by having the same column name
@@ -214,7 +218,13 @@ class Database:
         for table in self.tableSet:
             self.tableSet[table].generateRows(qty)
     
-
+    # Ensuring consistency across FKs is done in Table.link(),
+    # but does require the rows to be generated BEFORE the
+    # tables are linked
+    def generateRowsBackendRelaX(self, qty=0):
+        for table in self.tableSet:
+            self.tableSet[table].generateRowsBackend(qty)
+    
 
     # Adds the tables' schema to data
     def loadColumns(self, data):
@@ -271,6 +281,8 @@ class Database:
             data['params']['db_initialize_create_backend'] += self.tableSet[table].getRelaXSchemaBackend()
         data['params']['db_initialize_create'] = data['params']['db_initialize_create'][:-1]
         data['params']['db_initialize_create_backend'] = data['params']['db_initialize_create_backend'][:-1]
+        #print(data['params']['db_initialize_create'])
+        print(data['params']['db_initialize_create_backend'])
         #with open("./RelaXElementSharedLibrary/ShipmemtDatabase.txt") as f:
         #    data['params']['db_initialize'] = f.read()
     
@@ -822,6 +834,11 @@ class Table:
             for i in range(len(self.rows[column])):
                 foreignTable.rows[column].append(choice(self.rows[column]))
                 # print(f"{foreignTable.rows[column][i]} : {self.rows[column][i]}")
+        if foreignTable.rowsBackend:
+            foreignTable.rowsBackend[column] = []
+            for i in range(len(self.rowsBackend[column])):
+                foreignTable.rowsBackend[column].append(choice(self.rowsBackend[column]))
+        
 
 
     # Given a marked-up textfile, return an array

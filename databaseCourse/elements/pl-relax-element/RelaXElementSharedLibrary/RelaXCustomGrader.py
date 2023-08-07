@@ -87,7 +87,7 @@ def gradeQuery(data, feedback):
     # change to and test 'db_initialize_insert_backend'
     #print(data['params']['database'])
     #print(data['params']['db_initialize_create'])
-    db = data['params']['database']
+    db = data['params']['db_initialize_create_backend']
 
     submittedAnswer = data['submitted_answers']['RelaXEditor']
     correctAnswer = data['correct_answers']['RelaXEditor']
