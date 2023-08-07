@@ -355,7 +355,7 @@ class Table:
         self.rowsBackend = {}
         self.isSQL = isSQL
 
-        print("Innit:", len(tableNames), tableNames)
+
 
         # If no constrains are present, guarantees the
         # existance of a basic INTEGER/NUMBER type column.
@@ -382,7 +382,6 @@ class Table:
     # f"{file}" will become the table name if it is
     # provided, otherwise a random name will be chosen
     def load(self, file, columns, joins, clauses, constraints, random, tableNames, columnNames):
-        print("Load:", len(tableNames), tableNames)
 
         if not random:
             self.loadFromText(file)
@@ -495,8 +494,6 @@ class Table:
     # Creates a random table
     def loadRandom(self, name, columns, joins, clauses, constraints, tableNames, columnNames):
 
-        print("Load random:", len(tableNames), tableNames)
-
         # Checks whether the parameters are legal
         #
         # Columns must be at least three otherwise there is
@@ -593,7 +590,6 @@ class Table:
 
             # Chooses a random column to add
             # Pops the column to ensure no duplicates
-            #print(columnNames)
             addColumn = columnNames.pop(choice(range(len(columnNames))))
 
             # Checks if the column would override an existing 
