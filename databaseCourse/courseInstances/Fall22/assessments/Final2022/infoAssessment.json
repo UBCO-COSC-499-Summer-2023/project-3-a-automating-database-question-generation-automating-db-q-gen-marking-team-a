@@ -1,0 +1,25 @@
+{
+    "uuid": "3d704d90-dfd4-445e-bd14-7ac82f82f75a",
+    "type": "Exam",
+    "title": "Final Exam",
+    "set": "Quiz",
+    "number": "1",
+    "allowAccess": [
+        {
+            "startDate": "2022-12-14T21:00:00",
+            "endDate": "2022-12-15T01:00:00",
+            "credit": 10
+        }
+    ],
+    "zones": [
+        {
+            "questions": [
+                {
+                    "id": "Restaurant",
+                    "triesPerVariant": 5,
+                    "points": [10,10,10,10,10]
+                }
+            ]
+        }
+    ]
+}

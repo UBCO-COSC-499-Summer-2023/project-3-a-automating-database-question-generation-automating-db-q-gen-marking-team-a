@@ -1,0 +1,16 @@
+{
+    "uuid": "174f3345-4538-4de6-a103-92744bf3575e",
+    "type": "Homework",
+    "title": "Lab 5 - Q1",
+    "set": "Homework",
+    "number": "5.1",
+      "allowAccess": [
+        {
+            "credit": 7
+        }
+    ],
+    "zones": [  {
+            "questions": [
+                {"id": "Pet_Daycare",        "points": 7, "triesPerVariant": 10}
+                ]}]
+}

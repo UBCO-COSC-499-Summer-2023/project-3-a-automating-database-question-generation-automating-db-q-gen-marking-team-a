@@ -1,0 +1,53 @@
+<pl-uml-element random="False" max-grade = "10">
+<uml-question>
+    Construct a database design in UML for a restaurant database.
+    The database tracks [restaurants](Restaurant), where a [restaurant](Restaurant) is identified by its [name](restaurantName) and [location](location) and has a [type](type) (e.g. Greek, Italian, American, etc.).
+    Each restaurant has exactly one [owner](Owner) that has a unique [name](ownerName). An [owner](Owner) may own 1 or more [restaurants](Restaurant). 
+    A [restaurant](Restaurant) [serves](serves) [menu items](MenuItem) that have a [name](itemName) unique to the restaurant and a [price](price).
+    A [chef](Chef) [works at](worksAt) exactly one [restaurant](Restaurant), and a [restaurant](Restaurant) has one or more [chefs](Chef). A [chef](Chef) has a unique [id](chefId) as well as a [name](chefName), [experience](experience), and receives a [salary](salary) when working at a [restaurant](Restaurant).
+    A [chef](Chef) may [supervise](supervises) other chefs, but does not have to supervise anyone and may not be supervised by anyone.
+    One or more [chefs](Chef) [prepare](prepare) each [menu item](MenuItem), and a [chefs](Chef) may make zero or more [menu items](MenuItem).
+    [Ingredients](Ingredient) are [required](requires) to produce [menu items](MenuItem). An [ingredient](Ingredient) has a unique [name](ingredientName) and a [cost](cost).
+    Each [menu item](MenuItem) [requires](requires) a certain [amount](amount) of each [ingredient](Ingredient) and a [description](description) on how it is used. [Ingredients](Ingredient) are used in multiple [menu items](MenuItem), and each item may have multiple ingredients.
+    Each [ingredient](Ingredient) is [supplied by](supplies) exactly one [supplier](Supplier) that may supply multiple [ingredients](Ingredient). A [supplier](Supplier) is identified by an [id](supplierId) and has a [name](supplierName).
+</uml-question>
+<uml-answer>
+[Restaurant|restaurantName {PK};location {PK};type]
+[Owner|ownerName {PK}]
+[MenuItem|itemName {PPK};price]
+[Chef|chefId {PK};chefName;experience;salary]
+[Ingredient|ingredientName {PK};cost]
+[Requires|amount;description]
+[Supplier|supplierId {PK};supplierName]
+[Prepare]
+[Owner]1..1 - 1..*[Restaurant] : Owns
+[Restaurant]1..1 - *[MenuItem] : Serves
+[MenuItem]1..1 - 0..*[Prepare] : Has
+[Chef]1..1 - 0..*[Prepare] : Has
+[Chef]0..1 - 0..*[Chef] : Supervises
+[MenuItem]1..1 - 0..*[Requires] : Has
+[Requires]0..* - 1..1[Ingredient] : Has
+[Supplier]1..1 - *[Ingredient] : Supplies
+[Chef]1..* - 1..1[Restaurant] : WorksAt
+</uml-answer>
+<uml-answer>
+[Restaurant|restaurantName {PK};location {PK};type]
+[Owner|ownerName {PK}]
+[MenuItem|itemName {PPK};price]
+[Chef|chefId {PK};chefName;experience;salary]
+[Ingredient|ingredientName {PK};cost]
+[Requires|amount;description]
+[Supplier|supplierId {PK};supplierName]
+[Owner]1..1 - 1..*[Restaurant] : Owns
+[Restaurant]1..1 - *[MenuItem] : Serves
+[MenuItem]* - 1..*[Chef] : Prepares
+[Chef]0..1 - 0..*[Chef] : Supervises
+[MenuItem]1..1 - 0..*[Requires] : Has
+[Requires]0..* - 1..1[Ingredient] : Has
+[Supplier]1..1 - *[Ingredient] : Supplies
+[Chef]1..* - 1..1[Restaurant] : WorksAt
+</uml-answer>
+
+    <uml-marking entity-name="0.2" entity-attributes="0.1" entity-key="0.2" extra-entity-penalty="0.25" weak_entity="0.5" relationship="0.5" cardinality="0.25" extra-relationship-penalty="0.25"></uml-marking>
+</pl-uml-element>
+
