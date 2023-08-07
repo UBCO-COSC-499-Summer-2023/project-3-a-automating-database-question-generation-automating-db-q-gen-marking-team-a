@@ -298,9 +298,7 @@ def generateUpdate(data, difficulty):
 
 
 
-
-
-    # Adds the important rows to the backend DB
+    # Adds the important rows to the backend database
     database.addRowsBackend(conditionalValues)
 
     # Loads data
@@ -409,6 +407,9 @@ def generateDelete(data, difficulty):
 
 
 
+    # Adds the important rows to the backend database
+    database.addRowsBackend(conditionalValues)
+
     # Loads the database
     database.loadDatabase(data)
 
@@ -493,12 +494,7 @@ def generateQuery(data, difficulty):
     # Unpacks variables for easy referencing
     table = database.primaryTable
     referenced = database.referencedTables
-
-    keyMap = table.getKeyMap()
-
-    tableMap = {key: referenced[keyMap[key]['references']] for key in keyMap}
-    tableMap[table.name] = table
-
+    
     conditionals = queryClauses['conditional']
     useSubquery = queryClauses['useSubquery']
     columnsToSelect = queryClauses['columnsToSelect']
@@ -509,6 +505,14 @@ def generateQuery(data, difficulty):
     withClause = queryClauses['with']
     isDistinct = queryClauses['isDistinct']
     useQueryFunctions = queryClauses['useQueryFunctions']
+
+    # Maps table names to the table itself
+    #   allTables {
+    #       $tableName: $table
+    #   }
+    allTables = {table.name: table}
+    for ref in referenced:
+        allTables[ref] = referenced[ref]
 
 
 
@@ -560,14 +564,17 @@ def generateQuery(data, difficulty):
 
 
 
-    # A list of all columns in the table.
-    columnList = getColumnList(tableMap)
+    # A list of all columns in the joined tables
+    joinedColumnList = []
+    for selectedTable in selectedColumns:
+        for column in allTables[selectedTable].columns.keys():
+            joinedColumnList.append(column)
 
     # Gets the columns to order and whether or not they're
     # ascending
     orderByColumns = {}
     while len(orderByColumns) < orderBy:
-        orderByColumns[columnList.pop(random.choice(range(len(columnList))))] = random.choice(['ASC', 'DESC'])
+        orderByColumns[joinedColumnList.pop(random.choice(range(len(joinedColumnList))))] = random.choice(['ASC', 'DESC'])
     
 
     # A list of *selected* columns
@@ -949,16 +956,13 @@ def generateSubquery(database):
 
     # Grabs some parameters for easy referencing
     table = database.primaryTable
-    referenced = database.referencedTables
 
-    keyMap = table.getKeyMap()
-    tableMap = database.getTableMap()
     columnMap = database.getColumnMap(tableNames=False)
     
 
 
-    # All columns that are in the primary table
-    primaryColumnList = [column for column in table.columns]
+    # All columns that are not in the primary table
+    foreignColumnList = [column for column in columnMap if column not in table.columns]
 
     # Assigns weights to columns by data type. If the
     # data type is not present, it gets a weight of 100.
@@ -968,38 +972,36 @@ def generateSubquery(database):
     #   - VARCHAR has LENGTH() and COUNT() so it's not bad
     #   - DATE, and DATETIME only have COUNT(), MIN(), and 
     #     MAX() so they're also not too bad
-    #   - CHAR only has COUNT()
+    #   - CHAR only has COUNT(), so it has a small weight
     weightMap = {
-        'INTEGER': 200,
-        'DECIMAL': 200,
-        'VARCHAR': 50,
-        'CHAR': 50,
-        'DATE': 50,
-        'DATETIME': 25
+        'INTEGER': 20,
+        'DECIMAL': 20,
+        'VARCHAR': 5,
+        'CHAR': 1,
+        'DATE': 5,
+        'DATETIME': 5
     }
 
     # Uses the weight map to create weights for selecting a
-    # conditional column
-    conditionalWeights = [weightMap[table.columns[key]['unit']] for key in primaryColumnList]
+    # foreign column
+    foreignWeights = [weightMap[columnMap[key].columns[key]['unit']] for key in foreignColumnList]
 
-    # Gets all units in referenced tables to ensure that the
-    # conditional column has the same units as at least one
-    # other column in a referenced table
-    unitsInReferenced = set(columnMap[key].columns[key]['unit'] for key in columnMap if key not in table.columns)
+    # Gets all units in the primary tables to ensure that the
+    # foreign column has the same units as at least one
+    # column in a primary table
+    unitsInPrimary = set(table.columns[key]['unit'] for key in table.columns)
 
-    # Selects a random column based on the weights, and keeps
-    # doing so until the column's unit are in a set belonging
-    # to the units of the referenced tables
-    conditionalColumn = None
-    while not conditionalColumn or table.columns[conditionalColumn]['unit'] not in unitsInReferenced:
-        conditionalColumn = random.choices(primaryColumnList, conditionalWeights)[0]
+    # Chooses a foreign column for the subquery's SELECT. Can
+    # only select columns which have at least one column in the
+    # primary table with the same unit
+    selectedColumn = None
+    while not selectedColumn or columnMap[selectedColumn].columns[selectedColumn]['unit'] not in unitsInPrimary:
+        selectedColumn = random.choices(foreignColumnList, foreignWeights)[0]
 
-    # Creates a list of all columns from referenced tables that
-    # have the same unit as the conditional column
-    foreignColumnList = [column for column in columnMap if column not in table.columns and columnMap[column].columns[column]['unit'] == table.columns[conditionalColumn]['unit']]
-
-    # Selects one such column
-    selectedColumn = random.choice(foreignColumnList)
+    # Checks whether or not a query function is valid for this
+    # subquery. All query clauses produce a number, so they
+    # must be compared against a number.
+    canUseQueryFunction = 'INTEGER' in unitsInPrimary or 'DECIMAL' in unitsInPrimary
 
 
 
@@ -1009,15 +1011,53 @@ def generateSubquery(database):
     conditionalValues = {}
     
 
-    # There's a small chance to eschew caring about the datatype
-    # and instead use an `IN (SELECT ...)`
-    if random.random() * 10 < 1:
+
+    # Only use the 'IN' clause if there is no other option. Unless
+    # the data between the selected and conditional column is very
+    # similar, an 'IN' clause will produce few–if any–rows
+    if not canUseQueryFunction:
+
+        # Get all columns in the primary that match the data-type
+        # of the selected column
+        conditionalColumnList = []
+        for column in table.columns:
+            if table.columns[column]['unit'] == columnMap[selectedColumn].columns[selectedColumn]['unit']:
+                conditionalColumnList.append(column)
+
+        # Chooses a random column from the list
+        conditionalColumn = random.choice(conditionalColumnList)
+
 
         # Guarantees some conditional values
         conditionalValues = getConditionalValues(random.choices([1, 2, 3], [100, 10, 1])[0], database, columnList=[column for column in columnMap[selectedColumn].columns], restrictive=False)
         statement = subqueryStatement(conditionalColumn, 'IN', selectedColumn, columnMap[selectedColumn].name, conditionalValues=conditionalValues)
         questionString = subqueryQuestionString(database, conditionalColumn, 'IN', selectedColumn, queryFunction, conditionalValues=conditionalValues)
         return statement, questionString
+
+
+
+    # Selects the query function
+    queryFunction = getQueryFunction(database, selectedColumn, conditionalValues, useIn=False)
+
+
+
+    # Gets all columns in the primary table that match the data-type
+    # required for query functions, i.e. number-like data-types
+    conditionalColumnList = []
+    for column in table.columns:
+
+        # If the unit is date-like, the conditional column can also
+        # be a date-like so long as the function isn't 'COUNT'
+        if columnMap[selectedColumn].columns[selectedColumn]['unit'] in ['DATE', 'DATETIME'] and queryFunction not in ['COUNT']:
+            if table.columns[column]['unit'] in ['DATE', 'DATETIME']:
+                conditionalColumnList.append(column)
+
+        # Otherwise, it has to be compared to a number-like
+        elif table.columns[column]['unit'] in ['INTEGER', 'DECIMAL']:
+            conditionalColumnList.append(column)
+        
+    # Chooses a random column from the list
+    conditionalColumn = random.choice(conditionalColumnList)
 
 
 
@@ -1028,34 +1068,25 @@ def generateSubquery(database):
         conditionalValues = getConditionalValues(random.choices([1, 2, 3], [100, 10, 1])[0], database, columnList=[column for column in columnMap[selectedColumn].columns], restrictive=False)
 
 
-    queryFunction = getQueryFunction(database, selectedColumn, conditionalValues)
-
 
     # Selects an appropriate operator.
-    # Prefers 'greater thans' since we prefer larger query 
-    # results. The 'equals' and 'not equals have no chance 
-    # since they ruin query results
+    # Prefers 'greater than's since we prefer larger query 
+    # results
     if queryFunction in ['COUNT', 'MIN']:
-        comparisonOperator = random.choices(['>', '>=', '<', '<=', '=', '!='], [10, 10, 1, 1, 0, 0])[0]
+        comparisonOperator = random.choices(['>', '>=', '<', '<=', '=', '!='], [20, 20, 2, 2, 1, 1])[0]
     
-    # Similarly, 'less than' works best for MAX function
+    # Similarly, 'less than's works best for MAX function
     elif queryFunction in ['MAX']:
-        comparisonOperator = random.choices(['>', '>=', '<', '<=', '=', '!='], [1, 1, 10, 10, 0, 0])[0]
+        comparisonOperator = random.choices(['>', '>=', '<', '<=', '=', '!='], [2, 2, 20, 20, 1, 1])[0]
     
-    # For the LENGTH function, all comparators are about as
-    # good as one another. Notably, the 'equals' aren't
-    # all too bad, so we include them now
+    # For the LENGTH function, the returned number tends to
+    # be small so we prefer 'greater than's
     elif queryFunction in ['LENGTH']:
-        comparisonOperator = random.choices(['>', '>=', '<', '<=', '=', '!='], [2, 2, 2, 2, 1, 1])[0]
-
-    # If the rows aren't aggregate, then we have to use the
-    # 'IN' clause
-    elif queryFunction == '':
-        comparisonOperator = 'IN'
+        comparisonOperator = random.choices(['>', '>=', '<', '<=', '=', '!='], [20, 20, 2, 2, 1, 1])[0]
 
     # No chance of the 'equals'
     else:
-        comparisonOperator = random.choices(['>', '>=', '<', '<=', '=', '!='], [1, 1, 1, 1, 0, 0])[0]
+        comparisonOperator = random.choices(['>', '>=', '<', '<=', '=', '!='], [20, 20, 20, 20, 1, 1])[0]
 
 
 

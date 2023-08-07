@@ -14,14 +14,10 @@ from RASQLib import noisyData as nd
 
 # Models a group of tables
 class Database:
-    def __init__(self, isSQL=True, file='', columns=5, joins=0, depth=3, clauses={}, constraints={'': {'name': '', 'unit': 'INTEGER', 'unitOther': None}}, rows=0, random=True):
-
-        
+    def __init__(self, isSQL=True, file='', columns=5, joins=0, depth=3, clauses={}, constraints={}, rows=0, random=True):
 
         self.isSQL = isSQL
         self.random = random
-        
-
 
         # For SQL databases
         if isSQL:
@@ -358,11 +354,6 @@ class Table:
         # If no constrains are present, guarantees the
         # existance of a basic INTEGER/NUMBER type column.
         # Useful for generating random queries.
-        if not constraints:
-            if isSQL:
-                constraints = {'': {'name': '', 'unit': 'INTEGER', 'unitOther': None}}
-            else:
-                constraints = {'': {'name': '', 'unit': 'NUMBER', 'unitOther': None}}
 
         # Adds columns.
         # Also passes in column names from the file if they
@@ -563,12 +554,6 @@ class Table:
         # Adds foreign key constraints
         if constraints:
             for key in constraints.keys():
-
-                # If the default contraint, then choose
-                # an applicable name for an INTEGER
-                if not key:
-                    constraints[key]['name'] = choice(['num', 'id'])
-
                 self.columns[constraints[key]['name']] = {
                     'name': constraints[key]['name'],
                     'unit': constraints[key]['unit'],
@@ -586,16 +571,14 @@ class Table:
         # Keeps adding columns until there are enough
         while len(self.columns) < columns:
 
-            # Chooses a random column to add
-            # Pops the column to ensure no duplicates
-            addColumn = columnNames.pop(choice(range(len(columnNames))))
 
-            # Checks if the column would override an existing 
-            # column. This could only occur due to foreign key
-            # constraints adding a column then the pop() function
-            # giving the same column. Requires at most one more
-            # pop() to fix
-            if addColumn[0] in self.columns.keys():
+            # Gets a unique column name. The while should
+            # is not necessary, but there for safety
+            addColumn = None
+            while not addColumn or addColumn[0] in self.columns.keys():
+                
+                # Chooses a random column to add
+                # Pops the column to ensure no duplicates
                 addColumn = columnNames.pop(choice(range(len(columnNames))))
 
             # Grabs parameters
@@ -694,7 +677,7 @@ class Table:
             self.columns[foreignColumn]['name'] = f"{selfPrepend}{foreignColumn}"
 
             # Removes the old column while updateting the new
-            self.columns[f"{self.name[0:1].lower()}{foreignColumn}"] = self.columns.pop(foreignColumn)
+            self.columns[f"{selfPrepend}{foreignColumn}"] = self.columns.pop(foreignColumn)
 
 
 
@@ -970,9 +953,12 @@ class Table:
 
 
     # Returns a dictionary with the following mapping:
-    #   column: (if the column is a foreign key)
-    #       'references': the table referenced
-    #       'foreignKey': the column in the referenced table
+    #   keyMap {
+    #       $column: (if the column is a foreign key) {
+    #           'references': $referencedTableName
+    #           'foreignKey': $referencedColumnName
+    #       }
+    #   }
     def getKeyMap(self):
         return {key: {'references': self.columns[key]['references'], 'foreignKey': self.columns[key]['foreignKey']} for key in self.columns.keys() if self.columns[key]['references']}
     
@@ -1014,6 +1000,32 @@ class Table:
         # Generates the data
         columns = nd.generateColumns(self, qty)
 
+        # Enforced uniqueness on generated values
+        if self.rowsBackend:
+            for key in columns:
+
+                # Only continue if the column is unique
+                if nd.isUnique(self, key):
+                    for value in self.rowsBackend[key]:
+
+                        # If it finds a non-unique value
+                        if value in columns[key]:
+
+                            # Removes the value
+                            columns[key].pop(columns[key].index(value))
+
+                            # Keeps generating values until
+                            # it is unique to both the current
+                            # backend rows or the rows in the
+                            # generated columns
+                            newValue = None
+                            while not newValue or newValue in self.rowsBackend[key] or newValue in columns[key]:
+                                newValue = nd.generateNoisyDataNoFile(self, key)[0]
+
+                            # Adds the new value
+                            columns[key].append(newValue)
+
+        # Adds the set of rows to the backend rows
         for key in columns:
 
             # Creates the column if it does not already exist
@@ -1022,7 +1034,6 @@ class Table:
 
             # Adds the column
             self.rowsBackend[key] += columns[key]
-
     
     # Adds a row to this table
     def addRow(self, row, index=0):
