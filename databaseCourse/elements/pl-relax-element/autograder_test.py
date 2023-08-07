@@ -8,24 +8,24 @@ class CustomGraderTest(unittest.TestCase):
     # rowmatch
     # 0 due to empty
     def testRowMatchReturnsZeroWhenEmpty(self):
-        submittedAns = [()]
-        correctAns = [(1,2,3)]
+        submittedAns = []
+        correctAns = [[1,2,3]]
 
         result = rowMatch(submittedAns, correctAns)
 
         self.assertEqual(result['score'],0)
     # 0.5
     def testRowMatchReturnsHalfWhenHalfMatches(self):
-        submittedAns = [(1,2,3)]
-        correctAns = [(1,2,3),(4,5,6)]
+        submittedAns = [[1,2,3]]
+        correctAns = [[1,2,3],[4,5,6]]
 
         result = rowMatch(submittedAns, correctAns)
 
         self.assertEqual(result['score'],0.5)
     # 1
     def testRowMatchReturnsOneWhenAllMatch(self):
-        submittedAns = [(1,2,3)]
-        correctAns = [(1,2,3)]
+        submittedAns = [[1,2,3]]
+        correctAns = [[1,2,3]]
 
         result = rowMatch(submittedAns, correctAns)
 
@@ -34,24 +34,24 @@ class CustomGraderTest(unittest.TestCase):
     # valmatch
     # 0 when empty
     def testValMatchReturnsZeroWhenEmpty(self):
-        submittedAns = [()]
-        correctAns = [(1,2,3)]
+        submittedAns = [[]]
+        correctAns = [[1,2,3]]
 
         result = valueMatch(submittedAns, correctAns)
 
         self.assertEqual(result['score'],0)
     # 0 when non empty
     def testValMatchReturnsZeroWhenNoMatches(self):
-        submittedAns = [(0,5,9)]
-        correctAns = [(1,2,3,4)]
+        submittedAns = [[0,5,9]]
+        correctAns = [[1,2,3,4]]
 
         result = valueMatch(submittedAns, correctAns)
 
         self.assertEqual(result['score'],0)
     
     def testValMatchReturnsZeroWhenExtraMatches(self):
-        submittedAns = [(1,2,3,4,5,6)]
-        correctAns = [(1,2,3)]
+        submittedAns = [[1,2,3,4,5,6]]
+        correctAns = [[1,2,3]]
         
         result = valueMatch(submittedAns, correctAns)
         
@@ -59,16 +59,16 @@ class CustomGraderTest(unittest.TestCase):
         
     # 0.5
     def testValMatchReturnsHalfWhenHalfMatches(self):
-        submittedAns = [(1,2,3),(0,2,3)]
-        correctAns = [(1,2,3),(1,9,8)]
+        submittedAns = [[1,2,3],[0,2,3]]
+        correctAns = [[1,2,3],[1,9,8]]
 
         result = valueMatch(submittedAns,correctAns)
 
         self.assertEqual(result['score'],0.5)
     # 1
     def testValMatchReturnsOneWhenAllMatch(self):
-        submittedAns = [(1,2,3)]
-        correctAns = [(1,2,3)]
+        submittedAns = [[1,2,3]]
+        correctAns = [[1,2,3]]
 
         result = valueMatch(submittedAns, correctAns)
 

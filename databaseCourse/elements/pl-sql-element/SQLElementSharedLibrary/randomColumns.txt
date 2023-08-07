@@ -1,0 +1,25 @@
+id,INTEGER
+inventory,INTEGER
+quantity,INTEGER
+
+price,DECIMAL,3-9,2
+
+identifier,CHAR,3-6
+state,CHAR,2
+
+name,VARCHAR,20-40-5
+city,VARCHAR,25-50-5
+province,VARCHAR,20-30-5
+country,VARCHAR,20-30-5
+address,VARCHAR,40-55-5
+departAirport,VARCHAR,25-35-5
+arriveAirport,VARCHAR,25-35-5
+firstName,VARCHAR,25-35-5
+lastName,VARCHAR,25-35-5
+
+birthdate,DATE
+manufactureDate,DATE
+
+arrivalDate,DATETIME
+departureDate,DATETIME
+shipdate, DATETIME

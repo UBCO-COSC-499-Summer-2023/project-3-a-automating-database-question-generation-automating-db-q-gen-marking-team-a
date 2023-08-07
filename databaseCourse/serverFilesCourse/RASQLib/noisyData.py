@@ -230,12 +230,18 @@ def generateNoisyDate(unique, qty):
         # whether or not it's a leapyear and thus
         # allow a 29th day in February
         day = -1
-        if month % 2 == 1:
-            day = random.randint(1, 31)
-        elif month == 2:
-            day = random.randint(1, 28)
+        if month < 8:
+            if month % 2 == 1:
+                day = random.randint(1, 31)
+            elif month == 2:
+                day = random.randint(1, 28)
+            else:
+                day = random.randint(1, 30)
         else:
-            day = random.randint(1, 30)
+            if month % 2 == 1:
+                day = random.randint(1, 30)
+            else:
+                day = random.randint(1, 31)
 
         # the ':02' formatting ensures that the length of the
         # string is a minimum of 2, padded left with zeroes
