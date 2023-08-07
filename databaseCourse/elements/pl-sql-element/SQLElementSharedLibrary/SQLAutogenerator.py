@@ -30,6 +30,27 @@ def autogenerate(data):
         case 'update': generateUpdate(data, difficulty)
         case 'delete': generateDelete(data, difficulty)
         case 'query': generateQuery(data, difficulty)
+    
+
+
+    # Generates a new query question if there is expected output
+    # but it is empty
+    queryMisses = 0
+    while questionType == 'query' and data['params']['html_params']['expectedOutput'] and '<td>' not in data['params']['expectedOutput']:
+        
+        # If there are too many misses, then use a query with empty
+        # expected output rather than waiting too long
+        queryMisses += 1
+        if queryMisses > 2:
+            break 
+
+        # Clears out the previous create and insert statements
+        data['params']['db_initialize_create'] = ''
+        data['params']['db_initialize_insert_frontend'] = ''
+        data['params']['db_initialize_insert_backend'] = ''
+
+        # Generates the new query
+        generateQuery(data, difficulty)
 
 '''
     Begin create-style question
