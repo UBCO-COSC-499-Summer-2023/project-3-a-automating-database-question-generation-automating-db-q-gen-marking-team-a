@@ -18,8 +18,6 @@ class Database:
 
         self.isSQL = isSQL
         self.random = random
-        
-
 
         # For SQL databases
         if isSQL:
