@@ -25,5 +25,8 @@
 - worked on testorama list of things to do
 
 ## Friday , July 28:
+- met with TA
+- worked on setting up stuff for testorama
+- team meeting and working on bug fixes
 
 ## Saturday , July 29:
