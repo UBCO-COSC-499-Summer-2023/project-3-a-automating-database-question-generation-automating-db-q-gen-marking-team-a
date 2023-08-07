@@ -31,7 +31,7 @@ def customGrader(data):
     inputScore = 0
 
     if wordsSA == "" or wordsSA == []:
-        addFeedback(data,"Code :",0)
+        addFeedback(data,"Code Match :",0)
         return 0
 
     if os.path.exists("ans.db"):
@@ -128,9 +128,9 @@ def customGrader(data):
     else:
         inputScore = similarity / threshold
     
-    addFeedback(data,"Code: ", inputScore)
     grade = (inputScoreWeight*inputScore) + (outputScoreWeight*outputScore)
     grade = round(grade,2)
+    addFeedback(data,"Code Match :",inputScore)
     return grade
 
 # Returns the similarity between two strings.
@@ -190,8 +190,11 @@ def getExpectedAndActualQueryResults(data,correctAnswer,submittedAnswer):
     commands += data['params']['db_initialize_insert_backend'].replace('\n', '').replace('\t', '')
     
     # db initialization
-    cur.executescript(commands)
-    con.commit()
+    try:
+        cur.executescript(commands)
+        con.commit()
+    except:
+        con.rollback()
 
     # format solution from string to code and execute + fetch results
     expectedCode = correctAnswer.replace('\n', ' ').replace('\t', ' ')
@@ -203,6 +206,8 @@ def getExpectedAndActualQueryResults(data,correctAnswer,submittedAnswer):
 
     if not (actualAns or expectedAns):
         raise Exception("expected and actual empty")
+    
+    con.close()
     
     return (expectedAns,actualAns)
 
@@ -268,6 +273,9 @@ def getExpectedAndActualCreateResults(correctAnswer,submittedAnswer):
     
     if not (actualAns or expectedAns):
         raise Exception("expected and actual empty")
+    
+    con.close()
+    conTwo.close()
 
     return (expectedAns,actualAns)
 
@@ -299,8 +307,11 @@ def getExpectedAndActualInsertResults(data,correctAnswer,submittedAnswer):
     # formats db initialization code from string to SQL and executes
     commands = data['params']['db_initialize_create'].replace('\n', '').replace('\t', '')
     commands += data['params']['db_initialize_insert_backend'].replace('\n', '').replace('\t', '')
-    cur.executescript(commands)
-    con.commit()
+    try:
+        cur.executescript(commands)
+        con.commit()
+    except:
+        con.rollback()
 
     # gets all tables
     tables = cur.execute("SELECT name FROM sqlite_master WHERE type='table';").fetchall()
@@ -332,6 +343,9 @@ def getExpectedAndActualInsertResults(data,correctAnswer,submittedAnswer):
     
     if not (actualAns or expectedAns):
         raise Exception("expected and actual empty")
+
+    con.close()
+    conTwo.close()
         
     return (expectedAns,actualAns)
 
@@ -381,8 +395,11 @@ def getExpectedAndActualUpdateResults(data,correctAnswer,submittedAnswer):
     # formats db initialization code from string to SQL and executes
     commands = data['params']['db_initialize_create'].replace('\n', '').replace('\t', '')
     commands += data['params']['db_initialize_insert_backend'].replace('\n', '').replace('\t', '')
-    cur.executescript(commands)
-    con.commit()
+    try:
+        cur.executescript(commands)
+        con.commit()
+    except:
+        con.rollback()
 
     # gets all tables in db
     tables = cur.execute("SELECT name FROM sqlite_master WHERE type='table';").fetchall()
@@ -420,6 +437,9 @@ def getExpectedAndActualUpdateResults(data,correctAnswer,submittedAnswer):
     
     if not (actualAns or expectedAns):
         raise Exception("expected and actual empty")
+
+    con.close()
+    conTwo.close()
         
     return (expectedAns,actualAns,originalDb)
 
@@ -474,8 +494,11 @@ def getExpectedAndActualDeleteResults(data,correctAnswer,submittedAnswer):
     # formats db initialization code from string to SQL and executes
     commands = data['params']['db_initialize_create'].replace('\n', '').replace('\t', '')
     commands += data['params']['db_initialize_insert_backend'].replace('\n', '').replace('\t', '')
-    cur.executescript(commands)
-    con.commit()
+    try:
+        cur.executescript(commands)
+        con.commit()
+    except:
+        con.rollback()
 
     # gets all tables in db
     tables = cur.execute("SELECT name FROM sqlite_master WHERE type='table';").fetchall()
@@ -517,6 +540,9 @@ def getExpectedAndActualDeleteResults(data,correctAnswer,submittedAnswer):
     
     if not (actualAns or expectedAns):
         raise Exception("expected and actual empty")
+    
+    con.close()
+    conTwo.close()
 
     return (expectedAns,actualAns,originalDb)
 
@@ -540,7 +566,8 @@ def rowMatch(expectedAns,actualAns):
     rowGrade = (expectedTotal - actualTotal)
     if rowGrade < -actualTotal : return 0
     rowScore = (expectedTotal - abs(rowGrade))/expectedTotal
-
+    if rowScore < 0:
+        return 0
     return rowScore
 
 # scores the difference in the number of columns between both outputs
@@ -560,6 +587,8 @@ def colMatch(expectedAns,actualAns):
     # for each column that the submitted answer has that is more or less than the expected answer, a point is deducted
     colGrade = abs(expectedTotal - actualTotal)
     colScore = (expectedTotal - colGrade)/expectedTotal
+    if colScore < 0:
+        return 0
     return colScore
 
 # scores how much the values match between the expected ans and the actual ans
@@ -578,6 +607,8 @@ def valueMatch(expectedAns,actualAns):
             valueMatchActualTotal += 1
 
     matchScore = valueMatchActualTotal / valueMatchExpectedTotal
+    if matchScore < 0:
+        return 0
     return matchScore
 
 def addFeedback(data, category, categoryScore):

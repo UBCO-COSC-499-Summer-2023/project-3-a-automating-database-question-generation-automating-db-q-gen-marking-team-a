@@ -30,12 +30,12 @@ def generateNoisyData(table, key, qty=1, unique=None):
     # If the column passed has a clean data
     # file, then choose items from said file.
     if key in getColumnToFileMap().keys():
-        return generateFromFile(qty, readLines(getColumnToFileMap()[key]), choose)
+        return generateFromFile(qty, readLines(getColumnToFileMap()[key]), choose, table, key)
 
     # Also checks but removing the first letter
     # due to table aliasing
     if  key[1:] in getColumnToFileMap().keys():
-        return generateFromFile(qty, readLines(getColumnToFileMap()[key[1:]]), choose)
+        return generateFromFile(qty, readLines(getColumnToFileMap()[key[1:]]), choose, table, key)
     
 
     # If the column does not correspond to a file,
@@ -188,12 +188,22 @@ def generateNoisyVarchar(unique, qty, unitOther):
     # Holds the values to be returned
     values = []
     
+    # Places bounds on the string size to help
+    # with both uniqueness and ugliness
+    lowerBound = 4
+    if unitOther < lowerBound:
+        lowerBound = unitOther
+
+    upperBound = 8
+    if unitOther < upperBound:
+        upperBound = unitOther
+
     # Adds values until there are enough
     while len(values) < qty:
 
         # Creates a random string of somewhat-specified length.
         # The array indexing removes the value from the array
-        tryValue = generateNoisyChar(unique, 1, random.randint(1, unitOther))[0]
+        tryValue = generateNoisyChar(unique, 1, random.randint(lowerBound, upperBound))[0]
         
         # Ensures no duplicated, if necessary
         if not (unique and tryValue in values):
@@ -266,8 +276,8 @@ def generateNoisyDateTime(unique, qty):
 
 # Given an array of choices and a method of selection choose,
 # returns an array of data of size quantity
-def generateFromFile(qty, choices, choose):
-    return [choose(choices) for i in range(qty)]
+def generateFromFile(qty, choices, choose, table=None, key=''):
+    return [choose(choices, table=table, key=key) for i in range(qty)]
 
 
 
@@ -327,12 +337,22 @@ def isUnique(table, key):
 
 # Given a list, pops and returns a random item
 # Repeated calls on the same unique list will not return duplicate values
-def popRandom(values, weights=[]):
+def popRandom(values, weights=[], table=None, key=''):
     
     # If there are no more values to supply,
-    # instead return null
+    # perform a backup generation method.
     if not values:
-        return 'NULL'
+
+        # Generates a noisy value, depening
+        # on constraints
+        if table and (isUnique(table, key) or table.columns[key]['isNotNull']):
+            return generateNoisyDataNoFile(table, key, qty=1, unique=isUnique(table, key))[0]
+        
+        # If the values are not unique, then
+        # just return a NULL
+        else:
+            return 'NULL'
+
 
     # If weigths are not supplied, pop a random item and return it
     if not weights:
@@ -350,7 +370,7 @@ def popRandom(values, weights=[]):
 
 # Given a list, returns a random values.
 # Repeated calls on the same unique list may return duplicate values
-def selectRandom(values, weights=[]):
+def selectRandom(values, weights=[], table=None, key=''):
     if not weights:
         return random.choice(list(values))
     
