@@ -9,6 +9,7 @@ import RelaXElementSharedLibrary.RelaXAutogenerator as autogen
 
 # This allows DroneCI to see the RASQLib module
 import sys
+sys.path.append('/databaseCourse/serverFilesCourse/RASQLib')
 sys.path.append('/drone/src/databaseCourse/serverFilesCourse/')
 
 from RASQLib import textDatabaseHandler as db
@@ -20,6 +21,8 @@ def generate(element_html, data):
 
 def prepare(element_html, data):
     data['params']['grader'] = 'RelaXEditor'
+
+    data['params']['db_initialize_create'] = ''
     element = lxml.html.fragment_fromstring(element_html)
     
     # If there is a database file, read and loads its contents
@@ -29,7 +32,7 @@ def prepare(element_html, data):
         with open(databaseFilePath,"r") as databaseFile:
            database += databaseFile.read()
     
-    data['params']['database'] = database
+    data['params']['database'] = database    
     
     # parameter whether to show feedback or not
     feedback = pl.get_boolean_attrib(element, 'feedback', False)
@@ -37,7 +40,7 @@ def prepare(element_html, data):
     
     # storing the actual feedback
     data['params']['queryFeedback'] = ''
-    
+
     #get the url to execute relax from backend
     url = pl.get_string_attrib(element, 'url', '')
     data['params']['url'] = url
@@ -58,7 +61,7 @@ def prepare(element_html, data):
         with open(databaseFilePath,"r") as databaseFile:
            data['params']['db_initialize'] = databaseFile.read()
         
-
+        
     
     # Loads quesiton parameters into data
     #
@@ -70,12 +73,29 @@ def prepare(element_html, data):
     questionRandom = pl.get_boolean_attrib(element, 'random', False)
 
     data['params']['html_params'] = {
-        'random': questionRandom
+        'random': questionRandom,
+        'expectedOutput' : pl.get_boolean_attrib(element, "expectedoutput", True)
     }
+
+
+    if questionRandom:
+        attribDict = {
+            "numClauses": pl.get_integer_attrib(element, "numclauses", 1),
+            "orderBy": pl.get_boolean_attrib(element, "orderby", False),
+            "groupBy": pl.get_boolean_attrib(element, "groupby", False),
+            "numJoins": pl.get_integer_attrib(element, "numjoins", 0),
+            "antiJoin": pl.get_boolean_attrib(element, "antijoin", False),
+            "semiJoin": pl.get_boolean_attrib(element, "semijoin", False),
+            "outerJoin": pl.get_boolean_attrib(element, "outerjoin", False)
+        }
+        data['params']['attrib_dict'] = attribDict
 
     # If if is a randomised question, generate the question
     if questionRandom:
         autogen.autogenerate(data)
+        database = data['params']['db_initialize_create']
+        # print(database)
+        data['params']['database'] = database
 
 
 
@@ -96,10 +116,14 @@ def render(element_html, data):
 
     # This renders the question into PL
     if data['panel'] == 'question':
+        if 'questionText' not in data['params'].keys():
+            data['params']['questionText'] = ""
         # setting the paramaters
         html_params = {
-            'database' : data['params']['db_initialize'],
-            'previousSubmission' : submittedAnswer
+            'database' : data['params']['database'],
+            'questionText' : data['params']['questionText'],
+            'previousSubmission' : submittedAnswer,
+            'expectedOutput' : data['params']['html_params']['expectedOutput']
         }
             # Opens and renders mustache file into the question html
         with open('pl-relax-element.mustache', 'r', encoding='utf-8') as f:
