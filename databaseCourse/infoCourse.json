@@ -1,14 +1,30 @@
 {
     "uuid": "5b82b56a-0261-11ed-b939-0242ac120002",
-    "name": "COSC 304 Labs",
-    "title": "Lab Demos",
+    "name": "COSC 304",
+    "title": "Database Systems",
     "options": {
         "useNewQuestionRenderer": true
     },
     "assessmentSets": [],
     "topics": [
-        {"name": "Databases", "color": "red3", "description": "Database Questions"}
-
+        {"name": "IntroDB", "color": "blue1", "description": "Database Introduction"},
+        {"name": "Relational", "color": "blue1", "description": "Relational Model"},
+        {"name": "SQLDDL", "color": "blue1", "description": "SQL DDL"},
+        {"name": "SQL", "color": "blue1", "description": "SQL"},
+        {"name": "SQLAgg", "color": "blue1", "description": "SQL Aggregation/GROUP BY"},
+        {"name": "SQLSQ", "color": "blue1", "description": "SQL Subqueries"},
+        {"name": "DBDesign", "color": "blue1", "description": "Database Design"},
+        {"name": "ER", "color": "red3", "description": "ER/UML"},
+        {"name": "EER", "color": "blue1", "description": "EER Design"},
+        {"name": "DB_Java", "color": "blue1", "description": "DB Programming with Java"},
+        {"name": "DB_Python", "color": "blue1", "description": "DB Programming with Python"},
+        {"name": "DB_Web", "color": "blue1", "description": "DB Web Programming with Java"},
+        {"name": "Triggers", "color": "blue1", "description": "Triggers"},
+        {"name": "Views", "color": "blue1", "description": "Views"},
+        {"name": "Security", "color": "blue1", "description": "Security"},
+        {"name": "Transactions", "color": "blue1", "description": "Transactions"},
+        {"name": "Normalization", "color": "blue1", "description": "Normalization"},
+        {"name": "DW_DM", "color": "blue1", "description": "Data Warehousing and Data Mining"}
     ],
     "tags": [
         {"name": "rlawrence", "color": "gray1", "description": "Question originally written by rlawrence"}

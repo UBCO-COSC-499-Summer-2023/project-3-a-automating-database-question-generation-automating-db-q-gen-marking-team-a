@@ -1,0 +1,27 @@
+<pl-uml-element random="False" max-grade = "10">
+<uml-question>
+    Construct a database design in UML for a stock market tracking database.
+    The database tracks [companies](Company), where a [company](Company) has a [name](companyName) and is identified by its [ticker symbol](tickerSymbol).
+    Each company participates in a particular [industry](Industry). An [industry](Industry) has an identifying [name](industryName) and also a [description](description).
+    Stock market [analysts](Analyst) cover [stocks](stocks) and produce [recommendations](recommendation). [Analysts](Analyst) are distinguished from each other by the name of their [firm](firm) and their [name](analystName). [Analysts](Analyst) also have a [accuracy rating](accuracyRating) that measures the accuracy of their [recommendations](recommendation).
+    Each [recommendation](recommendation) is from a particular [analyst](analyst) on a certain [company](Company). A [recommendation](recommendation) includes a predicted [price](price) in the next 12 months and a [rating](rating) for the stock (buy, hold, sell).
+    The database includes a [daily summary](DailySummary) for each company with a [closing price](closingPrice), [volume](volume), [low price](low), and [high price](high). Daily summaries are identified by the company it is associated with and the [summary date](summaryDate).
+    [News events](NewsEvent) are tracked for companies. A [news event](NewsEvent) has an identifying [eventId](eventId) and has additional details on the event [text](text) and the [release date](releaseDate). A [news event](NewsEvent) may be associated with multiple [companies](Company), and a [company](Company) may have many [news events](NewsEvent).
+</uml-question>
+<!-- Model with M-N relationship for NewsEvent<->Company] -->
+<uml-answer>
+[Company| tickerSymbol{PK}; companyName]
+[Industry| industryName{PK}; description]
+[Analyst| firm{PK}; analystName{PK}; accuracyRating]
+[Recommendation| price; rating]
+[DailySummary| summaryDate{PPK}; closingPrice; volume; low; high]
+[NewsEvent| eventId{PK}; text; releaseDate]
+[Company] 0..* - 1..1 [Industry]
+[Analyst] 1..1 - 0..* [Recommendation]
+[Company] 1..1 - 0..* [Recommendation]
+[Company] 1..1 - 0..* [DailySummary]
+[NewsEvent] 0..* - 0..* [Company]
+</uml-answer>
+    <uml-marking entity-name="0.2" entity-attributes="0.1" entity-key="0.2" extra-entity-penalty="0.25" weak_entity="0.5" relationship="0.5" cardinality="0.25" extra-relationship-penalty="0.25"></uml-marking>
+</pl-uml-element>
+

@@ -1,0 +1,16 @@
+{
+    "uuid": "af22f013-f3cd-4952-93f5-b649399487f4",
+    "type": "Homework",
+    "title": "Lab 4",
+    "set": "Homework",
+    "number": "4",
+    "allowAccess": [
+        {
+            "credit": 20
+        }
+    ],
+    "zones": [  {
+            "questions": [
+                {"id": "StockDB",        "points": 10, "triesPerVariant": 10},
+                {"id": "QuestionDatabank", "points": 10, "triesPerVariant": 10}]}]
+}

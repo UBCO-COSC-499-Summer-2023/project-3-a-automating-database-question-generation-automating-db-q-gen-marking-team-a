@@ -1,0 +1,9 @@
+{
+    "uuid": "62dc4b8e-00e1-4253-a679-6e99a8f33975",
+    "type": "Homework",
+    "title": "Lab 4 - Fish Store",
+    "set": "Practice Quiz",
+    "number": "1",
+    "allowAccess": [{"credit": 100}],
+    "zones": [ {"questions": [  {"id": "Fish_Store", "points": 10}]}]
+}

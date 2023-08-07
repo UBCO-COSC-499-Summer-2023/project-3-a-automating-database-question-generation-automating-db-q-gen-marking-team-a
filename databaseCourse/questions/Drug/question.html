@@ -1,0 +1,28 @@
+<pl-uml-element random="False" max-grade = "10">
+    <uml-question>The ACME chain of pharmacies agrees to pay you to design and implement a database based on the following information:
+        [Patients](Patient) are identified by [SSN](ssn), and their [names](name), [addresses](address), and [ages](age) must be recorded.
+        [Doctors](Doctor) are identified by [SSN](ssn). For each [doctor](Doctor), the [name](name), [speciality](speciality), and [years of experience](experience) are recorded.
+        For each [drug](Drug), the trade [name](name) and [formula](formula) must be recorded. The trade name identifies a drug uniquely.
+        Each [pharmacy](Pharmacy) has a [name](name), [address](address), [phone number](phone), and a unique [id](id).
+        Every [patient](patient) has only one primary physician. Every [doctor](doctor) has at least one [patient](patient).
+        Each [pharmacy](pharmacy) [sells](sells) several [drugs](drug) and has a [price](price) for each. A drug could be [sold at](sells) several pharmacies, and the price could vary from one pharmacy to another.
+        [Doctors](doctor) prescribe [drugs](drug) for patients. A [patient](patient) could obtain drug [prescriptions](prescription) from multiple doctors. Each [prescription](prescription) has a [date](prescribeDate) and a [quantity](quantity) associated with it.
+        You can assume that, if a doctor prescribes the same drug for the same patient more than once, only the last such prescription needs be stored.
+        [Supervisors](supervisor) manage each pharmacy. Every [supervisor](supervisor) has a [name](name) and [id](id). A [supervisor](supervisor) manages only one [pharmacy](pharmacy), and each pharmacy always has one supervisor.</uml-question>
+    <uml-answer>[Patient| ssn{PK}; name; address; age]
+[Doctor| ssn{PK}; name; speciality; experience]
+[Prescription| prescribeDate; quantity]
+[Drug| name{PK}; formula]
+[Pharmacy| id{PK}; name; address; phone]
+[Supervisor| id{PK}; name]
+[Sells| price]
+[Patient] 1..1 - 0..* [Prescription]
+[Patient] 1..* - 1..1 [Doctor]
+[Doctor] 1..1 - 0..* [Prescription]
+[Drug] 1..1 - 0..* [Prescription]
+[Supervisor] 1..1 - 1..1 [Pharmacy]
+[Drug] 1..1 - 0..* [Sells]
+[Sells] 1..* - 1..1 [Pharmacy]</uml-answer>
+    <uml-marking entity-name="0.2" entity-attributes="0.1" entity-key="0.2" extra-entity-penalty="0.25" weak_entity="0.5" relationship="0.5" cardinality="0.25" extra-relationship-penalty="0.25"></uml-marking>
+</pl-uml-element>
+
