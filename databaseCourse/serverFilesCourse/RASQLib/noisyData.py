@@ -224,6 +224,7 @@ def generateNoisyDate(unique, qty):
 
         # Generates a random month
         month = random.randint(1, 12)
+        year = random.randint(1955, 2023)
         
         # Ensures the day is valid.
         # And no, I'm not doing the legwork to check
@@ -245,11 +246,11 @@ def generateNoisyDate(unique, qty):
 
         # the ':02' formatting ensures that the length of the
         # string is a minimum of 2, padded left with zeroes
-        tryValue = f"{random.randint(1955, 2023)}-{month:02}-{day:02}"
+        tryValue = f"{year}-{month:02}-{day:02}"
 
         # Ensures no duplicated, if necessary
         if not (unique and tryValue in values):
-            values.append(f"{random.randint(1955, 2023)}-{month:02}-{day:02}")
+            values.append(f"{year}-{month:02}-{day:02}")
 
     return values
 

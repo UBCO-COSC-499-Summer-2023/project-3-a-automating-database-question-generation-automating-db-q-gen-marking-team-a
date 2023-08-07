@@ -30,6 +30,20 @@ def autogenerate(data):
         case 'update': generateUpdate(data, difficulty)
         case 'delete': generateDelete(data, difficulty)
         case 'query': generateQuery(data, difficulty)
+    
+
+
+    # Generates a new query question if there is expected output
+    # but it is empty
+    while questionType == 'query' and data['params']['html_params']['expectedOutput'] and '<td>' not in data['params']['expectedOutput']:
+
+        # Clears out the previous create and insert statements
+        data['params']['db_initialize_create'] = ''
+        data['params']['db_initialize_insert_frontend'] = ''
+        data['params']['db_initialize_insert_backend'] = ''
+
+        # Generates the new query
+        generateQuery(data, difficulty)
 
 '''
     Begin create-style question
@@ -1390,9 +1404,14 @@ def statementConditionals(statement='', conditionalValues={}, clauseType=' WHERE
     statement += clauseType
 
     # Includes the conditional if they exist as
-    # well as the condtional connector
+    # well as the condtional connector. Notice the
+    # string quotes are the opposite of the normal
+    # choice; this is due to requiring the `"`
+    # quote as part of the string such that SQL
+    # values such as "St John's" don't break the 
+    # SQLite
     for key in conditionalValues:
-        statement += f" {key} {conditionalValues[key]['comparator']} '{conditionalValues[key]['value']}' {conditionalValues[key]['connector']}"
+        statement += f' {key} {conditionalValues[key]["comparator"]} "{conditionalValues[key]["value"]}" {conditionalValues[key]["connector"]}'
 
     # Removes trailing 'OR' or 'AND' if necessary
     if statement[-3] == ' ':
