@@ -1390,9 +1390,14 @@ def statementConditionals(statement='', conditionalValues={}, clauseType=' WHERE
     statement += clauseType
 
     # Includes the conditional if they exist as
-    # well as the condtional connector
+    # well as the condtional connector. Notice the
+    # string quotes are the opposite of the normal
+    # choice; this is due to requiring the `"`
+    # quote as part of the string such that SQL
+    # values such as "St John's" don't break the 
+    # SQLite
     for key in conditionalValues:
-        statement += f" {key} {conditionalValues[key]['comparator']} '{conditionalValues[key]['value']}' {conditionalValues[key]['connector']}"
+        statement += f' {key} {conditionalValues[key]["comparator"]} "{conditionalValues[key]["value"]}" {conditionalValues[key]["connector"]}'
 
     # Removes trailing 'OR' or 'AND' if necessary
     if statement[-3] == ' ':
