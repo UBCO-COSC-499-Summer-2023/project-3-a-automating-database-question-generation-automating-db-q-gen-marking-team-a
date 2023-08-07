@@ -167,10 +167,11 @@
     margin: 25px 0;
     font-size: 0.9em;
     font-family: ubuntu, sans-serif;
-	margin: auto;
+	/* margin: auto; */
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
 	border-radius: 5px 5px 0 0;
-	overflow:hidden;
+	width: -webkit-fill-available;
+	/* overflow:hidden; */
 }
 
 .output-tables > table {
