@@ -188,8 +188,11 @@ def getExpectedAndActualQueryResults(data,correctAnswer,submittedAnswer):
     commands += data['params']['db_initialize_insert_backend'].replace('\n', '').replace('\t', '')
     
     # db initialization
-    cur.executescript(commands)
-    con.commit()
+    try:
+        cur.executescript(commands)
+        con.commit()
+    except:
+        con.rollback()
 
     # format solution from string to code and execute + fetch results
     expectedCode = correctAnswer.replace('\n', ' ').replace('\t', ' ')
@@ -201,6 +204,8 @@ def getExpectedAndActualQueryResults(data,correctAnswer,submittedAnswer):
 
     if not (actualAns or expectedAns):
         raise Exception("expected and actual empty")
+    
+    con.close()
     
     return (expectedAns,actualAns)
 
@@ -266,6 +271,9 @@ def getExpectedAndActualCreateResults(correctAnswer,submittedAnswer):
     
     if not (actualAns or expectedAns):
         raise Exception("expected and actual empty")
+    
+    con.close()
+    conTwo.close()
 
     return (expectedAns,actualAns)
 
@@ -297,8 +305,11 @@ def getExpectedAndActualInsertResults(data,correctAnswer,submittedAnswer):
     # formats db initialization code from string to SQL and executes
     commands = data['params']['db_initialize_create'].replace('\n', '').replace('\t', '')
     commands += data['params']['db_initialize_insert_backend'].replace('\n', '').replace('\t', '')
-    cur.executescript(commands)
-    con.commit()
+    try:
+        cur.executescript(commands)
+        con.commit()
+    except:
+        con.rollback()
 
     # gets all tables
     tables = cur.execute("SELECT name FROM sqlite_master WHERE type='table';").fetchall()
@@ -330,6 +341,9 @@ def getExpectedAndActualInsertResults(data,correctAnswer,submittedAnswer):
     
     if not (actualAns or expectedAns):
         raise Exception("expected and actual empty")
+
+    con.close()
+    conTwo.close()
         
     return (expectedAns,actualAns)
 
@@ -379,8 +393,11 @@ def getExpectedAndActualUpdateResults(data,correctAnswer,submittedAnswer):
     # formats db initialization code from string to SQL and executes
     commands = data['params']['db_initialize_create'].replace('\n', '').replace('\t', '')
     commands += data['params']['db_initialize_insert_backend'].replace('\n', '').replace('\t', '')
-    cur.executescript(commands)
-    con.commit()
+    try:
+        cur.executescript(commands)
+        con.commit()
+    except:
+        con.rollback()
 
     # gets all tables in db
     tables = cur.execute("SELECT name FROM sqlite_master WHERE type='table';").fetchall()
@@ -418,6 +435,9 @@ def getExpectedAndActualUpdateResults(data,correctAnswer,submittedAnswer):
     
     if not (actualAns or expectedAns):
         raise Exception("expected and actual empty")
+
+    con.close()
+    conTwo.close()
         
     return (expectedAns,actualAns,originalDb)
 
@@ -472,8 +492,11 @@ def getExpectedAndActualDeleteResults(data,correctAnswer,submittedAnswer):
     # formats db initialization code from string to SQL and executes
     commands = data['params']['db_initialize_create'].replace('\n', '').replace('\t', '')
     commands += data['params']['db_initialize_insert_backend'].replace('\n', '').replace('\t', '')
-    cur.executescript(commands)
-    con.commit()
+    try:
+        cur.executescript(commands)
+        con.commit()
+    except:
+        con.rollback()
 
     # gets all tables in db
     tables = cur.execute("SELECT name FROM sqlite_master WHERE type='table';").fetchall()
@@ -515,6 +538,9 @@ def getExpectedAndActualDeleteResults(data,correctAnswer,submittedAnswer):
     
     if not (actualAns or expectedAns):
         raise Exception("expected and actual empty")
+    
+    con.close()
+    conTwo.close()
 
     return (expectedAns,actualAns,originalDb)
 
