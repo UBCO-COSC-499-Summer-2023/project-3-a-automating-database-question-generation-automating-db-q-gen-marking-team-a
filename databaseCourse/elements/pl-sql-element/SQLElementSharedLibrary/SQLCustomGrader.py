@@ -31,7 +31,7 @@ def customGrader(data):
     inputScore = 0
 
     if wordsSA == "" or wordsSA == []:
-        addFeedback(data,"Code Match :",0)
+        addFeedback(data,"Code Match ",0)
         return 0
 
     if os.path.exists("ans.db"):
@@ -130,7 +130,7 @@ def customGrader(data):
     
     grade = (inputScoreWeight*inputScore) + (outputScoreWeight*outputScore)
     grade = round(grade,2)
-    addFeedback(data,"Code Match :",inputScore)
+    addFeedback(data,"Code Match ",inputScore)
     return grade
 
 # Returns the similarity between two strings.
