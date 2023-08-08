@@ -61,7 +61,7 @@ class Database:
         # Populates the table with data
         if rows:
             self.generateRows(rows)
-            self.generateRowsBackendRelaX(30)
+            self.generateRowsBackendRelaX(60)
         # Links tables such that there is a depth
         # of `d`
         keyList = list(self.tableSet.keys())
@@ -84,17 +84,6 @@ class Database:
             #print(f"{randIndex}/ {depth-1}/ {i}\n{joins+1}/ {len(keyList)}/ {len(self.tableSet)}")
             self.tableSet[keyList[randIndex]].link(self.tableSet[keyList[i]])
         
-
-        # self.generateRowsBackendRelaX(rows)
-
-
-        # For relax, Foreign keys are created by having the same column name
-        # This insures that only desired columns are foreign keys
-        for key in keyList:
-            for column in self.tableSet[key].columns:
-                if self.tableSet[key].columns[column]['references'] is None and (self.tableSet[key].columns[column]['name'] == "id" or self.tableSet[key].columns[column]['name'] == "num"):
-                    self.tableSet[key].columns[column]['name'] = key[:3] + column
-
     # Populates the database with rows of data
     #
     # Note: This function respects references so a foreign key
@@ -281,10 +270,7 @@ class Database:
             data['params']['db_initialize_create_backend'] += self.tableSet[table].getRelaXSchemaBackend()
         data['params']['db_initialize_create'] = data['params']['db_initialize_create'][:-1]
         data['params']['db_initialize_create_backend'] = data['params']['db_initialize_create_backend'][:-1]
-        #print(data['params']['db_initialize_create'])
-        print(data['params']['db_initialize_create_backend'])
-        #with open("./RelaXElementSharedLibrary/ShipmemtDatabase.txt") as f:
-        #    data['params']['db_initialize'] = f.read()
+
     
     # Adds everything necessary for each table to the data variable
     def loadDatabase(self, data):

@@ -61,17 +61,28 @@ def createPreview(data):
     htmlTable = "<div class='expectedOutput'><b>Expected Output:</b><div id='output' class='output-tables'><table><thead>"
     
     columnNames = queriedCA['schema']['_names']
+    columnTypes = queriedCA['schema']['_types']
     dataRows = queriedCA['rows']
 
-    for column in columnNames:
+    if len(dataRows) == 0:
+        return False
+
+    dateRowRecord = []
+    for i, column in enumerate(columnNames):
+        if columnTypes[i] == 'date':
+            # print(columnTypes[i])
+            dateRowRecord.append(i)
         htmlTable += "<th>" + str(column) + "</th>"
 
     htmlTable += "</thead>"
 
     for row in dataRows:
         rowString = "<tr>"
-        for x in row:
-            rowString+= "<td>" + str(x) + "</td>"
+        for i, x in enumerate(row):
+            if i in dateRowRecord:
+                rowString+= "<td><date>" + str(x) + "</date></td>"
+            else:
+                rowString+= "<td>" + str(x) + "</td>"
         rowString += "</tr>"
         htmlTable += rowString
 
@@ -85,19 +96,35 @@ def autogenerate(data):
     #  data['params']['expectedOutput'] = createPreview(data)
     # Generates a random database
     columns = rand.randint(4, 7)
-    joins = returnGreater(rand.randint(2,5), (data['params']['attrib_dict']['numJoins'])) #! Change to joins/rand -> whichever is bigger
+    joins = returnGreater(rand.randint(2,4), (data['params']['attrib_dict']['numJoins'])) #! Change to joins/rand -> whichever is bigger
     rows = rand.randint(7, 15)
     
     database = db.Database(isSQL=False, columns=columns, joins=joins, rows=rows)
-    question = Question(dataset=database, attribDict=data['params']['attrib_dict'])
+    question = Question(dataset=database, attribDict=data['params']['attrib_dict'], rows=rows)
 
 
     # Loads the database into the data variable
     database.loadDatabase(data)
     question.loadQuestion(data)
 
+    #"Note From Matthew: if you are seeing this, check Line 101 of databaseCourse/elements/pl-relax-element/RelaXElementSharedLibrary/RelaXAutogenerator.py"
+    data['params']['html_params']['expectedOutput'] = createPreview(data)
+    while not data['params']['html_params']['expectedOutput']:
+        print("pass")
+        data['params']['db_initialize_create'] = ''
+        data['params']['db_initialize_create_backend'] = ''
+       
+        database = db.Database(isSQL=False, columns=columns, joins=joins, rows=rows)
+        question = Question(dataset=database, attribDict=data['params']['attrib_dict'], rows=rows)
 
-    data['params']['html_params']['expectedOutput'] = "hello world"#createPreview(data) 
+
+        # Loads the database into the data variable
+        database.loadDatabase(data)
+        question.loadQuestion(data)
+
+
+        data['params']['html_params']['expectedOutput'] = createPreview(data) 
+    
 
 class Question:
     Query = "π "
@@ -121,7 +148,7 @@ class Question:
 
 
     tableListText = ""
-    def  __init__(self, dataset, attribDict) -> None:
+    def  __init__(self, dataset, attribDict, rows) -> None:
         #* Load all attribs from data
         self.numJoins = attribDict['numJoins']
         self.numClauses = attribDict['numClauses']
@@ -130,7 +157,7 @@ class Question:
         self.antiJoinBool = attribDict['antiJoin']
         self.outerJoinBool = attribDict['outerJoin']
         self.semiJoinBool = attribDict['semiJoin']
-        #* Join first -- may need recursive function
+        #* Join first
         # number of joins for the question
         self.offLimitsTable = None
 
@@ -140,14 +167,22 @@ class Question:
         self.JoinList = []
         neededColumns = []
         loopNum = 0
+        if self.numJoins == 0:
+            self.JoinList.append(rand.choice(list(graph.keys())))
+            self.joinStatement = self.JoinList[0]
         while loopNum != (self.numJoins):
             if len(self.JoinList) == 0:
-                joinChoice = rand.choice(['natural', 'outer', 'semi', 'anti'])
-                match joinChoice:
-                    case 'natural': self.naturalJoinGeneration(subgraph=graph)
-                    case 'outer': self.outerJoinGeneration(subgraph=graph,dataset=dataset)
-                    case 'semi': self.semiJoinGeneration(subgraph=graph,dataset=dataset)
-                    case 'anti': self.antiJoinGeneration(subgraph=graph,dataset=dataset)
+                if rows >= 11:
+                    joinChoice = rand.choice(['semi', 'anti'])
+                    match joinChoice:
+                        case 'semi': self.semiJoinGeneration(subgraph=graph,dataset=dataset)
+                        case 'anti': self.antiJoinGeneration(subgraph=graph,dataset=dataset)
+                else:
+                    joinChoice = rand.choice(['natural', 'outer'])
+                    match joinChoice:
+                        case 'natural': self.naturalJoinGeneration(subgraph=graph)
+                        case 'outer': self.outerJoinGeneration(subgraph=graph,dataset=dataset)
+
             else:
                 self.naturalJoinGeneration(subgraph=graph)
             loopNum+=1
@@ -169,10 +204,10 @@ class Question:
             for column in dataset.tableSet[table].columns:
                 usableColumns.append(dataset.tableSet[table].columns[column]['name'])
                 if i == num:
-                   neededColumns.append(dataset.tableSet[table].columns[column]['name']) 
+                    neededColumns.append(dataset.tableSet[table].columns[column]['name']) 
                 i+=1
         #* Projection
-        projectedColumns = projection(neededColumns, usableColumns)
+        projectedColumns = self.projection(neededColumns, usableColumns)
         if not self.groupByBool:
             self.projectedColumnText = ", ".join(projectedColumns)
             parts = self.projectedColumnText.rsplit(",", 1)  # Split the string from the right side only once
@@ -205,14 +240,43 @@ class Question:
         #* Selection
         selectedColumns = []
         if self.numClauses != 0:
-            for i in range(self.numClauses):
+
+            # Checks to see if only one select clause
+            # makes sure that it returns more than 1 output.
+            if self.numClauses == 1:
+
+                # NeededColumns is to ensure each table has been used when selected columns
                 if len(neededColumns) == 0:
                     randColumn = rand.choice(usableColumns)
+                    for table in dataset.tableSet:
+                        if randColumn in dataset.tableSet[table].columns:
+                            while dataset.tableSet[table].columns[randColumn]['unit'] == 'STRING':
+                                randColumn = rand.choice(usableColumns)
                 else:
-                    randColumn = neededColumns.pop(rand.choice(range(len(neededColumns))))
-                while randColumn in selectedColumns:
-                    randColumn =  rand.choice(usableColumns)
+                    randColumn = rand.choice(neededColumns)
+                    for table in dataset.tableSet:
+                        if randColumn in dataset.tableSet[table].columns:
+                            while dataset.tableSet[table].columns[randColumn]['unit'] == 'STRING':
+                                randColumn = rand.choice(neededColumns)
+  
+                # fills SelectedColumn
                 selectedColumns.append(selection(usableColumns, randColumn, graph, dataset))
+            # Else grabs random columns to fill selection
+            else:
+                # loops to fill selectedColumns 
+                for i in range(self.numClauses):
+                    if len(neededColumns) == 0:
+                        randColumn = rand.choice(usableColumns)
+                        # Ensures That no columns are double called
+                        while randColumn in selectedColumns:
+                            randColumn =  rand.choice(usableColumns)
+                    else:
+                        randColumn = neededColumns.pop(rand.choice(range(len(neededColumns))))
+
+                    # fills selectedColumns
+                    selectedColumns.append(selection(usableColumns, randColumn, graph, dataset))
+
+            
             conditions = []
             selectedColumnsArray = []
             for item in selectedColumns:
@@ -399,7 +463,6 @@ class Question:
         # print(self.joinStatement)
 
 
-
     #* getters=======================================================
     def getQuery(self):
         self.Query = self.joinStatement 
@@ -429,18 +492,18 @@ class Question:
 
 
 
-def projection(neededColumns, usableColumns):
-    projectedColumns = []
-    for i in range(rand.randint(2,5)):
-        if len(neededColumns) == 0:
-            randColumn = rand.choice(usableColumns)
-        else:
-            randColumn = neededColumns.pop(rand.choice(range(len(neededColumns))))
-        while randColumn in projectedColumns:
-            randColumn =  rand.choice(usableColumns)
-        projectedColumns.append(randColumn)
+    def projection(self, neededColumns, usableColumns):
+        projectedColumns = []
+        for i in range(rand.randint(2,5)):
+            if len(neededColumns) == 0 or self.numJoins == 0:
+                randColumn = rand.choice(usableColumns)
+            else:
+                randColumn = neededColumns.pop(rand.choice(range(len(neededColumns))))
+            while randColumn in projectedColumns:
+                randColumn =  rand.choice(usableColumns)
+            projectedColumns.append(randColumn)
 
-    return projectedColumns
+        return projectedColumns
 
 def groupBy(randColumn, subgraph, dataset):
     for table in subgraph.keys():
@@ -451,19 +514,22 @@ def groupBy(randColumn, subgraph, dataset):
                     case 'NUMBER': return f"{rand.choice(['avg','sum'])}"
                     case 'DATE': return "count"
 
-        
 def selection(usableColumns, randColumn, graph, dataset):
     for table in graph.keys():
         for column in dataset.tableSet[table].columns:
             if randColumn == dataset.tableSet[table].columns[column]['name']:
                 match(dataset.tableSet[table].columns[column]['unit']):
                     case 'STRING': return (randColumn, " = ", f"'{rand.choice(dataset.tableSet[table].rows[column])}'")
-                    case 'NUMBER': return (randColumn, f" {rand.choice([ '≥', '≤', '>', '<'])} ", rand.choice(dataset.tableSet[table].rows[column]))
-                    case 'DATE':   return (randColumn, f" {rand.choice([ '≥', '≤', '>', '<'])} ", f"Date('{rand.choice(dataset.tableSet[table].rows[column])}')")
+                    case 'NUMBER': return (randColumn, f" {rand.choice([ '≥', '≤'])} ", rand.choice(dataset.tableSet[table].rows[column]))
+                    case 'DATE':   return (randColumn, f" {rand.choice([ '≥', '≤'])} ", f"Date('{rand.choice(dataset.tableSet[table].rows[column])}')")
                 #print(f"Selection string '{rand.choice(dataset.tableSet[table].rows[column])}'")
                 #selectedColumns.append(randColumn)
 
 
+
+
+
+# Performs a Depth first search to retreave a connected graph
 def dfs(graph, startNode, visited=set(), n=1):
     visited.add(startNode)
     if len(visited) > n:
@@ -475,6 +541,7 @@ def dfs(graph, startNode, visited=set(), n=1):
                 return visited
     return visited
 
+# Returns a random subgraph of a desired size. Used to retrieve natural joins.
 def randomSubgraph(graph, n):
     startNode = rand.choice(list(graph.keys()))
     connectedNodes = dfs(graph, startNode, n=n)

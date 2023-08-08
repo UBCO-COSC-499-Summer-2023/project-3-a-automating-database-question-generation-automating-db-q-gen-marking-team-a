@@ -72,6 +72,41 @@ $(document).ready(function () {
 
         return $('body').html();
     }
+    
+    // Function that renders Dates for Expected output
+    function applyDateFormatting() {
+        // Create a regular expression to match the opening and closing tags
+        // (.*?) matches everything between the tags
+        // g enables global search
+        var regex = new RegExp('<date>(.*?)</date>', 'g');
+
+        // Find all text nodes in the body (not including empty text nodes)
+        var textNodes = $('body').find('*').addBack().contents().filter(function () {
+            return this.nodeType === 3 && this.nodeValue.trim() !== '';
+        });
+
+        // Iterate over the text nodes and apply tags to the matched strings
+        textNodes.each(function () {
+
+            var node = this;
+            var replacedText = node.nodeValue.replace(regex, function (match, capturedText) {
+                const date = new Date(capturedText);
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+ 
+                return `${year}-${month}-${day}`;
+            });
+            $(node).replaceWith(replacedText);
+        });
+
+        return $('body').html();
+    }
+    // Apply Functionality
+
+
+    // Apply Date Formatting
+    var dateFormatting = applyDateFormatting()
 
     // Apply HTML tags to certain parts of strings
     var boldedWords = applyHTMLTagsToWords('b');
@@ -168,7 +203,7 @@ $(document).ready(function () {
         for (var i = 0; i < dataSchema._names.length; i++) {
             let field = `<div style="text-align: center; border: 1px solid white; padding: 0.2em; display: flex; justify-content: space-around;" class='submenu' id='schema-${dataSchema._relAliases[0]}'>`;
             let name = `<span onClick='updateCodeMirror("${dataSchema._names[i]}")' style='cursor: pointer; width: ${maxColNameLength}ch;'>${dataSchema._names[i]}</span>`;
-            let type = `<span style=' width: ${maxColTypeLength}ch;'>${dataSchema._types[i].toUpperCase()}</span>`;
+            let type = `<span style=' width: 8ch;'>${dataSchema._types[i].toUpperCase()}</span>`;
 
             schemaView += field + name + type + '</div>';
         }
@@ -391,7 +426,7 @@ function createTreeNodeDropdown(output) {
 
     for (var i = 0; i < columns.length; i++) {
         let name = `<span style='width: ${maxColNameLength}ch; font-size: 16px;'>${output.getSchema().getName(i)}</span>`;
-        let type = `<span style='width: ${maxColTypeLength}ch; font-size: 16px;'><small>${output.getSchema().getType(i).toUpperCase()}</small></span>`;
+        let type = `<span style='width: 8 ch; font-size: 16px;'><small>${output.getSchema().getType(i).toUpperCase()}</small></span>`;
         columns[i].append(name);
         columns[i].append(type);
 
