@@ -227,7 +227,7 @@ class Question:
                 if i == 0:
                     self.groupByStatement = f"{self.groupByStatement} {column};"
                 else:
-                    func = groupBy(column, subgraph=subgraph, dataset=dataset)
+                    func = groupBy(column, subgraph=graph, dataset=dataset)
                     groupByText.append(f" the <b>{func}</b> of <b>{column}</b>, <em>mapped</em> to a column named <b>{func}{column}</b>")
                     self.groupByStatement = f"{self.groupByStatement} {func}({column}) → {func}{column},"
             self.queryStatement = self.groupByStatement[:-1]
