@@ -1,6 +1,6 @@
 import unittest
 import random as rand
-#from parameterized import parameterized
+from parameterized import parameterized
 from RelaXElementSharedLibrary.RelaXAutogenerator import *
 
 class AutogenerateTest(unittest.TestCase):
@@ -39,3 +39,73 @@ class AutogenerateTest(unittest.TestCase):
 #                     print(f"Error: {len(subgraph)} != {numJoins+1}")
                     
 # #AutogenerateTest.testAutogenerateJoinedTablesCollection()
+
+
+# Tests RelaX autogen queries
+class AutogenerateQueryTest(unittest.TestCase):
+    
+    # Describes how many times each test should be run.
+    # Since we're testing random generation, we need
+    # a sufficient sample size to catch edge cases.
+    sampleSize = 50
+
+    # Declares and sets defaults
+    data = {
+        'params': {
+            'html_params': {
+                'random': True,
+                'questionType': 'create',
+                'difficulty': None,
+                'maxGrade': 3,
+                'markerFeedback': True,
+                'expectedOutput': False
+            }
+        },
+        'correct_answers': {
+            'RelaXEditor': ''
+        }
+    }
+
+    # Parameters for RelaX question.
+    # These are passed into the function header for all
+    # functions of this class. Each tuple corresponds to 
+    # a test case
+    @parameterized.expand([
+            # data, numJoins, numClauses, orderBy, groupBy, antiJoin, outerJoin, semiJoin
+            [data, 1, 1, False, False, False, False, False, sampleSize] # A very simple query
+        ])
+    
+    
+    # The real value in this test is not what the assert statements
+    # cover, but the error message of when it crashes
+    def testRelaXQuery(self,data,numJoins,numClauses,orderBy,groupBy,antiJoin,outerJoin,semiJoin,sampleSize):        
+        data['params']['attrib_dict'] = {
+            "numClauses": numClauses,
+            "orderBy": orderBy,
+            "groupBy": groupBy,
+            "numJoins": numJoins,
+            "antiJoin": antiJoin,
+            "semiJoin": semiJoin,
+            "outerJoin": outerJoin,
+        }
+
+        for i in range(sampleSize):
+
+            # Sets values to be empty
+            data['params']['questionText'] = ''
+            data['params']['db_initialize_create'] = ''
+            data['params']['db_initialize_create_backend'] = ''
+            data['correct_answers']['RelaXEditor'] = ''
+
+            # Generates the question
+            autogenerate(data)
+
+            # Asserts
+            self.assertGreater(len(data['params']['db_initialize_create']), 0)
+            self.assertGreater(len(data['params']['db_initialize_create_backend']), 0)
+            self.assertGreater(len(data['correct_answers']['RelaXEditor']), 0)
+
+            self.assertIn("π", data['correct_answers']['RelaXEditor'])
+
+            if numClauses:
+                self.assertIn("σ", data['correct_answers']['RelaXEditor'])
