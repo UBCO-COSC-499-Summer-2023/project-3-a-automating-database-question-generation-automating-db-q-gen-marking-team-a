@@ -35,7 +35,7 @@ def autogenerate(data):
 
     # Generates a new query question if there is expected output
     # but it is empty
-    while questionType == 'query' and '<td>' not in data['params']['expectedOutput']:
+    while questionType == 'query' and '<td>' not in data['params']['expectedOutput'] and data['params']['expectedOutput']:
 
         # Clears out the previous create and insert statements
         data['params']['db_initialize_create'] = ''
