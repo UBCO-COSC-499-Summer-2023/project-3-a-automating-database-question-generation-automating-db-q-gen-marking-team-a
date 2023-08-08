@@ -555,8 +555,6 @@ class ParameterizedQueryTests(unittest.TestCase):
             'SQLEditor': ''
         }
     }
-
-
     
     # Parameters for QUERY to test various cases
     @parameterized.expand([
@@ -568,6 +566,8 @@ class ParameterizedQueryTests(unittest.TestCase):
             [data, 10, 4, 1, False, 10, 4, 4, 1, 5, False, True, sampleSize], # Max, without subquery
             [data, 10, 4, 1, True, 10, 4, 4, 1, 5, False, True, sampleSize]    # Max, with subquery
             ])
+    
+
     
     def testParameterizedQuery(self,data,columns,joins,conditionals,subquery,columnsToSelect,orderBy,groupBy,having,limit,isDistinct,useQueryFunctions,sampleSize):        
         data['params']['html_params']['columns'] = columns
