@@ -318,17 +318,16 @@ class Question:
             if dataset.tableSet[node1].columns[column]['references'] == node2:
                 compareColumn = dataset.tableSet[node1].columns[column]["name"]
         
-        # print(compareColumn)
-        
-        # print(f"node1 {len(set(dataset.tableSet[node1].rows[compareColumn]))}, node2 {len(set(dataset.tableSet[node2].rows[compareColumn]))}")
-
+        # this if orders the tables such that when the outer join is executed the proper table is on the proper side
         if len(set(dataset.tableSet[node1].rows[compareColumn])) > len(set(dataset.tableSet[node2].rows[compareColumn])):
             self.joinStatement = f"{node1}{self.outerLeftJoins}{node2}"
             qColumn = rand.choice(list(dataset.tableSet[node2].columns.keys()))
             querryColumn = dataset.tableSet[node2].columns[qColumn]['name']
+            
             while querryColumn is compareColumn:
                 qColumn = rand.choice(list(dataset.tableSet[node2].columns.keys()))
                 querryColumn = dataset.tableSet[node2].columns[qColumn]['name']
+            
             self.tableListText = f"where <b>{querryColumn}</b> <em>is null</em> in <b>{node2}</b>"
             self.selectStatement =  f"{self.selectStatement} {querryColumn} = null ∨"
             self.JoinList = [node1]
