@@ -548,7 +548,7 @@ def generateQuery(data, difficulty):
     for key in selectedColumns:
         for column in selectedColumns[key]:
 
-            # The first one is guaranteed. Pas that, there's 
+            # The first one is guaranteed. Past that, there's 
             # a one in five chance per column for that
             # column to have a function performed on it
             if useQueryFunctions and not functionColumns:
