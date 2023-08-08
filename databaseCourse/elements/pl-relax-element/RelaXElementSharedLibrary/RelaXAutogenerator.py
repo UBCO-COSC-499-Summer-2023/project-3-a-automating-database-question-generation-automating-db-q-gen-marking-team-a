@@ -253,7 +253,7 @@ class Question:
                     randColumn = rand.choice(usableColumns)
                     # Gets table name of which column is a part
                     tableName = dataset.getColumnMap()[randColumn]
-
+                    # Ensures that strings are not used for selection if there is only one select clause
                     while dataset.tableSet[tableName].columns[randColumn]['unit'] == 'STRING':
                         randColumn = rand.choice(usableColumns)
                         # Gets table name of which column is a part
@@ -262,7 +262,7 @@ class Question:
                     randColumn = rand.choice(neededColumns)
                     # Gets table name of which column is a part
                     tableName = dataset.getColumnMap()[randColumn]
-
+                    # Ensures that strings are not used for selection if there is only one select clause
                     while dataset.tableSet[tableName].columns[randColumn]['unit'] == 'STRING':
                         randColumn = rand.choice(neededColumns)
                         # Gets table name of which column is a part
