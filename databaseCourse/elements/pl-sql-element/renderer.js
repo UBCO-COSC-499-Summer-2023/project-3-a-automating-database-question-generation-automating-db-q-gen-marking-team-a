@@ -430,7 +430,7 @@ $(document).ready(function () {
     function createTableRows(rows) {
 
         let numRows = rows.length;
-        let limitRows = 10000;
+        let limitRows = 200;
 
         // limit the number of rows being created in DOM for performance
         if (numRows > limitRows) {
