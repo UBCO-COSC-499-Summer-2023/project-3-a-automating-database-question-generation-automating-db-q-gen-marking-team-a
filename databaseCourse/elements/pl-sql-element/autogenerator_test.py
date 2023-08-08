@@ -559,6 +559,7 @@ class ParameterizedQueryTests(unittest.TestCase):
     # 1: 19s
     # 2: 
 
+
     # Parameters for QUERY to test various cases
     @parameterized.expand([
             # columns, joins, conditional, useSubquery, columnsToSelect, orderBy, groupBy, having, limit, isDistinct
