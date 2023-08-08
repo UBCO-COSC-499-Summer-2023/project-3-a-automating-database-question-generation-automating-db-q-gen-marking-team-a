@@ -253,6 +253,7 @@ class Question:
                     randColumn = rand.choice(usableColumns)
                     for table in dataset.tableSet:
                         if randColumn in dataset.tableSet[table].columns:
+                            print(f"Real:{dataset.tableSet[table].columns}, randColumn:{randColumn}, table:{table}")
                             while dataset.tableSet[table].columns[randColumn]['unit'] == 'STRING':
                                 randColumn = rand.choice(usableColumns)
                 else:

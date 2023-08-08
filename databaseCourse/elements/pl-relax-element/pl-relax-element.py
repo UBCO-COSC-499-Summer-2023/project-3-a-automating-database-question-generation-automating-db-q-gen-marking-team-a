@@ -98,6 +98,10 @@ def prepare(element_html, data):
         # print(database)
         data['params']['database'] = database
 
+    if not pl.get_boolean_attrib(element, "expectedoutput", True):
+        data['params']['html_params']['expectedOutput'] = ''        
+
+
 
 
 def render(element_html, data):
