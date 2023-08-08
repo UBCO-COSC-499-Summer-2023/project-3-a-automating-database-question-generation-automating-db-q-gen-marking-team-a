@@ -35,7 +35,6 @@ def autogenerate(data):
 
     # Generates a new query question if there is expected output
     # but it is empty
-
     doomCounter = 0
     while questionType == 'query' and '<td>' not in data['params']['expectedOutput'] and data['params']['expectedOutput']:
 
