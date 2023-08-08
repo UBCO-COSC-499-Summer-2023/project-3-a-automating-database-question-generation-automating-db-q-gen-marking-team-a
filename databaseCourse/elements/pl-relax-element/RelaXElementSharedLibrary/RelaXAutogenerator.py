@@ -113,7 +113,7 @@ def autogenerate(data, testing=False):
 
     data['params']['html_params']['expectedOutput'] = createPreview(data)
     while not data['params']['html_params']['expectedOutput']:
-        print("pass")
+
         data['params']['db_initialize_create'] = ''
         data['params']['db_initialize_create_backend'] = ''
        

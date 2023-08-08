@@ -109,7 +109,7 @@ class AutogenerateQueryTest(unittest.TestCase):
             self.assertGreater(len(data['params']['db_initialize_create_backend']), 0)
             self.assertGreater(len(data['correct_answers']['RelaXEditor']), 0)
 
-            self.assertIn("π", data['correct_answers']['RelaXEditor'])
+            self.assertIn("π" if not groupBy else "γ", data['correct_answers']['RelaXEditor'])
 
             if numClauses:
                 self.assertIn("σ", data['correct_answers']['RelaXEditor'])
