@@ -90,7 +90,7 @@ def createPreview(data):
 
     return htmlTable
 
-def autogenerate(data):
+def autogenerate(data, testing=False):
     #expectedOutput = data['params']['html_params']['expectedOutput']
     #if expectedOutput:
     #  data['params']['expectedOutput'] = createPreview(data)
@@ -107,7 +107,10 @@ def autogenerate(data):
     database.loadDatabase(data)
     question.loadQuestion(data)
 
-    #"Note From Matthew: if you are seeing this, check Line 101 of databaseCourse/elements/pl-relax-element/RelaXElementSharedLibrary/RelaXAutogenerator.py"
+
+    if testing:
+        return
+
     data['params']['html_params']['expectedOutput'] = createPreview(data)
     while not data['params']['html_params']['expectedOutput']:
         print("pass")

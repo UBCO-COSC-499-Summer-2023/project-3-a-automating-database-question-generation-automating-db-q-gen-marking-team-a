@@ -98,7 +98,7 @@ class AutogenerateQueryTest(unittest.TestCase):
             data['correct_answers']['RelaXEditor'] = ''
 
             # Generates the question
-            autogenerate(data)
+            autogenerate(data, testing=True)
 
             # Asserts
             self.assertGreater(len(data['params']['db_initialize_create']), 0)
