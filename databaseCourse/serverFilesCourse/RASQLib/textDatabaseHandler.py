@@ -305,7 +305,10 @@ class Database:
     #       $columnName: $table
     #   }
     def getColumnMap(self, tableNames=True):
-        tableMap = self.getTableMap()
+        if self.isSQL:
+            tableMap = self.getTableMap()
+        else:
+            tableMap = self.tableSet
         columnMap = {}
         for key in tableMap:
             for column in tableMap[key].columns:

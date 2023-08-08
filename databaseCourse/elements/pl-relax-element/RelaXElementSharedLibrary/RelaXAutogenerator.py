@@ -261,10 +261,13 @@ class Question:
                         print(tableName)
                 else:
                     randColumn = rand.choice(neededColumns)
-                    for table in dataset.tableSet:
-                        if randColumn in dataset.tableSet[table].columns:
-                            while dataset.tableSet[table].columns[randColumn]['unit'] == 'STRING':
-                                randColumn = rand.choice(neededColumns)
+                    tableName = dataset.getColumnMap()[randColumn]
+                    print(tableName)
+
+                    while dataset.tableSet[tableName].columns[randColumn]['unit'] == 'STRING':
+                        randColumn = rand.choice(neededColumns)
+                        tableName = dataset.getColumnMap()[randColumn]
+                        print(tableName)
   
                 # fills SelectedColumn
                 selectedColumns.append(selection(usableColumns, randColumn, graph, dataset))
