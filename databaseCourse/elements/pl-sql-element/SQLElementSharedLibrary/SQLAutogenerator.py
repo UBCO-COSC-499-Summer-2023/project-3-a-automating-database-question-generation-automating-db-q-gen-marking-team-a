@@ -35,7 +35,7 @@ def autogenerate(data):
 
     # Generates a new query question if there is expected output
     # but it is empty
-    while questionType == 'query' and data['params']['html_params']['expectedOutput'] and '<td>' not in data['params']['expectedOutput']:
+    while questionType == 'query' and '<td>' not in data['params']['expectedOutput']:
 
         # Clears out the previous create and insert statements
         data['params']['db_initialize_create'] = ''
@@ -843,9 +843,11 @@ def generateQuery(data, difficulty):
 
     if os.path.exists("preview.db"):
         os.remove("preview.db")
-    expectedOutput = data['params']['html_params']['expectedOutput']
-    if expectedOutput:
-        data['params']['expectedOutput'] = createPreview(data)
+    
+    # Always obtains the expected feedback, regardless of 
+    # whether the flag is true or not. This is to ensure
+    # that the query returns at least one row
+    data['params']['expectedOutput'] = createPreview(data)
 
 # Creates a query
 def queryStatement(database, selectedColumns, joinTypes={}, conditionalValues={}, orderByColumns={}, groupByColumns={}, havingColumns={}, withColumns={}, limit=0, isDistinct=False, functionColumns={}, subquery=''):
