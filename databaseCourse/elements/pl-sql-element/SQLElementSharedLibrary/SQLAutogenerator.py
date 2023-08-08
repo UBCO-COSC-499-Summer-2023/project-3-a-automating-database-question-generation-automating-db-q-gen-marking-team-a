@@ -45,6 +45,8 @@ def autogenerate(data):
         # Generates the new query
         generateQuery(data, difficulty)
 
+
+
 '''
     Begin create-style question
 '''
