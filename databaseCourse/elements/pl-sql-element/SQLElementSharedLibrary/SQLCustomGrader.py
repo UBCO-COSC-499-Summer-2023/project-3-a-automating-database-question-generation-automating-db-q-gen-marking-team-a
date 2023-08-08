@@ -648,9 +648,6 @@ def createValueMatch(expectedMeta,expectedForeign,actualMeta,actualForeign):
 
     metaValMatch = valueMatch(expectedMetaFiltered,actualMetaFiltered)
     foreignValMatch = valueMatch(expectedForeignFiltered,actualForeignFiltered)
-
-    print("actualMetaData",actualMetaFiltered,"\n expectedMetaData",expectedMetaFiltered)
-    print("actualForeignData",actualForeignFiltered,"\n expectedForeignData",expectedForeignFiltered)
     
     matchScore = (foreignValMatch + metaValMatch)/2
 
