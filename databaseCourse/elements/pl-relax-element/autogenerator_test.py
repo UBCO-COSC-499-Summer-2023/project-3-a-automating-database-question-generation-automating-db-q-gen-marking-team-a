@@ -47,7 +47,7 @@ class AutogenerateQueryTest(unittest.TestCase):
     # Describes how many times each test should be run.
     # Since we're testing random generation, we need
     # a sufficient sample size to catch edge cases.
-    sampleSize = 50
+    sampleSize = 30
 
     # Declares and sets defaults
     data = {
@@ -72,9 +72,13 @@ class AutogenerateQueryTest(unittest.TestCase):
     # a test case
     @parameterized.expand([
             # data, numJoins, numClauses, orderBy, groupBy, antiJoin, outerJoin, semiJoin
-            [data, 1, 1, False, False, False, False, False, sampleSize] # A very simple query
+            [data, 1, 1, False, True, False, False, False, sampleSize], # A very simple query
+            [data, 2, 2, True, False, False, False, False, sampleSize], # A very simple query
+            [data, 3, 2, False, False, False, False, False, sampleSize], # A very simple query
+            [data, 0, 3, False, False, False, False, False, sampleSize], # A very simple query
+            [data, 0, 0, True, False, False, False, False, sampleSize]
         ])
-    
+
     
     # The real value in this test is not what the assert statements
     # cover, but the error message of when it crashes

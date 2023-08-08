@@ -253,24 +253,20 @@ class Question:
                     randColumn = rand.choice(usableColumns)
                     # Gets table name of which column is a part
                     tableName = dataset.getColumnMap()[randColumn]
-                    print(tableName)
 
                     while dataset.tableSet[tableName].columns[randColumn]['unit'] == 'STRING':
                         randColumn = rand.choice(usableColumns)
                         # Gets table name of which column is a part
                         tableName = dataset.getColumnMap()[randColumn]
-                        print(tableName)
                 else:
                     randColumn = rand.choice(neededColumns)
                     # Gets table name of which column is a part
                     tableName = dataset.getColumnMap()[randColumn]
-                    print(tableName)
 
                     while dataset.tableSet[tableName].columns[randColumn]['unit'] == 'STRING':
                         randColumn = rand.choice(neededColumns)
                         # Gets table name of which column is a part
                         tableName = dataset.getColumnMap()[randColumn]
-                        print(tableName)
   
                 # fills SelectedColumn
                 selectedColumns.append(selection(usableColumns, randColumn, graph, dataset))
