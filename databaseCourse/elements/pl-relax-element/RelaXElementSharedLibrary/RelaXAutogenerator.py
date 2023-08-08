@@ -251,11 +251,14 @@ class Question:
                 # NeededColumns is to ensure each table has been used when selected columns
                 if len(neededColumns) == 0:
                     randColumn = rand.choice(usableColumns)
-                    for table in dataset.tableSet:
-                        if randColumn in dataset.tableSet[table].columns:
-                            print(f"Real:{dataset.tableSet[table].columns}, randColumn:{randColumn}, table:{table}")
-                            while dataset.tableSet[table].columns[randColumn]['unit'] == 'STRING':
-                                randColumn = rand.choice(usableColumns)
+                    
+                    tableName = dataset.getColumnMap()[randColumn]
+                    print(tableName)
+
+                    while dataset.tableSet[tableName].columns[randColumn]['unit'] == 'STRING':
+                        randColumn = rand.choice(usableColumns)
+                        tableName = dataset.getColumnMap()[randColumn]
+                        print(tableName)
                 else:
                     randColumn = rand.choice(neededColumns)
                     for table in dataset.tableSet:
