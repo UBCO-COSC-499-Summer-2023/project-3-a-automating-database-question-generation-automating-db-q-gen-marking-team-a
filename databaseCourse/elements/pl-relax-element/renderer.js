@@ -203,7 +203,7 @@ $(document).ready(function () {
         for (var i = 0; i < dataSchema._names.length; i++) {
             let field = `<div style="text-align: center; border: 1px solid white; padding: 0.2em; display: flex; justify-content: space-around;" class='submenu' id='schema-${dataSchema._relAliases[0]}'>`;
             let name = `<span onClick='updateCodeMirror("${dataSchema._names[i]}")' style='cursor: pointer; width: ${maxColNameLength}ch;'>${dataSchema._names[i]}</span>`;
-            let type = `<span style=' width: ${maxColTypeLength}ch;'>${dataSchema._types[i].toUpperCase()}</span>`;
+            let type = `<span style=' width: 8ch;'>${dataSchema._types[i].toUpperCase()}</span>`;
 
             schemaView += field + name + type + '</div>';
         }
