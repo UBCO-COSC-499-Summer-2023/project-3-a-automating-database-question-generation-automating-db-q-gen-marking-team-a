@@ -14,6 +14,7 @@ sys.path.append('/drone/src/databaseCourse/serverFilesCourse/')
 
 from RASQLib import textDatabaseHandler as db
 
+# url to the relax API for backend grading
 RELAXAPI_URL = 'http://relaxAPI:3001/index'
 
 def generate(element_html, data):
