@@ -61,7 +61,7 @@ class Database:
         # Populates the table with data
         if rows:
             self.generateRows(rows)
-
+            self.generateRowsBackendRelaX(60)
         # Links tables such that there is a depth
         # of `d`
         keyList = list(self.tableSet.keys())
@@ -74,6 +74,7 @@ class Database:
            self.tableSet[keyList[i]].link(self.tableSet[keyList[i+1]])
         # The rest of the joins link the remaining
         # table to a random one in the depth chain
+
         if joins == len(keyList):
             joins-=1
         for i in range(depth, joins+1):
@@ -82,15 +83,7 @@ class Database:
             randIndex = randint(0,depth-1)
             #print(f"{randIndex}/ {depth-1}/ {i}\n{joins+1}/ {len(keyList)}/ {len(self.tableSet)}")
             self.tableSet[keyList[randIndex]].link(self.tableSet[keyList[i]])
-
-
-        # For relax, Foreign keys are created by having the same column name
-        # This insures that only desired columns are foreign keys
-        for key in keyList:
-            for column in self.tableSet[key].columns:
-                if self.tableSet[key].columns[column]['references'] is None and (self.tableSet[key].columns[column]['name'] == "id" or self.tableSet[key].columns[column]['name'] == "num"):
-                    self.tableSet[key].columns[column]['name'] = key[:3] + column
-
+        
     # Populates the database with rows of data
     #
     # Note: This function respects references so a foreign key
@@ -214,7 +207,13 @@ class Database:
         for table in self.tableSet:
             self.tableSet[table].generateRows(qty)
     
-
+    # Ensuring consistency across FKs is done in Table.link(),
+    # but does require the rows to be generated BEFORE the
+    # tables are linked
+    def generateRowsBackendRelaX(self, qty=0):
+        for table in self.tableSet:
+            self.tableSet[table].generateRowsBackend(qty)
+    
 
     # Adds the tables' schema to data
     def loadColumns(self, data):
@@ -268,9 +267,10 @@ class Database:
     def loadRelaX(self, data):
         for table in self.tableSet:
             data['params']['db_initialize_create'] += self.tableSet[table].getRelaXSchema()
+            data['params']['db_initialize_create_backend'] += self.tableSet[table].getRelaXSchemaBackend()
         data['params']['db_initialize_create'] = data['params']['db_initialize_create'][:-1]
-        #with open("./RelaXElementSharedLibrary/ShipmemtDatabase.txt") as f:
-        #    data['params']['db_initialize'] = f.read()
+        data['params']['db_initialize_create_backend'] = data['params']['db_initialize_create_backend'][:-1]
+
     
     # Adds everything necessary for each table to the data variable
     def loadDatabase(self, data):
@@ -305,7 +305,10 @@ class Database:
     #       $columnName: $table
     #   }
     def getColumnMap(self, tableNames=True):
-        tableMap = self.getTableMap()
+        if self.isSQL:
+            tableMap = self.getTableMap()
+        else:
+            tableMap = self.tableSet
         columnMap = {}
         for key in tableMap:
             for column in tableMap[key].columns:
@@ -820,6 +823,11 @@ class Table:
             for i in range(len(self.rows[column])):
                 foreignTable.rows[column].append(choice(self.rows[column]))
                 # print(f"{foreignTable.rows[column][i]} : {self.rows[column][i]}")
+        if foreignTable.rowsBackend:
+            foreignTable.rowsBackend[column] = []
+            for i in range(len(self.rowsBackend[column])):
+                foreignTable.rowsBackend[column].append(choice(self.rowsBackend[column]))
+        
 
 
     # Given a marked-up textfile, return an array
@@ -1124,6 +1132,44 @@ class Table:
     def getInsertsBackend(self):
         return ''.join([f"INSERT INTO {self.name} VALUES ({str([self.rowsBackend[key][i] for key in self.rowsBackend])[1:-1]});\n" for i in range(len(list(self.rowsBackend.values())[0]))]) if self.rowsBackend else ''
 
+
+        # Returns the entire schema for RelaX
+    def getRelaXSchemaBackend(self):
+        
+        schema = ''
+
+        # Iterates over all columns
+        for key in self.columns:
+            schema += f"{self.name}.{self.columns[key]['name']}:{self.columns[key]['unit'].lower()}, "
+        schema = schema[:-2] + '\n'
+
+
+        # Iterates over rows and columns
+        for row in range(len(list(self.rowsBackend.values())[0])):
+            for key in self.rowsBackend:
+
+                # Adds the line, with quotes.
+                # Strings will break the editor if they do
+                # not have quotes. All other data types will
+                # break the editor if they do have quotes.
+                #
+                # Notice that, unlike most string formating,
+                # the single quotes are on the outside. It is
+                # important that the double quotes are on the
+                # inside due to apostrophes in names like
+                # "St. John's"
+                if self.columns[key]['unit'].upper() == 'STRING':
+                    schema += f'"{self.rowsBackend[key][row]}", '
+
+                # Adds the line, without quotes
+                else:
+                    schema += f"{self.rowsBackend[key][row]}, "
+        
+            # Removes the trailing comma and adds a newline
+            schema = schema[:-2] + '\n'
+
+        # Wraps the output in braces
+        return "{\n"+schema+"};"
 
 
     # Returns the entire schema for RelaX

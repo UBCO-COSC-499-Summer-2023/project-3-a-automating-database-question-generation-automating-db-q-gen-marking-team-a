@@ -1,18 +1,22 @@
 import unittest
 import random as rand
-#from parameterized import parameterized
+from parameterized import parameterized
+
+# This allows DroneCI to see the RASQLib module
+import sys
+sys.path.append('databaseCourse/elements/pl-relax-element/')
 from RelaXElementSharedLibrary.RelaXAutogenerator import *
 
-class AutogenerateTest(unittest.TestCase):
+#class AutogenerateTest(unittest.TestCase):
 
-    def testAutogenerateTablesRelaX(self):
-        for i in range(100):
-            columns = rand.randint(4, 7)
-            joins = rand.randint(2, 5)
-            rows = rand.randint(5, 15)
-            database = db.Database(isSQL=False, columns=columns, joins=joins, rows=rows)
-            if database is None:
-                print("Error: database is None")
+    # def testAutogenerateTablesRelaX(self):
+    #     for i in range(100):
+    #         columns = rand.randint(4, 7)
+    #         joins = rand.randint(2, 5)
+    #         rows = rand.randint(5, 15)
+    #         database = db.Database(isSQL=False, columns=columns, joins=joins, rows=rows)
+    #         if database is None:
+    #             print("Error: database is None")
 
     
 #     def testAutogenerateJoinedTablesCollection(self):
@@ -39,3 +43,96 @@ class AutogenerateTest(unittest.TestCase):
 #                     print(f"Error: {len(subgraph)} != {numJoins+1}")
                     
 # #AutogenerateTest.testAutogenerateJoinedTablesCollection()
+
+
+# Tests RelaX autogen queries
+class AutogenerateQueryTest(unittest.TestCase):
+    
+    # Describes how many times each test should be run.
+    # Since we're testing random generation, we need
+    # a sufficient sample size to catch edge cases.
+    sampleSize = 30
+
+
+    # Declares and sets defaults
+    data = {
+        'params': {
+            'html_params': {
+                'random': True,
+                'questionType': 'create',
+                'difficulty': None,
+                'maxGrade': 3,
+                'markerFeedback': True,
+                'expectedOutput': False
+            }
+        },
+        'correct_answers': {
+            'RelaXEditor': ''
+        }
+    }
+
+    # Parameters for RelaX question.
+    # These are passed into the function header for all
+    # functions of this class. Each tuple corresponds to 
+    # a test case
+    @parameterized.expand([
+            # data, numJoins, numClauses, orderBy, groupBy, antiJoin, outerJoin, semiJoin
+            [data, 0, 0, True, False, False, False, False, sampleSize],
+            [data, 1, 0, False, False, False, False, False, sampleSize],
+            [data, 2, 0, False, False, False, False, False, sampleSize],
+            [data, 3, 0, True, True, False, False, False, sampleSize],
+
+            [data, 0, 1, False, False, False, False, False, sampleSize],
+            [data, 1, 1, False, True, False, False, False, sampleSize], # A very simple query
+            [data, 2, 1, False, False, False, False, False, sampleSize],
+            [data, 3, 1, True, False, False, False, False, sampleSize],
+
+            [data, 0, 2, False, True, False, False, False, sampleSize], # A simple query
+            [data, 1, 2, True, True, False, False, False, sampleSize], # A simple query
+            [data, 2, 2, True, False, False, False, False, sampleSize], # A simple query
+            [data, 3, 2, False, False, False, False, False, sampleSize], # A complex query
+            
+            [data, 0, 3, False, False, False, False, False, sampleSize], # A very weird query
+            [data, 1, 3, False, True, False, False, False, sampleSize], # A very weird query
+            [data, 2, 3, False, False, False, False, False, sampleSize], # A very weird query
+            [data, 3, 3, True, False, False, False, False, sampleSize]  # A very weird query
+
+        ])
+
+    
+    # The real value in this test is not what the assert statements
+    # cover, but the error message of when it crashes
+    def testRelaXQuery(self,data,numJoins,numClauses,orderBy,groupBy,antiJoin,outerJoin,semiJoin,sampleSize):        
+        data['params']['attrib_dict'] = {
+            "numClauses": numClauses,
+            "orderBy": orderBy,
+            "groupBy": groupBy,
+            "numJoins": numJoins,
+            "antiJoin": antiJoin,
+            "semiJoin": semiJoin,
+            "outerJoin": outerJoin,
+        }
+
+        for i in range(sampleSize):
+
+            # Sets values to be empty
+            data['params']['questionText'] = ''
+            data['params']['db_initialize_create'] = ''
+            data['params']['db_initialize_create_backend'] = ''
+            data['correct_answers']['RelaXEditor'] = ''
+
+            # Generates the question
+            autogenerate(data, testing=True)
+
+            # Asserts
+            self.assertGreater(len(data['params']['db_initialize_create']), 0)
+            self.assertGreater(len(data['params']['db_initialize_create_backend']), 0)
+            self.assertGreater(len(data['correct_answers']['RelaXEditor']), 0)
+
+            self.assertIn("π" if not groupBy else "γ", data['correct_answers']['RelaXEditor'])
+            
+            if numClauses:
+                self.assertIn("σ", data['correct_answers']['RelaXEditor'])
+
+
+            print(data['correct_answers']['RelaXEditor'])
