@@ -60,7 +60,6 @@ $(document).ready(function () {
             return this.nodeType === 3 && this.nodeValue.trim() !== '';
         });
 
-        console.log(textNodes)
         // Iterate over the text nodes and apply tags to the matched strings
         textNodes.each(function () {
 
@@ -74,35 +73,7 @@ $(document).ready(function () {
         return $('body').html();
     }
     
-    // Function that renders Dates for Expected output
-    function applyDateFormatting() {
-        // Create a regular expression to match the opening and closing tags
-        // (.*?) matches everything between the tags
-        // g enables global search
-        var regex = new RegExp('<date>(.*?)</date>', 'g');
-
-        // Find all text nodes in the body (not including empty text nodes)
-        var textNodes = $('body').find('*').addBack().contents().filter(function () {
-            return this.nodeType === 3 && this.nodeValue.trim() !== '';
-        });
-        console.log(textNodes)
-        // Iterate over the text nodes and apply tags to the matched strings
-        textNodes.each(function () {
-
-            var node = this;
-            var replacedText = node.nodeValue.replace(regex, function (match, capturedText) {
-                const date = new Date(capturedText);
-                const year = date.getFullYear();
-                const month = String(date.getMonth() + 1).padStart(2, '0');
-                const day = String(date.getDate()).padStart(2, '0');
-                console.log(`${year}-${month}-${day}`)
-                return `${year}-${month}-${day}`;
-            });
-            $(node).replaceWith(replacedText);
-        });
-
-        return $('body').html();
-    }
+    
     // Function that applies onClick functionality for specified targets
     function applyOnClick() {
         var regex = new RegExp('<click>(.*?)</click>', 'g');
@@ -127,11 +98,7 @@ $(document).ready(function () {
 
 
     // Apply Functionality
-
     var onClickFormatting = applyOnClick()
-    // Apply Date Formatting
-    var dateFormatting = applyDateFormatting()
-
     // Apply HTML tags to certain parts of strings
     var boldedWords = applyHTMLTagsToWords('b');
     var italicWords = applyHTMLTagsToWords('i');

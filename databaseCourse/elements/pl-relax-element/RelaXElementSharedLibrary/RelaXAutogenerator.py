@@ -1,5 +1,6 @@
 import random as rand
 import requests
+from datetime import datetime
 # This allows DroneCI to see the RASQLib module
 import sys
 sys.path.append('databaseCourse/serverFilesCourse/')
@@ -13,6 +14,10 @@ from RASQLib import noisyData as nd
 # do this by creating array first. then pop out whats needed. should be easy
 
 
+def formatDate(capturedText):
+    dateObj = datetime.strptime(capturedText, '%Y-%m-%dT%H:%M:%S.%fZ')
+    formattedDate = dateObj.strftime('%Y-%m-%d')
+    return formattedDate
 
 # A very basic autogenerate function.
 # At the moment, all it does is create a database
@@ -80,7 +85,7 @@ def createPreview(data):
         rowString = "<tr>"
         for i, x in enumerate(row):
             if i in dateRowRecord:
-                rowString+= "<td><date>" + str(x) + "</date></td>"
+                rowString+= "<td>" + formatDate(str(x)) + "</td>"
             else:
                 rowString+= "<td>" + str(x) + "</td>"
         rowString += "</tr>"
