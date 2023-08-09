@@ -146,6 +146,8 @@ def render(element_html, data):
                 queryFeedback = data['partial_scores']['RelaXEditor'].get('feedback', None)
             except KeyError:
                 queryFeedback = ''
+        else:
+            queryFeedback = "Your instructor has disabled feedback for this question."
   
         html_params = {
             'submission': True,
