@@ -286,15 +286,15 @@ def checkOrder(valueSA, valueCA):
     # Replace None values with empty strings
     
     #if valuesCA contains None values
-    # for i in range(len(valueCA)):
-    #     for j in range(len(valueCA[i])):
-    #         if valueCA[i][j] is None:
-    #             valueCA[i][j] = ''
+    for i in range(len(valueCA)):
+        for j in range(len(valueCA[i])):
+            if valueCA[i][j] is None:
+                valueCA[i][j] = ''
     
-    # for i in range(len(valueSA)):
-    #     for j in range(len(valueSA[i])):
-    #         if valueSA[i][j] is None:
-    #             valueSA[i][j] = ''
+    for i in range(len(valueSA)):
+        for j in range(len(valueSA[i])):
+            if valueSA[i][j] is None:
+                valueSA[i][j] = ''
     
     
     # Convert rows to tuples for comparison
