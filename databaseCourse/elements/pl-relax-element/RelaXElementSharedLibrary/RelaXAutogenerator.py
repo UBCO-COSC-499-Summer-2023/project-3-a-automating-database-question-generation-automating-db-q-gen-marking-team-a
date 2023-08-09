@@ -266,20 +266,26 @@ class Question:
                     # Gets table name of which column is a part
                     tableName = dataset.getColumnMap()[randColumn]
                     # Ensures that strings are not used for selection if there is only one select clause
-                    while dataset.tableSet[tableName].columns[randColumn]['unit'] == 'STRING':
+                    index = 0
+                    while dataset.tableSet[tableName].columns[randColumn]['unit'] == 'STRING' and index < 20:
                         randColumn = rand.choice(usableColumns)
                         # Gets table name of which column is a part
                         tableName = dataset.getColumnMap()[randColumn]
+
+                        index+=1
                 else:
                     randColumn = rand.choice(neededColumns)
                     # Gets table name of which column is a part
                     tableName = dataset.getColumnMap()[randColumn]
                     # Ensures that strings are not used for selection if there is only one select clause
-                    while dataset.tableSet[tableName].columns[randColumn]['unit'] == 'STRING':
+                    index = 0
+                    while dataset.tableSet[tableName].columns[randColumn]['unit'] == 'STRING' and index < 20:
                         randColumn = rand.choice(neededColumns)
                         # Gets table name of which column is a part
                         tableName = dataset.getColumnMap()[randColumn]
-  
+
+                        index+=1
+
                 # fills SelectedColumn
                 selectedColumns.append(selection(usableColumns, randColumn, graph, dataset))
             # Else grabs random columns to fill selection
