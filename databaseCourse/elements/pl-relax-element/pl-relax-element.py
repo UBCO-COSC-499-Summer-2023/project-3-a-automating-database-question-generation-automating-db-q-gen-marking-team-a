@@ -55,18 +55,6 @@ def prepare(element_html, data):
     # Grabs the path to the database file
     # Only used in static questions
     databaseFilePath = pl.get_string_attrib(element, 'database', '')
-
-    # If there is a database file, read and loads its contents
-    data['params']['db_initialize'] = ''
-    if databaseFilePath:
-        with open(databaseFilePath,"r") as databaseFile:
-           data['params']['db_initialize'] = databaseFile.read()
-    
-        data['params']['db_initialize_create_backend'] = data['params']['db_initialize']
-        
-    
-    # Loads quesiton parameters into data
-    #
     # Note to devs:
     # Notice the strings in the pl.get_... are lowercase despite
     # the html parameters being uppercase. I have no clue why
@@ -78,6 +66,18 @@ def prepare(element_html, data):
         'random': questionRandom,
         'expectedOutput' : pl.get_boolean_attrib(element, "expectedoutput", True)
     }
+    # If there is a database file, read and loads its contents
+    data['params']['db_initialize'] = ''
+    if databaseFilePath:
+        with open(databaseFilePath,"r") as databaseFile:
+           data['params']['db_initialize'] = databaseFile.read()
+        data['params']['html_params']['expectedOutput'] = ''
+        data['params']['db_initialize_create_backend'] = data['params']['db_initialize']
+        
+    
+    # Loads quesiton parameters into data
+    #
+
 
 
     if questionRandom:
