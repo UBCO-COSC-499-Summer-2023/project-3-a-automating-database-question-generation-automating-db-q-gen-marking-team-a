@@ -14,6 +14,8 @@ sys.path.append('/drone/src/databaseCourse/serverFilesCourse/')
 
 from RASQLib import textDatabaseHandler as db
 
+RELAXAPI_URL = 'http://relaxAPI:3001/index'
+
 def generate(element_html, data):
     pass
     
@@ -43,8 +45,8 @@ def prepare(element_html, data):
     data['params']['queryFeedback'] = ''
 
     #get the url to execute relax from backend
-    url = pl.get_string_attrib(element, 'url', '')
-    data['params']['url'] = url
+    #url = pl.get_string_attrib(element, 'url', '') #obsolete, now taken from global variable
+    data['params']['url'] = RELAXAPI_URL
     
     #get the correct answer from question.html
     correctAnswer = lxml.html.fromstring(pl.inner_html(element[0])).text_content()
@@ -112,6 +114,7 @@ def render(element_html, data):
     # Gets each element from the questionHTML
     submittedAnswer = data['submitted_answers'].get('RelaXEditor','')
     correctAnswer = data['correct_answers'].get('RelaXEditor', '')
+    giveFeedback = data['params']['feedback']
 
 
     # NOTE: the database is loaded into the data
@@ -138,11 +141,16 @@ def render(element_html, data):
 
 
     elif data['panel'] == 'submission':
+        if (giveFeedback is True):
+            try:
+                queryFeedback = data['partial_scores']['RelaXEditor'].get('feedback', None)
+            except KeyError:
+                queryFeedback = ''
   
         html_params = {
             'submission': True,
             'submissionAnswer': submittedAnswer,
-            'feedback' : data['params']['queryFeedback']
+            'feedback' : queryFeedback
         }
         
         with open('pl-relax-submission.mustache', 'r', encoding='utf-8') as f:
@@ -177,7 +185,7 @@ def grade(element_html, data):
     data['partial_scores']['RelaXEditor'] = {
         'score': studentScore,
         'weight': 1,
-        'feedback': "",
+        'feedback': data['params']['queryFeedback'],
         'marker_feedback': ""
     }
     
