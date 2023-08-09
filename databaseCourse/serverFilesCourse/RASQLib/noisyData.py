@@ -307,6 +307,9 @@ def absoluteDirectoryPath():
 
     if 'RASQLib' in currentDirectory:
         return currentDirectory
+    # checks if on Personal Machine
+    elif "/home/matthewo/Documents/UBCO/Year 4/" in currentDirectory:
+        return f"{currentDirectory}/databaseCourse/serverFilesCourse/RASQLib"
     else:
         courseFile = currentDirectory[:currentDirectory.find('/elements')]
         return f"{courseFile}/serverFilesCourse/RASQLib"

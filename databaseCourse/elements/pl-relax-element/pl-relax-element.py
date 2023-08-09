@@ -23,6 +23,7 @@ def prepare(element_html, data):
     data['params']['grader'] = 'RelaXEditor'
 
     data['params']['db_initialize_create'] = ''
+    data['params']['db_initialize_create_backend'] = ''
     element = lxml.html.fragment_fromstring(element_html)
     
     # If there is a database file, read and loads its contents
@@ -97,6 +98,10 @@ def prepare(element_html, data):
         # print(database)
         data['params']['database'] = database
 
+    if not pl.get_boolean_attrib(element, "expectedoutput", True):
+        data['params']['html_params']['expectedOutput'] = ''        
+
+
 
 
 def render(element_html, data):
@@ -116,6 +121,7 @@ def render(element_html, data):
 
     # This renders the question into PL
     if data['panel'] == 'question':
+        #data['params']['html_params']['expectedOutput'] = autogen.createPreview(data)
         if 'questionText' not in data['params'].keys():
             data['params']['questionText'] = ""
         # setting the paramaters

@@ -1,5 +1,6 @@
 import random as rand
 import requests
+from datetime import datetime
 # This allows DroneCI to see the RASQLib module
 import sys
 sys.path.append('databaseCourse/serverFilesCourse/')
@@ -13,6 +14,10 @@ from RASQLib import noisyData as nd
 # do this by creating array first. then pop out whats needed. should be easy
 
 
+def formatDate(capturedText):
+    dateObj = datetime.strptime(capturedText, '%Y-%m-%dT%H:%M:%S.%fZ')
+    formattedDate = dateObj.strftime('%Y-%m-%d')
+    return formattedDate
 
 # A very basic autogenerate function.
 # At the moment, all it does is create a database
@@ -61,17 +66,28 @@ def createPreview(data):
     htmlTable = "<div class='expectedOutput'><b>Expected Output:</b><div id='output' class='output-tables'><table><thead>"
     
     columnNames = queriedCA['schema']['_names']
+    columnTypes = queriedCA['schema']['_types']
     dataRows = queriedCA['rows']
 
-    for column in columnNames:
+    if len(dataRows) == 0:
+        return False
+
+    dateRowRecord = []
+    for i, column in enumerate(columnNames):
+        if columnTypes[i] == 'date':
+            # print(columnTypes[i])
+            dateRowRecord.append(i)
         htmlTable += "<th>" + str(column) + "</th>"
 
     htmlTable += "</thead>"
 
     for row in dataRows:
         rowString = "<tr>"
-        for x in row:
-            rowString+= "<td>" + str(x) + "</td>"
+        for i, x in enumerate(row):
+            if i in dateRowRecord:
+                rowString+= "<td>" + formatDate(str(x)) + "</td>"
+            else:
+                rowString+= "<td>" + str(x) + "</td>"
         rowString += "</tr>"
         htmlTable += rowString
 
@@ -79,26 +95,43 @@ def createPreview(data):
 
     return htmlTable
 
-def autogenerate(data):
+def autogenerate(data, testing=False):
+    
     #expectedOutput = data['params']['html_params']['expectedOutput']
     #if expectedOutput:
     #  data['params']['expectedOutput'] = createPreview(data)
     # Generates a random database
     columns = rand.randint(4, 7)
-    joins = returnGreater(rand.randint(2,5), (data['params']['attrib_dict']['numJoins'])) #! Change to joins/rand -> whichever is bigger
+    joins = returnGreater(rand.randint(2,4), (data['params']['attrib_dict']['numJoins'])) #! Change to joins/rand -> whichever is bigger
     rows = rand.randint(7, 15)
     
     database = db.Database(isSQL=False, columns=columns, joins=joins, rows=rows)
-
-    question = Question(dataset=database, attribDict=data['params']['attrib_dict'])
+    question = Question(dataset=database, attribDict=data['params']['attrib_dict'], rows=rows)
 
 
     # Loads the database into the data variable
     database.loadDatabase(data)
     question.loadQuestion(data)
 
+    if testing:
+        return
 
     data['params']['html_params']['expectedOutput'] = createPreview(data)
+    while not data['params']['html_params']['expectedOutput']:
+
+        data['params']['db_initialize_create'] = ''
+        data['params']['db_initialize_create_backend'] = ''
+       
+        database = db.Database(isSQL=False, columns=columns, joins=joins, rows=rows)
+        question = Question(dataset=database, attribDict=data['params']['attrib_dict'], rows=rows)
+
+
+        # Loads the database into the data variable
+        database.loadDatabase(data)
+        question.loadQuestion(data)
+
+        data['params']['html_params']['expectedOutput'] = createPreview(data) 
+    
 
 class Question:
     Query = "π "
@@ -122,7 +155,7 @@ class Question:
 
 
     tableListText = ""
-    def  __init__(self, dataset, attribDict) -> None:
+    def  __init__(self, dataset, attribDict, rows) -> None:
         #* Load all attribs from data
         self.numJoins = attribDict['numJoins']
         self.numClauses = attribDict['numClauses']
@@ -131,7 +164,7 @@ class Question:
         self.antiJoinBool = attribDict['antiJoin']
         self.outerJoinBool = attribDict['outerJoin']
         self.semiJoinBool = attribDict['semiJoin']
-        #* Join first -- may need recursive function
+        #* Join first
         # number of joins for the question
         self.offLimitsTable = None
 
@@ -141,14 +174,22 @@ class Question:
         self.JoinList = []
         neededColumns = []
         loopNum = 0
+        if self.numJoins == 0:
+            self.JoinList.append(rand.choice(list(graph.keys())))
+            self.joinStatement = self.JoinList[0]
         while loopNum != (self.numJoins):
             if len(self.JoinList) == 0:
-                joinChoice = rand.choice(['natural', 'outer', 'semi', 'anti'])
-                match joinChoice:
-                    case 'natural': self.naturalJoinGeneration(subgraph=graph)
-                    case 'outer': self.outerJoinGeneration(subgraph=graph,dataset=dataset)
-                    case 'semi': self.semiJoinGeneration(subgraph=graph,dataset=dataset)
-                    case 'anti': self.antiJoinGeneration(subgraph=graph,dataset=dataset)
+                if rows >= 11:
+                    joinChoice = rand.choice(['semi', 'anti'])
+                    match joinChoice:
+                        case 'semi': self.semiJoinGeneration(subgraph=graph,dataset=dataset)
+                        case 'anti': self.antiJoinGeneration(subgraph=graph,dataset=dataset)
+                else:
+                    joinChoice = rand.choice(['natural', 'outer'])
+                    match joinChoice:
+                        case 'natural': self.naturalJoinGeneration(subgraph=graph)
+                        case 'outer': self.outerJoinGeneration(subgraph=graph,dataset=dataset)
+
             else:
                 self.naturalJoinGeneration(subgraph=graph)
             loopNum+=1
@@ -170,12 +211,17 @@ class Question:
             for column in dataset.tableSet[table].columns:
                 usableColumns.append(dataset.tableSet[table].columns[column]['name'])
                 if i == num:
-                   neededColumns.append(dataset.tableSet[table].columns[column]['name']) 
+                    neededColumns.append(dataset.tableSet[table].columns[column]['name']) 
                 i+=1
+
+
         #* Projection
-        projectedColumns = projection(neededColumns, usableColumns)
+        projectedColumns = self.projection(neededColumns, usableColumns)
+        tempArray = []
+        for elem in projectedColumns:
+            tempArray.append(f"<click>{elem}</click>")
         if not self.groupByBool:
-            self.projectedColumnText = ", ".join(projectedColumns)
+            self.projectedColumnText = ", ".join(tempArray)
             parts = self.projectedColumnText.rsplit(",", 1)  # Split the string from the right side only once
             self.projectedColumnText = f'<b>{" and".join(parts)}</b>'
             #print(self.projectedColumnText)
@@ -190,11 +236,11 @@ class Question:
                 if i == 0:
                     self.groupByStatement = f"{self.groupByStatement} {column};"
                 else:
-                    func = groupBy(column, subgraph=subgraph, dataset=dataset)
-                    groupByText.append(f" the <b>{func}</b> of <b>{column}</b>, <em>mapped</em> to a column named <b>{func}{column}</b>")
+                    func = groupBy(column, subgraph=graph, dataset=dataset)
+                    groupByText.append(f" the <b><click>{func}</click></b> of <b><click>{column}</click></b>, <em>mapped</em> to a column named <b><click>{func}{column}</click></b>")
                     self.groupByStatement = f"{self.groupByStatement} {func}({column}) → {func}{column},"
             self.queryStatement = self.groupByStatement[:-1]
-            self.projectedColumnText = f"<b>{projectedColumns[0]}</b> <em>grouped by</em> {' and'.join(groupByText)}"
+            self.projectedColumnText = f"<b><click>{projectedColumns[0]}</click></b> <em>grouped by</em> {' and'.join(groupByText)}"
         
         #* Order By
         if self.orderByBool:
@@ -202,18 +248,56 @@ class Question:
             randColumn = randColumn + (rand.choice([' desc', ' asc']))
             self.orderByStatement = f"{self.orderByStatement} {randColumn}"
             self.orderByText = f" <em>ordered by {randColumn.replace('desc', 'in <b>descending order</b>').replace('asc', 'in <b>ascending order</b>')}</em>"
-
+        
         #* Selection
         selectedColumns = []
-        if self.numClauses != 0:
-            for i in range(self.numClauses):
+
+        if self.numClauses <= 0:
+            return
+        if self.numClauses > 0:
+
+            # Checks to see if only one select clause
+            # makes sure that it returns more than 1 output.
+            if self.numClauses == 1:
+
+                # NeededColumns is to ensure each table has been used when selected columns
                 if len(neededColumns) == 0:
                     randColumn = rand.choice(usableColumns)
+                    # Gets table name of which column is a part
+                    tableName = dataset.getColumnMap()[randColumn]
+                    # Ensures that strings are not used for selection if there is only one select clause
+                    while dataset.tableSet[tableName].columns[randColumn]['unit'] == 'STRING':
+                        randColumn = rand.choice(usableColumns)
+                        # Gets table name of which column is a part
+                        tableName = dataset.getColumnMap()[randColumn]
                 else:
-                    randColumn = neededColumns.pop(rand.choice(range(len(neededColumns))))
-                while randColumn in selectedColumns:
-                    randColumn =  rand.choice(usableColumns)
+                    randColumn = rand.choice(neededColumns)
+                    # Gets table name of which column is a part
+                    tableName = dataset.getColumnMap()[randColumn]
+                    # Ensures that strings are not used for selection if there is only one select clause
+                    while dataset.tableSet[tableName].columns[randColumn]['unit'] == 'STRING':
+                        randColumn = rand.choice(neededColumns)
+                        # Gets table name of which column is a part
+                        tableName = dataset.getColumnMap()[randColumn]
+  
+                # fills SelectedColumn
                 selectedColumns.append(selection(usableColumns, randColumn, graph, dataset))
+            # Else grabs random columns to fill selection
+            else:
+                # loops to fill selectedColumns 
+                for i in range(self.numClauses):
+                    if len(neededColumns) == 0:
+                        randColumn = rand.choice(usableColumns)
+                        # Ensures That no columns are double called
+                        while randColumn in selectedColumns:
+                            randColumn =  rand.choice(usableColumns)
+                    else:
+                        randColumn = neededColumns.pop(rand.choice(range(len(neededColumns))))
+
+                    # fills selectedColumns
+                    selectedColumns.append(selection(usableColumns, randColumn, graph, dataset))
+
+            
             conditions = []
             selectedColumnsArray = []
             for item in selectedColumns:
@@ -221,7 +305,7 @@ class Question:
                 selectedColumnsArray.append(f"{randColumn}{operator}{value}")
 
                 operator = operator.replace(">", "is greater than").replace("<", "is less than").replace("≥", "is greater than or equal to").replace("≤", "is less than or equal to").replace("=", "is").replace("≠", "is not")
-                conditions.append(f"<b>{randColumn}</b> <em>{operator}</em> <b>{value}</b>")
+                conditions.append(f"<b><click>{randColumn}</click></b> <em>{operator}</em> <b><click>{value}</click></b>")
             selected = ' ∨ '.join(selectedColumnsArray)
             self.selectStatement =  f"{self.selectStatement} {selected}"
             self.selectStatementText = ' or '.join(conditions)
@@ -246,19 +330,22 @@ class Question:
             if dataset.tableSet[node1].columns[column]['references'] == node2:
                 compareColumn = dataset.tableSet[node1].columns[column]["name"]
         
-        # print(compareColumn)
-        
-        # print(f"node1 {len(set(dataset.tableSet[node1].rows[compareColumn]))}, node2 {len(set(dataset.tableSet[node2].rows[compareColumn]))}")
-
+        # this if orders the tables such that when the outer join is executed the proper table is on the proper side
         if len(set(dataset.tableSet[node1].rows[compareColumn])) > len(set(dataset.tableSet[node2].rows[compareColumn])):
             self.joinStatement = f"{node1}{self.outerLeftJoins}{node2}"
             qColumn = rand.choice(list(dataset.tableSet[node2].columns.keys()))
             querryColumn = dataset.tableSet[node2].columns[qColumn]['name']
+            
             while querryColumn is compareColumn:
                 qColumn = rand.choice(list(dataset.tableSet[node2].columns.keys()))
                 querryColumn = dataset.tableSet[node2].columns[qColumn]['name']
-            self.tableListText = f"where <b>{querryColumn}</b> <em>is null</em> in <b>{node2}</b>"
-            self.selectStatement =  f"{self.selectStatement} {querryColumn} = null ∨"
+            
+            self.tableListText = f"where <b><click>{querryColumn}</click></b> <em>is null</em> in <b><click>{node2}</click></b>"
+            if self.numClauses == 0: 
+                self.selectStatement =  f"{self.selectStatement} {querryColumn} = null"
+                self.numClauses = -1
+            else:
+                self.selectStatement =  f"{self.selectStatement} {querryColumn} = null ∨"
             self.JoinList = [node1]
         else:
             self.joinStatement = f"{node1}{self.outerRightJoins}{node2}"
@@ -267,8 +354,12 @@ class Question:
             while querryColumn is compareColumn:
                 qColumn = rand.choice(list(dataset.tableSet[node1].columns.keys()))
                 querryColumn = dataset.tableSet[node1].columns[qColumn]['name']
-            self.selectStatement =  f"{self.selectStatement} {querryColumn} = null ∨"
-            self.tableListText = f"where <b>{querryColumn}</b> <em>is null</em> in <b>{node1}</b>"
+            if self.numClauses == 0: 
+                self.selectStatement =  f"{self.selectStatement} {querryColumn} = null"
+                self.numClauses = -1
+            else:
+                self.selectStatement =  f"{self.selectStatement} {querryColumn} = null ∨"
+            self.tableListText = f"where <b><click>{querryColumn}</click></b> <em>is null</em> in <b><click>{node1}</click></b>"
             self.JoinList = [node2, node1]
         
         if self.numClauses > 0:
@@ -307,21 +398,11 @@ class Question:
             if dataset.tableSet[node1].columns[column]['references'] == node2:
                 compareColumn = dataset.tableSet[node1].columns[column]["name"]
         
-        #print(compareColumn)
         # Render Outputs
         self.joinStatement = f"{node1}{self.semiRightJoins}{node2}"
-        self.tableListText = f"or where <b>{compareColumn}</b> exists in <b>{node2}</b>"
+        self.tableListText = f"or where <b><click>{compareColumn}</click></b> exists in <b><click>{node2}</click></b>"
         self.JoinList = [node1]
         self.offLimitsTable = node2
-        # else:
-        #     self.joinStatement = f"{node1}{self.semiLeftJoins}{node2}"
-        #     self.tableListText = f"or where <b>{compareColumn}</b> exists in <b>{node1}</b>"
-        #     self.JoinList = [node1]
-        #     self.offLimitsTable = node2
-        
-        # print(f"{self.JoinList}: {subgraph[self.JoinList[0]]}")
-        # print(self.joinStatement)
-        # print(self.offLimitsTable)
     
     def antiJoinGeneration(self, subgraph, dataset):
         #* Anti Joins --> bigger ▷ smaller
@@ -360,7 +441,7 @@ class Question:
         # print(f"node1 {len(set(dataset.tableSet[node1].rows[compareColumn]))}, node2 {len(set(dataset.tableSet[node2].rows[compareColumn]))}")
 
         self.joinStatement = f"{node1}{self.antiJoins}{node2}"
-        self.tableListText = f"where <b>{compareColumn}</b> is not in <b>{node2}</b>"
+        self.tableListText = f"where <b><click>{compareColumn}</click></b> is not in <b><click>{node2}</click></b>"
         self.JoinList = [node1]
         self.offLimitsTable = node2
 
@@ -400,11 +481,11 @@ class Question:
         # print(self.joinStatement)
 
 
-
     #* getters=======================================================
     def getQuery(self):
         self.Query = self.joinStatement 
-        self.Query = f"{self.selectStatement} ({self.Query})"
+        if self.numClauses != 0:
+            self.Query = f"{self.selectStatement} ({self.Query})"
         if self.orderByBool:
             self.Query = f"{self.orderByStatement} ({self.Query})"
         self.Query = f"{self.queryStatement} ({self.Query})"
@@ -415,7 +496,7 @@ class Question:
         text = f"Return a table of {self.projectedColumnText}"
         if self.orderByBool:
             text += self.orderByText
-        if self.numClauses == 0:
+        if self.numClauses <= 0:
             text += f" {self.tableListText}"
         else:
             text += f" where {self.selectStatementText} {self.tableListText}"
@@ -430,18 +511,21 @@ class Question:
 
 
 
-def projection(neededColumns, usableColumns):
-    projectedColumns = []
-    for i in range(rand.randint(2,5)):
-        if len(neededColumns) == 0:
-            randColumn = rand.choice(usableColumns)
-        else:
-            randColumn = neededColumns.pop(rand.choice(range(len(neededColumns))))
-        while randColumn in projectedColumns:
-            randColumn =  rand.choice(usableColumns)
-        projectedColumns.append(randColumn)
+    def projection(self, neededColumns, usableColumns):
+        projectedColumns = []
+        index = 0
+        for i in range(rand.randint(2,5)):
+            if len(neededColumns) == 0 or self.numJoins == 0:
+                randColumn = rand.choice(usableColumns)
+            else:
+                randColumn = neededColumns.pop(rand.choice(range(len(neededColumns))))
+            while randColumn in projectedColumns and index < 15:
+                randColumn =  rand.choice(usableColumns)
+                index+=1
+            index = 0
+            projectedColumns.append(randColumn)
 
-    return projectedColumns
+        return projectedColumns
 
 def groupBy(randColumn, subgraph, dataset):
     for table in subgraph.keys():
@@ -452,19 +536,22 @@ def groupBy(randColumn, subgraph, dataset):
                     case 'NUMBER': return f"{rand.choice(['avg','sum'])}"
                     case 'DATE': return "count"
 
-        
 def selection(usableColumns, randColumn, graph, dataset):
     for table in graph.keys():
         for column in dataset.tableSet[table].columns:
             if randColumn == dataset.tableSet[table].columns[column]['name']:
                 match(dataset.tableSet[table].columns[column]['unit']):
                     case 'STRING': return (randColumn, " = ", f"'{rand.choice(dataset.tableSet[table].rows[column])}'")
-                    case 'NUMBER': return (randColumn, f" {rand.choice([ '≥', '≤', '>', '<'])} ", rand.choice(dataset.tableSet[table].rows[column]))
-                    case 'DATE':   return (randColumn, f" {rand.choice([ '≥', '≤', '>', '<'])} ", f"Date('{rand.choice(dataset.tableSet[table].rows[column])}')")
+                    case 'NUMBER': return (randColumn, f" {rand.choice([ '≥', '≤'])} ", rand.choice(dataset.tableSet[table].rows[column]))
+                    case 'DATE':   return (randColumn, f" {rand.choice([ '≥', '≤'])} ", f"Date('{rand.choice(dataset.tableSet[table].rows[column])}')")
                 #print(f"Selection string '{rand.choice(dataset.tableSet[table].rows[column])}'")
                 #selectedColumns.append(randColumn)
 
 
+
+
+
+# Performs a Depth first search to retreave a connected graph
 def dfs(graph, startNode, visited=set(), n=1):
     visited.add(startNode)
     if len(visited) > n:
@@ -476,80 +563,9 @@ def dfs(graph, startNode, visited=set(), n=1):
                 return visited
     return visited
 
+# Returns a random subgraph of a desired size. Used to retrieve natural joins.
 def randomSubgraph(graph, n):
     startNode = rand.choice(list(graph.keys()))
     connectedNodes = dfs(graph, startNode, n=n)
     return {node: graph[node] for node in connectedNodes}
 
-
-
-#         table = rand.choice(list(dataset.tableSet.keys()))
-#         table = dataset.tableSet[table]
-#         tableDict = {}
-#         for table in dataset.tableSet:
-#             for column in dataset.tableSet[table].columns:
-#                 if dataset.tableSet[table].columns[column]['references']:
-#                     if column not in tableDict:
-#                         #print(table)
-#                         tableDict[dataset.tableSet[table].columns[column]['references']] = []
-#                         tableDict[dataset.tableSet[table].columns[column]['references']].append(table)
-#         print(tableDict)
-#         keysList = list(tableDict.keys())
-#         selectedKey = rand.choice(keysList)
-#         joinedTables = []
-
-#         randomWalk(tableDict, selectedKey)
-
-#         for name in tableDict:
-#             print(name)
-#         for i in range(numJoins):
-#             # keysList = list(tableDict.keys())
-#             # selectedKey = rand.choice(keysList)
-#             # keysList.remove(selectedKey)
-#             if selectedKey in tableDict.keys():
-#                 output = tableDict.pop(selectedKey)
-#             else:
-#                 for tableName in joinedTables:
-#                     if tableName is tableDict.keys():
-#                         output = tableDict.pop(tableName)
-#                         print(f"hello: {tableName}")
-
-
-#             if i == 0:
-#                 self.joinSection = selectedKey + self.naturalJoin + output[0]
-#             # else:
-#                 self.joinSection = self.joinSection + self.naturalJoin + output[0]
-#             selectedKey = output[0]
-#             joinedTables.append(output[0])
-
-#         print(self.joinSection)
-#         # Project Second
-
-#         # Select third 
-
-#         # order by / Group by last
-
-
-# # Function to perform a random walk on the tree
-# def randomWalk(tree, startNode):
-#     visited = set()
-#     current_node = startNode
-
-#     while current_node is not None:
-#         visited.add(current_node)
-#         print(current_node, end=" -> ")
-
-#         # Get the children nodes of the current node
-#         children = tree.get(current_node)
-
-#         # Filter children to exclude previously visited nodes
-#         unvisitedChildren = [child for child in children if child not in visited]
-
-#         if unvisitedChildren:
-#             # Choose a random unvisited child node
-#             current_node = rand.choice(unvisitedChildren)
-#         else:
-#             # No unvisited children, end the walk
-#             break
-
-#     print("END")
