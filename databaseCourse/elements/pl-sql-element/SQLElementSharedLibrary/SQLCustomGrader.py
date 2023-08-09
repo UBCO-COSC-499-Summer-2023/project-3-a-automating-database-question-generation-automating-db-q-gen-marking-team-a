@@ -31,7 +31,7 @@ def customGrader(data):
     inputScore = 0
 
     if wordsSA == "" or wordsSA == []:
-        addFeedback(data,"Code Match :",0)
+        addFeedback(data,"Code Match",0)
         return 0
 
     if os.path.exists("ans.db"):
@@ -46,10 +46,12 @@ def customGrader(data):
             outputScore += gradeCreateQuestion(data,correctAnswer,submittedAnswer)
         except sqlite3.OperationalError as e:
             if "syntax error" in str(e).lower():
+                outputScore = 0
                 outputScoreWeight = 0.15
                 inputScoreWeight = 0.85
         except Exception as e:
             if str(e).lower() == "expected and actual empty":
+                outputScore = 0
                 outputScoreWeight = 0
                 inputScoreWeight = 1
     
@@ -59,10 +61,12 @@ def customGrader(data):
             outputScore += gradeInsertQuestion(data,correctAnswer,submittedAnswer)
         except sqlite3.OperationalError as e:
             if "syntax error" in str(e).lower():
+                outputScore = 0
                 outputScoreWeight = 0.15
                 inputScoreWeight = 0.85
         except Exception as e:
             if str(e).lower() == "expected and actual empty":
+                outputScore = 0
                 outputScoreWeight = 0
                 inputScoreWeight = 1
 
@@ -72,10 +76,12 @@ def customGrader(data):
             outputScore += gradeUpdateQuestion(data,correctAnswer,submittedAnswer)
         except sqlite3.OperationalError as e:
             if "syntax error" in str(e).lower():
+                outputScore = 0
                 outputScoreWeight = 0.15
                 inputScoreWeight = 0.85
         except Exception as e:
             if str(e).lower() == "expected and actual empty":
+                outputScore = 0
                 outputScoreWeight = 0
                 inputScoreWeight = 1
 
@@ -85,10 +91,12 @@ def customGrader(data):
             outputScore += gradeDeleteQuestion(data,correctAnswer,submittedAnswer)
         except sqlite3.OperationalError as e:
             if "syntax error" in str(e).lower():
+                outputScore = 0
                 outputScoreWeight = 0.15
                 inputScoreWeight = 0.85
         except Exception as e:
             if str(e).lower() == "expected and actual empty":
+                outputScore = 0
                 outputScoreWeight = 0
                 inputScoreWeight = 1
 
@@ -98,14 +106,18 @@ def customGrader(data):
             outputScore += gradeQueryQuestion(data,correctAnswer,submittedAnswer)
         except sqlite3.OperationalError as e:
             if "syntax error" in str(e).lower():
+                outputScore = 0
                 outputScoreWeight = 0.15
                 inputScoreWeight = 0.85
         except Exception as e:
             if str(e).lower() == "expected and actual empty":
+                outputScore = 0
                 outputScoreWeight = 0
                 inputScoreWeight = 1
 
-
+    if outputScore == 1:
+        return 1
+    
     # Uses the sequence checker to check similatiry between
     # the submission and answer. It returns a number between
     # 0 and 1. 1 means the strings are identical and 0 is
@@ -130,7 +142,7 @@ def customGrader(data):
     
     grade = (inputScoreWeight*inputScore) + (outputScoreWeight*outputScore)
     grade = round(grade,2)
-    addFeedback(data,"Code Match :",inputScore)
+    addFeedback(data,"Code Match",inputScore)
     return grade
 
 # Returns the similarity between two strings.
@@ -163,8 +175,7 @@ def gradeQueryQuestion(data,correctAnswer,submittedAnswer):
 
     # order matching
     orderScore = 0
-    if len(expectedAns) == 0 or len(actualAns) == 0:
-        return 1
+
     if rowScore == 1 and colScore ==1:
         if expectedAns[0] == actualAns[0] and expectedAns[-1] == actualAns[-1]:
             orderScore = 1
@@ -219,9 +230,11 @@ def gradeCreateQuestion(data,correctAnswer,submittedAnswer):
 
     expectedAns = arr[0]
     actualAns = arr[1]
+    expectedForeign = arr[2]
+    actualForeign = arr[3]
 
     # value matching
-    valueMatchScore = valueMatch(expectedAns,actualAns)
+    valueMatchScore = createValueMatch(expectedAns,expectedForeign,actualAns,actualForeign)
 
     addFeedback(data,"Values",round(valueMatchScore,2))
 
@@ -248,9 +261,10 @@ def getExpectedAndActualCreateResults(correctAnswer,submittedAnswer):
 
     # gets the schema info and metadata for each table in the db after running the solution
     expectedAns = []
+    expectedForeign = []
     for table in tablesCleaned:
         expectedAns += cur.execute("PRAGMA table_info(" + table + ")").fetchall()
-        expectedAns += cur.execute("PRAGMA foreign_key_list(" + table + ")").fetchall()
+        expectedForeign += cur.execute("PRAGMA foreign_key_list(" + table + ")").fetchall()
 
 # submitted answer execution
     conTwo = sqlite3.connect("ans2.db")
@@ -267,9 +281,10 @@ def getExpectedAndActualCreateResults(correctAnswer,submittedAnswer):
 
     # get metadatae on tables created by submission
     actualAns = []
+    actualForeign = []
     for table in tablesCleaned:
         actualAns += curTwo.execute("PRAGMA table_info(" + table + ")").fetchall()
-        actualAns += curTwo.execute("PRAGMA foreign_key_list(" + table + ")").fetchall()
+        actualForeign += curTwo.execute("PRAGMA foreign_key_list(" + table + ")").fetchall()
     
     if not (actualAns or expectedAns):
         raise Exception("expected and actual empty")
@@ -277,7 +292,7 @@ def getExpectedAndActualCreateResults(correctAnswer,submittedAnswer):
     con.close()
     conTwo.close()
 
-    return (expectedAns,actualAns)
+    return (expectedAns,actualAns,expectedForeign,actualForeign)
 
 # INSERT------------------------------------------------------------------------------------------------------------------------
 # all or nothing grading for insert questions
@@ -609,6 +624,36 @@ def valueMatch(expectedAns,actualAns):
     matchScore = valueMatchActualTotal / valueMatchExpectedTotal
     if matchScore < 0:
         return 0
+    return matchScore
+
+def createValueMatch(expectedMeta,expectedForeign,actualMeta,actualForeign):
+    valueMatchExpectedTotal = len(expectedMeta) + len(expectedForeign)
+
+    if valueMatchExpectedTotal == 0 and len(actualMeta) == 0:
+        return 1
+    if valueMatchExpectedTotal == 0 and len(actualMeta) != 0:
+        return 0
+    
+    # removed cid column from expected and actual Meta
+    expectedMetaFiltered = [row[1:] for row in expectedMeta]
+    actualMetaFiltered = [row[1:] for row in actualMeta]
+
+    # remove id and seq columns from expected and actual foreign
+    expectedForeignFiltered = [row[2:] for row in expectedForeign]
+    actualForeignFiltered = [row[2:] for row in actualForeign]
+
+    # int is replaced with INTEGER in expected and actual meta
+    expectedMetaFiltered = [(row[0],"INTEGER" if row[1]=="INT" else row[1],*row[2:]) for row in expectedMetaFiltered]
+    actualMetaFiltered = [(row[0],"INTEGER" if row[1]=="INT" else row[1],*row[2:]) for row in actualMetaFiltered]
+
+    metaValMatch = valueMatch(expectedMetaFiltered,actualMetaFiltered)
+    foreignValMatch = valueMatch(expectedForeignFiltered,actualForeignFiltered)
+    
+    matchScore = (foreignValMatch + metaValMatch)/2
+
+    if matchScore < 0:
+        return 0
+    
     return matchScore
 
 def addFeedback(data, category, categoryScore):

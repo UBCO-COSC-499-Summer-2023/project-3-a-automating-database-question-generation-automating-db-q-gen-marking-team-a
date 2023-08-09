@@ -30,6 +30,22 @@ def autogenerate(data):
         case 'update': generateUpdate(data, difficulty)
         case 'delete': generateDelete(data, difficulty)
         case 'query': generateQuery(data, difficulty)
+    
+
+
+    # Generates a new query question if there is expected output
+    # but it is empty
+    while questionType == 'query' and '<td>' not in data['params']['expectedOutput'] and data['params']['expectedOutput']:
+
+        # Clears out the previous create and insert statements
+        data['params']['db_initialize_create'] = ''
+        data['params']['db_initialize_insert_frontend'] = ''
+        data['params']['db_initialize_insert_backend'] = ''
+
+        # Generates the new query
+        generateQuery(data, difficulty)
+
+
 
 '''
     Begin create-style question
@@ -534,7 +550,7 @@ def generateQuery(data, difficulty):
     for key in selectedColumns:
         for column in selectedColumns[key]:
 
-            # The first one is guaranteed. Pas that, there's 
+            # The first one is guaranteed. Past that, there's 
             # a one in five chance per column for that
             # column to have a function performed on it
             if useQueryFunctions and not functionColumns:
@@ -829,9 +845,11 @@ def generateQuery(data, difficulty):
 
     if os.path.exists("preview.db"):
         os.remove("preview.db")
-    expectedOutput = data['params']['html_params']['expectedOutput']
-    if expectedOutput:
-        data['params']['expectedOutput'] = createPreview(data)
+    
+    # Always obtains the expected feedback, regardless of 
+    # whether the flag is true or not. This is to ensure
+    # that the query returns at least one row
+    data['params']['expectedOutput'] = createPreview(data)
 
 # Creates a query
 def queryStatement(database, selectedColumns, joinTypes={}, conditionalValues={}, orderByColumns={}, groupByColumns={}, havingColumns={}, withColumns={}, limit=0, isDistinct=False, functionColumns={}, subquery=''):
@@ -1390,9 +1408,14 @@ def statementConditionals(statement='', conditionalValues={}, clauseType=' WHERE
     statement += clauseType
 
     # Includes the conditional if they exist as
-    # well as the condtional connector
+    # well as the condtional connector. Notice the
+    # string quotes are the opposite of the normal
+    # choice; this is due to requiring the `"`
+    # quote as part of the string such that SQL
+    # values such as "St John's" don't break the 
+    # SQLite
     for key in conditionalValues:
-        statement += f" {key} {conditionalValues[key]['comparator']} '{conditionalValues[key]['value']}' {conditionalValues[key]['connector']}"
+        statement += f' {key} {conditionalValues[key]["comparator"]} "{conditionalValues[key]["value"]}" {conditionalValues[key]["connector"]}'
 
     # Removes trailing 'OR' or 'AND' if necessary
     if statement[-3] == ' ':

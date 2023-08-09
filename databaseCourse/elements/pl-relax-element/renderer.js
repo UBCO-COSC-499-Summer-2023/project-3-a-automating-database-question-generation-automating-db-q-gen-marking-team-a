@@ -190,6 +190,13 @@ $(document).ready(function () {
             }
         }
 
+        // adds headers to the schema tables
+        let field = `<div style="text-align: center; border: 1px solid white; padding: 0.2em; display: flex; justify-content: space-around;" class='submenu' id='schema-${dataSchema._relAliases[0]}'>`;
+        let name = `<span style='font-weight: bold; width: ${maxColNameLength}ch;'>Columns</span>`;
+        let type = `<span style='font-weight: bold; width: ${maxColTypeLength}ch;'>Types</span>`;
+
+        schemaView += field + name + type + '</div>';
+
         // Creates the submenue element for the table, onclick each member of the table will add itself to the editor
         for (var i = 0; i < dataSchema._names.length; i++) {
             let field = `<div style="text-align: center; border: 1px solid white; padding: 0.2em; display: flex; justify-content: space-around;" class='submenu' id='schema-${dataSchema._relAliases[0]}'>`;

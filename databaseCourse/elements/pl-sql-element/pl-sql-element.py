@@ -162,6 +162,12 @@ def render(element_html, data):
     # The get returns the entry if it exists or an empty string otherwise.
     dbInit = ''.join(data['params'].get('db_initialize_create', ''))
     dbInit += ''.join(data['params'].get('db_initialize_insert_frontend', ''))
+
+    
+    # Obtains expected feedback
+    expectedOutput = ''
+    if data['params']['html_params']['expectedOutput']:
+        expectedOutput = data['params'].get('expectedOutput', '')
      
     # This renders the question into PL
     if data['panel'] == 'question':  
@@ -170,7 +176,7 @@ def render(element_html, data):
             'question': True,
             'db_initialize': dbInit,
             'questionString': data['params'].get('questionString', ''),
-            'expectedOutput': data['params'].get('expectedOutput', ''),
+            'expectedOutput': expectedOutput,
             'previousSubmission': submittedAnswer
         }
     

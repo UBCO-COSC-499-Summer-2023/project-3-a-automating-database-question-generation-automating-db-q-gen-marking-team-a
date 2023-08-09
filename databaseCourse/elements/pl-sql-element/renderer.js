@@ -171,6 +171,16 @@ $(document).ready(function () {
             }
         }
 
+        // adds headers to schema table
+        let field = `<div style="text-align: center; border: 1px solid white; padding: 0.2em; display: flex; justify-content: space-around;" class="submenu" id="schema-${tableName}">`;
+        let colName = `<span style=" font-weight: bold; width: ${maxColNameLength}ch;">Columns</span>`;
+        let colType = `<span style=" font-weight: bold; width: ${maxColTypeLength}ch;">Types</span>`;
+        let colKey = `<span style=" font-weight: bold; width: ${maxColKeyLength}ch;">Keys</span>`;
+
+        field += colName + colType + colKey + '</div>';
+
+        schemaView += field;
+
         // populates each row of scehma table
         for (const row of schemaFields[0].values) {
 
@@ -430,7 +440,7 @@ $(document).ready(function () {
     function createTableRows(rows) {
 
         let numRows = rows.length;
-        let limitRows = 10000;
+        let limitRows = 200;
 
         // limit the number of rows being created in DOM for performance
         if (numRows > limitRows) {
