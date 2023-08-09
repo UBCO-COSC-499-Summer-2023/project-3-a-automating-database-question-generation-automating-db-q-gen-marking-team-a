@@ -50,6 +50,8 @@ $(document).ready(function () {
 
     const tables = [];
 
+    var canInteract = false;
+
     // Add syntax highlighting to the textarea
     // Also transforms the textarea into a CodeMirror editor
     var editor = CodeMirror.fromTextArea(commandsElm[0], {
@@ -60,10 +62,16 @@ $(document).ready(function () {
         lineNumbers: true,
         matchBrackets: true,
         autofocus: true,
+        readOnly: !canInteract,
         extraKeys: {
             "Ctrl-Enter": executeEditorContents,
         }
     });
+
+    function enableEditorInteraction() {
+        canInteract = true;
+        editor.setOption("readOnly", false);
+    }
 
     // Load previous submission into editor
     
@@ -337,6 +345,7 @@ $(document).ready(function () {
             if (editor.getValue() == "") {
                 if (outputElm.text() != "Database initialized.") {
                     outputElm.text("Database initialized.");
+                    enableEditorInteraction();
                 }
             } else {
                 outputElm.append(output.map(item => (item !== undefined ? item : "") + "<br>").join(""));
