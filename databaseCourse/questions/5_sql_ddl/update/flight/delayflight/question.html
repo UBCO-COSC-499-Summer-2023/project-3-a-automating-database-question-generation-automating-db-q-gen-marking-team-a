@@ -15,10 +15,7 @@
     </sql-question>
 
     <sql-answer answer = "UPDATE flight SET actualDepartDT = datetime(actualDepartDT, '+1 hour') 
-WHERE departAirport = 'YLW';
-
-UPDATE flight SET actualDepartDT = datetime(actualDepartDT, '+1 hour') 
-WHERE departAirport = (SELECT id from Airport WHERE city = 'Kelowna');">
+WHERE departAirport = 'YLW';">
     </sql-answer>
     
     <sql-marking ></sql-marking>
