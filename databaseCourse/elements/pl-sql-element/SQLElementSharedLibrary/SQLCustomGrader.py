@@ -143,6 +143,10 @@ def customGrader(data):
     grade = (inputScoreWeight*inputScore) + (outputScoreWeight*outputScore)
     grade = round(grade,2)
     addFeedback(data,"Code Match",inputScore)
+    
+    if data['params']['html_params']['markerFeedback'] is False:
+        data['params']['feedback'] = "Your instructor has disabled feedback for this question."
+    
     return grade
 
 # Returns the similarity between two strings.

@@ -141,7 +141,7 @@ def render(element_html, data):
 
 
     elif data['panel'] == 'submission':
-        if (giveFeedback is True):
+        if giveFeedback:
             try:
                 queryFeedback = data['partial_scores']['RelaXEditor'].get('feedback', None)
             except KeyError:

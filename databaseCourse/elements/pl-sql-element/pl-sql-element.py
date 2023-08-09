@@ -193,6 +193,8 @@ def render(element_html, data):
                 feedback = data['partial_scores']['SQLEditor'].get('feedback', '')
             except KeyError:
                 feedback = ''
+        else:
+            feedback = "Your instructor has disabled feedback for this question."
         
         html_params = {
             'submission': True,
