@@ -513,13 +513,16 @@ class Question:
 
     def projection(self, neededColumns, usableColumns):
         projectedColumns = []
+        index = 0
         for i in range(rand.randint(2,5)):
             if len(neededColumns) == 0 or self.numJoins == 0:
                 randColumn = rand.choice(usableColumns)
             else:
                 randColumn = neededColumns.pop(rand.choice(range(len(neededColumns))))
-            while randColumn in projectedColumns:
+            while randColumn in projectedColumns and index < 15:
                 randColumn =  rand.choice(usableColumns)
+                index+=1
+            index = 0
             projectedColumns.append(randColumn)
 
         return projectedColumns
