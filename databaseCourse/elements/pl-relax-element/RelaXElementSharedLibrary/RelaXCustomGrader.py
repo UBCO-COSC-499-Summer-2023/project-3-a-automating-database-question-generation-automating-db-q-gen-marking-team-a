@@ -278,24 +278,13 @@ def orderMatch(valueSA, valueCA):
                 return 1
         return 0
     
-    return checkOrder(valueSA, valueCA)
+    try:
+        return checkOrder(valueSA, valueCA)
+    except:
+        return 0
 
 #helper function for ordermatch
 def checkOrder(valueSA, valueCA):
-    
-    # Replace None values with empty strings
-    
-    #if valuesCA contains None values
-    for i in range(len(valueCA)):
-        for j in range(len(valueCA[i])):
-            if valueCA[i][j] is None:
-                valueCA[i][j] = ''
-    
-    for i in range(len(valueSA)):
-        for j in range(len(valueSA[i])):
-            if valueSA[i][j] is None:
-                valueSA[i][j] = ''
-    
     
     # Convert rows to tuples for comparison
     valueCA_tuples = [tuple(row) for row in valueCA]
