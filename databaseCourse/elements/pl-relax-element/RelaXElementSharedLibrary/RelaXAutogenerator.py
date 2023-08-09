@@ -211,8 +211,11 @@ class Question:
                 i+=1
         #* Projection
         projectedColumns = self.projection(neededColumns, usableColumns)
+        tempArray = []
+        for elem in projectedColumns:
+            tempArray.append(f"<click>{elem}</click>")
         if not self.groupByBool:
-            self.projectedColumnText = ", ".join(projectedColumns)
+            self.projectedColumnText = ", ".join(tempArray)
             parts = self.projectedColumnText.rsplit(",", 1)  # Split the string from the right side only once
             self.projectedColumnText = f'<b>{" and".join(parts)}</b>'
             #print(self.projectedColumnText)
@@ -228,10 +231,10 @@ class Question:
                     self.groupByStatement = f"{self.groupByStatement} {column};"
                 else:
                     func = groupBy(column, subgraph=graph, dataset=dataset)
-                    groupByText.append(f" the <b>{func}</b> of <b>{column}</b>, <em>mapped</em> to a column named <b>{func}{column}</b>")
+                    groupByText.append(f" the <b><click>{func}</click></b> of <b><click>{column}</click></b>, <em>mapped</em> to a column named <b><click>{func}{column}</click></b>")
                     self.groupByStatement = f"{self.groupByStatement} {func}({column}) → {func}{column},"
             self.queryStatement = self.groupByStatement[:-1]
-            self.projectedColumnText = f"<b>{projectedColumns[0]}</b> <em>grouped by</em> {' and'.join(groupByText)}"
+            self.projectedColumnText = f"<b><click>{projectedColumns[0]}</click></b> <em>grouped by</em> {' and'.join(groupByText)}"
         
         #* Order By
         if self.orderByBool:
@@ -293,7 +296,7 @@ class Question:
                 selectedColumnsArray.append(f"{randColumn}{operator}{value}")
 
                 operator = operator.replace(">", "is greater than").replace("<", "is less than").replace("≥", "is greater than or equal to").replace("≤", "is less than or equal to").replace("=", "is").replace("≠", "is not")
-                conditions.append(f"<b>{randColumn}</b> <em>{operator}</em> <b>{value}</b>")
+                conditions.append(f"<b><click>{randColumn}</click></b> <em>{operator}</em> <b><click>{value}</click></b>")
             selected = ' ∨ '.join(selectedColumnsArray)
             self.selectStatement =  f"{self.selectStatement} {selected}"
             self.selectStatementText = ' or '.join(conditions)
@@ -328,7 +331,7 @@ class Question:
                 qColumn = rand.choice(list(dataset.tableSet[node2].columns.keys()))
                 querryColumn = dataset.tableSet[node2].columns[qColumn]['name']
             
-            self.tableListText = f"where <b>{querryColumn}</b> <em>is null</em> in <b>{node2}</b>"
+            self.tableListText = f"where <b><click>{querryColumn}</click></b> <em>is null</em> in <b><click>{node2}</click></b>"
             self.selectStatement =  f"{self.selectStatement} {querryColumn} = null ∨"
             self.JoinList = [node1]
         else:
@@ -339,7 +342,7 @@ class Question:
                 qColumn = rand.choice(list(dataset.tableSet[node1].columns.keys()))
                 querryColumn = dataset.tableSet[node1].columns[qColumn]['name']
             self.selectStatement =  f"{self.selectStatement} {querryColumn} = null ∨"
-            self.tableListText = f"where <b>{querryColumn}</b> <em>is null</em> in <b>{node1}</b>"
+            self.tableListText = f"where <b><click>{querryColumn}</click></b> <em>is null</em> in <b><click>{node1}</click></b>"
             self.JoinList = [node2, node1]
         
         if self.numClauses > 0:
@@ -378,21 +381,11 @@ class Question:
             if dataset.tableSet[node1].columns[column]['references'] == node2:
                 compareColumn = dataset.tableSet[node1].columns[column]["name"]
         
-        #print(compareColumn)
         # Render Outputs
         self.joinStatement = f"{node1}{self.semiRightJoins}{node2}"
-        self.tableListText = f"or where <b>{compareColumn}</b> exists in <b>{node2}</b>"
+        self.tableListText = f"or where <b><click>{compareColumn}</click></b> exists in <b><click>{node2}</click></b>"
         self.JoinList = [node1]
         self.offLimitsTable = node2
-        # else:
-        #     self.joinStatement = f"{node1}{self.semiLeftJoins}{node2}"
-        #     self.tableListText = f"or where <b>{compareColumn}</b> exists in <b>{node1}</b>"
-        #     self.JoinList = [node1]
-        #     self.offLimitsTable = node2
-        
-        # print(f"{self.JoinList}: {subgraph[self.JoinList[0]]}")
-        # print(self.joinStatement)
-        # print(self.offLimitsTable)
     
     def antiJoinGeneration(self, subgraph, dataset):
         #* Anti Joins --> bigger ▷ smaller
@@ -431,7 +424,7 @@ class Question:
         # print(f"node1 {len(set(dataset.tableSet[node1].rows[compareColumn]))}, node2 {len(set(dataset.tableSet[node2].rows[compareColumn]))}")
 
         self.joinStatement = f"{node1}{self.antiJoins}{node2}"
-        self.tableListText = f"where <b>{compareColumn}</b> is not in <b>{node2}</b>"
+        self.tableListText = f"where <b><click>{compareColumn}</click></b> is not in <b><click>{node2}</click></b>"
         self.JoinList = [node1]
         self.offLimitsTable = node2
 

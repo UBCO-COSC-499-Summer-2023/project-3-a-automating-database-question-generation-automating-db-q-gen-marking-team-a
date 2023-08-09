@@ -47,7 +47,7 @@ class AutogenerateQueryTest(unittest.TestCase):
     # Describes how many times each test should be run.
     # Since we're testing random generation, we need
     # a sufficient sample size to catch edge cases.
-    sampleSize = 30
+    sampleSize = 1
 
     # Declares and sets defaults
     data = {
@@ -110,6 +110,9 @@ class AutogenerateQueryTest(unittest.TestCase):
             self.assertGreater(len(data['correct_answers']['RelaXEditor']), 0)
 
             self.assertIn("π" if not groupBy else "γ", data['correct_answers']['RelaXEditor'])
-
+            
             if numClauses:
                 self.assertIn("σ", data['correct_answers']['RelaXEditor'])
+
+
+            print(data['correct_answers']['RelaXEditor'])

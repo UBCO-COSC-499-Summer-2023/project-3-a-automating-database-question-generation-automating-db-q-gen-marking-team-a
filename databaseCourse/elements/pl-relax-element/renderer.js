@@ -94,17 +94,41 @@ $(document).ready(function () {
                 const year = date.getFullYear();
                 const month = String(date.getMonth() + 1).padStart(2, '0');
                 const day = String(date.getDate()).padStart(2, '0');
- 
+
                 return `${year}-${month}-${day}`;
             });
             $(node).replaceWith(replacedText);
         });
 
         return $('body').html();
+
     }
+    // Function that applies onClick functionality for specified targets
+    function applyOnClick() {
+        var regex = new RegExp('<click>(.*?)</click>', 'g');
+
+        // Find all text nodes in the body (not including empty text nodes)
+        var textNodes = $('body').find('*').addBack().contents().filter(function () {
+            return this.nodeType === 3 && this.nodeValue.trim() !== '';
+        });
+
+        // Iterate over the text nodes and apply tags to the matched strings
+        textNodes.each(function () {
+
+            var node = this;
+            var replacedText = node.nodeValue.replace(regex, function (match, capturedText) {
+                return `<span  style="cursor: pointer;" onclick="updateCodeMirror('${capturedText}')">${capturedText}</span>`;
+            });
+            $(node).replaceWith(replacedText);
+        });
+
+        return $('body').html();
+    }
+
+
     // Apply Functionality
 
-
+    var onClickFormatting = applyOnClick()
     // Apply Date Formatting
     var dateFormatting = applyDateFormatting()
 
