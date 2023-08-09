@@ -43,7 +43,9 @@ def customGrader(data):
 
     # If the similarity between the submission and answer
     # is above the threshold, the student is given full credit
-    if similarity > threshold:
+    if outputScore == 1:
+        inputScore = 1
+    elif similarity > threshold:
         inputScore = 1
     # Otherwise, the student is given a grade that reflective of
     # how close they are. The function linearly maps (0, $threshhold)
@@ -64,7 +66,11 @@ def customGrader(data):
             data['params']['queryFeedback'] += f"Execution Penalty: {outputScoreWeight*100:.2f}% <br>"
         outputScore = 0
         
-    return (outputScore * outputScoreWeight + inputScore * inputScoreWeight)
+    totalScore = outputScore * outputScoreWeight + inputScore * inputScoreWeight
+    
+    totalScore = max(totalScore, 0)
+        
+    return totalScore
 
 
 # Returns the similarity between two strings.
@@ -184,6 +190,8 @@ def rowMatch(rowsSA, rowsCA):
         rowScore = correctRows / totalRowsCA
     elif (totalRowsCA == 0 and totalRowsSA == 0):
         rowScore = 1
+    else:
+        rowScore = 0
     
     #if not (rowsCA or rowsSA): rowScore = 1
     #if not rowsSA or not rowsSA[0]: rowScore = 0
@@ -274,17 +282,36 @@ def orderMatch(valueSA, valueCA):
 
 #helper function for ordermatch
 def checkOrder(valueSA, valueCA):
+    
+    # Replace None values with empty strings
+    
+    #if valuesCA contains None values
+    # for i in range(len(valueCA)):
+    #     for j in range(len(valueCA[i])):
+    #         if valueCA[i][j] is None:
+    #             valueCA[i][j] = ''
+    
+    # for i in range(len(valueSA)):
+    #     for j in range(len(valueSA[i])):
+    #         if valueSA[i][j] is None:
+    #             valueSA[i][j] = ''
+    
+    
+    # Convert rows to tuples for comparison
+    valueCA_tuples = [tuple(row) for row in valueCA]
+    valueSA_tuples = [tuple(row) for row in valueSA]
+
     # if ascending
-    if valueCA[0] < valueCA[-1]:
-        if valueSA[0] < valueSA[-1]:
+    if valueCA_tuples[0] < valueCA_tuples[-1]:
+        if valueSA_tuples[0] < valueSA_tuples[-1]:
             return 1
         else:
             return 0
     # if descending
-    elif valueCA[0] > valueCA[-1]:
-        if valueSA[0] > valueSA[-1]:
+    elif valueCA_tuples[0] > valueCA_tuples[-1]:
+        if valueSA_tuples[0] > valueSA_tuples[-1]:
             return 1
-        else :
+        else:
             return 0
     
 

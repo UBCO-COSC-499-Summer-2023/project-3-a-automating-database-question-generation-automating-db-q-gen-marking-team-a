@@ -142,6 +142,14 @@ class CustomGraderTest(unittest.TestCase):
         
         self.assertEqual(result,0)
         
+    def testOrderMatchWithNoneTypeReturnsOne(self):
+        submittedAns = [[None,2,3],[7,8,9]]
+        correctAns = [["",2,3],[4,5,6]]
+        
+        result = orderMatch(submittedAns, correctAns)
+        
+        self.assertEqual(result,1)
+        
     def testAddFeedback(self):
         data = {}
         data['params'] = {}
