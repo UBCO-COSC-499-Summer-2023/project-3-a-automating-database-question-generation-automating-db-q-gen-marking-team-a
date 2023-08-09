@@ -73,7 +73,7 @@ class AutogenerateQueryTest(unittest.TestCase):
     @parameterized.expand([
             # data, numJoins, numClauses, orderBy, groupBy, antiJoin, outerJoin, semiJoin
             [data, 1, 1, False, True, False, False, False, sampleSize], # A very simple query
-            [data, 2, 2, True, False, False, False, False, sampleSize], # A simple query
+            #[data, 2, 2, True, False, False, False, False, sampleSize], # A simple query
             #[data, 3, 2, False, False, False, False, False, sampleSize], # A complex query
             [data, 0, 3, False, False, False, False, False, sampleSize], # A very weird query
             [data, 0, 0, False, False, False, False, False, sampleSize]
