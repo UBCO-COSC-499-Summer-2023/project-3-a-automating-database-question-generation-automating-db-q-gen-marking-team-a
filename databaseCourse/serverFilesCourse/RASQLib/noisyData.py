@@ -97,7 +97,16 @@ def generateNoisyDataNoFileRelaX(table, key, qty=1, unique=False):
                 return generateNoisyInteger(unique, qty)
 
         case 'DATE': return generateNoisyDate(unique, qty)
-        case 'STRING': return generateNoisyVarchar(unique, qty, 6)
+        
+        case 'STRING': 
+
+            # 'status' should be exactly 2 characters and 
+            # noisyChar is called directly due to NULL
+            # issues
+            if key == 'status':
+                return generateNoisyChar(unique, qty, 2)
+            else:
+                return generateNoisyVarchar(unique, qty, 6)
 
 
 
