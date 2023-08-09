@@ -60,6 +60,7 @@ $(document).ready(function () {
             return this.nodeType === 3 && this.nodeValue.trim() !== '';
         });
 
+        console.log(textNodes)
         // Iterate over the text nodes and apply tags to the matched strings
         textNodes.each(function () {
 
@@ -84,7 +85,7 @@ $(document).ready(function () {
         var textNodes = $('body').find('*').addBack().contents().filter(function () {
             return this.nodeType === 3 && this.nodeValue.trim() !== '';
         });
-
+        console.log(textNodes)
         // Iterate over the text nodes and apply tags to the matched strings
         textNodes.each(function () {
 
@@ -94,14 +95,13 @@ $(document).ready(function () {
                 const year = date.getFullYear();
                 const month = String(date.getMonth() + 1).padStart(2, '0');
                 const day = String(date.getDate()).padStart(2, '0');
-
+                console.log(`${year}-${month}-${day}`)
                 return `${year}-${month}-${day}`;
             });
             $(node).replaceWith(replacedText);
         });
 
         return $('body').html();
-
     }
     // Function that applies onClick functionality for specified targets
     function applyOnClick() {

@@ -107,7 +107,6 @@ def autogenerate(data, testing=False):
     database.loadDatabase(data)
     question.loadQuestion(data)
 
-
     if testing:
         return
 
@@ -124,7 +123,6 @@ def autogenerate(data, testing=False):
         # Loads the database into the data variable
         database.loadDatabase(data)
         question.loadQuestion(data)
-
 
         data['params']['html_params']['expectedOutput'] = createPreview(data) 
     
@@ -209,6 +207,8 @@ class Question:
                 if i == num:
                     neededColumns.append(dataset.tableSet[table].columns[column]['name']) 
                 i+=1
+
+
         #* Projection
         projectedColumns = self.projection(neededColumns, usableColumns)
         tempArray = []
@@ -242,10 +242,13 @@ class Question:
             randColumn = randColumn + (rand.choice([' desc', ' asc']))
             self.orderByStatement = f"{self.orderByStatement} {randColumn}"
             self.orderByText = f" <em>ordered by {randColumn.replace('desc', 'in <b>descending order</b>').replace('asc', 'in <b>ascending order</b>')}</em>"
-
+        
         #* Selection
         selectedColumns = []
-        if self.numClauses != 0:
+
+        if self.numClauses <= 0:
+            return
+        if self.numClauses > 0:
 
             # Checks to see if only one select clause
             # makes sure that it returns more than 1 output.
@@ -332,7 +335,11 @@ class Question:
                 querryColumn = dataset.tableSet[node2].columns[qColumn]['name']
             
             self.tableListText = f"where <b><click>{querryColumn}</click></b> <em>is null</em> in <b><click>{node2}</click></b>"
-            self.selectStatement =  f"{self.selectStatement} {querryColumn} = null ∨"
+            if self.numClauses == 0: 
+                self.selectStatement =  f"{self.selectStatement} {querryColumn} = null"
+                self.numClauses = -1
+            else:
+                self.selectStatement =  f"{self.selectStatement} {querryColumn} = null ∨"
             self.JoinList = [node1]
         else:
             self.joinStatement = f"{node1}{self.outerRightJoins}{node2}"
@@ -341,7 +348,11 @@ class Question:
             while querryColumn is compareColumn:
                 qColumn = rand.choice(list(dataset.tableSet[node1].columns.keys()))
                 querryColumn = dataset.tableSet[node1].columns[qColumn]['name']
-            self.selectStatement =  f"{self.selectStatement} {querryColumn} = null ∨"
+            if self.numClauses == 0: 
+                self.selectStatement =  f"{self.selectStatement} {querryColumn} = null"
+                self.numClauses = -1
+            else:
+                self.selectStatement =  f"{self.selectStatement} {querryColumn} = null ∨"
             self.tableListText = f"where <b><click>{querryColumn}</click></b> <em>is null</em> in <b><click>{node1}</click></b>"
             self.JoinList = [node2, node1]
         
@@ -467,7 +478,8 @@ class Question:
     #* getters=======================================================
     def getQuery(self):
         self.Query = self.joinStatement 
-        self.Query = f"{self.selectStatement} ({self.Query})"
+        if self.numClauses != 0:
+            self.Query = f"{self.selectStatement} ({self.Query})"
         if self.orderByBool:
             self.Query = f"{self.orderByStatement} ({self.Query})"
         self.Query = f"{self.queryStatement} ({self.Query})"
@@ -478,7 +490,7 @@ class Question:
         text = f"Return a table of {self.projectedColumnText}"
         if self.orderByBool:
             text += self.orderByText
-        if self.numClauses == 0:
+        if self.numClauses <= 0:
             text += f" {self.tableListText}"
         else:
             text += f" where {self.selectStatementText} {self.tableListText}"
