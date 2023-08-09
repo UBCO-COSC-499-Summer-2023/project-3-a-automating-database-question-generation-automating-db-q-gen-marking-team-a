@@ -76,7 +76,7 @@ class AutogenerateQueryTest(unittest.TestCase):
             [data, 2, 2, True, False, False, False, False, sampleSize], # A simple query
             [data, 3, 2, False, False, False, False, False, sampleSize], # A complex query
             [data, 0, 3, False, False, False, False, False, sampleSize], # A very weird query
-            #[data, 0, 0, False, False, False, False, False, sampleSize]
+            [data, 0, 0, False, False, False, False, False, sampleSize]
         ])
 
     
