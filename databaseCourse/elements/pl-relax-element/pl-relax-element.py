@@ -61,7 +61,8 @@ def prepare(element_html, data):
     if databaseFilePath:
         with open(databaseFilePath,"r") as databaseFile:
            data['params']['db_initialize'] = databaseFile.read()
-        
+    
+        data['params']['db_initialize_create_backend'] = data['params']['db_initialize']
         
     
     # Loads quesiton parameters into data
