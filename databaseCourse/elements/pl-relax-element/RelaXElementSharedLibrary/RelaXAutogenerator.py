@@ -96,6 +96,7 @@ def createPreview(data):
     return htmlTable
 
 def autogenerate(data, testing=False):
+    
     #expectedOutput = data['params']['html_params']['expectedOutput']
     #if expectedOutput:
     #  data['params']['expectedOutput'] = createPreview(data)
