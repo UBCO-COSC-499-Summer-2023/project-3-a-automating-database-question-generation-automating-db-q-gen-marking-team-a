@@ -51,7 +51,7 @@ class AutogenerateQueryTest(unittest.TestCase):
     # Describes how many times each test should be run.
     # Since we're testing random generation, we need
     # a sufficient sample size to catch edge cases.
-    sampleSize = 60
+    sampleSize = 30
 
 
     # Declares and sets defaults
@@ -77,11 +77,26 @@ class AutogenerateQueryTest(unittest.TestCase):
     # a test case
     @parameterized.expand([
             # data, numJoins, numClauses, orderBy, groupBy, antiJoin, outerJoin, semiJoin
+            [data, 0, 0, True, False, False, False, False, sampleSize],
+            [data, 1, 0, False, False, False, False, False, sampleSize],
+            [data, 2, 0, False, False, False, False, False, sampleSize],
+            [data, 3, 0, True, True, False, False, False, sampleSize],
+
+            [data, 0, 1, False, False, False, False, False, sampleSize],
             [data, 1, 1, False, True, False, False, False, sampleSize], # A very simple query
+            [data, 2, 1, False, False, False, False, False, sampleSize],
+            [data, 3, 1, True, False, False, False, False, sampleSize],
+
+            [data, 0, 2, False, True, False, False, False, sampleSize], # A simple query
+            [data, 1, 2, True, True, False, False, False, sampleSize], # A simple query
             [data, 2, 2, True, False, False, False, False, sampleSize], # A simple query
             [data, 3, 2, False, False, False, False, False, sampleSize], # A complex query
+            
             [data, 0, 3, False, False, False, False, False, sampleSize], # A very weird query
-            [data, 0, 0, False, False, False, False, False, sampleSize]
+            [data, 1, 3, False, True, False, False, False, sampleSize], # A very weird query
+            [data, 2, 3, False, False, False, False, False, sampleSize], # A very weird query
+            [data, 3, 3, True, False, False, False, False, sampleSize]  # A very weird query
+
         ])
 
     
