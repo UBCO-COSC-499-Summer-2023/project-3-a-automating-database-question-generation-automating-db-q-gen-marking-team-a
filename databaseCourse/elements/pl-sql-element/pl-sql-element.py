@@ -154,6 +154,9 @@ def render(element_html, data):
     # Grabs the correct answer from the data variable
     correctAnswer = data['correct_answers']['SQLEditor']
 
+    # Whether to show feedback or not
+    giveFeedback = data['params']['html_params']['markerFeedback']
+
     # feedback
     feedback = data['params']['feedback']
     
@@ -185,7 +188,13 @@ def render(element_html, data):
         
     # This renders the users submitted answer into the "Submitted answer" box in PL
     elif data['panel'] == 'submission':
-
+        if giveFeedback:
+            try:
+                feedback = data['partial_scores']['SQLEditor'].get('feedback', '')
+            except KeyError:
+                feedback = ''
+        else:
+            feedback = "Your instructor has disabled feedback for this question."
         
         html_params = {
             'submission': True,
@@ -240,7 +249,7 @@ def grade(element_html, data):
     data['partial_scores']['SQLEditor'] = {
         'score': studentScore,
         'weight': 1,
-        'feedback': "",
+        'feedback': data['params']['feedback'],
         'marker_feedback': ""
     }
 
