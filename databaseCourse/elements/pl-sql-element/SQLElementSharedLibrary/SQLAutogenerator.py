@@ -72,7 +72,7 @@ def generateCreate(data, difficulty):
 
     # Creates a string to tell the student what they need
     # to do for the qestion
-    questionString = f"Create a table named <b>{table.name}</b> with columns"
+    questionString = f"Create a table named <b><click>{table.name}</click></b> with columns"
 
     # Adds a list of columns and units to the question string
     columnList = list(table.columns.keys())
@@ -84,7 +84,7 @@ def generateCreate(data, difficulty):
             questionString += ' and'
         
         # Adds the column name
-        questionString += f" <b>{columnValues[i]['name']}</b>"
+        questionString += f" <b><click>{columnValues[i]['name']}</click></b>"
 
 
 
@@ -104,7 +104,7 @@ def generateCreate(data, difficulty):
 
         # Mentions foreign key and its clauses, if necessary
         if columnValues[i]['references']:
-            questionString += f" that references <b>{columnValues[i]['references']}</b>\'s <b>{columnValues[i]['foreignKey']}</b>"
+            questionString += f" that references <b><click>{columnValues[i]['references']}</click></b>\'s <b><click>{columnValues[i]['foreignKey']}</click></b>"
 
             # Handles cascade
             if columnValues[i]['isOnUpdateCascade']:
@@ -200,7 +200,7 @@ def generateInsert(data, difficulty):
 
 
     # Creates the question string
-    questionString = f"Insert the following values into the <b>{table.name}</b> table:\n({str(row)[1:-1]})"
+    questionString = f"Insert the following values into the <b><click>{table.name}</click></b> table:\n({str(row)[1:-1]})"
 
     # Loads the database
     database.loadDatabase(data)
@@ -296,7 +296,7 @@ def generateUpdate(data, difficulty):
 
 
     # Generates the question string
-    questionString = f"From the column <b>{updateColumn}</b>, update all values to be <b>{updateValue}</b>"
+    questionString = f"From the column <b><click>{updateColumn}</click></b>, update all values to be <b><click>{updateValue}</click></b>"
 
     # Adds the conditionals
     questionString = questionConditionals(conditionalValues, questionString)
@@ -661,7 +661,7 @@ def generateQuery(data, difficulty):
                         case 'AVG': questionString += ' the <em>average of</em>'
                 
                 # Adds the column
-                questionString += f" <b>{column}</b>,"
+                questionString += f" <b><click>{column}</click></b>,"
 
                 # Increments the interations
                 index += 1
@@ -712,16 +712,16 @@ def generateQuery(data, difficulty):
             # Creates the string based on the join type
             match joinTypes[key]:
                 case 'INNER JOIN':
-                    joinString = f" Only matching rows from <b>{key}</b> are included,"
+                    joinString = f" Only matching rows from <b><click>{key}</click></b> are included,"
 
                 case 'JOIN': 
-                    joinString = f" Rows from <b>{key}</b> are joined to their matching row,"
+                    joinString = f" Rows from <b><click>{key}</click></b> are joined to their matching row,"
 
                 case 'LEFT OUTER JOIN': 
-                    joinString = f" All rows from <b>{key}</b> are matched to their single corresponding row,"
+                    joinString = f" All rows from <b><click>{key}</click></b> are matched to their single corresponding row,"
 
                 case 'CROSS JOIN':
-                    joinString = f" Each row from <b>{key}</b> should be paired with every possible row,"
+                    joinString = f" Each row from <b><click>{key}</click></b> should be paired with every possible row,"
             
             # Sets the join string to lower case, except when it
             # is the first join and thus starting the sentence
@@ -757,8 +757,8 @@ def generateQuery(data, difficulty):
             ascOrDesc = ' <em>in ascending order</em>' if orderByColumns[key] == 'ASC' else ' <em>in descending order</em>'
 
             # Inserts the string after it's corresponding key.
-            # The `+ 4` accounts for the length of the '</b>' tag
-            orderString = orderString[:orderString.find(key) + len(key) + 4] + ascOrDesc + orderString[orderString.find(key) + len(key) + 4:]
+            # The `+ 4` accounts for the length of the '</click></b>' tags
+            orderString = orderString[:orderString.find(key) + len(key) + 12] + ascOrDesc + orderString[orderString.find(key) + len(key) + 12:]
 
         # Removes trailing comma
         questionString = questionString + removeTrailingChars(orderString, 1, orderBy == 1)
@@ -1126,7 +1126,7 @@ def subqueryQuestionString(database, conditionalColumn, comparisonOperator, sele
         questionString += ' the values of'
 
     # Adds the conditional column
-    questionString += f" <b>{conditionalColumn}</b>"
+    questionString += f" <b><click>{conditionalColumn}</click></b>"
 
     # Adds the comparison operator
     match comparisonOperator:
@@ -1149,7 +1149,7 @@ def subqueryQuestionString(database, conditionalColumn, comparisonOperator, sele
             case '': questionString += ' the <em>set of</em>'
     
     # Adds the selected column
-    questionString += f" <b>{selectedColumnName}</b>"
+    questionString += f" <b><click>{selectedColumnName}</click></b>"
 
     # If present, adds the conditional values
     if conditionalValues:
@@ -1331,7 +1331,7 @@ def dictionaryQuestionString(dictionary, string='', iterations=None, index=0, ta
 
         # Adds the key to the string
         if tag:
-            string += f" <{tag}>{key}</{tag}>,"
+            string += f" <{tag}><click>{key}</click></{tag}>,"
         else:
             string += f" {key},"
 
@@ -1368,7 +1368,7 @@ def questionConditionals(conditionalValues, string=''):
     for key in conditionalValues.keys():
 
         # Adds the column
-        string += f" <b>{key}</b>"
+        string += f" <b><click>{key}</click></b>"
 
         # Adds the appropraite comparing operator
         match conditionalValues[key]['comparator']:
@@ -1380,7 +1380,7 @@ def questionConditionals(conditionalValues, string=''):
             case '!=': string += ' <em>is not equal to</em>'
         
         # Adds the value
-        string += f" <b>{conditionalValues[key]['value']}</b>"
+        string += f" <b><click>{conditionalValues[key]['value']}</click></b>"
 
         # Adds the logical operator
         if conditionalValues[key]['connector'] == 'OR':
