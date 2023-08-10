@@ -29,7 +29,13 @@ Client Liason:      Matthew Obirek
 Technical Lead:     Skyler Alderson  
 Integration Lead:   Andrei Zipis  
 
-# Docker Documentation for PrairieLearn
+
+# Docker
+
+This project requires two Docker containers. The first Docker container runs PrairieLearn and the course instance. The second Docker container hosts a server to run RelaX queries, which is required for grading relational algebra and displaying expected outputs for relational algebra questions.
+
+
+## Docker Documentation for PrairieLearn
 
 1. Install docker, docker-compose, and docker-desktop(optional)
 
@@ -39,31 +45,28 @@ Integration Lead:   Andrei Zipis
 
 4. In your terminal run `docker-compose up`
 
-5. To check if the docker container is running, run `docker-compose ps`. if the response is empty, run `docker-compose ps -a`, and it will show the status of the closed docker container.
+5. (Optional) To check if the docker container is running, run `docker-compose ps`. if the response is empty, run `docker-compose ps -a`, and it will show the status of the closed docker container.
 
-# Creating the relaxAPI container
+
+## Creating the relaxAPI container
 
 1. Visit repository found at `https://github.com/azipis/RelaXQueryAPI`
 
 2. Follow directions found at that repository.
 
 
-### Issues With PrairieLearn pertaining to AutoER
-
-1. the `elements/pl-iml-element` element does not work when loaded universally in the `[prairielearn directory]` and must be loaded in the `[course directory]` of choice. Prairielearn Documentation ***EXPLICITLY*** states that the elements directory be in either directory - depending on desired functionality.
-
-2. The AutoER `docker-compose.yml` file was set to load a local image of prairielearn, which does not exist on a virgin machine. as staeted in step 3. changing the Image line from `prairielearn/prairielearn:latest`, instead of `prairielearn/prairielearn:local` should solve this issue. Otherwise building the image from the PrairieLearn repo, then launching the docker-compose inside the AutoER directory should work.
-
-3. As per the PrairieLearn Documentation. All question directories should have a `server.py` file. none of the AutoER questions have that. This creates confusion.
-
 # Linters
 
 This project makes use of two linters, ESLint for JavaScript and pylint for Python.  
 
+
 ## ESLint
+
 ESLint requires Node.js to be installed locally. To download Node.js, visit `https://nodejs.org/en`. Navigate to the project folder and run the command `npm install eslint`. ESLint can then be run either through the console (visit `https://eslint.org/docs/latest/` for more information) or the recommended route of installing it through Visual Studio Code's extensions. The linter automatically runs when used through Visual Studio Code.  
 To adjust ESLinter's configuration, use the `.eslintrc.json` file and adjust the `"rules"` block. Visit `https://eslint.org/docs/latest/rules/` for a complete list of rules.  
 
+
 ## pylint
+
 pylint must be installed in the project folder. Navigate to the project folder and run the command `pip install pylint`. pylint can be run through either the console (visits `https://docs.pylint.org/index.html` for more information) or the recommended route of installing it through Visual Studio Code's extensions.  The linter automatically runs when used through Visual Studio Code.  
 To adjust pylint's configuration, use the `.pylintrc` file. Visit `https://docs.pylint.org/index.html` for more information about pylint configuration.
