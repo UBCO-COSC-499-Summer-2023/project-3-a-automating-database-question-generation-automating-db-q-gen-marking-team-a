@@ -1548,6 +1548,13 @@ def getQuestionParameters(data):
         numberOfColumns = 5
         numberOfJoins = 1
 
+
+    # Adds default value for tests
+    try:
+        data['params']['html_params']['canRegenerate']
+    except:
+        data['params']['html_params']['canRegenerate'] = True
+
     # Constructs table clauses.
     # Parameters:
     #   - primaryKeys
