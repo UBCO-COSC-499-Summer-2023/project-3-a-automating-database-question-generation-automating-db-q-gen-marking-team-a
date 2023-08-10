@@ -2,8 +2,12 @@
 
 $(document).ready(function () {
 
+    var expectedOutputButton;
+    var expectedOutputTable;
     // Function to load the required database for the question
     window.onload = function () {
+        expectedOutputButton = $(".expectedOutputButton");
+        expectedOutputTable = $(".expectedOutputTable")[0];
         dbInitElm = $("#db-init");
         // turns on foreign keys
         execute("PRAGMA foreign_keys = ON;");
@@ -13,7 +17,6 @@ $(document).ready(function () {
         dbInitElm.remove();
 
         updateCodeMirrorPreviousSubmission();
-
     }
 
     /*
@@ -516,6 +519,16 @@ $(document).ready(function () {
 
         $tbody.empty();
         rows.forEach(row => $tbody.append(row));
+    }
+
+    window.togglePreview = function(){
+        if (expectedOutputTable.style.display === "none"){
+            expectedOutputTable.style.display = "table"
+            expectedOutputButton[0].innerText = "Hide Expected Output"
+        }else{
+            expectedOutputTable.style.display = "none"
+            expectedOutputButton[0].innerText = "Show Expected Output"
+        }
     }
 
 

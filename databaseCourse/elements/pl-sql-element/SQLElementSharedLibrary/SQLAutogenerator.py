@@ -1660,15 +1660,17 @@ def createPreview(data):
 
     columnNames = [description[0] for description in cur.description]
 
-    htmlTable = "<div class='expectedOutput'><b>Expected Output:</b><div class='scrollable'><table class='output-tables'><thead>"
+    con.close()
+
+    htmlTable = "<button  type='button' onclick='togglePreview()' class='expectedOutputButton'>Show Expected Output</button><br><br><div class='expectedOutput'><div class='scrollable'><table class='expectedOutputTable' style='display: none;'><thead>"
 
     for column in columnNames:
         htmlTable += "<th>" + str(column) + "</th>"
 
     htmlTable += "</thead>"
 
-    if len(dataRows) > 1000:
-        dataRows = dataRows[0:999]
+    if len(dataRows) > 300:
+        dataRows = dataRows[0:299]
 
     for row in dataRows:
         rowString = "<tr>"
