@@ -17,7 +17,7 @@ def autogenerate(data):
     # markerFeedback = data['params']['html_params']['markerFeedback']
     questionType = data['params']['html_params'].get('questionType', 'query')
     difficulty = data['params']['html_params'].get('difficulty', None)
-    canRegenerate = data['params']['html_params'].get('canRegenerate', 'True')
+    guaranteeOutput = data['params']['html_params'].get('guaranteeOutput', 'True')
 
 
     # Checks if the difficulty are valid
@@ -37,7 +37,7 @@ def autogenerate(data):
     # Generates a new query question if there is expected output
     # but it is empty, so long as the question is allowed to
     # regenerate
-    while canRegenerate and questionType == 'query' and '<td>' not in data['params']['expectedOutput'] and data['params']['expectedOutput']:
+    while guaranteeOutput and questionType == 'query' and '<td>' not in data['params']['expectedOutput'] and data['params']['expectedOutput']:
 
         # Clears out the previous create and insert statements
         data['params']['db_initialize_create'] = ''
@@ -1551,9 +1551,9 @@ def getQuestionParameters(data):
 
     # Adds default value for tests
     try:
-        data['params']['html_params']['canRegenerate']
+        data['params']['html_params']['guaranteeOutput']
     except:
-        data['params']['html_params']['canRegenerate'] = True
+        data['params']['html_params']['guaranteeOutput'] = True
 
     # Constructs table clauses.
     # Parameters:
@@ -1588,7 +1588,7 @@ def getQuestionParameters(data):
             queryClauses[clause] = data['params']['html_query_clauses'][clause]
     except:
         queryClauses = {
-            'conditional': 1,
+            'conditionals': 1,
             'useSubquery': False,
             'columnsToSelect': 3,
             'orderBy': 0,
