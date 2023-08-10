@@ -15,8 +15,9 @@ def autogenerate(data):
     # random = data['params']['html_params']['random']
     # maxGrade = data['params']['html_params']['maxGrade']
     # markerFeedback = data['params']['html_params']['markerFeedback']
-    questionType = data['params']['html_params']['questionType']
-    difficulty = data['params']['html_params']['difficulty']
+    questionType = data['params']['html_params'].get('questionType', 'query')
+    difficulty = data['params']['html_params'].get('difficulty', None)
+    canRegenerate = data['params']['html_params'].get('canRegenerate', 'True')
 
 
     # Checks if the difficulty are valid
@@ -34,8 +35,9 @@ def autogenerate(data):
 
 
     # Generates a new query question if there is expected output
-    # but it is empty
-    while questionType == 'query' and '<td>' not in data['params']['expectedOutput'] and data['params']['expectedOutput']:
+    # but it is empty, so long as the question is allowed to
+    # regenerate
+    while canRegenerate and questionType == 'query' and '<td>' not in data['params']['expectedOutput'] and data['params']['expectedOutput']:
 
         # Clears out the previous create and insert statements
         data['params']['db_initialize_create'] = ''

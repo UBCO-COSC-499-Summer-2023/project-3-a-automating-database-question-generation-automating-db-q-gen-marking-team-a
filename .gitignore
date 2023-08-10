@@ -20,3 +20,4 @@ databaseCourse/elements/pl-sql-element/SQLElementSharedLibrary/__pycache__/__ini
 databaseCourse/elements/pl-sql-element/autograder_test.py
 databaseCourse/elements/pl-sql-element/ans.db
 databaseCourse/elements/pl-sql-element/ans.db-journal
+databaseCourse/elements/pl-sql-element/preview.db
