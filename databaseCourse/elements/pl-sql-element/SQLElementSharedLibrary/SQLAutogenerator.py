@@ -850,7 +850,7 @@ def generateQuery(data, difficulty):
     # used since even if expected output will not be
     # displayed, the preview is used to determine
     # whether the query has any rows
-    if data['params']['html_params']['canRegenerate'] or data['params']['html_params']['expectedOutput']:
+    if data['params']['html_params']['guaranteeOutput'] or data['params']['html_params']['expectedOutput']:
         data['params']['expectedOutput'] = createPreview(data)
 
 # Creates a query
