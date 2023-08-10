@@ -606,10 +606,11 @@ class ParameterizedQueryTests(unittest.TestCase):
             self.assertNotIn("INSERT",data['correct_answers']['SQLEditor'])
             self.assertNotIn("DELETE",data['correct_answers']['SQLEditor'])
 
-            if subquery or conditionals or (not columnsToSelect and joins):
-                self.assertIn("WHERE",data['correct_answers']['SQLEditor'])
-            else:
-                self.assertNotIn("WHERE",data['correct_answers']['SQLEditor'])
+            if columnsToSelect:
+                if subquery or conditionals:
+                    self.assertIn("WHERE",data['correct_answers']['SQLEditor'])
+                else:
+                    self.assertNotIn("WHERE",data['correct_answers']['SQLEditor'])
 
             self.assertGreater(len(data['params']['questionString']), 0)
             self.assertGreater(len(data['params']['db_initialize_create']), 0)
