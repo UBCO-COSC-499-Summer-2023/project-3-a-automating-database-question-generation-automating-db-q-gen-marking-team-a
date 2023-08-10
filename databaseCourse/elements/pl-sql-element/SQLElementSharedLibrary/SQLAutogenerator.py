@@ -238,22 +238,22 @@ def generateUpdate(data, difficulty):
             columns = random.randint(4, 5)
             joins = 1
             database = db.Database(columns=columns, joins=joins)
-            queryClauses['conditional'] = 0
+            queryClauses['conditionals'] = 0
             queryClauses['useSubquery'] = False
 
         case 'medium': 
             columns = random.randint(4, 5)
             joins = random.randint(1, 2)
             database = db.Database(columns=columns, joins=joins)
-            queryClauses['conditional'] = random.randint(1, 3)
-            queryClauses['conditional'] = random.randint(1, 3)
+            queryClauses['conditionals'] = random.randint(1, 3)
+            queryClauses['conditionals'] = random.randint(1, 3)
             queryClauses['useSubquery'] = False
 
         case 'hard': 
             columns = random.randint(4, 5)
             joins = random.randint(1, 2)
             database = db.Database(columns=columns, joins=joins)
-            queryClauses['conditional'] = 0
+            queryClauses['conditionals'] = 0
             queryClauses['useSubquery'] = True
         
         case _:
@@ -266,8 +266,8 @@ def generateUpdate(data, difficulty):
 
     # Checks if the parameters are valid
     nonCascadingForeignKeys = len([key for key in table.columns.keys() if table.columns[key]['references'] and not table.columns[key]['isOnUpdateCascade']])
-    if columns - nonCascadingForeignKeys < queryClauses['conditional']:
-        print(f"UPDATE question cannot have more conditional clauses than foreign keys that do not cascade on update (was supplied with {queryClauses['conditional']} conditionals and {nonCascadingForeignKeys} non-cascading foreign keys)")
+    if columns - nonCascadingForeignKeys < queryClauses['conditionals']:
+        print(f"UPDATE question cannot have more conditional clauses than foreign keys that do not cascade on update (was supplied with {queryClauses['conditionals']} conditionals and {nonCascadingForeignKeys} non-cascading foreign keys)")
 
     # Generates a bunch of rows
     database.generateRows(random.randint(15, 25))
@@ -291,7 +291,7 @@ def generateUpdate(data, difficulty):
     updateValue = nd.generateNoisyData(table, updateColumn)[0]
 
     # If the quesiton should use a condition, set parameters
-    conditionalValues = getConditionalValues(queryClauses['conditional'], database, list(table.columns.keys()))
+    conditionalValues = getConditionalValues(queryClauses['conditionals'], database, list(table.columns.keys()))
 
 
 
@@ -370,22 +370,22 @@ def generateDelete(data, difficulty):
             columns = random.randint(4, 5)
             joins = 1
             database = db.Database(columns=columns, joins=joins)
-            queryClauses['conditional'] = 0
+            queryClauses['conditionals'] = 0
             queryClauses['useSubquery'] = False
 
         case 'medium': 
             columns = random.randint(4, 5)
             joins = random.randint(1, 2)
             database = db.Database(columns=columns, joins=joins)
-            queryClauses['conditional'] = random.randint(1, 3)
-            queryClauses['conditional'] = random.randint(1, 3)
+            queryClauses['conditionals'] = random.randint(1, 3)
+            queryClauses['conditionals'] = random.randint(1, 3)
             queryClauses['useSubquery'] = False
 
         case 'hard': 
             columns = random.randint(4, 5)
             joins = random.randint(1, 2)
             database = db.Database(columns=columns, joins=joins)
-            queryClauses['conditional'] = 0
+            queryClauses['conditionals'] = 0
             queryClauses['useSubquery'] = True
         
         case _:
@@ -398,7 +398,7 @@ def generateDelete(data, difficulty):
     database.generateRows(random.randint(15, 25))
 
     # If the quesiton should use a condition, set parameters
-    conditionalValues = getConditionalValues(queryClauses['conditional'], database, list(table.columns.keys()))
+    conditionalValues = getConditionalValues(queryClauses['conditionals'], database, list(table.columns.keys()))
 
 
     # If there are no
@@ -483,14 +483,14 @@ def generateQuery(data, difficulty):
             columnsToSelect = random.randint(1, 2)
             joins = 1
             database = db.Database(columns=columns, joins=joins)
-            queryClauses['conditional'] = 0
+            queryClauses['conditionals'] = 0
 
         case 'medium': 
             columns = random.randint(6, 7)
             columnsToSelect = random.randint(2, 4)
             joins = random.randint(1, 2)
             database = db.Database(columns=columns, joins=joins)
-            queryClauses['conditional'] = random.randint(1, 3)
+            queryClauses['conditionals'] = random.randint(1, 3)
 
         case 'hard': 
             columns = random.randint(7, 8)
@@ -511,7 +511,7 @@ def generateQuery(data, difficulty):
     table = database.primaryTable
     referenced = database.referencedTables
     
-    conditionals = queryClauses['conditional']
+    conditionals = queryClauses['conditionals']
     useSubquery = queryClauses['useSubquery']
     columnsToSelect = queryClauses['columnsToSelect']
     orderBy = queryClauses['orderBy']
