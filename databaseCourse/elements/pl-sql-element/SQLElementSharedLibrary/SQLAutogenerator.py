@@ -911,7 +911,7 @@ def queryStatement(database, selectedColumns, joinTypes={}, conditionalValues={}
     if 'WHERE' in queryString[-7:] and subquery:
         queryString += subquery
     elif 'WHERE' in queryString[-7:]:
-        queryString = queryString[:queryString.find('WHERE')]
+        queryString = queryString[:queryString.find('\nWHERE')]
     elif subquery and 'AND' not in queryString[-4:]:
         queryString += ' AND' + subquery
     elif subquery:
