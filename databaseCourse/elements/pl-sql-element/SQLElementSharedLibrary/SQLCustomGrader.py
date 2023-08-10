@@ -587,6 +587,8 @@ def rowMatch(expectedAns,actualAns):
     rowScore = (expectedTotal - abs(rowGrade))/expectedTotal
     if rowScore < 0:
         return 0
+    if rowScore > 1:
+        return 1
     return rowScore
 
 # scores the difference in the number of columns between both outputs
@@ -608,6 +610,8 @@ def colMatch(expectedAns,actualAns):
     colScore = (expectedTotal - colGrade)/expectedTotal
     if colScore < 0:
         return 0
+    if colScore > 1:
+        return 1
     return colScore
 
 # scores how much the values match between the expected ans and the actual ans
@@ -621,13 +625,17 @@ def valueMatch(expectedAns,actualAns):
         return 0
 
     # +1 point per row of exact values matched
+    visited = {}
     for x in actualAns:
-        if x in expectedAns:
+        if x in expectedAns and x not in visited:
             valueMatchActualTotal += 1
+            visited[x] = 1
 
     matchScore = valueMatchActualTotal / valueMatchExpectedTotal
     if matchScore < 0:
         return 0
+    if matchScore > 1:
+        return 1
     return matchScore
 
 def createValueMatch(expectedMeta,expectedForeign,actualMeta,actualForeign):
@@ -658,7 +666,11 @@ def createValueMatch(expectedMeta,expectedForeign,actualMeta,actualForeign):
     if matchScore < 0:
         return 0
     
+    if matchScore > 1:
+        return 1
+    
     return matchScore
 
+# helper function to add score for a particular factor used in output-matching to give students a detailed rundown
 def addFeedback(data, category, categoryScore):
     data['params']['feedback'] += f"{category} : {(round((categoryScore*100),2))}"+"%<br>"

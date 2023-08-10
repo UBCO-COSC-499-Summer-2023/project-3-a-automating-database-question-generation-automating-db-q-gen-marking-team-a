@@ -120,3 +120,77 @@ The noisy data Python file generates random data given an SQL data type. If the 
 ## textDatabaseHandler
 
 The text database handler models a simplified database and table system, used to assist random question generation. Its functionality focuses on a table as a set of columns as well as converting text file-stored values into memory.
+
+## SQLCustomGrader
+
+Weights:
+
+- `outputScoreWeight`: The percent of marks given based on output matching.
+  - `orderWeight`: Percent of marks given for having rows in the correct order.
+  - `rowWeight`: Percent of marks given for having correct number of rows.
+  - `colWeight`: Percent of marks given for having correct number and match of columns.
+  - `valueMatchWeight`: Percent of marks given for having correct match of values.
+- `inputScoreWeight`: The percent of marks given based on string matching the submitted query string vs. the correct query string.
+  - `threshold`: When input string matching, this is the minimum percent of similarity required between strings to receive 100%.
+
+* To change the weight of each factor requires going into the grader file and changing their respective values, which is not uniform for all question types
+
+Extra Note on the input string matching:
+The custom grader compares the student's supplied answer against a pre-defined correct solution. It compares the similarity and grants a grade proportionally. If the student gets above some threshold, whose default value is 0.75 or 75%, they are given full marks on the question. Similarities below 0.75 are mapped as such: (0, 0.75) -> (0, 1).
+
+
+Cases for input and output grading:
+- Standard:
+    - outputScoreWeight = 0.85
+    - inputScoreWeight = 0.15
+
+- Perfect output matching (student gets 100% on output matching):
+    - outputScoreWeight = 1
+    - inputScoreWeight = 0
+
+- Expected Output is empty (autogenerator has been modified to limit/eliminate these):
+    - outputScoreWeight = 0
+    - inputScoreWeight = 1
+
+- Syntax error in student code that prevents it from being executed:
+    - outputScoreWeight = 0.15 ; penalizes a little bit for the syntax error
+    - inputScoreWeight = 0.85
+
+
+Functions Legend:
+- getExpectedAndActual_Results(): 
+    - where "_" is one of the 5 question types 
+    - the functions where database(s) is/are called and we get the results that we need to do the appropriate output-matching for each type
+
+- grade_Question():
+    - where "_" is one of the 5 question types 
+    - these usually call multiple different helper methods that carry out different aspects of our output-matching and then spits out a final grade for the question's output-matching portion of the grading
+    - contain adjustable weighting of different aspects of output-matching such as # of rows, col.'s, etc.
+
+- _Match():
+    - previously mentioned helper functions where "_" is a factor taken into consideration for any of the question types, ex. valueMatch()
+    - give a grade for the outputmatching with regards to the particular factor, being adjusted and used in conjunction with other factors in a grade_Question() function
+
+
+Grading Process by Question Type:
+- QUERY
+    - uses one database
+    - compares the query results
+
+- CREATE
+    - uses 2 databases
+    - compares the metadata of the db created by the solution code with that of the submitted code
+
+- UPDATE
+    - uses 2 databases
+    - compares (the rows which are in the db after running the solution, but not in the original database) and (the rows which are in the db after running the submitted answer, but not in the original database)
+
+- DELETE
+    - uses 2 databases
+    - compares (the rows which are in the db after running the solution, but not in the original database) and (the rows which are in the db after running the submitted answer, but not in the original database)
+
+- INSERT
+    - uses 2 databases
+    - compares the db with the rows inserted by the solution with the db with rows inserted by the submitted answer
+
+* Code is documented in the grader file itself with more details
