@@ -109,12 +109,40 @@ $(document).ready(function () {
 
         return $('body').html();
     }
+        
+    
+    // Function that applies onClick functionality for specified targets
+    function applyOnClick() {
+        var regex = new RegExp('<click>(.*?)</click>', 'g');
+
+        // Find all text nodes in the body (not including empty text nodes)
+        var textNodes = $('body').find('*').addBack().contents().filter(function () {
+            return this.nodeType === 3 && this.nodeValue.trim() !== '';
+        });
+
+        // Iterate over the text nodes and apply tags to the matched strings
+        textNodes.each(function () {
+
+            var node = this;
+            var replacedText = node.nodeValue.replace(regex, function (match, capturedText) {
+                return `<span  style="cursor: pointer;" onclick="updateCodeMirror('${capturedText}')">${capturedText}</span>`;
+            });
+            $(node).replaceWith(replacedText);
+        });
+
+        return $('body').html();
+    }
+
+
+    // Apply onclick functionality to text in question string
+    var onClickFormatting = applyOnClick();
 
     // Apply HTML tags to certain parts of strings
     var boldedWords = applyHTMLTagsToWords('b');
     var italicWords = applyHTMLTagsToWords('i');
     var emphWords = applyHTMLTagsToWords('em');
     var strongWords = applyHTMLTagsToWords('strong');
+    
 
     /*
     //
@@ -380,6 +408,11 @@ $(document).ready(function () {
         var doc = editor.getDoc(); //gets the information of the editor
         doc.setValue(previousSubmissionElm.text().trim());
         previousSubmissionElm.remove();
+    }
+    
+    // helper function to allow for HTML calling.
+    window.updateCodeMirror = function (data) {
+        updateCodeMirror(data);
     }
 
     /*
