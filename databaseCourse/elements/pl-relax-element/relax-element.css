@@ -434,3 +434,85 @@
 	max-width:80%; 
 	margin:auto;
 }
+
+.expectedOutputTable{
+	border-collapse: collapse;
+    font-size: 0.9em;
+    font-family: ubuntu, sans-serif;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+	border-radius: 5px;
+	width: -webkit-fill-available;
+	padding: 1em;
+}
+
+.expectedOutputTable thead tr{
+	background-color: #007bff;
+    color: #ffffff;
+    text-align: left;
+	font-weight: bold;
+
+}
+
+.expectedOutputTable thead {
+	position: sticky;
+	top: 0;
+	z-index: 2;
+}
+
+.expectedOutputTable thead th{
+	cursor: pointer;
+}
+
+.expectedOutputTable thead th:first-child{
+	border-top-left-radius: 5px;
+}
+
+.expectedOutputTable thead th:last-child{
+	border-top-right-radius: 5px;
+}
+
+
+.expectedOutputTable th, .expectedOutputTable td{
+	padding: 10px 13px;
+}
+
+.expectedOutputTable tr{
+	border-bottom: 1px solid #dddddd;
+}
+
+.expectedOutputTable tr:nth-of-type(even){
+	background-color: #f3f3f3;
+}
+
+.expectedOutputTable tr:last-of-type{
+	border-bottom: 2px solid #007bff;
+}
+
+.expectedOutputTable tbody > tr:hover{
+	background: #000000b6;
+	color: #fff;
+}
+
+.expectedOutputButton{
+	background-color: transparent;
+	color: #007bff;
+	border: 2px solid #007bff;
+}
+
+.expectedOutputButton{
+	background-color: transparent;
+	color: #007bff;
+	border: 2px solid #007bff;
+	border-radius: 3px;
+	padding: 7px;
+	margin-right: 5px;
+	transition: .3s;
+	font-family: ubuntu, sans-serif;
+	font-size: 1em;
+}
+
+.expectedOutputButton:hover{
+	background-color: #007bff;
+	color: white;
+	cursor: pointer;
+}
