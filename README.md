@@ -55,6 +55,61 @@ This project requires two Docker containers. The first Docker container runs Pra
 2. Follow directions found at that repository.
 
 
+# Relational Algebra and SQL Assessments and Questions
+
+## Creating New Questions
+
+All questions are represented by a folder within the `databaseCourse/questions` directory. In order to create a new Relational Algebra or SQL question, a new folder must be created within the `question` directory or one of its subdirectories. The question's folder must contain the following files: `info.json` and `question.html`. Optionally the question's folder may have a `clientFilesQuestion` directory which contains resources, such as images, used for the question. For more information, see the [PrairieLearn documentation](https://prairielearn.readthedocs.io).  
+Randomly generated questions are handled differently than normal static questions. A random question's `question.html` file is empty aside from a single set of tags: `<pl-relax-element>` for Relational Algebra questions and `<pl-sql-element>` for SQL questions. Unlike a static question which stores texts and creates elements within various HTML tags, randomly generated questions create and load their text when the page is loaded. *To specify the parameters for random question, use variables in the HTML tag.*  
+Relational Algebra and SQL have several shared parameters and unique parameters. All parameters have a default value should they not be specified.  
+
+
+### Shared Question Parameters
+
+`random`, *boolean* (false): Specifies whether the question will be randomly generated or static.  
+`maxGrade`, **TODO**  
+`markerFeedback`, **TODO**  
+`expectedOutput`, *boolean* (false): if true, then the question will display the query's result to the student. *Only applicable for Relational Algebra questions and SQL SELECT questions*. Warning: for complex relational algebra questions, this can lead to a timeout on load; the time taken to execute the query to obtain the feedback may exceed PrairieLearn's timeout limit. This is not an issue for SQL questions due to SQL query execution time.  
+`canRegenerate`, *boolean* (true): if true, then if the question's query output were to produce zero rows then a new question is generated; this guarantees the query produces at least one row. *Only applicable for Relational Algebra questions and SQL SELECT questions*. Warning: for complex relational algebra questions, this can lead to a timeout on load; the time taken to execute the query to obtain a valid question may exceed PrairieLearn's timeout limit. This is not an issue for SQL questions due to SQL query execution time. **TODO**: make this parameter consistent with what is implemented on the RelaX side.
+
+### Relational Algebra Question Parameters
+
+**TODO**
+
+
+### SQL Question Parameters
+
+Out of the five supported SQL question types (CREATE, INSERT, UPDATE, DELETE, and SELECT), each question type has parameters unique to that type. In addition, there are several parameters that can be used for all question types.  
+
+
+#### Shared SQL Question Parameters
+
+`questionType`, *string* (`'query'`): specifies the type of question and can be one of these values: `'create'`, `'insert'`, `'update''`, `'delete'`, or `'query'`.  
+`questionDifficulty`, *string* or *None* (`None`): instead of specifing question-type specific parameters, a difficulty can be used. The question difficulties are `'easy'`, `'medium'`, and `'hard'`. Alternatively the difficulty can be `None` whereupon the question instead uses the parameters specified in the HTML tag. *It is suggested to use a difficulty of `None`. Difficulties are deprecated*.  
+`useSubquery`, *boolean* (false): if true, then the question will contain a subquery. *Only applicable for UPDATE, DELETE, and SELECT questions*.  
+
+
+#### CREATE Questions
+
+All parameters for CREATE questions can be used for other SQL questions. If these parameters are used for other question types, then they will specify the metadata for the question's primary table.  
+
+`columns`, *integer* (5): specifies how many columns the table will contain. *The minimum value for this parameter is 3*.  
+`joins`, *integer* (0): specifies how many foreign keys this table will contain. *The maximum value for this parameter is equal to the number of columns*.  
+`primaryKeys`, *integer* (1): the number of primary keys this table will contain. *This parameter must be less than the number of columns minus the number of foreign keys (a.k.a. joins)*.  
+`isNotNull`, *integer* (0): the number of columns with the 'IS NOT NULL' clause. *This parameter must be less than the number of columns minus the number of foreign keys (a.k.a. joins) minus the number of primary keys*.  
+`isUnique`, *integer* (0): the number of columns with the 'IS UNIQUE' clause. *This parameter must be less than the number of columns minus the number of foreign keys (a.k.a. joins) minus the number of primary keys*.  
+`isOnUpdateCascade`, *integer* (0): the number of foreign keys with the 'ON UPDATE CASCADE' clause. *This parameter cannot be greater than the number of foreign keys (a.k.a. joins)*.  
+`isOnDeleteSetNull`, *integer* (0): the number of foreign keys with the 'ON DELETE SET NULL' clause. *This parameter cannot be greater than the number of foreign keys (a.k.a. joins)*.  
+
+
+#### INSERT Questions
+
+#### UPDATE Questions
+
+#### DELETE Questions
+
+#### SELECT Questions
+
 # Linters
 
 This project makes use of two linters, ESLint for JavaScript and pylint for Python.  
