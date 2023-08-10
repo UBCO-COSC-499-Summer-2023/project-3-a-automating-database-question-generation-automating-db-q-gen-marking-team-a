@@ -419,7 +419,7 @@ class ParameterizedUpdateTests(unittest.TestCase):
         data['params']['html_params']['joins'] = joins
 
         data['params']['html_query_clauses'] = {
-            'conditional': conditionals,
+            'conditionals': conditionals,
             'useSubquery': subquery
         }
 
@@ -496,7 +496,7 @@ class ParameterizedDeleteTests(unittest.TestCase):
         data['params']['html_params']['joins'] = joins
 
         data['params']['html_query_clauses'] = {
-            'conditional': conditionals,
+            'conditionals': conditionals,
             'useSubquery': subquery
         }
 
@@ -574,7 +574,7 @@ class ParameterizedQueryTests(unittest.TestCase):
         data['params']['html_params']['joins'] = joins
 
         data['params']['html_query_clauses'] = {
-            'conditional': conditionals,
+            'conditionals': conditionals,
             'useSubquery': subquery,
             'columnsToSelect': columnsToSelect,
             'orderBy': orderBy,
