@@ -846,10 +846,12 @@ def generateQuery(data, difficulty):
     if os.path.exists("preview.db"):
         os.remove("preview.db")
     
-    # Always obtains the expected feedback, regardless of 
-    # whether the flag is true or not. This is to ensure
-    # that the query returns at least one row
-    data['params']['expectedOutput'] = createPreview(data)
+    # Obtains the expected output. The 'or' clause is
+    # used since even if expected output will not be
+    # displayed, the preview is used to determine
+    # whether the query has any rows
+    if data['params']['html_params']['canRegenerate'] or data['params']['html_params']['expectedOutput']:
+        data['params']['expectedOutput'] = createPreview(data)
 
 # Creates a query
 def queryStatement(database, selectedColumns, joinTypes={}, conditionalValues={}, orderByColumns={}, groupByColumns={}, havingColumns={}, withColumns={}, limit=0, isDistinct=False, functionColumns={}, subquery=''):
