@@ -538,7 +538,23 @@ def generateQuery(data, difficulty):
     #           $columnNames
     #       ]
     #   }
-    selectedColumns = selectColumns(columnsToSelect, database)
+    selectedColumns = {}
+
+    # Selects a random assortment of columns
+    if columnsToSelect:
+        selectedColumns = selectColumns(columnsToSelect, database)
+
+    # When columnsToSelect == 0, then it is equivalent
+    # to `SELECT *`. Adds all columns to selectedColumns
+    # so that the rest of the question can correctly
+    # function
+    else:
+        for key in allTables:
+            for column in allTables[key].columns.keys():
+                if key not in selectedColumns:
+                    selectedColumns[key] = []
+                selectedColumns[key].append(column)
+
 
 
 
@@ -547,17 +563,18 @@ def generateQuery(data, difficulty):
     #       $columnName = '$fxn'
     # }
     functionColumns = {}
-    for key in selectedColumns:
-        for column in selectedColumns[key]:
+    if columnsToSelect:
+        for key in selectedColumns:
+            for column in selectedColumns[key]:
 
-            # The first one is guaranteed. Past that, there's 
-            # a one in five chance per column for that
-            # column to have a function performed on it
-            if useQueryFunctions and not functionColumns:
-                functionColumns[column] = getQueryFunction(database, column, useIn=False)
-            elif random.random() * 5 < 1 and useQueryFunctions:
-                functionColumns[column] = getQueryFunction(database, column, useIn=False)
- 
+                # The first one is guaranteed. Past that, there's 
+                # a one in five chance per column for that
+                # column to have a function performed on it
+                if useQueryFunctions and not functionColumns:
+                    functionColumns[column] = getQueryFunction(database, column, useIn=False)
+                elif random.random() * 5 < 1 and useQueryFunctions:
+                    functionColumns[column] = getQueryFunction(database, column, useIn=False)
+    
 
 
     # Obtains the conditional values
@@ -631,7 +648,7 @@ def generateQuery(data, difficulty):
 
 
     # Starts the question string and the column selection section
-    if selectedColumns:
+    if columnsToSelect:
         questionString = 'Select'
 
         # De-pluralizes if necessary
@@ -840,7 +857,7 @@ def generateQuery(data, difficulty):
     data['params']['questionString'] = questionString
     
     # Sets the correct answer
-    data['correct_answers']['SQLEditor'] = queryStatement(database, selectedColumns, joinTypes, conditionalValues, orderByColumns, groupByColumns, havingColumns, withColumns, limit, isDistinct, functionColumns, subquery)
+    data['correct_answers']['SQLEditor'] = queryStatement(database, selectedColumns if columnsToSelect else {}, joinTypes, conditionalValues, orderByColumns, groupByColumns, havingColumns, withColumns, limit, isDistinct, functionColumns, subquery)
 
 
     if os.path.exists("preview.db"):
