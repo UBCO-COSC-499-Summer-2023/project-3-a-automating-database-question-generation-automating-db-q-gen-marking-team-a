@@ -93,7 +93,7 @@ There are five supported SQL question types: CREATE, INSERT, UPDATE, DELETE, and
 
 `questionType`, *string* (`'query'`): specifies the type of question and can be one of these values: `'create'`, `'insert'`, `'update''`, `'delete'`, or `'query'`.  
 `questionDifficulty`, *string* or *None* (`None`): instead of specifing question-type specific parameters, a difficulty can be used. The question difficulties are `'easy'`, `'medium'`, and `'hard'`. Alternatively the difficulty can be `None` whereupon the question instead uses the parameters specified in the HTML tag. *It is suggested to use a difficulty of `None`. Difficulties are deprecated*.  
-`conditional`, *integer* (0): the number of conditional clauses in the question's WHERE section. *Only applicable for UPDATE, DELETE, and SELECT questions*.  
+`conditionals`, *integer* (0): the number of conditional clauses in the question's WHERE section. *Only applicable for UPDATE, DELETE, and SELECT questions*.  
 `useSubquery`, *boolean* (false): if true, then the question will contain a subquery. *Only applicable for UPDATE, DELETE, and SELECT questions*.  
 
 
