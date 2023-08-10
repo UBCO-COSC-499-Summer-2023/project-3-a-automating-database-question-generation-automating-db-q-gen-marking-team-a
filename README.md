@@ -1,22 +1,27 @@
 [![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-718a45dd9cf7e7f842a935f5ebbe5719a5e09af4491e668f4dbf3b35d5cca122.svg)](https://classroom.github.com/online_ide?assignment_repo_id=11208034&assignment_repo_type=AssignmentRepo)
-# Project-Starter
-
-Please use the provided folder structure for your docs (scope & charter, design documenation, communications log, weekly logs and final documentation), source code, tesing, etc.    You are free to organize any additional internal folder structure as required by the project.  Please use a branching workflow and once an item is ready, do remember to issue a PR, review and merge in into the master brach.
+# Project-Structure
 ```
 .
 ├── docs                    # Documentation files (alternatively `doc`)
-│   ├── scope_and_charter   # Scope and Charter
-│   ├── design              # Getting started guide
-│   ├── final               # Getting started guide
-│   ├── logs                # Team Logs
-│   └── ...          
-├── src                     # Source files (alternatively `lib` or `app`)
-├── test                    # Automated tests (alternatively `spec` or `tests`)
-├── tools                   # Tools and utilities
-└── README.md
+│   ├── scope-charter       # Scope and Charter
+│   ├── design              # Design documents
+│   ├── final               # Final documents
+│   ├── weekly logs         # Team and Individual Logs
+│   ├── marking             # Documents for grading
+│   ├── porting             # Documentation for porting code editors
+│   ├── communication       # Documentation for communication with client
+│   ├── archived            # Documentation from autoER group
+│   └── mvp                 # Documentation used for MVP
+│
+├── databaseCourse          # Course files
+├── drone                   # Automated tests (Old)
+├── tests                   # Selenium Front-end testing
+├── README.md
+├── .drone.yml              # Automated tests
+└── docker-compose.yml      # Creating docker container
+
 ```
 Also, update your README.md file with the team and client/project information.  You can find details on writing GitHub Markdown [here](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax) as well as a [handy cheatsheet](https://enterprise.github.com/downloads/en/markdown-cheatsheet.pdf).   
-
 
 Roles:  
 Project Manager:    Nishant Srinivasan  
@@ -24,20 +29,23 @@ Client Liason:      Matthew Obirek
 Technical Lead:     Skyler Alderson  
 Integration Lead:   Andrei Zipis  
 
-# Docker Documentation for PrairieLearn and AutoER
+# Docker Documentation for PrairieLearn
+
 1. Install docker, docker-compose, and docker-desktop(optional)
 
-2. git clone the prairielearn repo, and the AutoER Repo.
+2. git clone this repository: `https://github.com/UBCO-COSC-499-Summer-2023/project-3-a-automating-database-question-generation-automating-db-q-gen-marking-team-a.git`
 
-3. Make Sure that in the Docker-compose.yml file in the AutoER database the Image line states `prairielearn/prairielearn:latest`, instead of `prairielearn/prairielearn:local`
-or
-build the docker image from the prairielearn repo.
-test to make sure you have the docker image by running `docker images`
+3. In your terminal, navigate to cloned directory.
 
-4. inside the AutoER repo, run `docker-compose create`
-then `docker-compose start`
+4. In your terminal run `docker-compose up`
 
-5. to check if the docker container is running, run `docker-compose ps`. if the response is empty, run `docker-compose ps -a`, and it will show the status of the closed docker container.
+5. To check if the docker container is running, run `docker-compose ps`. if the response is empty, run `docker-compose ps -a`, and it will show the status of the closed docker container.
+
+# Creating the relaxAPI container
+
+1. Visit repository found at `https://github.com/azipis/RelaXQueryAPI`
+
+2. Follow directions found at that repository.
 
 
 ### Issues With PrairieLearn pertaining to AutoER
