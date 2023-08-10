@@ -1,13 +1,19 @@
 from difflib import SequenceMatcher
 import requests
 
-# weights for input and oututbased grading
+# weights for input and outputbased grading
 outputScoreWeight = 0.85
 inputScoreWeight = 0.15
 
 #threshold for how close input matching needs to be for a correct answer
 #above which the student is given a score of 100%
 threshold = 0.75
+
+# grading weights for each component when output matching
+orderWeight = 0.05 # correct order
+rowWeight = 0.20 # correct number of rows
+colWeight = 0.25 # correct columns
+valueMatchWeight = 0.50 # correct values
 
 
 # Uses Python's SequenceMatcher library to check the
@@ -42,7 +48,8 @@ def customGrader(data):
     similarity = similar(wordsSA, wordsCA)
 
     # If the similarity between the submission and answer
-    # is above the threshold, the student is given full credit
+    # is above the threshold, the student is given full credit.
+    # NOTE: students given full credit on input score if output is correct
     if outputScore == 1:
         inputScore = 1
     elif similarity > threshold:
@@ -55,6 +62,8 @@ def customGrader(data):
     else:
         inputScore = similarity / threshold
         
+    # If outputScore is a string, it means that the query was unable to execute
+    # therefore we are grading solely on input string matching and giving a 15% execution penalty
     if type(outputScore) == str:
         global outputScoreWeight
         outputScoreWeight = 0.15
@@ -82,25 +91,13 @@ def similar(a, b):
 def gradeQuery(data, feedback):
     
     score = 0
-    
-    # grading weight for each component of statement
-    orderWeight = 0.05
-    rowWeight = 0.20
-    colWeight = 0.25
-    valueMatchWeight = 0.50
 
-
-    # change to and test 'db_initialize_insert_backend'
-    #print(data['params']['database'])
-    #print(data['params']['db_initialize_create'])
     db = data['params']['db_initialize_create_backend']
 
     submittedAnswer = data['submitted_answers']['RelaXEditor']
     correctAnswer = data['correct_answers']['RelaXEditor']
 
-    #url = f"http://relaxAPI:3001/index"
     url = data['params']['url']
-    #print(url)
 
     # Construct the data to be sent in the POST request
     data_to_send = {
@@ -154,6 +151,7 @@ def gradeQuery(data, feedback):
     orderScore = orderMatch(queriedSA['rows'], queriedCA['rows'])
     order = "Correct" if orderScore == 1 else "Incorrect"
     
+    # if feedback is enabled, add feedback
     if (feedback):
         data['params']['queryFeedback'] = "<em>Category: [actual / expected]</em>  <br>"
         addFeedback(data, "rows", totalRowsSA, totalRowsCA)
@@ -171,10 +169,7 @@ def gradeQuery(data, feedback):
 # HELPERS ----------------------------------------------------------------------------------------------------------------------
 # scores the difference in the number of rows between both outputs
 def rowMatch(rowsSA, rowsCA):
-    
-    #taken from SQL customgrader
-
-    
+      
     totalRowsSA = 0
     totalRowsCA = 0
     

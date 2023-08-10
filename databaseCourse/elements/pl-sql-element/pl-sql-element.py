@@ -66,7 +66,8 @@ def prepare(element_html, data):
     questionDifficulty = pl.get_string_attrib(element, 'difficulty', None)
     questionMaxGrade = pl.get_float_attrib(element, 'maxgrade', 1)
     questionMarkerFeedback = pl.get_boolean_attrib(element, 'markerfeedback', False)
-    questionExpectedPreview = pl.get_boolean_attrib(element,'expectedoutput',False)
+    questionExpectedPreview = pl.get_boolean_attrib(element, 'expectedoutput', False)
+    questionCanRegenerate = pl.get_boolean_attrib(element, 'canregenerate', True)
 
     questionColumns = pl.get_integer_attrib(element, 'columns', 5)
     questionJoins = pl.get_integer_attrib(element, 'joins', 0)
@@ -103,7 +104,8 @@ def prepare(element_html, data):
         'markerFeedback': questionMarkerFeedback,
         'columns': questionColumns,
         'joins': questionJoins,
-        'expectedOutput': questionExpectedPreview
+        'expectedOutput': questionExpectedPreview,
+        'canRegenerate': questionCanRegenerate
     }
 
     data['params']['html_table_clauses'] = {
@@ -154,6 +156,9 @@ def render(element_html, data):
     # Grabs the correct answer from the data variable
     correctAnswer = data['correct_answers']['SQLEditor']
 
+    # Whether to show feedback or not
+    giveFeedback = data['params']['html_params']['markerFeedback']
+
     # feedback
     feedback = data['params']['feedback']
     
@@ -185,7 +190,13 @@ def render(element_html, data):
         
     # This renders the users submitted answer into the "Submitted answer" box in PL
     elif data['panel'] == 'submission':
-
+        if giveFeedback:
+            try:
+                feedback = data['partial_scores']['SQLEditor'].get('feedback', '')
+            except KeyError:
+                feedback = ''
+        else:
+            feedback = "Your instructor has disabled feedback for this question."
         
         html_params = {
             'submission': True,
@@ -240,7 +251,7 @@ def grade(element_html, data):
     data['partial_scores']['SQLEditor'] = {
         'score': studentScore,
         'weight': 1,
-        'feedback': "",
+        'feedback': data['params']['feedback'],
         'marker_feedback': ""
     }
 
