@@ -3,6 +3,8 @@ $(document).ready(function () {
     const executeRelalg = relalg_bundle.executeRelalg;
     const Relation = relalg_bundle.Relation;
 
+    
+
     // database setup
     const dbSchema = document.getElementById("database");
     const dbValue = dbSchema.getAttribute("value");
@@ -336,6 +338,22 @@ $(document).ready(function () {
         $tbody.empty();
         rows.forEach(row => $tbody.append(row));
     }
+
+    // function to toggle expected output
+    $(document).ready(function() {
+        var expectedOutputButton = $(".expectedOutputButton");
+        var expectedOutputTable = $(".expectedOutputTable")[0];
+    
+        window.togglePreview = function(){
+            if (expectedOutputTable.style.display === "none"){
+                expectedOutputTable.style.display = "table";
+                expectedOutputButton[0].innerText = "Hide Expected Output";
+            } else {
+                expectedOutputTable.style.display = "none";
+                expectedOutputButton[0].innerText = "Show Expected Output";
+            }
+        };
+    });
 
 
     //* Recursive function that creates the RelaX output Tree

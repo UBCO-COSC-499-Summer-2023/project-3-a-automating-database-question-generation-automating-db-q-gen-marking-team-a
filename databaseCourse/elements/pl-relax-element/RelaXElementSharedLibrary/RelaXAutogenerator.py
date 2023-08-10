@@ -30,16 +30,14 @@ def returnGreater(num1, num2):
     return num1 if num1 > num2 else num2
 
 def createPreview(data):
-    #con = sqlite3.connect("preview.db")
-    #cur  = con.cursor()
+
     
     db = data['params']['db_initialize_create']
     correctAnswer = data['correct_answers']['RelaXEditor']
-    #print(correctAnswer)
-    #url = f"http://localhost:3000/ra_autoGrader"
+
     url = data['params']['url']
-    #print(url)
-    # Construct the data to be sent in the POST request
+
+    # Construct the data to be sent in the GET request
     data_to_send = {
     "database": db,
     "submittedAnswer": correctAnswer,
@@ -63,7 +61,7 @@ def createPreview(data):
         return "error"
     
 
-    htmlTable = "<div class='expectedOutput'><b>Expected Output:</b><div id='output' class='output-tables'><table><thead>"
+    htmlTable = "<button  type='button' onclick='togglePreview()' class='expectedOutputButton'>Show Expected Output</button><br><div class='expectedOutput'><div id='output' class='output-tables'><table class='expectedOutputTable' style='display: none;'><thead>"
     
     columnNames = queriedCA['schema']['_names']
     columnTypes = queriedCA['schema']['_types']
@@ -71,6 +69,9 @@ def createPreview(data):
 
     if len(dataRows) == 0:
         return False
+    
+    if len(dataRows) > 300:
+        dataRows = dataRows[0:299]
 
     dateRowRecord = []
     for i, column in enumerate(columnNames):
