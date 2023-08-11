@@ -26,6 +26,8 @@ def formatDate(capturedText):
 # The functionality that was previously in
 # this file has been moved to the database
 # and table objects file
+
+# returns the greater number - used to ensure number of tables exceeds number of joins
 def returnGreater(num1, num2):
     return num1 if num1 > num2 else num2
 
@@ -70,24 +72,29 @@ def createPreview(data):
     columnTypes = queriedCA['schema']['_types']
     dataRows = queriedCA['rows']
 
+    # will loop if the expected output has no rows
     if len(dataRows) == 0:
         return False
     
+    # Ensures that the expected output will not exceed 300 rows
     if len(dataRows) > 300:
         dataRows = dataRows[0:299]
 
+    # Records the columns that have type date for proper rendering later on 
     dateRowRecord = []
+    # loops to find date columns and to render Expected output headers
     for i, column in enumerate(columnNames):
         if columnTypes[i] == 'date':
-            # print(columnTypes[i])
             dateRowRecord.append(i)
         htmlTable += "<th>" + str(column) + "</th>"
 
     htmlTable += "</thead>"
 
+    # Loops to render table rows
     for row in dataRows:
         rowString = "<tr>"
         for i, x in enumerate(row):
+            # Uses dateRowRecord from earlier to ensire dates are formatted correctly
             if i in dateRowRecord:
                 rowString+= "<td>" + formatDate(str(x)) + "</td>"
             else:
@@ -99,7 +106,7 @@ def createPreview(data):
 
     return htmlTable
 
-def autogenerate(data, outputGuarantee=True):
+def autogenerate(data, outputGuaranteed=True):
     
     #expectedOutput = data['params']['html_params']['expectedOutput']
     #if expectedOutput:
@@ -109,6 +116,7 @@ def autogenerate(data, outputGuarantee=True):
     joins = returnGreater(rand.randint(2,4), (data['params']['attrib_dict']['numJoins'])) #! Change to joins/rand -> whichever is bigger
     rows = rand.randint(7, 15)
     
+    # Autogenerates the Database and the Questions
     database = db.Database(isSQL=False, columns=columns, joins=joins, rows=rows)
     question = Question(dataset=database, attribDict=data['params']['attrib_dict'], rows=rows)
 
@@ -117,23 +125,29 @@ def autogenerate(data, outputGuarantee=True):
     database.loadDatabase(data)
     question.loadQuestion(data)
 
-    if not outputGuarantee:
+    # checks
+    if outputGuaranteed is False:
+        data['params']['html_params']['expectedOutput'] = ''
         return
+    
 
+    # Creates and loads preview table
     data['params']['html_params']['expectedOutput'] = createPreview(data)
     while not data['params']['html_params']['expectedOutput']:
 
         data['params']['db_initialize_create'] = ''
         data['params']['db_initialize_create_backend'] = ''
        
+        # generates the Database and the Question string and answer
         database = db.Database(isSQL=False, columns=columns, joins=joins, rows=rows)
         question = Question(dataset=database, attribDict=data['params']['attrib_dict'], rows=rows)
 
 
-        # Loads the database into the data variable
+        # Loads the database and question into the data variable
         database.loadDatabase(data)
         question.loadQuestion(data)
 
+        # Creates and loads preview table
         data['params']['html_params']['expectedOutput'] = createPreview(data) 
     
 
@@ -168,6 +182,7 @@ class Question:
         self.antiJoinBool = attribDict['antiJoin']
         self.outerJoinBool = attribDict['outerJoin']
         self.semiJoinBool = attribDict['semiJoin']
+        self.rangeNum = attribDict['projectedColumns']
         #* Join first
         # number of joins for the question
         self.offLimitsTable = None
@@ -213,7 +228,7 @@ class Question:
 
 
         #* Projection
-        projectedColumns = self.projection(neededColumns, usableColumns)
+        projectedColumns = self.projection(neededColumns, usableColumns, self.rangeNum)
         tempArray = []
         for elem in projectedColumns:
             tempArray.append(f"<click>{elem}</click>")
@@ -304,8 +319,11 @@ class Question:
             conditions = []
             selectedColumnsArray = []
             for item in selectedColumns:
-                randColumn, operator, value = item
-                selectedColumnsArray.append(f"{randColumn}{operator}{value}")
+                randColumn, operator, value, isDate = item
+                if isDate:
+                    selectedColumnsArray.append(f"{randColumn}{operator}{isDate}")
+                else:
+                    selectedColumnsArray.append(f"{randColumn}{operator}{value}")
 
                 operator = operator.replace(">", "is greater than").replace("<", "is less than").replace("≥", "is greater than or equal to").replace("≤", "is less than or equal to").replace("=", "is").replace("≠", "is not")
                 conditions.append(f"<b><click>{randColumn}</click></b> <em>{operator}</em> <b><click>{value}</click></b>")
@@ -514,10 +532,10 @@ class Question:
 
 
 
-    def projection(self, neededColumns, usableColumns):
+    def projection(self, neededColumns, usableColumns, rangeNum):
         projectedColumns = []
         index = 0
-        for i in range(rand.randint(2,5)):
+        for i in range(rangeNum):
             if len(neededColumns) == 0 or self.numJoins == 0:
                 randColumn = rand.choice(usableColumns)
             else:
@@ -543,10 +561,11 @@ def selection(usableColumns, randColumn, graph, dataset):
     for table in graph.keys():
         for column in dataset.tableSet[table].columns:
             if randColumn == dataset.tableSet[table].columns[column]['name']:
+                choice = rand.choice(dataset.tableSet[table].rows[column])
                 match(dataset.tableSet[table].columns[column]['unit']):
-                    case 'STRING': return (randColumn, " = ", f"'{rand.choice(dataset.tableSet[table].rows[column])}'")
-                    case 'NUMBER': return (randColumn, f" {rand.choice([ '≥', '≤'])} ", rand.choice(dataset.tableSet[table].rows[column]))
-                    case 'DATE':   return (randColumn, f" {rand.choice([ '≥', '≤'])} ", f"{rand.choice(dataset.tableSet[table].rows[column])}")
+                    case 'STRING': return (randColumn, " = ", f"'{choice}'", None)
+                    case 'NUMBER': return (randColumn, f" {rand.choice([ '≥', '≤'])} ", choice, None)
+                    case 'DATE':   return (randColumn, f" {rand.choice([ '≥', '≤'])} ", f"{choice}", f"date('{choice}')")
                 #print(f"Selection string '{rand.choice(dataset.tableSet[table].rows[column])}'")
                 #selectedColumns.append(randColumn)
 
