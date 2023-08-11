@@ -64,7 +64,8 @@ def createPreview(data):
     
     # Begins the HTML required to render the expected outpyt
     htmlTable = "<div class='expectedOutput'><b>Expected Output:</b><div id='output' class='output-tables'><table><thead>"
-    if not queriedCA:
+    if 'schema' not in queriedCA.keys():
+        #print(correctAnswer)
         return False
     # loads the data from the query response
     columnNames = queriedCA['schema']['_names']
