@@ -125,8 +125,9 @@ $(document).ready(function () {
 
             var node = this;
             var replacedText = node.nodeValue.replace(regex, function (match, capturedText) {
-                return `<span  style="cursor: pointer;" onclick="updateCodeMirror('${capturedText}')">${capturedText}</span>`;
-            });
+                newText = capturedText.replace(/'/g, "\\'"); // ensures that all single quotes are rendered properly
+                returnedTest = `<span style="cursor: pointer;" onclick="updateCodeMirror('${newText}')">${capturedText}</span>`;
+                return returnedTest            });
             $(node).replaceWith(replacedText);
         });
 
