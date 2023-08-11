@@ -88,7 +88,7 @@ $(document).ready(function () {
 
             var node = this;
             var replacedText = node.nodeValue.replace(regex, function (match, capturedText) {
-                return `<span  style="cursor: pointer;" onclick="updateCodeMirror('${capturedText}')">${capturedText}</span>`;
+                return `<span  style="cursor: pointer;" onclick='updateCodeMirror("${capturedText}")'>${capturedText}</span>`;
             });
             $(node).replaceWith(replacedText);
         });

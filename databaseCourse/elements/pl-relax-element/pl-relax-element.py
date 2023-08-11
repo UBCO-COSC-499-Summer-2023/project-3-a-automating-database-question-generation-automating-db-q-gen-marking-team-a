@@ -91,6 +91,7 @@ def prepare(element_html, data):
             "outerJoin": pl.get_boolean_attrib(element, "outerjoin", False)
         }
         data['params']['attrib_dict'] = attribDict
+        data['params']['outputGuarantee'] = pl.get_boolean_attrib(element, "outputguarantee", True)
 
     # If if is a randomised question, generate the question
     if questionRandom:

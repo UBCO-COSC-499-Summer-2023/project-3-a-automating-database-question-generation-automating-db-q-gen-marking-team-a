@@ -62,9 +62,11 @@ def createPreview(data):
         print("Error:", str(e))
         return "error"
     
-
+    # Begins the HTML required to render the expected outpyt
     htmlTable = "<div class='expectedOutput'><b>Expected Output:</b><div id='output' class='output-tables'><table><thead>"
-    
+    if not queriedCA:
+        return False
+    # loads the data from the query response
     columnNames = queriedCA['schema']['_names']
     columnTypes = queriedCA['schema']['_types']
     dataRows = queriedCA['rows']
@@ -95,7 +97,7 @@ def createPreview(data):
 
     return htmlTable
 
-def autogenerate(data, testing=False):
+def autogenerate(data, outputGuarantee=True):
     
     #expectedOutput = data['params']['html_params']['expectedOutput']
     #if expectedOutput:
@@ -113,7 +115,7 @@ def autogenerate(data, testing=False):
     database.loadDatabase(data)
     question.loadQuestion(data)
 
-    if testing:
+    if not outputGuarantee:
         return
 
     data['params']['html_params']['expectedOutput'] = createPreview(data)
@@ -172,28 +174,21 @@ class Question:
 #        subgraph = randomSubgraph(graph=graph, n=self.numJoins)
         
         self.JoinList = []
-        neededColumns = []
-        loopNum = 0
-        if self.numJoins == 0:
+
+        if self.antiJoinBool:
+            self.antiJoinGeneration(subgraph=graph,dataset=dataset)
+        elif self.semiJoinBool:
+            self.semiJoinGeneration(subgraph=graph,dataset=dataset)
+        elif self.outerJoinBool:
+            self.outerJoinGeneration(subgraph=graph,dataset=dataset)
+        elif self.numJoins == 0:
             self.JoinList.append(rand.choice(list(graph.keys())))
             self.joinStatement = self.JoinList[0]
-        while loopNum != (self.numJoins):
-            if len(self.JoinList) == 0:
-                if rows >= 11:
-                    joinChoice = rand.choice(['semi', 'anti'])
-                    match joinChoice:
-                        case 'semi': self.semiJoinGeneration(subgraph=graph,dataset=dataset)
-                        case 'anti': self.antiJoinGeneration(subgraph=graph,dataset=dataset)
-                else:
-                    joinChoice = rand.choice(['natural', 'outer'])
-                    match joinChoice:
-                        case 'natural': self.naturalJoinGeneration(subgraph=graph)
-                        case 'outer': self.outerJoinGeneration(subgraph=graph,dataset=dataset)
-
-            else:
+        else:
+            loopNum = 0
+            while loopNum != (self.numJoins):
                 self.naturalJoinGeneration(subgraph=graph)
-            loopNum+=1
-
+                loopNum+=1
 
         # neededColumns are one random column from each joined graph 
         # such that all joined tables are utilized in output
@@ -549,7 +544,7 @@ def selection(usableColumns, randColumn, graph, dataset):
                 match(dataset.tableSet[table].columns[column]['unit']):
                     case 'STRING': return (randColumn, " = ", f"'{rand.choice(dataset.tableSet[table].rows[column])}'")
                     case 'NUMBER': return (randColumn, f" {rand.choice([ '≥', '≤'])} ", rand.choice(dataset.tableSet[table].rows[column]))
-                    case 'DATE':   return (randColumn, f" {rand.choice([ '≥', '≤'])} ", f"Date('{rand.choice(dataset.tableSet[table].rows[column])}')")
+                    case 'DATE':   return (randColumn, f" {rand.choice([ '≥', '≤'])} ", f"{rand.choice(dataset.tableSet[table].rows[column])}")
                 #print(f"Selection string '{rand.choice(dataset.tableSet[table].rows[column])}'")
                 #selectedColumns.append(randColumn)
 
