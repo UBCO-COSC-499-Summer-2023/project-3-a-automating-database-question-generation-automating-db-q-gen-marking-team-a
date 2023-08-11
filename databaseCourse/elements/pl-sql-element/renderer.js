@@ -69,6 +69,7 @@ $(document).ready(function () {
         extraKeys: {
             "Ctrl-Enter": executeEditorContents,
         }
+        
     });
 
     function enableEditorInteraction() {
@@ -110,7 +111,6 @@ $(document).ready(function () {
         return $('body').html();
     }
         
-    
     // Function that applies onClick functionality for specified targets
     function applyOnClick() {
         var regex = new RegExp('<click>(.*?)</click>', 'g');
@@ -134,9 +134,8 @@ $(document).ready(function () {
     }
 
 
-    // Apply onclick functionality to text in question string
-    var onClickFormatting = applyOnClick();
-
+    // Apply Functionality
+    var onClickFormatting = applyOnClick()
     // Apply HTML tags to certain parts of strings
     var boldedWords = applyHTMLTagsToWords('b');
     var italicWords = applyHTMLTagsToWords('i');

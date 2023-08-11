@@ -419,7 +419,7 @@ class ParameterizedUpdateTests(unittest.TestCase):
         data['params']['html_params']['joins'] = joins
 
         data['params']['html_query_clauses'] = {
-            'conditional': conditionals,
+            'conditionals': conditionals,
             'useSubquery': subquery
         }
 
@@ -496,7 +496,7 @@ class ParameterizedDeleteTests(unittest.TestCase):
         data['params']['html_params']['joins'] = joins
 
         data['params']['html_query_clauses'] = {
-            'conditional': conditionals,
+            'conditionals': conditionals,
             'useSubquery': subquery
         }
 
@@ -563,6 +563,8 @@ class ParameterizedQueryTests(unittest.TestCase):
             [data, 5, 2, 2, True, 5, 1, 1, 1, 5, True, True, sampleSize],   # A bit of everything, and a subquery
             [data, 3, 1, 0, False, 0, 0, 0, 0, 0, False, False, sampleSize],   # Min, without subquery
             [data, 3, 1, 0, True, 0, 0, 0, 0, 0, False, False, sampleSize],   # Min, with subquery
+            [data, 5, 0, 2, False, 0, 2, 2, 1, 0, False, False, sampleSize],   # Min selected columns but complex, no joins
+            [data, 5, 3, 2, False, 0, 2, 2, 1, 0, False, False, sampleSize],   # Min selected columns but complex, joins
             [data, 10, 4, 1, False, 10, 4, 4, 1, 5, False, True, sampleSize], # Max, without subquery
             [data, 10, 4, 1, True, 10, 4, 4, 1, 5, False, True, sampleSize]    # Max, with subquery
             ])
@@ -574,7 +576,7 @@ class ParameterizedQueryTests(unittest.TestCase):
         data['params']['html_params']['joins'] = joins
 
         data['params']['html_query_clauses'] = {
-            'conditional': conditionals,
+            'conditionals': conditionals,
             'useSubquery': subquery,
             'columnsToSelect': columnsToSelect,
             'orderBy': orderBy,
@@ -604,10 +606,11 @@ class ParameterizedQueryTests(unittest.TestCase):
             self.assertNotIn("INSERT",data['correct_answers']['SQLEditor'])
             self.assertNotIn("DELETE",data['correct_answers']['SQLEditor'])
 
-            if subquery or conditionals:
-                self.assertIn("WHERE",data['correct_answers']['SQLEditor'])
-            else:
-                self.assertNotIn("WHERE",data['correct_answers']['SQLEditor'])
+            if columnsToSelect:
+                if subquery or conditionals:
+                    self.assertIn("WHERE",data['correct_answers']['SQLEditor'])
+                else:
+                    self.assertNotIn("WHERE",data['correct_answers']['SQLEditor'])
 
             self.assertGreater(len(data['params']['questionString']), 0)
             self.assertGreater(len(data['params']['db_initialize_create']), 0)

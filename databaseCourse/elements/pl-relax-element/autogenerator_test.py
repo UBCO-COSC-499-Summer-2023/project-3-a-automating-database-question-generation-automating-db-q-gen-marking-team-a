@@ -7,43 +7,6 @@ import sys
 sys.path.append('databaseCourse/elements/pl-relax-element/')
 from RelaXElementSharedLibrary.RelaXAutogenerator import *
 
-#class AutogenerateTest(unittest.TestCase):
-
-    # def testAutogenerateTablesRelaX(self):
-    #     for i in range(100):
-    #         columns = rand.randint(4, 7)
-    #         joins = rand.randint(2, 5)
-    #         rows = rand.randint(5, 15)
-    #         database = db.Database(isSQL=False, columns=columns, joins=joins, rows=rows)
-    #         if database is None:
-    #             print("Error: database is None")
-
-    
-#     def testAutogenerateJoinedTablesCollection(self):
-#         for i in range(10):
-#             columns = rand.randint(4, 7)
-#             joins = rand.randint(2, 5)
-#             rows = rand.randint(5, 15)
-#             database = db.Database(isSQL=False, columns=columns, joins=joins, rows=rows)
-#             numJoins = joins-1
-            
-            
-#             graph = {}
-#             for table in database.tableSet:
-#                 connections = []
-#                 for column in database.tableSet[table].columns:
-#                     if database.tableSet[table].columns[column]['references']:
-#                         connections.append(database.tableSet[table].columns[column]['references'])
-#                 graph[table] = connections
-
-#             for j in range(10):
-#                 table = rand.choice(list(database.tableSet.keys()))
-#                 subgraph = randomSubgraph(graph=graph, n=numJoins)
-#                 if len(subgraph) != (numJoins+1):
-#                     print(f"Error: {len(subgraph)} != {numJoins+1}")
-                    
-# #AutogenerateTest.testAutogenerateJoinedTablesCollection()
-
 
 # Tests RelaX autogen queries
 class AutogenerateQueryTest(unittest.TestCase):
@@ -95,7 +58,17 @@ class AutogenerateQueryTest(unittest.TestCase):
             [data, 0, 3, False, False, False, False, False, sampleSize], # A very weird query
             [data, 1, 3, False, True, False, False, False, sampleSize], # A very weird query
             [data, 2, 3, False, False, False, False, False, sampleSize], # A very weird query
-            [data, 3, 3, True, False, False, False, False, sampleSize]  # A very weird query
+            [data, 3, 3, True, False, False, False, False, sampleSize],  # A very weird query
+
+            [data, 0, 0, True, False, False, False, True, sampleSize],
+            [data, 1, 0, False, False, False, True, False, sampleSize],
+            [data, 2, 0, False, False, True, False, False, sampleSize],
+            [data, 3, 0, True, True, True, True, True, sampleSize],
+
+            [data, 0, 0, True, False, False, False, True, sampleSize],
+            [data, 0, 1, False, False, False, True, False, sampleSize],
+            [data, 0, 2, False, False, True, False, False, sampleSize],
+            [data, 0, 3, True, True, True, True, True, sampleSize]
 
         ])
 
@@ -122,7 +95,7 @@ class AutogenerateQueryTest(unittest.TestCase):
             data['correct_answers']['RelaXEditor'] = ''
 
             # Generates the question
-            autogenerate(data, testing=True)
+            autogenerate(data, outputGuarantee=False)
 
             # Asserts
             self.assertGreater(len(data['params']['db_initialize_create']), 0)
@@ -136,3 +109,5 @@ class AutogenerateQueryTest(unittest.TestCase):
 
 
             print(data['correct_answers']['RelaXEditor'])
+
+        print("\n\n")
