@@ -17,7 +17,7 @@ def autogenerate(data):
     # markerFeedback = data['params']['html_params']['markerFeedback']
     questionType = data['params']['html_params'].get('questionType', 'query')
     difficulty = data['params']['html_params'].get('difficulty', None)
-    canRegenerate = data['params']['html_params'].get('canRegenerate', 'True')
+    guaranteeOutput = data['params']['html_params'].get('guaranteeOutput', 'True')
 
 
     # Checks if the difficulty are valid
@@ -37,7 +37,7 @@ def autogenerate(data):
     # Generates a new query question if there is expected output
     # but it is empty, so long as the question is allowed to
     # regenerate
-    while canRegenerate and questionType == 'query' and '<td>' not in data['params']['expectedOutput'] and data['params']['expectedOutput']:
+    while guaranteeOutput and questionType == 'query' and '<td>' not in data['params']['expectedOutput'] and data['params']['expectedOutput']:
 
         # Clears out the previous create and insert statements
         data['params']['db_initialize_create'] = ''
@@ -238,22 +238,22 @@ def generateUpdate(data, difficulty):
             columns = random.randint(4, 5)
             joins = 1
             database = db.Database(columns=columns, joins=joins)
-            queryClauses['conditional'] = 0
+            queryClauses['conditionals'] = 0
             queryClauses['useSubquery'] = False
 
         case 'medium': 
             columns = random.randint(4, 5)
             joins = random.randint(1, 2)
             database = db.Database(columns=columns, joins=joins)
-            queryClauses['conditional'] = random.randint(1, 3)
-            queryClauses['conditional'] = random.randint(1, 3)
+            queryClauses['conditionals'] = random.randint(1, 3)
+            queryClauses['conditionals'] = random.randint(1, 3)
             queryClauses['useSubquery'] = False
 
         case 'hard': 
             columns = random.randint(4, 5)
             joins = random.randint(1, 2)
             database = db.Database(columns=columns, joins=joins)
-            queryClauses['conditional'] = 0
+            queryClauses['conditionals'] = 0
             queryClauses['useSubquery'] = True
         
         case _:
@@ -266,8 +266,8 @@ def generateUpdate(data, difficulty):
 
     # Checks if the parameters are valid
     nonCascadingForeignKeys = len([key for key in table.columns.keys() if table.columns[key]['references'] and not table.columns[key]['isOnUpdateCascade']])
-    if columns - nonCascadingForeignKeys < queryClauses['conditional']:
-        print(f"UPDATE question cannot have more conditional clauses than foreign keys that do not cascade on update (was supplied with {queryClauses['conditional']} conditionals and {nonCascadingForeignKeys} non-cascading foreign keys)")
+    if columns - nonCascadingForeignKeys < queryClauses['conditionals']:
+        print(f"UPDATE question cannot have more conditional clauses than foreign keys that do not cascade on update (was supplied with {queryClauses['conditionals']} conditionals and {nonCascadingForeignKeys} non-cascading foreign keys)")
 
     # Generates a bunch of rows
     database.generateRows(random.randint(15, 25))
@@ -291,7 +291,7 @@ def generateUpdate(data, difficulty):
     updateValue = nd.generateNoisyData(table, updateColumn)[0]
 
     # If the quesiton should use a condition, set parameters
-    conditionalValues = getConditionalValues(queryClauses['conditional'], database, list(table.columns.keys()))
+    conditionalValues = getConditionalValues(queryClauses['conditionals'], database, list(table.columns.keys()))
 
 
 
@@ -370,22 +370,22 @@ def generateDelete(data, difficulty):
             columns = random.randint(4, 5)
             joins = 1
             database = db.Database(columns=columns, joins=joins)
-            queryClauses['conditional'] = 0
+            queryClauses['conditionals'] = 0
             queryClauses['useSubquery'] = False
 
         case 'medium': 
             columns = random.randint(4, 5)
             joins = random.randint(1, 2)
             database = db.Database(columns=columns, joins=joins)
-            queryClauses['conditional'] = random.randint(1, 3)
-            queryClauses['conditional'] = random.randint(1, 3)
+            queryClauses['conditionals'] = random.randint(1, 3)
+            queryClauses['conditionals'] = random.randint(1, 3)
             queryClauses['useSubquery'] = False
 
         case 'hard': 
             columns = random.randint(4, 5)
             joins = random.randint(1, 2)
             database = db.Database(columns=columns, joins=joins)
-            queryClauses['conditional'] = 0
+            queryClauses['conditionals'] = 0
             queryClauses['useSubquery'] = True
         
         case _:
@@ -398,7 +398,7 @@ def generateDelete(data, difficulty):
     database.generateRows(random.randint(15, 25))
 
     # If the quesiton should use a condition, set parameters
-    conditionalValues = getConditionalValues(queryClauses['conditional'], database, list(table.columns.keys()))
+    conditionalValues = getConditionalValues(queryClauses['conditionals'], database, list(table.columns.keys()))
 
 
     # If there are no
@@ -483,14 +483,14 @@ def generateQuery(data, difficulty):
             columnsToSelect = random.randint(1, 2)
             joins = 1
             database = db.Database(columns=columns, joins=joins)
-            queryClauses['conditional'] = 0
+            queryClauses['conditionals'] = 0
 
         case 'medium': 
             columns = random.randint(6, 7)
             columnsToSelect = random.randint(2, 4)
             joins = random.randint(1, 2)
             database = db.Database(columns=columns, joins=joins)
-            queryClauses['conditional'] = random.randint(1, 3)
+            queryClauses['conditionals'] = random.randint(1, 3)
 
         case 'hard': 
             columns = random.randint(7, 8)
@@ -511,7 +511,7 @@ def generateQuery(data, difficulty):
     table = database.primaryTable
     referenced = database.referencedTables
     
-    conditionals = queryClauses['conditional']
+    conditionals = queryClauses['conditionals']
     useSubquery = queryClauses['useSubquery']
     columnsToSelect = queryClauses['columnsToSelect']
     orderBy = queryClauses['orderBy']
@@ -538,7 +538,23 @@ def generateQuery(data, difficulty):
     #           $columnNames
     #       ]
     #   }
-    selectedColumns = selectColumns(columnsToSelect, database)
+    selectedColumns = {}
+
+    # Selects a random assortment of columns
+    if columnsToSelect:
+        selectedColumns = selectColumns(columnsToSelect, database)
+
+    # When columnsToSelect == 0, then it is equivalent
+    # to `SELECT *`. Adds all columns to selectedColumns
+    # so that the rest of the question can correctly
+    # function
+    else:
+        for key in allTables:
+            for column in allTables[key].columns.keys():
+                if key not in selectedColumns:
+                    selectedColumns[key] = []
+                selectedColumns[key].append(column)
+
 
 
 
@@ -547,17 +563,18 @@ def generateQuery(data, difficulty):
     #       $columnName = '$fxn'
     # }
     functionColumns = {}
-    for key in selectedColumns:
-        for column in selectedColumns[key]:
+    if columnsToSelect:
+        for key in selectedColumns:
+            for column in selectedColumns[key]:
 
-            # The first one is guaranteed. Past that, there's 
-            # a one in five chance per column for that
-            # column to have a function performed on it
-            if useQueryFunctions and not functionColumns:
-                functionColumns[column] = getQueryFunction(database, column, useIn=False)
-            elif random.random() * 5 < 1 and useQueryFunctions:
-                functionColumns[column] = getQueryFunction(database, column, useIn=False)
- 
+                # The first one is guaranteed. Past that, there's 
+                # a one in five chance per column for that
+                # column to have a function performed on it
+                if useQueryFunctions and not functionColumns:
+                    functionColumns[column] = getQueryFunction(database, column, useIn=False)
+                elif random.random() * 5 < 1 and useQueryFunctions:
+                    functionColumns[column] = getQueryFunction(database, column, useIn=False)
+    
 
 
     # Obtains the conditional values
@@ -631,7 +648,7 @@ def generateQuery(data, difficulty):
 
 
     # Starts the question string and the column selection section
-    if selectedColumns:
+    if columnsToSelect:
         questionString = 'Select'
 
         # De-pluralizes if necessary
@@ -840,7 +857,7 @@ def generateQuery(data, difficulty):
     data['params']['questionString'] = questionString
     
     # Sets the correct answer
-    data['correct_answers']['SQLEditor'] = queryStatement(database, selectedColumns, joinTypes, conditionalValues, orderByColumns, groupByColumns, havingColumns, withColumns, limit, isDistinct, functionColumns, subquery)
+    data['correct_answers']['SQLEditor'] = queryStatement(database, selectedColumns if columnsToSelect else {}, joinTypes, conditionalValues, orderByColumns, groupByColumns, havingColumns, withColumns, limit, isDistinct, functionColumns, subquery)
 
 
     if os.path.exists("preview.db"):
@@ -850,7 +867,7 @@ def generateQuery(data, difficulty):
     # used since even if expected output will not be
     # displayed, the preview is used to determine
     # whether the query has any rows
-    if data['params']['html_params']['canRegenerate'] or data['params']['html_params']['expectedOutput']:
+    if data['params']['html_params']['guaranteeOutput'] or data['params']['html_params']['expectedOutput']:
         data['params']['expectedOutput'] = createPreview(data)
 
 # Creates a query
@@ -1551,9 +1568,9 @@ def getQuestionParameters(data):
 
     # Adds default value for tests
     try:
-        data['params']['html_params']['canRegenerate']
+        data['params']['html_params']['guaranteeOutput']
     except:
-        data['params']['html_params']['canRegenerate'] = True
+        data['params']['html_params']['guaranteeOutput'] = True
 
     # Constructs table clauses.
     # Parameters:
@@ -1588,7 +1605,7 @@ def getQuestionParameters(data):
             queryClauses[clause] = data['params']['html_query_clauses'][clause]
     except:
         queryClauses = {
-            'conditional': 1,
+            'conditionals': 1,
             'useSubquery': False,
             'columnsToSelect': 3,
             'orderBy': 0,

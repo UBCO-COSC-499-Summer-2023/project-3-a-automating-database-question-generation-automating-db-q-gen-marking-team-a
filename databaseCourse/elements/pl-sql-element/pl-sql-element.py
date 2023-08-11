@@ -67,7 +67,7 @@ def prepare(element_html, data):
     questionMaxGrade = pl.get_float_attrib(element, 'maxgrade', 1)
     questionMarkerFeedback = pl.get_boolean_attrib(element, 'markerfeedback', False)
     questionExpectedPreview = pl.get_boolean_attrib(element, 'expectedoutput', False)
-    questionCanRegenerate = pl.get_boolean_attrib(element, 'canregenerate', True)
+    questionGuaranteeOutput = pl.get_boolean_attrib(element, 'guaranteeoutput', True)
 
     questionColumns = pl.get_integer_attrib(element, 'columns', 5)
     questionJoins = pl.get_integer_attrib(element, 'joins', 0)
@@ -78,7 +78,7 @@ def prepare(element_html, data):
     questionIsOnUpdateCascade = pl.get_integer_attrib(element, 'isonupdatecascade', None)
     questionIsOnDeleteSetNull = pl.get_integer_attrib(element, 'isondeletesetnull', None)
 
-    questionConditional = pl.get_integer_attrib(element, 'conditional', 0)
+    questionConditionals = pl.get_integer_attrib(element, 'conditionals', 0)
     questionUseSubquery = pl.get_boolean_attrib(element, 'usesubquery', False)
 
     questionColumnsToSelect = pl.get_integer_attrib(element, "columnstoselect", 0)
@@ -105,7 +105,7 @@ def prepare(element_html, data):
         'columns': questionColumns,
         'joins': questionJoins,
         'expectedOutput': questionExpectedPreview,
-        'canRegenerate': questionCanRegenerate
+        'guaranteeOutput': questionGuaranteeOutput
     }
 
     data['params']['html_table_clauses'] = {
@@ -117,7 +117,7 @@ def prepare(element_html, data):
     }
     
     data['params']['html_query_clauses'] = {
-        'conditional': questionConditional,
+        'conditionals': questionConditionals,
         'useSubquery': questionUseSubquery,
         'columnsToSelect': questionColumnsToSelect,
         'orderBy': questionOrderBy,
