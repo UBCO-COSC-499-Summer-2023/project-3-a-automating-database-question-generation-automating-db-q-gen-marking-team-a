@@ -40,43 +40,49 @@ class AutogenerateQueryTest(unittest.TestCase):
     # a test case
     @parameterized.expand([
             # data, numJoins, numClauses, orderBy, groupBy, antiJoin, outerJoin, semiJoin
-            [data, 0, 0, True, False, False, False, False, sampleSize],
-            [data, 1, 0, False, False, False, False, False, sampleSize],
-            [data, 2, 0, False, False, False, False, False, sampleSize],
-            [data, 3, 0, True, True, False, False, False, sampleSize],
+            [data, 3, 0, 0, True, False, False, False, False, sampleSize],
+            [data, 3, 1, 0, False, False, False, False, False, sampleSize],
+            [data, 3, 2, 0, False, False, False, False, False, sampleSize],
+            [data, 3, 3, 0, True, True, False, False, False, sampleSize],
 
-            [data, 0, 1, False, False, False, False, False, sampleSize],
-            [data, 1, 1, False, True, False, False, False, sampleSize], # A very simple query
-            [data, 2, 1, False, False, False, False, False, sampleSize],
-            [data, 3, 1, True, False, False, False, False, sampleSize],
+            [data, 3, 0, 1, False, False, False, False, False, sampleSize],
+            [data, 3, 1, 1, False, True, False, False, False, sampleSize], # A very simple query
+            [data, 3, 2, 1, False, False, False, False, False, sampleSize],
+            [data, 3, 3, 1, True, False, False, False, False, sampleSize],
 
-            [data, 0, 2, False, True, False, False, False, sampleSize], # A simple query
-            [data, 1, 2, True, True, False, False, False, sampleSize], # A simple query
-            [data, 2, 2, True, False, False, False, False, sampleSize], # A simple query
-            [data, 3, 2, False, False, False, False, False, sampleSize], # A complex query
+            [data, 3, 0, 2, False, True, False, False, False, sampleSize], # A simple query
+            [data, 3, 1, 2, True, True, False, False, False, sampleSize], # A simple query
+            [data, 3, 2, 2, True, False, False, False, False, sampleSize], # A simple query
+            [data, 3, 3, 2, False, False, False, False, False, sampleSize], # A complex query
             
-            [data, 0, 3, False, False, False, False, False, sampleSize], # A very weird query
-            [data, 1, 3, False, True, False, False, False, sampleSize], # A very weird query
-            [data, 2, 3, False, False, False, False, False, sampleSize], # A very weird query
-            [data, 3, 3, True, False, False, False, False, sampleSize],  # A very weird query
+            [data, 3, 0, 3, False, False, False, False, False, sampleSize], # A very weird query
+            [data, 3, 1, 3, False, True, False, False, False, sampleSize], # A very weird query
+            [data, 3, 2, 3, False, False, False, False, False, sampleSize], # A very weird query
+            [data, 3, 3, 3, True, False, False, False, False, sampleSize],  # A very weird query
 
-            [data, 0, 0, True, False, False, False, True, sampleSize],
-            [data, 1, 0, False, False, False, True, False, sampleSize],
-            [data, 2, 0, False, False, True, False, False, sampleSize],
-            [data, 3, 0, True, True, True, True, True, sampleSize],
+            [data, 3, 0, 0, True, False, False, False, True, sampleSize],
+            [data, 3, 1, 0, False, False, False, True, False, sampleSize],
+            [data, 3, 2, 0, False, False, True, False, False, sampleSize],
+            [data, 3, 3, 0, True, True, True, True, True, sampleSize],
 
-            [data, 0, 0, True, False, False, False, True, sampleSize],
-            [data, 0, 1, False, False, False, True, False, sampleSize],
-            [data, 0, 2, False, False, True, False, False, sampleSize],
-            [data, 0, 3, True, True, True, True, True, sampleSize]
+            [data, 3, 0, 0, True, False, False, False, True, sampleSize],
+            [data, 3, 0, 1, False, False, False, True, False, sampleSize],
+            [data, 3, 0, 2, False, False, True, False, False, sampleSize],
+            [data, 3, 0, 3, True, True, True, True, True, sampleSize],
+
+            [data, 1, 0, 0, True, False, False, False, True, sampleSize],
+            [data, 3, 0, 1, False, False, False, True, False, sampleSize],
+            [data, 2, 0, 2, False, False, True, False, False, sampleSize],
+            [data, 3, 0, 3, True, True, True, True, True, sampleSize]
 
         ])
 
     
     # The real value in this test is not what the assert statements
     # cover, but the error message of when it crashes
-    def testRelaXQuery(self,data,numJoins,numClauses,orderBy,groupBy,antiJoin,outerJoin,semiJoin,sampleSize):        
+    def testRelaXQuery(self,data,projectedColumns,numJoins,numClauses,orderBy,groupBy,antiJoin,outerJoin,semiJoin,sampleSize):        
         data['params']['attrib_dict'] = {
+            "projectedColumns": projectedColumns,
             "numClauses": numClauses,
             "orderBy": orderBy,
             "groupBy": groupBy,
@@ -95,7 +101,7 @@ class AutogenerateQueryTest(unittest.TestCase):
             data['correct_answers']['RelaXEditor'] = ''
 
             # Generates the question
-            autogenerate(data, outputGuarantee=False)
+            autogenerate(data, outputGuaranteed=False)
 
             # Asserts
             self.assertGreater(len(data['params']['db_initialize_create']), 0)

@@ -2,6 +2,7 @@ import json
 import chevron
 import lxml.html
 import html
+import random
 import prairielearn as pl
 
 import RelaXElementSharedLibrary.RelaXCustomGrader as grader
@@ -25,18 +26,11 @@ def generate(element_html, data):
 def prepare(element_html, data):
     data['params']['grader'] = 'RelaXEditor'
 
+    data['params']['db_initialize'] = ''
     data['params']['db_initialize_create'] = ''
     data['params']['db_initialize_create_backend'] = ''
     element = lxml.html.fragment_fromstring(element_html)
     
-    # If there is a database file, read and loads its contents
-    databaseFilePath = pl.get_string_attrib(element, 'database', '')
-    database = ''
-    if databaseFilePath:
-        with open(databaseFilePath,"r") as databaseFile:
-           database += databaseFile.read()
-    
-    data['params']['database'] = database    
     
     # parameter whether to show feedback or not
     feedback = pl.get_boolean_attrib(element, 'feedback', False)
@@ -53,8 +47,6 @@ def prepare(element_html, data):
     correctAnswer = lxml.html.fromstring(pl.inner_html(element[0])).text_content()
     data['correct_answers']['RelaXEditor'] = correctAnswer
 
-
-
     # Grabs the path to the database file
     # Only used in static questions
     databaseFilePath = pl.get_string_attrib(element, 'database', '')
@@ -70,7 +62,6 @@ def prepare(element_html, data):
         'expectedOutput' : pl.get_boolean_attrib(element, "expectedoutput", True)
     }
     # If there is a database file, read and loads its contents
-    data['params']['db_initialize'] = ''
     if databaseFilePath:
         with open(databaseFilePath,"r") as databaseFile:
            data['params']['db_initialize'] = databaseFile.read()
@@ -80,11 +71,9 @@ def prepare(element_html, data):
     
     # Loads quesiton parameters into data
     #
-
-
-
     if questionRandom:
         attribDict = {
+            "projectedColumns": pl.get_integer_attrib(element, "projectedcolumns", random.randint(2,5)),
             "numClauses": pl.get_integer_attrib(element, "numclauses", 1),
             "orderBy": pl.get_boolean_attrib(element, "orderby", False),
             "groupBy": pl.get_boolean_attrib(element, "groupby", False),
@@ -94,14 +83,14 @@ def prepare(element_html, data):
             "outerJoin": pl.get_boolean_attrib(element, "outerjoin", False)
         }
         data['params']['attrib_dict'] = attribDict
-        data['params']['outputGuarantee'] = pl.get_boolean_attrib(element, "outputguarantee", True)
+        data['params']['outputGuarantee'] = pl.get_boolean_attrib(element, "outputguaranteed", True)
 
     # If if is a randomised question, generate the question
     if questionRandom:
-        autogen.autogenerate(data)
+        autogen.autogenerate(data, pl.get_boolean_attrib(element, "outputguaranteed", True))
         database = data['params']['db_initialize_create']
-        # print(database)
-        data['params']['database'] = database
+        data['params']['db_initialize'] = database
+
 
     if not pl.get_boolean_attrib(element, "expectedoutput", True):
         data['params']['html_params']['expectedOutput'] = ''        
@@ -132,7 +121,7 @@ def render(element_html, data):
             data['params']['questionText'] = ""
         # setting the paramaters
         html_params = {
-            'database' : data['params']['database'],
+            'database' : data['params']['db_initialize'],
             'questionText' : data['params']['questionText'],
             'previousSubmission' : submittedAnswer,
             'expectedOutput' : data['params']['html_params']['expectedOutput']
