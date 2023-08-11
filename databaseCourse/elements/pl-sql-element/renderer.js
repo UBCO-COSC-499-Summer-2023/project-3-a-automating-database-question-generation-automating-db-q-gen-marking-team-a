@@ -2,8 +2,12 @@
 
 $(document).ready(function () {
 
+    var expectedOutputButton;
+    var expectedOutputTable;
     // Function to load the required database for the question
     window.onload = function () {
+        expectedOutputButton = $(".expectedOutputButton");
+        expectedOutputTable = $(".expectedOutputTable")[0];
         dbInitElm = $("#db-init");
         // turns on foreign keys
         execute("PRAGMA foreign_keys = ON;");
@@ -13,7 +17,6 @@ $(document).ready(function () {
         dbInitElm.remove();
 
         updateCodeMirrorPreviousSubmission();
-
     }
 
     /*
@@ -50,6 +53,8 @@ $(document).ready(function () {
 
     const tables = [];
 
+    var canInteract = false;
+
     // Add syntax highlighting to the textarea
     // Also transforms the textarea into a CodeMirror editor
     var editor = CodeMirror.fromTextArea(commandsElm[0], {
@@ -60,11 +65,17 @@ $(document).ready(function () {
         lineNumbers: true,
         matchBrackets: true,
         autofocus: true,
+        readOnly: !canInteract,
         extraKeys: {
             "Ctrl-Enter": executeEditorContents,
         }
         
     });
+
+    function enableEditorInteraction() {
+        canInteract = true;
+        editor.setOption("readOnly", false);
+    }
 
     // Load previous submission into editor
     
@@ -99,6 +110,33 @@ $(document).ready(function () {
 
         return $('body').html();
     }
+        
+    
+    // Function that applies onClick functionality for specified targets
+    function applyOnClick() {
+        var regex = new RegExp('<click>(.*?)</click>', 'g');
+
+        // Find all text nodes in the body (not including empty text nodes)
+        var textNodes = $('body').find('*').addBack().contents().filter(function () {
+            return this.nodeType === 3 && this.nodeValue.trim() !== '';
+        });
+
+        // Iterate over the text nodes and apply tags to the matched strings
+        textNodes.each(function () {
+
+            var node = this;
+            var replacedText = node.nodeValue.replace(regex, function (match, capturedText) {
+                return `<span  style="cursor: pointer;" onclick="updateCodeMirror('${capturedText}')">${capturedText}</span>`;
+            });
+            $(node).replaceWith(replacedText);
+        });
+
+        return $('body').html();
+    }
+
+
+    // Apply onclick functionality to text in question string
+    var onClickFormatting = applyOnClick();
 
     // Function that applies onClick functionality for specified targets
     function applyOnClick() {
@@ -130,6 +168,7 @@ $(document).ready(function () {
     var italicWords = applyHTMLTagsToWords('i');
     var emphWords = applyHTMLTagsToWords('em');
     var strongWords = applyHTMLTagsToWords('strong');
+    
 
     /*
     //
@@ -363,6 +402,7 @@ $(document).ready(function () {
             if (editor.getValue() == "") {
                 if (outputElm.text() != "Database initialized.") {
                     outputElm.text("Database initialized.");
+                    enableEditorInteraction();
                 }
             } else {
                 outputElm.append(output.map(item => (item !== undefined ? item : "") + "<br>").join(""));
@@ -394,6 +434,11 @@ $(document).ready(function () {
         var doc = editor.getDoc(); //gets the information of the editor
         doc.setValue(previousSubmissionElm.text().trim());
         previousSubmissionElm.remove();
+    }
+    
+    // helper function to allow for HTML calling.
+    window.updateCodeMirror = function (data) {
+        updateCodeMirror(data);
     }
 
     /*
@@ -552,6 +597,16 @@ $(document).ready(function () {
 
         $tbody.empty();
         rows.forEach(row => $tbody.append(row));
+    }
+
+    window.togglePreview = function(){
+        if (expectedOutputTable.style.display === "none"){
+            expectedOutputTable.style.display = "table"
+            expectedOutputButton[0].innerText = "Hide Expected Output"
+        }else{
+            expectedOutputTable.style.display = "none"
+            expectedOutputButton[0].innerText = "Show Expected Output"
+        }
     }
 
 
