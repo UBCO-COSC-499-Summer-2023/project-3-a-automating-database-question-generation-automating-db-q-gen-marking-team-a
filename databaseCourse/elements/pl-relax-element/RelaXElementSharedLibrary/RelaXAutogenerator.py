@@ -188,10 +188,14 @@ class Question:
         self.offLimitsTable = None
 
         graph = dataset.toGraph()
-#        subgraph = randomSubgraph(graph=graph, n=self.numJoins)
+        # subgraph = randomSubgraph(graph=graph, n=self.numJoins)
         
+        # List of tables that are joined together in needed order
         self.JoinList = []
 
+
+        # checks if specific type of join, else loops through natural join to satisfy numJoins
+        # Specific join queries (anti, semi, outer) do not have more than one join to ensure output
         if self.antiJoinBool:
             self.antiJoinGeneration(subgraph=graph,dataset=dataset)
         elif self.semiJoinBool:
@@ -214,11 +218,14 @@ class Question:
         # usableColumns are all Columns from joined graphs.
         usableColumns = []
         for table in self.JoinList:
-            #print(F"Hello form Useable Columns: {table}")
+
+            # ensures that num will be unique for each table
             num = rand.randint(0, len(dataset.tableSet[table].columns)-1)
             while num in numArray:
                 num = rand.randint(0, len(dataset.tableSet[table].columns))
             numArray.append(num)
+
+            # for loop to fill usable and needed columns
             i = 0
             for column in dataset.tableSet[table].columns:
                 usableColumns.append(dataset.tableSet[table].columns[column]['name'])
