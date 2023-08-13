@@ -2,13 +2,18 @@
 <div id="question">
     {{questionText}}
 </div>
+<br>
 
+    {{expectedOutput}}
+
+<div style="text-align: center;"> 
+    <b>Database Tables</b> | Hint: Hover to dropdown, click to add to editor.
+</div>
 <div id="database" value="{{database}}" class="flex-container">
-
 </div>
 
 <div id="relax_input">
-    
+
 
     {{! this is where the relax editor will be placed}}
     <div class="editor-base">
@@ -63,10 +68,15 @@
     <div id="execute" type="button" class="btn btn-primary exec-button selection">Execute</div>
     <div id="outputContainer">
         <div id="error" class="error"></div>
-        <div id="outputContainer" class="flex-container">
-            <div id="tree"></div>   
+        <div id="outputContainer">
+            <div id="tree" class="ra-tree"></div>   
             <div id="output" class="output-tables"></div>
         </div>
     </div>
-</div> 
+</div>
+
+    <div id="previousSubmission">
+        {{previousSubmission}}
+    </div>
+ 
 <!-- End of File -->

@@ -45,11 +45,13 @@ def prepare(element_html, data):
     databaseFilePath = pl.get_string_attrib(element, 'database', '')
 
     # If there is a database file, read and loads its contents
-    data['params']['db_initialize'] = ''
+    data['params']['db_initialize_create'] = ''
     if databaseFilePath:
         with open(databaseFilePath,"r") as databaseFile:
-           data['params']['db_initialize'] = databaseFile.read()
+           data['params']['db_initialize_create'] = databaseFile.read()
         
+    data['params']['db_initialize_insert_frontend'] = ''
+    data['params']['db_initialize_insert_backend'] = ''
 
 
     # Loads quesiton parameters into data
@@ -61,22 +63,78 @@ def prepare(element_html, data):
     # parameter if their string is uppercase. Hence all lowercase
     questionRandom = pl.get_boolean_attrib(element, 'random', False)
     questionType = pl.get_string_attrib(element, 'questiontype', 'query')
-    questionDifficulty = pl.get_string_attrib(element, 'difficulty', 'normal')
+    questionDifficulty = pl.get_string_attrib(element, 'difficulty', None)
     questionMaxGrade = pl.get_float_attrib(element, 'maxgrade', 1)
     questionMarkerFeedback = pl.get_boolean_attrib(element, 'markerfeedback', False)
+    questionExpectedPreview = pl.get_boolean_attrib(element, 'expectedoutput', False)
+    questionGuaranteeOutput = pl.get_boolean_attrib(element, 'guaranteeoutput', True)
+
+    questionColumns = pl.get_integer_attrib(element, 'columns', 5)
+    questionJoins = pl.get_integer_attrib(element, 'joins', 0)
+
+    questionPrimaryKeys = pl.get_integer_attrib(element, 'primarykeys', 1)
+    questionIsNotNull = pl.get_integer_attrib(element, 'isnotnull', None)
+    questionIsUnique = pl.get_integer_attrib(element, 'isunique', None)
+    questionIsOnUpdateCascade = pl.get_integer_attrib(element, 'isonupdatecascade', None)
+    questionIsOnDeleteSetNull = pl.get_integer_attrib(element, 'isondeletesetnull', None)
+
+    questionConditionals = pl.get_integer_attrib(element, 'conditionals', 0)
+    questionUseSubquery = pl.get_boolean_attrib(element, 'usesubquery', False)
+
+    questionColumnsToSelect = pl.get_integer_attrib(element, "columnstoselect", 0)
+    questionOrderBy = pl.get_integer_attrib(element, "orderby", 0)
+    questionGroupBy = pl.get_integer_attrib(element, "groupby", 0)
+    questionHaving = pl.get_integer_attrib(element, 'having', 0)
+    questionLimit = pl.get_integer_attrib(element, 'limit', 0)
+    questionWith = pl.get_integer_attrib(element, 'with', 0)
+    questionIsDistinct = pl.get_boolean_attrib(element, 'isdistinct', False)
+    questionUseQueryFunctions = pl.get_boolean_attrib(element, 'usequeryfunctions', False)
+
+    # Notice that there is no "LIKE" clause included.
+    # This is becuase SQLite does not have a LIKE clause,
+    # rather it uses "WHERE $col GLOB $val". While this
+    # is similar, testing on a 'gotcha' between SQL and
+    # SQLite is a poor idea
 
     data['params']['html_params'] = {
         'random': questionRandom,
         'questionType': questionType,
         'difficulty': questionDifficulty,
         'maxGrade': questionMaxGrade,
-        'markerFeedback': questionMarkerFeedback
+        'markerFeedback': questionMarkerFeedback,
+        'columns': questionColumns,
+        'joins': questionJoins,
+        'expectedOutput': questionExpectedPreview,
+        'guaranteeOutput': questionGuaranteeOutput
     }
 
+    data['params']['html_table_clauses'] = {
+        'primaryKeys': questionPrimaryKeys,
+        'isNotNull': questionIsNotNull,
+        'isUnique': questionIsUnique,
+        'isOnUpdateCascade': questionIsOnUpdateCascade,
+        'isOnDeleteSetNull': questionIsOnDeleteSetNull
+    }
+    
+    data['params']['html_query_clauses'] = {
+        'conditionals': questionConditionals,
+        'useSubquery': questionUseSubquery,
+        'columnsToSelect': questionColumnsToSelect,
+        'orderBy': questionOrderBy,
+        'groupBy': questionGroupBy,
+        'having': questionHaving,
+        'limit': questionLimit,
+        'with': questionWith,
+        'isDistinct': questionIsDistinct,
+        'useQueryFunctions': questionUseQueryFunctions
+    }
+
+    data['params']['feedback']=""
+
     # If if is a randomised question, generate the question
-    # data['params']['html_params']['random']
     if questionRandom:
         autogen.autogenerate(data)
+
 
 
 # Renders the element
@@ -97,11 +155,24 @@ def render(element_html, data):
     
     # Grabs the correct answer from the data variable
     correctAnswer = data['correct_answers']['SQLEditor']
+
+    # Whether to show feedback or not
+    giveFeedback = data['params']['html_params']['markerFeedback']
+
+    # feedback
+    feedback = data['params']['feedback']
     
     # Grabs the string to initialize the database.
     # The join command turns an array of strings into a single string.
     # The get returns the entry if it exists or an empty string otherwise.
-    dbInit = ''.join(data['params'].get('db_initialize', ''))
+    dbInit = ''.join(data['params'].get('db_initialize_create', ''))
+    dbInit += ''.join(data['params'].get('db_initialize_insert_frontend', ''))
+
+    
+    # Obtains expected feedback
+    expectedOutput = ''
+    if data['params']['html_params']['expectedOutput']:
+        expectedOutput = data['params'].get('expectedOutput', '')
      
     # This renders the question into PL
     if data['panel'] == 'question':  
@@ -109,7 +180,9 @@ def render(element_html, data):
         html_params = {
             'question': True,
             'db_initialize': dbInit,
-            'questionString': data['params'].get('questionString', '')
+            'questionString': data['params'].get('questionString', ''),
+            'expectedOutput': expectedOutput,
+            'previousSubmission': submittedAnswer
         }
     
         with open('pl-sql-element.mustache', 'r', encoding='utf-8') as f:
@@ -117,11 +190,18 @@ def render(element_html, data):
         
     # This renders the users submitted answer into the "Submitted answer" box in PL
     elif data['panel'] == 'submission':
-
+        if giveFeedback:
+            try:
+                feedback = data['partial_scores']['SQLEditor'].get('feedback', '')
+            except KeyError:
+                feedback = ''
+        else:
+            feedback = "Your instructor has disabled feedback for this question."
         
         html_params = {
             'submission': True,
-            'studentSubmission': submittedAnswer
+            'studentSubmission': submittedAnswer,
+            'feedback':feedback
         }
         
 
@@ -171,7 +251,7 @@ def grade(element_html, data):
     data['partial_scores']['SQLEditor'] = {
         'score': studentScore,
         'weight': 1,
-        'feedback': "",
+        'feedback': data['params']['feedback'],
         'marker_feedback': ""
     }
 

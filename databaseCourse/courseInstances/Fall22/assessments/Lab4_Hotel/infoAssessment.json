@@ -1,0 +1,22 @@
+{
+    "uuid": "b4ea7f4e-e98e-489b-96d6-bd22a1704329",
+    "type": "Homework",
+    "title": "Lab 4 - Hotel Reservation System",
+    "set": "Practice Quiz",
+    "number": "1",
+    "allowAccess": [
+        {
+            "credit": 100
+        }
+    ],
+    "zones": [
+        {
+            "questions": [
+                {
+                    "id": "9_er_design/Hotel",
+                    "points": 10
+                }
+            ]
+        }
+    ]
+}

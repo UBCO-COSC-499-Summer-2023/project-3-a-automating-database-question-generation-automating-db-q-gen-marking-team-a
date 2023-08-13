@@ -2,8 +2,12 @@
 
 $(document).ready(function () {
 
+    var expectedOutputButton;
+    var expectedOutputTable;
     // Function to load the required database for the question
     window.onload = function () {
+        expectedOutputButton = $(".expectedOutputButton");
+        expectedOutputTable = $(".expectedOutputTable")[0];
         dbInitElm = $("#db-init");
         // turns on foreign keys
         execute("PRAGMA foreign_keys = ON;");
@@ -11,6 +15,8 @@ $(document).ready(function () {
             execute(dbInitElm.text());
         }
         dbInitElm.remove();
+
+        updateCodeMirrorPreviousSubmission();
     }
 
     /*
@@ -43,7 +49,11 @@ $(document).ready(function () {
 
     const dbSchemaElm = $("#db-schema");
 
+    previousSubmissionElm = $("#previousSubmission");
+
     const tables = [];
+
+    var canInteract = false;
 
     // Add syntax highlighting to the textarea
     // Also transforms the textarea into a CodeMirror editor
@@ -55,10 +65,84 @@ $(document).ready(function () {
         lineNumbers: true,
         matchBrackets: true,
         autofocus: true,
+        readOnly: !canInteract,
         extraKeys: {
             "Ctrl-Enter": executeEditorContents,
         }
+        
     });
+
+    function enableEditorInteraction() {
+        canInteract = true;
+        editor.setOption("readOnly", false);
+    }
+
+    // Load previous submission into editor
+    
+    
+
+    /*
+    //
+    // Functions regarding rendering the Question correctly -------------------------------------------------------------------
+    // 
+    */
+    function applyHTMLTagsToWords(tagName) {
+
+        // Create a regular expression to match the opening and closing tags
+        // (.*?) matches everything between the tags
+        // g enables global search
+        var regex = new RegExp('<' + tagName + '>(.*?)</' + tagName + '>', 'g');
+
+        // Find all text nodes in the body (not including empty text nodes)
+        var textNodes = $('body').find('*').addBack().contents().filter(function () {
+            return this.nodeType === 3 && this.nodeValue.trim() !== '';
+        });
+
+        // Iterate over the text nodes and apply tags to the matched strings
+        textNodes.each(function () {
+
+            var node = this;
+            var replacedText = node.nodeValue.replace(regex, function (match, capturedText) {
+                return '<' + tagName + '>' + capturedText + '</' + tagName + '>';
+            });
+            $(node).replaceWith(replacedText);
+        });
+
+        return $('body').html();
+    }
+        
+    // Function that applies onClick functionality for specified targets
+    function applyOnClick() {
+        var regex = new RegExp('<click>(.*?)</click>', 'g');
+
+        // Find all text nodes in the body (not including empty text nodes)
+        var textNodes = $('body').find('*').addBack().contents().filter(function () {
+            return this.nodeType === 3 && this.nodeValue.trim() !== '';
+        });
+
+        // Iterate over the text nodes and apply tags to the matched strings
+        textNodes.each(function () {
+
+            var node = this;
+            var replacedText = node.nodeValue.replace(regex, function (match, capturedText) {
+                newText = capturedText.replace(/'/g, "\\'"); // ensures that all single quotes are rendered properly
+                returnedTest = `<span style="cursor: pointer;" onclick="updateCodeMirror('${newText}')">${capturedText}</span>`;
+                return returnedTest            });
+            $(node).replaceWith(replacedText);
+        });
+
+        return $('body').html();
+    }
+
+
+    // Apply Functionality
+    var onClickFormatting = applyOnClick()
+    // Apply HTML tags to certain parts of strings
+    var boldedWords = applyHTMLTagsToWords('b');
+    var italicWords = applyHTMLTagsToWords('i');
+    var emphWords = applyHTMLTagsToWords('em');
+    var strongWords = applyHTMLTagsToWords('strong');
+    
 
     /*
     //
@@ -126,6 +210,16 @@ $(document).ready(function () {
             }
         }
 
+        // adds headers to schema table
+        let field = `<div style="text-align: center; border: 1px solid white; padding: 0.2em; display: flex; justify-content: space-around;" class="submenu" id="schema-${tableName}">`;
+        let colName = `<span style=" font-weight: bold; width: ${maxColNameLength}ch;">Columns</span>`;
+        let colType = `<span style=" font-weight: bold; width: ${maxColTypeLength}ch;">Types</span>`;
+        let colKey = `<span style=" font-weight: bold; width: ${maxColKeyLength}ch;">Keys</span>`;
+
+        field += colName + colType + colKey + '</div>';
+
+        schemaView += field;
+
         // populates each row of scehma table
         for (const row of schemaFields[0].values) {
 
@@ -182,52 +276,6 @@ $(document).ready(function () {
         return foreignKeys;
 
     }
-
-    /*
-    //
-    // Functions regarding the dropdowns' visbility ---------------------------------------------------------------------------
-    // modeled after the dropdowns found in autoEr
-    */
-
-    // REFACTORED USING CSS
-    // CAN DELETE IF NOT NEEDED
-
-    /*
-
-    // function to show the dropdown of the selected schema
-    window.openMenu = function (tableName) {
-        // so that only the dropdown of one schema is open at a time
-        closeMenus();
-        let schemaDropdownId = 'schema-' + tableName.id.slice(4)
-        document.getElementById(schemaDropdownId).classList.toggle('show');
-    }
-
-    // function to close any and all dropdowns that are showing
-    window.closeMenus = function () {
-        let allDropDownsClass = 'dropdown-content'
-        let dropdowns = document.getElementsByClassName(allDropDownsClass);
-        for (let i = 0; i < dropdowns.length; i++) {
-            if (dropdowns[i].classList.contains('show')) {
-                dropdowns[i].classList.remove('show')
-            }
-        }
-    }
-
-
-    // close the dropdown when the mouse moves away from the button and the dropdown menu
-    
-    window.addEventListener('mouseleave', function (event) {
-        const target = event.target;
-        const relatedTarget = event.relatedTarget;
-        console.log(target);
-        console.log(relatedTarget);
-        if (!target.classList.contains('dropbtn') || !relatedTarget.classList.contains('dropdown-content')) {
-            closeMenus();
-        }
-    });
-
-    */
-
 
     /*
     //
@@ -328,6 +376,7 @@ $(document).ready(function () {
             if (editor.getValue() == "") {
                 if (outputElm.text() != "Database initialized.") {
                     outputElm.text("Database initialized.");
+                    enableEditorInteraction();
                 }
             } else {
                 outputElm.append(output.map(item => (item !== undefined ? item : "") + "<br>").join(""));
@@ -336,7 +385,7 @@ $(document).ready(function () {
     }
 
     // function that allows you to click the table and add it to editor
-    window.addTableToEditor = function (tableName){
+    window.addTableToEditor = function (tableName) {
         updateCodeMirror(`${tableName}`);
     }
 
@@ -352,6 +401,18 @@ $(document).ready(function () {
         doc.replaceRange(data, doc.getCursor()); // adds data at position of cursor
         editor.focus();
         editor.setCursor(doc.getCursor());
+    }
+
+    // insert previous submission into editor
+    function updateCodeMirrorPreviousSubmission() {
+        var doc = editor.getDoc(); //gets the information of the editor
+        doc.setValue(previousSubmissionElm.text().trim());
+        previousSubmissionElm.remove();
+    }
+    
+    // helper function to allow for HTML calling.
+    window.updateCodeMirror = function (data) {
+        updateCodeMirror(data);
     }
 
     /*
@@ -424,7 +485,7 @@ $(document).ready(function () {
     function createTableRows(rows) {
 
         let numRows = rows.length;
-        let limitRows = 10000;
+        let limitRows = 200;
 
         // limit the number of rows being created in DOM for performance
         if (numRows > limitRows) {
@@ -466,17 +527,28 @@ $(document).ready(function () {
         const rows = $tbody.find("tr").toArray();
         const currentDirection = $table.data("sort-direction");
         let direction;
+        let arrow;
 
         if (currentDirection === "asc" && $table.data("sort-column") === column) {
             // First click on the same column, reverse the sort direction
             direction = "desc";
+            arrow = $('<i class="fa fa-angle-down"></i>');
         } else {
             // First click on a column or different column, sort in ascending order
             direction = "asc";
+            arrow = $('<i class="fa fa-angle-up"></i>');
         }
 
         $table.data("sort-direction", direction);
         $table.data("sort-column", column);
+
+        // Remove any existing arrows from all header cells
+        $table.find("th svg, th span").remove();
+
+        // add arrow to the element th in the direction it should be
+        const arrowWithSpace = $('<span>&nbsp;</span>').append(arrow);
+        $(element).closest('th').append(arrowWithSpace);
+
 
         // sorting function
         rows.sort((a, b) => {
@@ -499,6 +571,16 @@ $(document).ready(function () {
 
         $tbody.empty();
         rows.forEach(row => $tbody.append(row));
+    }
+
+    window.togglePreview = function(){
+        if (expectedOutputTable.style.display === "none"){
+            expectedOutputTable.style.display = "table"
+            expectedOutputButton[0].innerText = "Hide Expected Output"
+        }else{
+            expectedOutputTable.style.display = "none"
+            expectedOutputButton[0].innerText = "Show Expected Output"
+        }
     }
 
 

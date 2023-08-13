@@ -9,7 +9,7 @@ Python libraries require an `__init__.py` file to be recognized as a library. Th
 
 Text files include all the .txt files one directory level down, so all files in any of the following folders:
 - lab2Databases
-- lab3Databases
+- lab3Databases  
 Such text files are used to hold DDL for static lab questions. These files are read during `pl-sql-element.py`'s `prepare()` function
 
 
@@ -40,7 +40,6 @@ This function is called by `generateCreate()` to set the solution.
 
 ### generateInsert(data, difficulty)
 
-This function creates a random question for the insert-style question. 
 Based on the difficulty and specified parameters of the question, it will generate a table appropriately. It will then generate rows for each table.  
 From the primary table, one row will be removed; this row of data is used to create the question string and will be the rows the user will insert into the table. By removing it from the primary table, it is guaranteed that inserting it will not violate and foreign key constraints.  
 The question text is then generated.  
@@ -233,4 +232,79 @@ This function returns the HTML table corresponding to the expected output of the
 It obtains the SQL commands to create the table and to populate it with the appropriate data. It then establishes the connection to the database and runs the command. It then obtains the correct solution and runs that as a command on the database. The result are then stitched together with HTML tags to create the string of a table which is returned.  
 The number of rows displayed is limited. If too many rows were to be displayed, then PrairieLearn's renderer will break and the unrendered HTML will spill onto the page.  
 This function is called during `generateQuery()` to obtain the expected output.  
+
+
+## SQLCustomGrader
+
+Weights:
+
+- `outputScoreWeight`: The percent of marks given based on output matching.
+  - `orderWeight`: Percent of marks given for having rows in the correct order.
+  - `rowWeight`: Percent of marks given for having correct number of rows.
+  - `colWeight`: Percent of marks given for having correct number and match of columns.
+  - `valueMatchWeight`: Percent of marks given for having correct match of values.
+- `inputScoreWeight`: The percent of marks given based on string matching the submitted query string vs. the correct query string.
+  - `threshold`: When input string matching, this is the minimum percent of similarity required between strings to receive 100%.
+
+* To change the weight of each factor requires going into the grader file and changing their respective values, which is not uniform for all question types
+
+Extra Note on the input string matching:
+The custom grader compares the student's supplied answer against a pre-defined correct solution. It compares the similarity and grants a grade proportionally. If the student gets above some threshold, whose default value is 0.75 or 75%, they are given full marks on the question. Similarities below 0.75 are mapped as such: (0, 0.75) -> (0, 1).
+
+
+Cases for input and output grading:
+- Standard:
+    - outputScoreWeight = 0.85
+    - inputScoreWeight = 0.15
+
+- Perfect output matching (student gets 100% on output matching):
+    - outputScoreWeight = 1
+    - inputScoreWeight = 0
+
+- Expected Output is empty (autogenerator has been modified to limit/eliminate these):
+    - outputScoreWeight = 0
+    - inputScoreWeight = 1
+
+- Syntax error in student code that prevents it from being executed:
+    - outputScoreWeight = 0.15 ; penalizes a little bit for the syntax error
+    - inputScoreWeight = 0.85
+
+
+Functions Legend:
+- getExpectedAndActual_Results(): 
+    - where "_" is one of the 5 question types 
+    - the functions where database(s) is/are called and we get the results that we need to do the appropriate output-matching for each type
+
+- grade_Question():
+    - where "_" is one of the 5 question types 
+    - these usually call multiple different helper methods that carry out different aspects of our output-matching and then spits out a final grade for the question's output-matching portion of the grading
+    - contain adjustable weighting of different aspects of output-matching such as # of rows, col.'s, etc.
+
+- _Match():
+    - previously mentioned helper functions where "_" is a factor taken into consideration for any of the question types, ex. valueMatch()
+    - give a grade for the outputmatching with regards to the particular factor, being adjusted and used in conjunction with other factors in a grade_Question() function
+
+
+Grading Process by Question Type:
+- QUERY
+    - uses one database
+    - compares the query results
+
+- CREATE
+    - uses 2 databases
+    - compares the metadata of the db created by the solution code with that of the submitted code
+
+- UPDATE
+    - uses 2 databases
+    - compares (the rows which are in the db after running the solution, but not in the original database) and (the rows which are in the db after running the submitted answer, but not in the original database)
+
+- DELETE
+    - uses 2 databases
+    - compares (the rows which are in the db after running the solution, but not in the original database) and (the rows which are in the db after running the submitted answer, but not in the original database)
+
+- INSERT
+    - uses 2 databases
+    - compares the db with the rows inserted by the solution with the db with rows inserted by the submitted answer
+
+* Code is documented in the grader file itself with more details
 

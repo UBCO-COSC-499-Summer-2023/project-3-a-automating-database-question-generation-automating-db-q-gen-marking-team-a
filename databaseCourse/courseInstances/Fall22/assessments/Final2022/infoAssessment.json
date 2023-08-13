@@ -15,7 +15,7 @@
         {
             "questions": [
                 {
-                    "id": "Restaurant",
+                    "id": "9_er_design/Restaurant",
                     "triesPerVariant": 5,
                     "points": [10,10,10,10,10]
                 }

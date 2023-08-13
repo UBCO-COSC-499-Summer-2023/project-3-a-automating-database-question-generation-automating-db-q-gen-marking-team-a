@@ -3,17 +3,18 @@ $(document).ready(function () {
     const executeRelalg = relalg_bundle.executeRelalg;
     const Relation = relalg_bundle.Relation;
 
+    
+
     // database setup
     const dbSchema = document.getElementById("database");
     const dbValue = dbSchema.getAttribute("value");
     const dbArray = dbValue.split(";");
     const dataset = [dbArray.length];
-    for (var i = 0; i < dbArray.length; i++){   
+    for (var i = 0; i < dbArray.length; i++) {
         dataset[i] = executeRelalg(dbArray.at(i), {});
     }
     // Creating dropbtn (Schema) tables
-    for(var i = 0; i < dataset.length; i++) {
-
+    for (var i = 0; i < dataset.length; i++) {
         dbSchema.innerHTML += createSchemaTables(dataset.at(i)._schema)
     }
 
@@ -40,14 +41,89 @@ $(document).ready(function () {
     var errorElm = $("#error");
     var execBtn = $("#execute");
     execBtn.on("click", executeEditorContents);
+
+    // setup editor with previous submission
     
+
 
 
     //* FUNCTION DEFINITIONS
+
+    // Function that renders HTML tags in string nodes found in body
+    function applyHTMLTagsToWords(tagName) {
+
+        // Create a regular expression to match the opening and closing tags
+        // (.*?) matches everything between the tags
+        // g enables global search
+        var regex = new RegExp('<' + tagName + '>(.*?)</' + tagName + '>', 'g');
+
+        // Find all text nodes in the body (not including empty text nodes)
+        var textNodes = $('body').find('*').addBack().contents().filter(function () {
+            return this.nodeType === 3 && this.nodeValue.trim() !== '';
+        });
+
+        // Iterate over the text nodes and apply tags to the matched strings
+        textNodes.each(function () {
+
+            var node = this;
+            var replacedText = node.nodeValue.replace(regex, function (match, capturedText) {
+                return '<' + tagName + '>' + capturedText + '</' + tagName + '>';
+            });
+            $(node).replaceWith(replacedText);
+        });
+
+        return $('body').html();
+    }
     
+    
+    // Function that applies onClick functionality for specified targets
+    function applyOnClick() {
+        var regex = new RegExp('<click>(.*?)</click>', 'g');
+
+        // Find all text nodes in the body (not including empty text nodes)
+        var textNodes = $('body').find('*').addBack().contents().filter(function () {
+            return this.nodeType === 3 && this.nodeValue.trim() !== '';
+        });
+
+        // Iterate over the text nodes and apply tags to the matched strings
+        textNodes.each(function () {
+
+            var node = this;
+            var replacedText = node.nodeValue.replace(regex, function (match, capturedText) {
+                newText = capturedText.replace(/'/g, "\\'"); // ensures that all single quotes are rendered properly
+                returnedTest = `<span style="cursor: pointer;" onclick="updateCodeMirror('${newText}')">${capturedText}</span>`;
+                return returnedTest
+            });
+            $(node).replaceWith(replacedText);
+        });
+
+        return $('body').html();
+    }
+
+
+    // Apply Functionality
+    var onClickFormatting = applyOnClick()
+    // Apply HTML tags to certain parts of strings
+    var boldedWords = applyHTMLTagsToWords('b');
+    var italicWords = applyHTMLTagsToWords('i');
+    var emphWords = applyHTMLTagsToWords('em');
+    var strongWords = applyHTMLTagsToWords('strong');
+
+    // element for previous submission div
+    var previousSubmissionElm = $("#previousSubmission");
+
+    // insert previous submission into editor
+    function updateCodeMirrorPreviousSubmission() {
+        var doc = editor.getDoc(); //gets the information of the editor
+        doc.setValue(previousSubmissionElm.text().trim());
+        previousSubmissionElm.remove();
+    }
+    // calls update code mirror with previous submission
+    updateCodeMirrorPreviousSubmission();
+
     //* FUNCTIONS - USER ACTIONS
     // adds functionality for onclick
-    function updateCodeMirror(data){
+    function updateCodeMirror(data) {
         var doc = editor.getDoc(); // gets the information of the editor
         doc.replaceRange(data, doc.getCursor()); // adds data at position of cursor
         editor.focus();             // focuses the user on the editor
@@ -57,28 +133,39 @@ $(document).ready(function () {
     window.updateCodeMirror = function (data) {
         updateCodeMirror(data);
     }
-    
+
     // Execute the RelaX Query
+    var activeNode = null;
+
     function executeEditorContents() {
-        //! d1 and d2 cannot be used to replace "S" and "P"
-        //? How can we fix the "S" and "P" issue
-        var d1 = dataset.at(0)._schema._relAliases.at(0);
-        var d2 = dataset.at(1)._schema._relAliases.at(0);
+        // loading datasets into relax
+        var dataStuff = {};
+        for (var i = 0; i < dataset.length; i++) {
+            var key = dataset.at(i)._schema._relAliases.at(0);
+            dataStuff[key] = dataset[i];
+        }
+
 
         try {
-            const PR = executeRelalg(editor.getValue(), { "Customer" : dataset[0], "Product" : dataset[1], "Shipment" : dataset[2], "ShippedProduct" : dataset[3] }); // gets query results
-            // console.log(PR);
-            // console.log(PR.getSchema());
-            // console.log(PR._child);
-            // console.log(PR._child.getSchema());
+            activeNode = null;
+
+            const PR = executeRelalg(editor.getValue(), dataStuff); // gets query results
             treeElm.contents().remove(); // clears Tree previous results
             createOutputTable(PR); // creates and renders new output table
-            treeElm.append(createRecList(PR)); // creates and renders new tree
+            var treeDiv = $('<div class="tree"></div>');
+            var ulDiv = $("<ul></ul>");
+            ulDiv.append(createRecList(PR)); // creates and renders new tree
+            treeDiv.append(ulDiv);
+            treeElm.append(treeDiv);
         } catch (err) {
-            createErrorOutput(err.stack); // creates and renders error in event user has incorrect RA query 
+            console.error(err)
+            if (err.name === 'SyntaxError')
+                createErrorOutput(err.message); // creates and renders error in event user has incorrect RA query 
+            else
+                createErrorOutput(err);
         }
     }
-0
+    0
 
     //* FUNCTIONS - RENDERING
     function createSchemaTables(dataSchema) {
@@ -87,7 +174,7 @@ $(document).ready(function () {
             return;
         }
         // Creates the button HTML element for the table; onclick it adds the tablename to Editor, onhover it shows the schema of the table.
-        let schemaView = "<div class='schemaTable'><button type='button' onmouseover='' onClick='updateCodeMirror(\""+dataSchema._relAliases[0]+"\");' class='dropbtn' id='btn-" + dataSchema._relAliases[0] + "'>" + dataSchema._relAliases[0]
+        let schemaView = "<div class='schemaTable'><button type='button' onmouseover='' onClick='updateCodeMirror(\"" + dataSchema._relAliases[0] + "\");' class='dropbtn' id='btn-" + dataSchema._relAliases[0] + "'>" + dataSchema._relAliases[0]
             + "</button> <div class='dropdown-content' id='schema-" + dataSchema._relAliases[0] + "'>"
 
         // get column widths for styling purposes
@@ -107,12 +194,18 @@ $(document).ready(function () {
             }
         }
 
+        // adds headers to the schema tables
+        let field = `<div style="text-align: center; border: 1px solid white; padding: 0.2em; display: flex; justify-content: space-around;" class='submenu' id='schema-${dataSchema._relAliases[0]}'>`;
+        let name = `<span style='font-weight: bold; width: ${maxColNameLength}ch;'>Columns</span>`;
+        let type = `<span style='font-weight: bold; width: ${maxColTypeLength}ch;'>Types</span>`;
+
+        schemaView += field + name + type + '</div>';
+
         // Creates the submenue element for the table, onclick each member of the table will add itself to the editor
         for (var i = 0; i < dataSchema._names.length; i++) {
-            console.log(dataSchema._names[i])
-            let field = `<div style="text-align: center; border: 1px solid white; padding: 0.2em; display: flex; justify-content: space-around;" classname='submenu' id='schema-${dataSchema._relAliases[0]}'>`;
+            let field = `<div style="text-align: center; border: 1px solid white; padding: 0.2em; display: flex; justify-content: space-around;" class='submenu' id='schema-${dataSchema._relAliases[0]}'>`;
             let name = `<span onClick='updateCodeMirror("${dataSchema._names[i]}")' style='cursor: pointer; width: ${maxColNameLength}ch;'>${dataSchema._names[i]}</span>`;
-            let type = `<span style='cursor: pointer; width: ${maxColTypeLength}ch;'>${dataSchema._types[i].toUpperCase()}</span>`;
+            let type = `<span style=' width: 8ch;'>${dataSchema._types[i].toUpperCase()}</span>`;
 
             schemaView += field + name + type + '</div>';
         }
@@ -137,33 +230,45 @@ $(document).ready(function () {
         errorElm.contents().remove();
 
         var table = $("<table></table>"); // creates new table element to be filled
-        table.append(createTableContent(output.getResult()._schema, output.getResult()._rows)); // creates table headers
-        //table.append(createTableRows(output.getResult()._rows)); // fills table rows
+        table.append(createTableHeader(output.getResult()._schema, output.getResult()._rows)); // creates table headers
+        table.append(createTableRows(output.getResult()._rows)); // fills table rows
         outputElm.append(table);
     }
-
+    var ifDateChecker = [];
     // Function that creates the table header
-    function createTableContent(columnSchema, rows) {
+    function createTableHeader(columnSchema, rows) {
+        ifDateChecker = [];
         var header = $("<thead></thead>");
         var headerRow = $("<tr></tr>");
-        var rowElements = [];
-        var ifDateChecker = [];
         // reads each header
         for (var i = 0; i < columnSchema._names.length; i++) {
-            var th = $("<th></th>").text(columnSchema._names[i]);
-            if(columnSchema._types[i] == 'date')
-                ifDateChecker.push(i);
-            headerRow.append(th);
+
+            (function (column) {
+
+                var th = $("<th></th>").text(columnSchema._names[i]);
+
+                th.on("click", function () {
+                    sortTable(this, column);
+                });
+
+                if (columnSchema._types[i] == 'date')
+                    ifDateChecker.push(i);
+
+                headerRow.append(th);
+            })(i);
         }
         header.append(headerRow);
-        rowElements.push(header);
-        
-        console.log(rows)
+        return header;
+    }
+
+    function createTableRows(rows) {
+        var tbody = $("<tbody></tbody>");
+        var rowElements = [];
         // reads each row in rows and adds them to the row element array.
         rows.forEach(function (row) {
             var tr = $("<tr></tr>");
             for (var i = 0; i < row.length; i++) {
-                if(ifDateChecker.includes(i)) {
+                if (ifDateChecker.includes(i)) {
                     const date = new Date(row[i]);
                     const year = date.getFullYear();
                     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -178,39 +283,199 @@ $(document).ready(function () {
             }
             rowElements.push(tr);
         });
-        return rowElements;
+        tbody.append(rowElements);
+        return tbody;
     }
 
+    // function that sorts output tables when column names are clicked on
+    function sortTable(element, column) {
+
+        const $table = $(element).closest("table");
+        const $tbody = $table.find("tbody");
+        const rows = $tbody.find("tr").toArray();
+        const currentDirection = $table.data("sort-direction");
+        let direction;
+        let arrow;
+
+        if (currentDirection === "asc" && $table.data("sort-column") === column) {
+            // First click on the same column, reverse the sort direction
+            direction = "desc";
+            arrow = $('<i class="fa fa-angle-down"></i>');
+        } else {
+            // First click on a column or different column, sort in ascending order
+            direction = "asc";
+            arrow = $('<i class="fa fa-angle-up"></i>');
+        }
+
+        $table.data("sort-direction", direction);
+        $table.data("sort-column", column);
+
+        // Remove any existing arrows from all header cells
+        $table.find("th svg, th span").remove();
+
+        // add arrow to the element th in the direction it should be
+        const arrowWithSpace = $('<span>&nbsp;</span>').append(arrow);
+        $(element).closest('th').append(arrowWithSpace);
+
+
+        // sorting function
+        rows.sort((a, b) => {
+            const aValue = a.cells.item(column).innerHTML;
+            const bValue = b.cells.item(column).innerHTML;
+
+            const isANumber = !isNaN(parseFloat(aValue)) && isFinite(aValue);
+            const isBNumber = !isNaN(parseFloat(bValue)) && isFinite(bValue);
+
+            if (isANumber && isBNumber) {
+                return direction === "asc" ? parseFloat(aValue) - parseFloat(bValue) : parseFloat(bValue) - parseFloat(aValue);
+            }
+
+            if (!isANumber && !isBNumber) {
+                return direction === "asc" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+            }
+
+            return isANumber ? -1 : 1;
+        });
+
+        $tbody.empty();
+        rows.forEach(row => $tbody.append(row));
+    }
+
+    // function to toggle expected output
+    $(document).ready(function() {
+        var expectedOutputButton = $(".expectedOutputButton");
+        var expectedOutputTable = $(".expectedOutputTable")[0];
+    
+        window.togglePreview = function(){
+            if (expectedOutputTable.style.display === "none"){
+                expectedOutputTable.style.display = "table";
+                expectedOutputButton[0].innerText = "Hide Expected Output";
+            } else {
+                expectedOutputTable.style.display = "none";
+                expectedOutputButton[0].innerText = "Show Expected Output";
+            }
+        };
+    });
+
+
     //* Recursive function that creates the RelaX output Tree
-    function createRecList(output){
-        var container = $("<div style='margin: 5px'></div>"); // Creates container holding section of tree
+    function createRecList(output) {
+        var container = $("<li></li>"); // Creates container holding section of tree
         var button = $("<div></div>"); // creates first node of this secton tree
 
         // fills node attributes
-        button.attr("id", "button-"+output._functionName);
-        button.addClass("btn btn-primary exec-button selection");
-        button.text(output._codeInfo.text);
-        // allows each node to return the output at that point of execution 
-        button.on("click", function() { createOutputTable(output); });
-        
+        button.attr("id", "button-" + output._functionName);
+        if (activeNode == null) {
+            button.attr("class", "node active");
+            activeNode = button;
+        } else {
+            button.attr("class", "node");
+        }
+
+        var text = output._functionName
+        if (text === '_inlineRelation8') {
+            button.append(output._codeInfo.text);
+        } else {
+            button.append(output.getFormulaHtml(false));
+        }
+        dropdown = createTreeNodeDropdown(output);
+        button.append(dropdown)
+        // allows each node to return the output at that point of  execution 
+        button.on("click", function () {
+            activeNode.attr("class", "node");
+            button.attr("class", "node active");
+            activeNode = button;
+            createOutputTable(output);
+        });
+
         // Checks to see if there are 2, 1, or no Children
         if ((output._child != null) && (output._child2 != null)) {
             container.append(button); // adds the main node
             // creates flex container.for children - allowing for side by side rendering
-            var newContainer = $("<div></div>");
-            newContainer.addClass("flex-container")
-            
+            var newUlDiv = $("<ul></ul>");
+            var newLiDiv = $("<li></li>");
+
             // adds the child nodes
-            newContainer.append(createRecList(output._child));
-            newContainer.append(createRecList(output._child2));
-            container.append(newContainer); // appends flex container to above container
+
+            newLiDiv.append(createRecList(output._child));
+            newLiDiv.append(createRecList(output._child2));
+            newUlDiv.append(newLiDiv);
+            container.append(newUlDiv); // appends flex container to above container
             return container;
-        } else if (output._child != null) { 
+        } else if (output._child != null) {
+            var newUlDiv = $("<ul></ul>");
+            var newLiDiv = $("<li></li>");
+
             container.append(button); // adds the main node.
-            container.append(createRecList(output._child)); // adds the child node
-            return container; 
+
+            newLiDiv.append(createRecList(output._child)); // adds the child node
+            newUlDiv.append(newLiDiv);
+            container.append(newUlDiv);
+            return container;
         } else {
             return container.append(button); // adds the main node
-        } 
+        }
     }
+
 });
+
+function createTreeNodeDropdown(output) {
+
+    // Creates the submenue element for the table, onclick each member of the table will add itself to the editor
+    var maxColNameLength = 0;
+    var maxColTypeLength = 0;
+    var dropdown = $("<div class='tree-popup'><em>columns:</em></div>")
+    var columns = output.getSchema().getColumns().map(function (col, i) {
+
+
+        if (col.toString().length > maxColNameLength) {
+            maxColNameLength = output.getSchema().getName(i).length + 3;
+        }
+        if (output.getSchema().getType(i).length > maxColTypeLength) {
+            maxColTypeLength = output.getSchema().getType(i).length + 2;
+        }
+
+
+        var div = $(`<div class='submenu'>`)
+        div.attr("style", "text-align: center; border: 1px solid white; padding: 0.2em; display: flex; justify-content: space-around;");
+        div.attr("class", "submenu");
+        return div;
+    });
+
+    for (var i = 0; i < columns.length; i++) {
+        let name = `<span style='width: ${maxColNameLength}ch; font-size: 16px;'>${output.getSchema().getName(i)}</span>`;
+        let type = `<span style='width: 8 ch; font-size: 16px;'><small>${output.getSchema().getType(i).toUpperCase()}</small></span>`;
+        columns[i].append(name);
+        columns[i].append(type);
+
+    }
+
+    dropdown.append(columns);
+    // dropdown.append($("<ul></ul>").append(columns));
+    if (output.hasMetaData('naturalJoinConditions')) {
+        var naturalJoinConditions = output.getMetaData('naturalJoinConditions');
+
+
+        var listItems = naturalJoinConditions.map(function (condition) {
+
+            var div = $(`<div class='submenu'>`)
+            div.attr("style", "text-align: center; border: 1px solid white; padding: 0.2em; display: flex; justify-content: space-around;");
+            div.attr("class", "submenu");
+
+            var condSpan = $(`<span style='font-size: 16px;'>${condition.getFormulaHtml()}</span>`)
+            div.append(condSpan)
+            return div;
+        });
+
+        var joinSpan = '<span style="width: 24ch; display: block; margin: auto">Natural Join Conditions:</span>';
+        dropdown.append(joinSpan);
+        dropdown.append(listItems);
+    }
+    if (output.getMetaData('isInlineRelation') === true && n.hasMetaData('inlineRelationDefinition')) {
+        dropdown.append(output.getMetaData('<span>inlineRelationDefinition</span>'))
+    }
+    dropdown.append(`<small>${output.getResultNumRows()} row${output.getResultNumRows() === 1 ? '' : 's'}</small>`)
+
+
+    return dropdown;
+}

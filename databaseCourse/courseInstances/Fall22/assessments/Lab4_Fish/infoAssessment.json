@@ -5,5 +5,5 @@
     "set": "Practice Quiz",
     "number": "1",
     "allowAccess": [{"credit": 100}],
-    "zones": [ {"questions": [  {"id": "Fish_Store", "points": 10}]}]
+    "zones": [ {"questions": [  {"id": "9_er_design/Fish_Store", "points": 10}]}]
 }

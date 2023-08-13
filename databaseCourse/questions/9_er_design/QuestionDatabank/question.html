@@ -1,0 +1,28 @@
+<pl-uml-element random="False" max-grade = "10">
+<uml-question>
+    Construct a database design in UML for a question databank.
+    A [course](Course) is identified by its [course number](courseNumber) and has a [course name](courseName) and [year](year).
+    Different [course offerings](CourseOffering) are distinguished from each other by the [starting date](startingDate) of the course. A [course offering](CourseOffering) stores the [number of students](numberOfStudents) in the [course](Course) and also has an [ending date](endingDate).
+    Every [course](Course) has one or more [learning outcomes](LearningOutcome) that are [material](material) and [skills](skills) that [students](students) should learn after [completing](completion) the course. A [learning outcome](LearningOutcome) (identified by [outcomeId](outcomeId)) may be achieved in many courses or in no current courses.
+    A [question](Question) is used in a [course offering](CourseOffering) to test student [knowledge](knowledge). A [question](Question) is identified by its [questionId](questionId) and also contains a [questionName](questionName), [questionText](questionText), and [questionAnswer](questionAnswer).
+    [Questions](Question) must have at least one [learning outcome](LearningOutcome) and may have many. Each [question](Question) has one [topic](Topic). A [topic](Topic) has a unique [topicName](topicName) and may have multiple [subtopics](subtopics).
+    A [question](CourseOfferingQuestion) can be used in multiple [course offerings](CourseOfferingQuestion), and in each offering the [mark](mark) associated with the [question](Question) may be different.
+</uml-question>
+<uml-answer>
+[Course| courseNumber{PK}; courseName; year]
+[CourseOffering| startingDate{PPK}; endingDate; numberOfStudents]
+[LearningOutcome| outcomeId{PK}; material; skills]
+[Question| questionId{PK}; questionName; questionText; questionAnswer]
+[Topic| topicName{PK}]
+[CourseOfferingQuestion| mark]
+[Course] 1..1 - 0..* [CourseOffering]
+[Course] 0..* - 1..* [LearningOutcome]
+[Question] 1..1 - 0..* [CourseOfferingQuestion]
+[Question] 0..* - 1..* [LearningOutcome]
+[CourseOffering] 1..1 - 0..* [CourseOfferingQuestion]
+[Question] 0..* - 1..1 [Topic]
+[Topic] 0..* - 1..1 [Topic]
+</uml-answer>
+    <uml-marking entity-name="0.2" entity-attributes="0.1" entity-key="0.2" extra-entity-penalty="0.25" weak_entity="0.5" relationship="0.5" cardinality="0.25" extra-relationship-penalty="0.25"></uml-marking>
+</pl-uml-element>
+
