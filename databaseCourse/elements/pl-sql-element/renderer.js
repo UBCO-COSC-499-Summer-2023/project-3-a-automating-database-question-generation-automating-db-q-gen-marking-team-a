@@ -4,6 +4,7 @@ $(document).ready(function () {
 
     var expectedOutputButton;
     var expectedOutputTable;
+
     // Function to load the required database for the question
     window.onload = function () {
         expectedOutputButton = $(".expectedOutputButton");
@@ -14,9 +15,11 @@ $(document).ready(function () {
         if (dbInitElm.text().length > 0) {
             execute(dbInitElm.text());
         }
-        dbInitElm.remove();
+        
+        //dbInitElm.remove();
 
         updateCodeMirrorPreviousSubmission();
+
     }
 
     /*
@@ -55,6 +58,9 @@ $(document).ready(function () {
 
     var canInteract = false;
 
+
+
+
     // Add syntax highlighting to the textarea
     // Also transforms the textarea into a CodeMirror editor
     var editor = CodeMirror.fromTextArea(commandsElm[0], {
@@ -76,6 +82,10 @@ $(document).ready(function () {
         canInteract = true;
         editor.setOption("readOnly", false);
     }
+
+    // Prevents writing in editor for 300ms or database initializes
+    setTimeout(enableEditorInteraction, 300);
+
 
     // Load previous submission into editor
     
@@ -142,6 +152,9 @@ $(document).ready(function () {
     var italicWords = applyHTMLTagsToWords('i');
     var emphWords = applyHTMLTagsToWords('em');
     var strongWords = applyHTMLTagsToWords('strong');
+
+
+
     
 
     /*
