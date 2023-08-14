@@ -20,3 +20,6 @@
 | 2023/06/28    | Matthew O. & Dr. Lawrence   | Email | Weekly Update | [Here](../communication/emails/Week-7-update.pdf)
 | 2023/06/30    | Andrei Z. & Dr. Lawrence    | Email | Ngrok Links| [Here](../communication/emails/COSC-944-PrairieLearn-Team-A.pdf)
 | 2023/07/03    | Andrei Z. & Dr. Lawrence    | Email | Feedback and meeting Confirmation| [Here](../communication/emails/Feedback-Meeting-Confirmation.pdf)
+| 2023/07/13    | Matthew O. & Dr. Lawrence    | Email | Weekly Update | [Here](../communication/emails/Week-9-update.pdf)
+| 2023/07/19    | Matthew O. & Dr. Lawrence    | Email | Feedback and meeting Confirmation| [Here](../communication/emails/Meeting-Prep-for-Today.pdf)
+| 2023/07/26    | Matthew O. & Dr. Lawrence    | Email | Weekly update | [Here](../communication/emails/Week-11-update.pdf)
