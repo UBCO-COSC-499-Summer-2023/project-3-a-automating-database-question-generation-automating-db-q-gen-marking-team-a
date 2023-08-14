@@ -111,6 +111,7 @@ $(document).ready(function () {
     );
     let allEntities = [].concat(allEntities1, allEntities2);
     for (let i = 0; i < allEntities.length; i++) {
+      //console.log(allEntities[i].className + " ");
       if (allEntities[i].className.indexOf(' disabled-link') < 0) {
         allEntities[i].className = allEntities[i].className + ' disabled-link';
       }
@@ -134,6 +135,7 @@ $(document).ready(function () {
         } else {
           attributes[i] = att[i];
         }
+        //console.log("HERE? " + entity_name + " " + attributes[i] + " "  + key)
         addAttribute(entity_name, attributes[i], key);
       }
     }
@@ -995,7 +997,7 @@ function editRelationship(id, relationA, relationB, cardinalityA, cardinalityB, 
     document.getElementById('attributeInfo').innerHTML = content;
   }
 
-  // Populate the ER diagram, update manager menus dependant on the diagram
+  // Populate the ER diagram, update manager menus dependent on the diagram
   function update() {
 
 
@@ -1088,6 +1090,8 @@ function editRelationship(id, relationA, relationB, cardinalityA, cardinalityB, 
     let schemaText = [];
     schema.forEach(function (schemaItem, entKey) {
       let item = '[' + schemaItem.entity + '|';
+      //console.log(schemaItem);
+      //console.log(schemaItem.attribute);
       schemaItem.attribute.forEach(function (attItem, attKey) {
         if (!attItem.key == '') {
           item += attItem.attribute + ' ' + attItem.key;

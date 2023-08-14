@@ -1,0 +1,24 @@
+{
+    "uuid": "4c9291cc-db7b-4d87-9329-c07416b65b49",
+    "type": "Homework",
+    "title": "Homework For Relational Algebra",
+    "set": "Homework",
+    "number": "1",
+    "allowAccess": [
+        {
+            "credit": 100
+        }
+    ],
+    "zones": [
+        {
+            "questions": [
+                {"id": "4_relational_algebra/1",             "points": 2},
+                {"id": "4_relational_algebra/2",             "points": 2},
+                {"id": "4_relational_algebra/3",             "points": 2},
+                {"id": "4_relational_algebra/4",             "points": 2},
+                {"id": "4_relational_algebra/5",             "points": 2},
+                {"id": "4_relational_algebra/Random",        "points": 2}
+            ]
+        }
+    ]
+}

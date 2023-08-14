@@ -1,0 +1,13 @@
+<pl-question-panel>
+  Return the <b>product name</b>, <b>current inventory</b>, <b>shipment amount</b>, and <b>price</b> where the product had a shipment of an <b>amount greater than 60% of its current inventory</b> and the <b>product price is less than \$5 or greater than or equal to \$50</b>.
+  <br>
+  <br>
+  Expected output:
+  <br>
+  <img src="{{options.client_files_question_url}}/ra_q4.png" alt="The columns are Customer.id, Customer.cname, Customer.address, and Customer.state" class="expected-output-img">
+</pl-question-panel>
+<pl-relax-element database="./RelaXElementSharedLibrary/ShipmemtDatabase.txt" random="False" max-grade = "10" feedback="True">
+
+  <relax-answer>π pname, inventory, amount, price (σ amount > inventory*0.6  and (price <5 or price >=50) (Product ⨝ ShippedProduct ⨝ Shipment))</relax-answer>
+
+</pl-relax-element>

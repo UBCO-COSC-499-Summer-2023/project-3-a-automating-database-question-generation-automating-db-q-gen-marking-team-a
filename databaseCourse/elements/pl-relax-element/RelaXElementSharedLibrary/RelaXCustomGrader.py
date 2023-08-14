@@ -1,13 +1,36 @@
 from difflib import SequenceMatcher
+import requests
+
+# weights for input and outputbased grading
+outputScoreWeight = 0.85
+inputScoreWeight = 0.15
+
+#threshold for how close input matching needs to be for a correct answer
+#above which the student is given a score of 100%
+threshold = 0.75
+
+# grading weights for each component when output matching
+orderWeight = 0.05 # correct order
+rowWeight = 0.20 # correct number of rows
+colWeight = 0.25 # correct columns
+valueMatchWeight = 0.50 # correct values
+
 
 # Uses Python's SequenceMatcher library to check the
 # similarity between the correct answer and the student's
 # submitted answer.
 def customGrader(data):
-    # Grabs the student answer from data
+    
+    feedback = True
+    
+    if (data['params']['feedback'] is False):
+        feedback = False
+        data['params']['queryFeedback'] = "Your instructor has disabled feedback for this question."
+    
+    outputScore = gradeQuery(data, feedback)
+    inputScore = 0
+    
     submittedAnswer = data['submitted_answers']['RelaXEditor']
-
-    # Grabs the solution from data
     correctAnswer = data['correct_answers']['RelaXEditor']
     
     # Strips both of whitespace
@@ -24,21 +47,39 @@ def customGrader(data):
     # the strings are entirely different.
     similarity = similar(wordsSA, wordsCA)
 
-    # The similarity threshold above which the student is given
-    # 100% score
-    threshold = 0.75
-
     # If the similarity between the submission and answer
-    # is above the threshold, the student is given full credit
-    if similarity > threshold:
-        return 1
+    # is above the threshold, the student is given full credit.
+    # NOTE: students given full credit on input score if output is correct
+    if outputScore == 1:
+        inputScore = 1
+    elif similarity > threshold:
+        inputScore = 1
     # Otherwise, the student is given a grade that reflective of
     # how close they are. The function linearly maps (0, $threshhold)
     # onto (0, 1) such that is the student gets exactly $threshold
     # they receive a score of 1 (full credit) and if they get a
     # similarity of 0 they recieve a score of 0. 
     else:
-        return similarity / threshold
+        inputScore = similarity / threshold
+        
+    # If outputScore is a string, it means that the query was unable to execute
+    # therefore we are grading solely on input string matching and giving a 15% execution penalty
+    if type(outputScore) == str:
+        global outputScoreWeight
+        outputScoreWeight = 0.15
+        global inputScoreWeight
+        inputScoreWeight = 0.85
+        if (feedback):
+            data['params']['queryFeedback'] = "Query was unable to execute. Scoring done through input matching. <br>"
+            data['params']['queryFeedback'] += f"Input Score: {inputScore*100:.2f}% <br>"
+            data['params']['queryFeedback'] += f"Execution Penalty: {outputScoreWeight*100:.2f}% <br>"
+        outputScore = 0
+        
+    totalScore = outputScore * outputScoreWeight + inputScore * inputScoreWeight
+    
+    totalScore = max(totalScore, 0)
+        
+    return totalScore
 
 
 # Returns the similarity between two strings.
@@ -46,3 +87,218 @@ def customGrader(data):
 # 0 means the strings are entirely different.
 def similar(a, b):
     return SequenceMatcher(None, a, b).ratio()
+
+def gradeQuery(data, feedback):
+    
+    score = 0
+
+    db = data['params']['db_initialize_create_backend']
+
+    submittedAnswer = data['submitted_answers']['RelaXEditor']
+    correctAnswer = data['correct_answers']['RelaXEditor']
+
+    url = data['params']['url']
+
+    # Construct the data to be sent in the POST request
+    data_to_send = {
+    "database": db,
+    "submittedAnswer": submittedAnswer,
+    "correctAnswer": correctAnswer
+    }
+    
+    try:
+
+        response = requests.get(url, json=data_to_send)
+
+        # Assuming the server returns JSON data containing the processed result
+        response_data = response.json()
+
+        # Process the response data as needed
+        queriedSA = response_data.get('queriedSA', None)
+        queriedCA = response_data.get('queriedCA', None)
+
+    except Exception as e:
+        print("Error:", str(e))
+        return "error"
+    
+
+    if ('error' in queriedSA or 'error' in queriedCA):
+        return "error"
+        
+    #row matching
+    rowData = rowMatch(queriedSA['rows'], queriedCA['rows'])
+    rowScore = rowData['score']
+    totalRowsSA = rowData['totalRowsSA']
+    totalRowsCA = rowData['totalRowsCA']
+
+    
+
+    #col matching
+    colData = colMatch(queriedSA['schema']['_names'], queriedCA['schema']['_names'])
+    colScore = colData['score']
+    totalColsSA = colData['totalColsSA']
+    totalColsCA = colData['totalColsCA']
+    missingCols = colData['missingCols']
+    
+    #value matching
+    valueData = valueMatch(queriedSA['rows'], queriedCA['rows'])
+    valueScore = valueData['score']
+    totalValuesSA = valueData['totalValuesSA']
+    totalValuesCA = valueData['totalValuesCA']
+    
+    
+    #order matching
+    orderScore = orderMatch(queriedSA['rows'], queriedCA['rows'])
+    order = "Correct" if orderScore == 1 else "Incorrect"
+    
+    # if feedback is enabled, add feedback
+    if (feedback):
+        data['params']['queryFeedback'] = "<em>Category: [actual / expected]</em>  <br>"
+        addFeedback(data, "rows", totalRowsSA, totalRowsCA)
+        addFeedback(data, "columns", totalColsSA, totalColsCA)
+        if missingCols:
+            data['params']['queryFeedback'] += f"missing columns: {missingCols}<br>"
+        addFeedback(data, "values", totalValuesSA, totalValuesCA)
+        addFeedback(data, "order", order, "Correct")
+
+    
+    score = (rowScore * rowWeight) + (colScore * colWeight) + (valueScore * valueMatchWeight) + (orderScore * orderWeight)
+    score = round(score, 2)
+    return score
+
+# HELPERS ----------------------------------------------------------------------------------------------------------------------
+# scores the difference in the number of rows between both outputs
+def rowMatch(rowsSA, rowsCA):
+      
+    totalRowsSA = 0
+    totalRowsCA = 0
+    
+    expectedRowsCA = len(rowsCA)
+    totalRowsCA += expectedRowsCA
+    
+    rowCountSA = len(rowsSA)
+    totalRowsSA += rowCountSA
+    
+    if (totalRowsCA != 0):
+        missingRows = abs(totalRowsCA - rowCountSA)
+        correctRows = totalRowsCA - missingRows
+        rowScore = correctRows / totalRowsCA
+    elif (totalRowsCA == 0 and totalRowsSA == 0):
+        rowScore = 1
+    else:
+        rowScore = 0
+    
+    #if not (rowsCA or rowsSA): rowScore = 1
+    #if not rowsSA or not rowsSA[0]: rowScore = 0
+    
+    rowData = {
+        'score': rowScore,
+        'totalRowsSA': totalRowsSA,
+        'totalRowsCA': totalRowsCA
+    }
+    
+    
+    return rowData
+    
+    
+# scores the difference in the number of columns between both outputs
+def colMatch(colsSA, colsCA):
+    
+    totalColsSA = 0
+    totalColsCA = len(colsCA)
+    missingColsList = []
+    
+    #+1 point for each correct column
+    for col in colsCA:
+        if col in colsSA:
+            totalColsSA += 1
+        else:
+            missingColsList.append(col)
+            
+    missingCols = abs(totalColsCA - totalColsSA)
+    correctCols = totalColsCA - missingCols
+    colScore = correctCols / totalColsCA
+    
+    colData = {
+        'score': colScore,
+        'totalColsSA': totalColsSA,
+        'totalColsCA': totalColsCA,
+        "missingCols": missingColsList
+    }
+    
+    return colData
+
+# scores how much the values match between the expected ans and the actual ans
+def valueMatch(valueSA, valueCA):
+    
+    totalValuesSA = 0
+    totalValuesCA = len(valueCA)
+    commonValues = 0
+    
+    for row in valueSA:
+        if row in valueCA:
+            commonValues += 1
+
+    if totalValuesCA != 0:
+        missingVals = abs(totalValuesCA - commonValues)
+        correctVals = totalValuesCA - missingVals
+        valueScore = correctVals / totalValuesCA
+    elif totalValuesCA == 0 and totalValuesSA == 0:
+        valueScore = 1
+    
+    totalValuesSA = commonValues
+    
+    valueData = {
+        'score': valueScore,
+        'totalValuesSA': totalValuesSA,
+        'totalValuesCA': totalValuesCA
+    }
+    
+    return valueData
+
+# checks if rows are ordered the same direction as the correct answer
+def orderMatch(valueSA, valueCA):
+    
+    numRowsSA = len(valueSA)
+    numRowsCA = len(valueCA)
+    
+    # if either list is empty, return 1
+    if numRowsSA == 0 or numRowsCA == 0:
+        return 1
+
+    # if either list has 1 row, return 1 if it's a match, otherwise 0
+    if numRowsSA == 1 or numRowsCA == 1:
+        for rowCA in valueCA:
+            if rowCA in valueSA:
+                return 1
+        return 0
+    
+    try:
+        return checkOrder(valueSA, valueCA)
+    except:
+        return 0
+
+#helper function for ordermatch
+def checkOrder(valueSA, valueCA):
+    
+    # Convert rows to tuples for comparison
+    valueCA_tuples = [tuple(row) for row in valueCA]
+    valueSA_tuples = [tuple(row) for row in valueSA]
+
+    # if ascending
+    if valueCA_tuples[0] < valueCA_tuples[-1]:
+        if valueSA_tuples[0] < valueSA_tuples[-1]:
+            return 1
+        else:
+            return 0
+    # if descending
+    elif valueCA_tuples[0] > valueCA_tuples[-1]:
+        if valueSA_tuples[0] > valueSA_tuples[-1]:
+            return 1
+        else:
+            return 0
+    
+
+
+def addFeedback(data, category, submitted, correct):
+    data['params']['queryFeedback'] += f"{category} : [{submitted} / {correct}] <br>"

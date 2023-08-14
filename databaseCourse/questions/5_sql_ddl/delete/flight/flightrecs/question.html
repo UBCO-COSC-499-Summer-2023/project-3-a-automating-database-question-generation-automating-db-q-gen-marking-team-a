@@ -1,0 +1,21 @@
+<!-- Question introduction -->
+<pl-question-panel>
+    Delete all on flight records for <strong>'Fred Brothers'</strong>. Note: You do not have to use a subquery for this question but try if you can!
+</pl-question-panel>
+
+<!-- Start Part 1 -->
+
+
+<!-- SQL editor -->
+<pl-sql-element database = "./SQLElementSharedLibrary/lab2Databases/tablesInserts.txt" questionType = 'delete'>
+    <sql-question>
+    </sql-question>
+
+    <sql-answer answer = "DELETE FROM OnFlight WHERE passengerId = 2;
+DELETE FROM OnFlight WHERE passengerId = (SELECT id FROM Passenger WHERE firstname = 'Fred' and lastname = 'Brothers');">
+    </sql-answer>
+    
+    <sql-marking ></sql-marking>
+</pl-sql-element>
+
+<!-- End Part 1 -->

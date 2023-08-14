@@ -1,0 +1,22 @@
+{
+    "uuid": "d7db04ca-8b8b-4944-8750-d9d44b99a283",
+    "type": "Homework",
+    "title": "9. ER Notes - University",
+    "set": "Practice Quiz",
+    "number": "1",
+    "allowAccess": [
+        {
+            "credit": 100
+        }
+    ],
+    "zones": [
+        {
+            "questions": [
+                {
+                    "id": "9_er_design/Student",
+                    "points": 10
+                }
+            ]
+        }
+    ]
+}

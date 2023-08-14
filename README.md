@@ -30,6 +30,7 @@ Technical Lead:     Skyler Alderson
 Integration Lead:   Andrei Zipis  
 
 
+
 # What this Project Includes
 
 This project adds two new elements to PrairieLearn: the RelaX element (`pl-relax_element`) and the SQL element (`pl-sql-element`). Each element adds their appropriate editor into PrairieLearn with additional functionality. These elements also add automatic generation and grading of Relational Algebra and SQL questions.  
@@ -44,6 +45,7 @@ This project requires two Docker containers. The first Docker container runs Pra
 
 
 ## Docker Documentation for PrairieLearn
+
 
 1. Install docker, docker-compose, and docker-desktop(optional)
 
@@ -68,6 +70,7 @@ This project requires two Docker containers. The first Docker container runs Pra
 All questions are represented by a folder within the `databaseCourse/questions` directory. In order to create a new Relational Algebra or SQL question, a new folder must be created within the `question` directory or one of its subdirectories. The question's folder must contain the following files: `info.json` and `question.html`. Optionally the question's folder may have a `clientFilesQuestion` directory which contains resources, such as images, used for the question. For more information, see the [PrairieLearn documentation](https://prairielearn.readthedocs.io).  
 Randomly generated questions are handled differently than normal static questions. A random question's `question.html` file is empty aside from a single set of tags: `<pl-relax-element>` for Relational Algebra questions and `<pl-sql-element>` for SQL questions. Unlike a static question which stores texts and creates elements within various HTML tags, randomly generated questions create and load their text when the page is loaded. *To specify the parameters for random question, use variables in the HTML tag.*  
 Relational Algebra and SQL have several shared parameters and unique parameters. All parameters have a default value should they not be specified.  
+
 
 
 ## Shared Question Parameters

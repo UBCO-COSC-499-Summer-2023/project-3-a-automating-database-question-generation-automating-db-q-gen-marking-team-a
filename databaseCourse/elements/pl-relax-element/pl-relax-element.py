@@ -2,9 +2,21 @@ import json
 import chevron
 import lxml.html
 import html
+import random
 import prairielearn as pl
-import RelaXElementSharedLibrary.RelaXCustomGrader as grader
 
+import RelaXElementSharedLibrary.RelaXCustomGrader as grader
+import RelaXElementSharedLibrary.RelaXAutogenerator as autogen
+
+# This allows DroneCI to see the RASQLib module
+import sys
+sys.path.append('/databaseCourse/serverFilesCourse/RASQLib')
+sys.path.append('/drone/src/databaseCourse/serverFilesCourse/')
+
+from RASQLib import textDatabaseHandler as db
+
+# url to the relax API for backend grading
+RELAXAPI_URL = 'http://relaxAPI:3001/index'
 
 def generate(element_html, data):
     pass
@@ -13,28 +25,106 @@ def generate(element_html, data):
 
 def prepare(element_html, data):
     data['params']['grader'] = 'RelaXEditor'
+
+    data['params']['db_initialize'] = ''
+    data['params']['db_initialize_create'] = ''
+    data['params']['db_initialize_create_backend'] = ''
     element = lxml.html.fragment_fromstring(element_html)
     
-    correctAnswer = lxml.html.fromstring(pl.inner_html(element[2])).text_content()
+    
+    # parameter whether to show feedback or not
+    feedback = pl.get_boolean_attrib(element, 'feedback', False)
+    data['params']['feedback'] = feedback
+    
+    # storing the actual feedback
+    data['params']['queryFeedback'] = ''
+
+    #get the url to execute relax from backend
+    #url = pl.get_string_attrib(element, 'url', '') #obsolete, now taken from global variable
+    data['params']['url'] = RELAXAPI_URL
+    
+    #get the correct answer from question.html
+    correctAnswer = lxml.html.fromstring(pl.inner_html(element[0])).text_content()
     data['correct_answers']['RelaXEditor'] = correctAnswer
 
-def render(element_html, data):
-    # # Gets the element data from the HTML
-    element = lxml.html.fragment_fromstring(element_html)
-    # # Gets each element from the questionHTML
-        
-    questionText = lxml.html.fromstring(pl.inner_html(element[0])).text_content()
-    database = lxml.html.fromstring(pl.inner_html(element[1])).text_content()
+    # Grabs the path to the database file
+    # Only used in static questions
+    databaseFilePath = pl.get_string_attrib(element, 'database', '')
+    # Note to devs:
+    # Notice the strings in the pl.get_... are lowercase despite
+    # the html parameters being uppercase. I have no clue why
+    # this is, but the pl.get_... will fail to find the corresponding
+    # parameter if their string is uppercase. Hence all lowercase
+    questionRandom = pl.get_boolean_attrib(element, 'random', False)
 
+    data['params']['html_params'] = {
+        'random': questionRandom,
+        'expectedOutput' : pl.get_boolean_attrib(element, "expectedoutput", True)
+    }
+    # If there is a database file, read and loads its contents
+    if databaseFilePath:
+        with open(databaseFilePath,"r") as databaseFile:
+           data['params']['db_initialize'] = databaseFile.read()
+        data['params']['html_params']['expectedOutput'] = ''
+        data['params']['db_initialize_create_backend'] = data['params']['db_initialize']
+        
+    
+    # Loads quesiton parameters into data
+    #
+    if questionRandom:
+        attribDict = {
+            "projectedColumns": pl.get_integer_attrib(element, "projectedcolumns", random.randint(2,5)),
+            "numClauses": pl.get_integer_attrib(element, "numclauses", 1),
+            "orderBy": pl.get_boolean_attrib(element, "orderby", False),
+            "groupBy": pl.get_boolean_attrib(element, "groupby", False),
+            "numJoins": pl.get_integer_attrib(element, "numjoins", 0),
+            "antiJoin": pl.get_boolean_attrib(element, "antijoin", False),
+            "semiJoin": pl.get_boolean_attrib(element, "semijoin", False),
+            "outerJoin": pl.get_boolean_attrib(element, "outerjoin", False)
+        }
+        data['params']['attrib_dict'] = attribDict
+        data['params']['outputGuarantee'] = pl.get_boolean_attrib(element, "outputguaranteed", True)
+
+    # If if is a randomised question, generate the question
+    if questionRandom:
+        autogen.autogenerate(data, pl.get_boolean_attrib(element, "outputguaranteed", True))
+        database = data['params']['db_initialize_create']
+        data['params']['db_initialize'] = database
+
+
+    if not pl.get_boolean_attrib(element, "expectedoutput", True):
+        data['params']['html_params']['expectedOutput'] = ''        
+
+
+
+
+def render(element_html, data):
+    # Gets the element data from the HTML
+    element = lxml.html.fragment_fromstring(element_html)
+
+    # Gets each element from the questionHTML
     submittedAnswer = data['submitted_answers'].get('RelaXEditor','')
     correctAnswer = data['correct_answers'].get('RelaXEditor', '')
-    
+    giveFeedback = data['params']['feedback']
+
+
+    # NOTE: the database is loaded into the data
+    # variable during the `prepare()` function,
+    # when it called `autogenerate()`
+
+
+
     # This renders the question into PL
     if data['panel'] == 'question':
+        #data['params']['html_params']['expectedOutput'] = autogen.createPreview(data)
+        if 'questionText' not in data['params'].keys():
+            data['params']['questionText'] = ""
         # setting the paramaters
         html_params = {
-            'questionText' : questionText,
-            'database' : database,
+            'database' : data['params']['db_initialize'],
+            'questionText' : data['params']['questionText'],
+            'previousSubmission' : submittedAnswer,
+            'expectedOutput' : data['params']['html_params']['expectedOutput']
         }
             # Opens and renders mustache file into the question html
         with open('pl-relax-element.mustache', 'r', encoding='utf-8') as f:
@@ -42,11 +132,18 @@ def render(element_html, data):
 
 
     elif data['panel'] == 'submission':
+        if giveFeedback:
+            try:
+                queryFeedback = data['partial_scores']['RelaXEditor'].get('feedback', None)
+            except KeyError:
+                queryFeedback = ''
+        else:
+            queryFeedback = "Your instructor has disabled feedback for this question."
   
         html_params = {
-            
             'submission': True,
             'submissionAnswer': submittedAnswer,
+            'feedback' : queryFeedback
         }
         
         with open('pl-relax-submission.mustache', 'r', encoding='utf-8') as f:
@@ -56,8 +153,6 @@ def render(element_html, data):
     # This will not be displayed on the student page unless a showCorrectAnswer: True 
     # is specified in the info.json file.
     elif data['panel'] == 'answer':
-        
-        #print("correctAnswer:", correctAnswer)
         html_params = {
             'answer': True,
             'correctAnswer': correctAnswer
@@ -79,12 +174,14 @@ def grade(element_html, data):
     # rather it must be placed within partial scores.
     # Updating final score is done automatically by PrairieLearn
     # based upon the partial scores.
+    
     data['partial_scores']['RelaXEditor'] = {
         'score': studentScore,
         'weight': 1,
-        'feedback': "",
+        'feedback': data['params']['queryFeedback'],
         'marker_feedback': ""
     }
+    
 
 def test(element_html, data):
     pass

@@ -1,0 +1,40 @@
+<!-- Question introduction -->
+<pl-question-panel>
+    Write the SQL DDL to create the following table.
+    <br>
+</pl-question-panel>
+
+<!-- Start Part 1 -->
+
+<!-- Question text -->
+<pl-question-panel>
+    An <strong>onFlight</strong> table that stores information about passengers on flights. Each record stores the
+    <strong>passengerId</strong>, <strong>flightNum</strong>, <strong>departDateTime</strong>, and a
+    <strong>seatNum</strong> (exactly 4 characters). Note: A passenger must have a seat number. <em>Make all foreign keys set to perform no action (generate
+        error) on delete and cascade on update</em>. (3 marks)
+</pl-question-panel>
+
+
+<!-- SQL editor -->
+<pl-sql-element database = "./SQLElementSharedLibrary/lab2Databases/flight.txt" questionType = 'create'>
+    <sql-question>
+    </sql-question>
+
+    <sql-answer answer = "CREATE TABLE onFlight (
+    passengerId int,
+    flightNum CHAR(5),
+    departDateTime DATETIME,
+    seatNum CHAR(4)	NOT NULL,
+    PRIMARY KEY (passengerId, flightNum, departDateTime),
+    FOREIGN KEY (passengerId) REFERENCES Passenger(id) 
+        ON DELETE NO ACTION ON UPDATE CASCADE,
+    FOREIGN KEY (flightNum, departDateTime) REFERENCES Flight(num,departDateTime) 
+        ON DELETE NO ACTION ON UPDATE CASCADE
+);">
+        
+    </sql-answer>
+
+    <sql-marking></sql-marking>
+</pl-sql-element>
+
+<!-- End Part 1 -->

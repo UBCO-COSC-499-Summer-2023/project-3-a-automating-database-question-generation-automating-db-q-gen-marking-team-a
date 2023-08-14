@@ -1,0 +1,22 @@
+{
+    "uuid": "bc557fd6-3ad1-41a1-b5b2-d9590cf83a72",
+    "type": "Homework",
+    "title": "8. DB Design Notes - University Example",
+    "set": "Practice Quiz",
+    "number": "1",
+    "allowAccess": [
+        {
+            "credit": 100
+        }
+    ],
+    "zones": [
+        {
+            "questions": [
+                {
+                    "id": "9_er_design/StudentIntro",
+                    "points": 10
+                }
+            ]
+        }
+    ]
+}

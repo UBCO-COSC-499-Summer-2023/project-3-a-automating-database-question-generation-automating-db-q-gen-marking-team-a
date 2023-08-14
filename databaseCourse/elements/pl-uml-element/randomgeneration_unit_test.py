@@ -1,154 +1,127 @@
-# -*- coding: utf-8 -*-
+import unittest
 from randomgeneration import *
 
-# unit test is whitebox testing, namely, test every unit of file "randomgeneration.py"
-# there are several main parts needed to be tested:
-# function of generating strong/weak entities
-# function of generating 1-1/1-N/M-N relationships
-# funciton of generating question that is to generate entities and their relationships by integrating the above 2 functions
-# Therefore, this unit-test will focus on the 3 main units
-# (1) buildEntity
-# (2) buildRelationship
-# (3) generate_question
 
+class test(unittest.TestCase):
 
-import unittest
-
-
-class Test_generate_random(unittest.TestCase):
-    # @unittest.skip('Some reason')
-    def setUp(self):
-        self.name = "Tom"
-        self.identifyingEntity = None
-        self.minattr = 3
-        self.maxattr = 6
-        self.strong_entity = buildEntity(self.name, self.identifyingEntity, self.minattr, self.maxattr)
-        [self.name, self.key, self.ppk, self.attr, self.identifyingEntity] = self.strong_entity  # unpack
-
-        self.e1 = buildEntity("Tom", None)  # strong entity
-        self.e2 = buildEntity("David", None)  # strong entity
-        self.e3 = buildEntity("Jack", None)  # strong entity
-        self.e4 = buildEntity("Lee", "Tom")  # weak entity
-        self.e5 = buildEntity("Andy", "David")  # weak entity
-        self.e6 = buildEntity("Henry", "Jack")  # weak entity
-
-        self.setting_values = {
-            "MIN_STRONG_ENTITY": 3, "MAX_STRONG_ENTITY": 6,
-            "MIN_WEAK_ENTITY": 1, "MAX_WEAK_ENTITY": 3,
-            "MIN_11_RELATIONSHIP": 2, "MAX_11_RELATIONSHIP": 5,
-            "MIN_1N_RELATIONSHIP": 2, "MAX_1N_RELATIONSHIP": 5,
-            "MIN_MN_RELATIONSHIP": 2, "MAX_MN_RELATIONSHIP": 4
-        }
-        self.data = {}
-        self.data['params'] = self.setting_values
-        self.result = generate_question(8888, self.data)
-        self.question = self.result['question'].strip().split("\n")
-        self.answer = self.result['answer'].strip().split("\n")
-        # calculate the number of entities in question
-        self.strong_entities_question, self.weak_entities_question, self.relationship_question = 0, 0, 0
-        for keys in self.question:
-            if " is identified by its association with " in keys or " exists dependent on " in keys:
-                self.weak_entities_question += 1
-
-            if " is identified by " in keys or " has key " in keys:
-                self.strong_entities_question += 1
-
-            if " is connected with one " in keys or " has multiple relationships with " in keys:
-                self.relationship_question += keys.count(" is connected with one ")
-                self.relationship_question += keys.count(" has multiple relationships with ")
-
-        # print( strong_entities_question, weak_entities_question, relationship_question//2 )
-        # calculate the number of entities & relationships in answer
-        self.strong_entities_answer, self.weak_entities_answer, self.relationship_answer = [], [], []
-        for keys in self.answer:
-            if "{PK}" in keys:
-                self.strong_entities_answer.append(keys)
-            elif "{PPK}" in keys:
-                self.weak_entities_answer.append(keys)
-            else:
-                self.relationship_answer.append(keys)
-
-    def tearDown(self):
-        self.name = "Tom"
-        self.identifyingEntity = None
-        self.minattr = 3
-        self.maxattr = 6
-
-
-    def test_strong_assertGreater(self):
-        self.assertGreater(len(self.key), 0, "no primary key generated for strong entity")
-
-    def test_weak_assertGreater(self):
-        self.name = "Jack"
-        self.identifyingEntity = "Tom"
-        self.minattr = 2
-        self.maxattr = 5
-        self.assertGreater(len(self.key), 0, "no primary key generated for strong entity")
-
-    def test_strong_assertEqual(self):
-        self.assertEqual(len(self.ppk), 0, "there is partial primary key generated for strong entity")
-
-    def test_weak_assertEqual(self):
-        self.name = "Jack"
-        self.identifyingEntity = "Tom"
-        self.minattr = 2
-        self.maxattr = 5
-        self.assertEqual(len(self.ppk), 0, "there is partial primary key generated for strong entity")
-
-    def test_strong_assertGreaterEqual_len_attr(self):
-        self.assertGreaterEqual(len(self.attr), self.minattr, "too few attribute(s) generated for strong entity")
-
-    def test_weak_assertGreaterEqual_len_attr(self):
-        self.name = "Jack"
-        self.identifyingEntity = "Tom"
-        self.minattr = 2
-        self.maxattr = 5
-        self.assertGreaterEqual(len(self.attr), self.minattr, "too few attribute(s) generated for strong entity")
-
-    def test_strong_assertGreaterEqual_maxattr(self):
-        self.assertGreaterEqual(self.maxattr, len(self.attr), "too many attribute(s) generated for strong entity")
-
-    def test_weak_assertGreaterEqual_maxattr(self):
-        self.name = "Jack"
-        self.identifyingEntity = "Tom"
-        self.minattr = 2
-        self.maxattr = 5
-        self.assertGreaterEqual(self.maxattr, len(self.attr), "too many attribute(s) generated for strong entity")
-
-    def test_buildRelationship_1(self):
-        [_, _, card1, card2, attr] = buildRelationship(self.e1, self.e4, 0)  # 1-1
-        f = "1..1" == card1 and "1..1" == card2
-        self.assertTrue(f, "no 1-1 relationship generated for 2 entities")
-        # print(_, _, card1, card2, attr)
-
-    def test_buildRelationship_2(self):
-        [_, _, card1, card2, attr] = buildRelationship(self.e1, self.e4, 0)  # 1-1
-        f = "1..1" == card1 and "1..1" == card2
-        self.assertTrue(f, "no 1-1 relationship generated for 2 entities")
-        # print(_, _, card1, card2, attr)
-
-    def test_buildRelationship_3(self):
-        [_, _, card1, card2, attr] = buildRelationship(self.e1, self.e4, 0)  # 1-1
-        f = "1..1" == card1 and "1..1" == card2
-        self.assertTrue(f, "no 1-1 relationship generated for 2 entities")
-        # print(_, _, card1, card2, attr)
-
-    def test_generate_question_strong(self):
-        self.assertEqual(len(self.strong_entities_answer), self.strong_entities_question, "number of strong entities does not match")
-
-    def test_generate_question_weak(self):
-        self.assertEqual(len(self.weak_entities_answer), self.weak_entities_question, "number of weak entities does not match")
-
-    def test_generate_question(self):
-        self.assertEqual(len(self.relationship_answer), self.relationship_question//2, "number of relationships does not match")
-
-    # @unittest.skip('Some reason')
-    def test_generate_random(self):
+    def test_basic(self):
         data = {}
         question_data = generate_random(data)
-        self.assertEqual(len(question_data), 4, "the returned data is not valid")
-        return
 
+        length = 4
 
-unittest.main(argv=[''], verbosity=2, exit=False)
+        question = question_data['question'].split("\n")
+        answer = question_data['answer'].split("\n")
+        attempts = 7
+        penalty = 0
 
+        self.assertEqual(length, len(question_data))
+
+        self.assertEqual(attempts, question_data['maximum_attempts'])
+        self.assertEqual(penalty, question_data['penalty_type'])
+        self.assertGreater(len(question), 0)
+        self.assertGreater(len(answer), len(question))
+
+    def test_detailed(self):
+        data = {}
+        question_data = generate_random(data)
+
+        question = question_data['question'].split("\n")
+        answer = question_data['answer'].split("\n")
+
+        # for question
+        tmp_set = set()
+        for it in question:
+            if it not in tmp_set:
+                tmp_set.add(it.strip())
+            else:
+                print("redundancy in question: ", it, ", remove it")
+
+        if len(tmp_set) != len(question):
+            question = list(tmp_set)
+
+        # for answer
+        tmp_set = set()
+        for it in answer:
+            if it not in tmp_set:
+                tmp_set.add(it.strip())
+            else:
+                print("redundancy in answer: ", it, ", remove it")
+
+        if len(tmp_set) != len(answer):
+            answer = list(tmp_set)
+
+        # parse list question
+        ppk_marks = [" is identified by its association with ", " exists dependent on "]
+        key_marks = [" is identified by ", " has key "]
+        strong_entities_question, weak_entities_question, relationships_question = [], [], []
+        for it in question:
+            flag = False
+            for m in ppk_marks:
+                if m in it:
+                    weak_entities_question.append(it)
+                    flag = True
+                    break
+
+            if flag:
+                continue
+
+            for m in key_marks:
+                if m in it:
+                    strong_entities_question.append(it)
+                    flag = True
+                    break
+
+            if flag:
+                continue
+
+            relationships_question.append(it)
+
+        self.assertEqual(len(question),
+                         len(strong_entities_question) + len(weak_entities_question) + len(relationships_question))
+
+        # parse list answer
+        strong_entities_answer, weak_entities_answer, relationships_answer = [], [], []
+        for it in answer:
+            if "{PK}" in it:
+                strong_entities_answer.append(it)
+            elif "{PPK}" in it:
+                weak_entities_answer.append(it)
+            else:
+                relationships_answer.append(it)
+
+        self.assertEqual(len(answer),
+                         len(strong_entities_answer) + len(weak_entities_answer) + len(relationships_answer))
+
+        # entity check
+        self.assertEqual(len(strong_entities_question), len(strong_entities_answer))
+        self.assertEqual(len(weak_entities_question), len(weak_entities_answer))
+
+        # relationship check
+        self.assertGreaterEqual(len(relationships_answer), len(relationships_question))
+
+        # relationships in list question == that in list answer
+        relationship_marks = []
+        relationship_marks += [" may be related to at most one ", " has at most one connection with "]
+        relationship_marks += [" must be related to exactly one ", " is connected with one "]
+        relationship_marks += [" may be related to many ", " has multiple relationships with ",
+                               " has zero or more connections with "]
+        relationship_marks += [" must be related to at least one but possibly many ", "is associated with one or more "]
+
+        # for strong entities in list question
+        offset1 = 0
+        for it in strong_entities_question:
+            for rs in relationship_marks:
+                if rs in it:
+                    offset1 += it.count(rs)
+
+        # for weak entities in list question
+        offset2 = 0
+        for it in weak_entities_question:
+            for rs in relationship_marks:
+                if rs in it:
+                    offset2 += it.count(rs)
+
+        offset1 = offset1 // 2  # because relationship occurs in pair, so divived by 2
+        offset2 = offset2 // 2  # because relationship occurs in pair, so divived by 2
+        self.assertEqual(len(relationships_answer), len(relationships_question) + offset1 + offset2)

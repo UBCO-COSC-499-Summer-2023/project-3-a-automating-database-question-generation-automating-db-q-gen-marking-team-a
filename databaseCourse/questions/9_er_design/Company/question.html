@@ -1,0 +1,32 @@
+<pl-uml-element random="False" max-grade = "10">
+    <uml-question>
+        Design a database describing companies with locations, employees, and products.
+        A [company](company) is identified by a unique [name](companyName) and also has information on the [industry](industry) the company is in and the [annual revenue](annualRevenue) generated.
+        Companies have [employees](employee) working at them. Each [employee](employee) has an [id](employeeId) as well as a [first name](firstName), [last name](lastName), and [birthdate](birthdate). An [employee](employee) may be [working at](workingAt) multiple companies, and for each company they [work at](workingAt) they have a [salary](salary) and [startDate](startDate).  A [company](company) may have zero or more [employees](employee).
+        There is one special employee called the [CEO](ceo). A company has exactly one employee as the [CEO](ceo). An employee can only be the [CEO](ceo) of one company.
+        An [employee](employee) may [manage](manages) multiple other employees but does not have to and may not have a manager.
+        A [company](company) has one or more [locations](location), which are identified on a per company basis by a [location name](locationName). Each [location](location) has an [address](address) and details about its [space](space).
+        An [employee](employee) may be [located at](locatedAt) multiple company [locations](location), and [locations](location) may have multiple [employees](employee) located there. At each particular location, an [employee](employee) may have multiple [room numbers](roomNumber) and a [description](description) of how the room is used.
+        A [company](company) [sells](sells) [products](product). Products are identified by an [id](productId) and also have a [name](productName) and [price](productPrice). [Products](product) belong to exactly one company.
+        At each [company](company) [location](location) there may be an [inventory of products](inventory) of a particular [quantity](quantity).
+        </uml-question>
+    <uml-answer>[Company|companyName {PK};industry;annualRevenue]
+[Employee|employeeId {PK};firstName;lastName;birthdate]
+[WorkingAt|salary;startDate]
+[Location|locationName {PPK};address;space]
+[LocatedAt|roomNumber {PPK};description]
+[Product|productId {PK};productName;productPrice]
+[Inventory|quantity]
+[Company]1..1 - 0..*[WorkingAt] : Has
+[Company]0..1 - 1..1[Employee] : IsCEO
+[Employee]1..1 - 0..*[WorkingAt] : Is
+[Employee]0..1 - 0..*[Employee] : Supervises
+[Company]1..1 - @..*[Product] : Sells
+[Company]1..1 - 1..*[Location] : Has
+[Employee]1..1 - 0..*[LocatedAt] : Is
+[Location]1..1 - 0..*[LocatedAt] : Has
+[Product]1..1 - 0..*[Inventory] : Has
+[Inventory]0..* - 1..1[Location] : IsAt</uml-answer>
+    <uml-marking entity-name="0.2" entity-attributes="0.1" entity-key="0.2" extra-entity-penalty="0.25" weak_entity="0.5" relationship="0.5" cardinality="0.25" extra-relationship-penalty="0.25"></uml-marking>
+</pl-uml-element>
+

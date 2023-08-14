@@ -1,0 +1,10 @@
+{
+    "uuid": "341c164d-f390-410a-8a35-e72bcde58d36",
+    "title": "Delete Airport",
+    "topic": "SQLDDL",
+    "singleVariant": true,
+    "tags": [
+        "DELETE"        
+    ],
+    "type": "v3"
+}

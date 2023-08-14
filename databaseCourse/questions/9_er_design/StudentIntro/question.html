@@ -1,0 +1,25 @@
+<pl-uml-element random="False" max-grade = "10">
+    <uml-question>Design an ER diagram for a university:
+        The database needs to keep track of each [Instructor](instructor) with [id](instrId), [name](name), and [address](address). Each [instructor](instructor) works for one [department](department) and each [department](department) has at least one [instructor](instructor).
+        The [departments](department) have a unique [id](deptId) and a [name](name).
+        [Courses](course) are offered by a single [department](department) and have a [number](courseNum) unique to each [department](department). Store the [course name](courseName), [credits](credits), and [description](description).
+        Each [course](course) has at least one [section](section). A [section](section) is identified using its associated [course number](courseNum), [section number](sectionNum), [year](year), and [semester](semester). Also store the [size](size) of the [section](section).
+        [Students](student) have [student ids](studentId) and [names](name). Each [student](student) has a single [instructor](instructor) as an advisor.
+        [Students](student) enroll in one or more [sections](section). A [section](section) must have five [students](student) or it is cancelled. A [section](section) is taught by at least one [instructor](instructor).</uml-question>
+    <uml-answer>[Instructor| instrId{PK}; name; address]
+[Department| deptId{PK}; name]
+[Student| studentId{PK}; name]
+[Section| sectionNum{PPK}; semester{PPK}; year{PPK}; size]
+[Course| courseNum{PPK}; credits; description; courseName]
+[Instructor] 1..1 - 0..* [Student]
+[Instructor] 1..* - 1..1 [Department]
+[Instructor] 1..* - 0..* [Section]
+[Department] 1..1 - 1..* [Course]
+[Course] 1..1 - 1..* [Section]
+[Section] 1..* - 0..* [Student]</uml-answer>
+    <uml-marking entity-name="0.2" entity-attributes="0.1" entity-key="0.2" extra-entity-penalty="0.25" weak_entity="0.5" relationship="0.5" cardinality="0.25" extra-relationship-penalty="0.25"></uml-marking>
+</pl-uml-element>
+
+
+
+

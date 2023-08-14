@@ -1,0 +1,35 @@
+{
+    "uuid": "294e5841-b705-4720-b5d4-266b82e9c6c8",
+    "type": "Homework",
+    "title": "Homework For UML Testing",
+    "set": "Homework",
+    "number": "1",
+    "allowAccess": [
+        {
+            "credit": 100
+        }
+    ],
+    "zones": [
+        {
+            "questions": [
+                {"id": "9_er_design/randomUML",                "points": 10},
+                {"id": "9_er_design/Autoshop",                "points": 10},
+                {"id": "9_er_design/Banks",                "points": 10},
+                {"id": "9_er_design/Claim",                "points": 10},
+                {"id": "9_er_design/Congress",                "points": 10},
+                {"id": "9_er_design/Drug",                "points": 10},
+                {"id": "9_er_design/Fish_Store",                "points": 10},
+                {"id": "9_er_design/Football",                "points": 10},
+                {"id": "9_er_design/Game_Database",                "points": 10},
+                {"id": "9_er_design/Hospital",                "points": 10},
+                {"id": "9_er_design/Hotel",                "points": 10},
+                {"id": "9_er_design/Inventory",                "points": 10},
+                {"id": "9_er_design/Medical_System",                "points": 10},
+                {"id": "9_er_design/Music_DB",                "points": 10},
+                {"id": "9_er_design/Project",                "points": 10},
+                {"id": "9_er_design/Publisher",                "points": 10},
+                {"id": "9_er_design/Student",                "points": 10}
+            ]
+        }
+    ]
+}
