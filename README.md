@@ -41,7 +41,7 @@ Integration Lead:   Andrei Zipis
 
 5. To check if the docker container is running, run `docker-compose ps`. if the response is empty, run `docker-compose ps -a`, and it will show the status of the closed docker container.
 
-# Creating the relaxAPI container
+# Creating the relaxAPI container (required for grading RelaX questions)
 
 1. Visit repository found at `https://github.com/azipis/RelaXQueryAPI`
 

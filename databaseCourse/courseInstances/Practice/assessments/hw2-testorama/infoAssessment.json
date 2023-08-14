@@ -1,0 +1,21 @@
+{
+    "uuid": "d90b6371-b1e4-49a0-bf2d-e46a2bb39547",
+    "type": "Homework",
+    "title": "Testorama",
+    "set": "Homework",
+    "number": "2",
+    "allowAccess": [
+        {
+            "credit": 100
+        }
+    ],
+    "zones": [
+        {
+            "questions": [
+                {"id": "9_er_design/randomUML",                "points": 10},
+                {"id": "9_er_design/Fish_Store",                "points": 10}
+
+            ]
+        }
+    ]
+}

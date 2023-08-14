@@ -1,0 +1,25 @@
+{
+    "uuid": "d9d888b8-ea07-47a2-9d16-7c0b41f5d029",
+    "type": "Homework",
+    "title": "Midterm Exam 2",
+    "set": "Quiz",
+    "number": "3",
+    "allowAccess": [
+        {
+            "startDate": "2022-11-02T20:25:00",
+            "endDate": "2022-11-03T01:00:00",
+            "credit": 10
+        }
+    ],
+    "zones": [
+        {
+            "questions": [
+                {
+                    "id": "9_er_design/Company",
+                    "triesPerVariant": 5,
+                    "points": 5
+                }
+            ]
+        }
+    ]
+}
