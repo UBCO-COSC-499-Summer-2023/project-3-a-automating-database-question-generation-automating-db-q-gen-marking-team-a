@@ -464,15 +464,20 @@ class Question:
         # Select node with most connections
         mcNode = list(graph.keys())[0]
         for column in dataset.tableSet[graph[mcNode][0]].columns:
+            # checks if Column is the foreign Key then records it
             if dataset.tableSet[graph[mcNode][0]].columns[column]['references'] == mcNode:
                 compareColumn = dataset.tableSet[graph[mcNode][0]].columns[column]["name"]
+        
+        # Checks which table has the greater unique data in teh compare column
         if len(set(dataset.tableSet[graph[mcNode][0]].rows[compareColumn])) <= len(set(dataset.tableSet[mcNode].rows[compareColumn])):
             for node in graph.keys():
+                # Loops through graph to find smallest connections.
                 if len(graph[node]) <= len(graph[mcNode]):
                     mcNode = node
                     for column in dataset.tableSet[graph[mcNode][0]].columns:
                         if dataset.tableSet[graph[mcNode][0]].columns[column]['references'] == mcNode:
                             compareColumn = dataset.tableSet[graph[mcNode][0]].columns[column]["name"]
+                    # Breaks loop if unique set of foreign keys in mcNode connection is larger than mcNode
                     if len(set(dataset.tableSet[graph[mcNode][0]].rows[compareColumn])) > len(set(dataset.tableSet[mcNode].rows[compareColumn])):
                         break
         
@@ -480,38 +485,43 @@ class Question:
         node1 = graph[mcNode][0]
         node2 = mcNode
 
+        # grabs compareColumn
         for column in dataset.tableSet[node1].columns: 
             if dataset.tableSet[node1].columns[column]['references'] == node2:
                 compareColumn = dataset.tableSet[node1].columns[column]["name"]
         
+        # renders text and query statements
         self.joinStatement = f"{node1}{self.antiJoins}{node2}"
         self.tableListText = f"where <b><click>{compareColumn}</click></b> is not in <b><click>{node2}</click></b>"
         self.JoinList = [node1]
         self.offLimitsTable = node2
 
+
     def naturalJoinGeneration(self, graph):
-        jList=[]
+        jList=[] # temp list
         key = False
+        # loops through each node in the graph
         for node in graph:
-            # print(f"NJG:{node}")
+            # Checks if the its the first node in the graph
             if len(self.JoinList) == 0 and len(jList) == 0:
-                jList.append(node)
-                # print(jList)
+                jList.append(node) # adds it to the temp list
+
+            # loops through each connecting node in graph            
             for connection in graph[node]:
-                # print(connection)
+                # checks if the connecting node is in JoinList, or in jList
+                # and checks if node is not in JoinLust
                 if (connection in self.JoinList or connection in jList) and node not in self.JoinList:
+                    # Checks if table will result in a zero output
                     if node is not self.offLimitsTable:
+                        # adds the  node to jList then breaks out of both loops
+                        # because the join is satisfied
                         jList.append(node)
-                        # print("Joined")
                         key = True
                         break
             if key:
-                # print("successful break")
                 break
-        
-        # print(jList)
-        # print(self.joinStatement)
-
+            
+        # checks if this is first join, renders as such, if not renders as such
         if self.joinStatement == "":
             self.joinStatement =f"{jList[0]}{self.naturalJoin}{jList[1]}"
         else:
@@ -519,6 +529,7 @@ class Question:
         
         parts = self.tableListText.rsplit(",", 1)  # Split the string from the right side only once
 
+        # adds temp list to joinlist
         for node in jList:
             self.JoinList.append(node)
 
@@ -526,51 +537,66 @@ class Question:
 
     #* getters=======================================================
     def getQuery(self):
+        # starts with the joinstatements
         self.Query = self.joinStatement 
+        # checks if there are any selectStatements
+        # if < 0 there is a select from an outerjoin
+        # if > 0 there is a normal select statement
         if self.numClauses != 0:
             self.Query = f"{self.selectStatement} ({self.Query})"
+        # checks if orderby is part of query
         if self.orderByBool:
             self.Query = f"{self.orderByStatement} ({self.Query})"
+        # adds projection/groupby statement
         self.Query = f"{self.queryStatement} ({self.Query})"
         return self.Query
 
     def getText(self):
-
+        # Renders text
         text = f"Return a table of {self.projectedColumnText}"
+        # checks if orderby
         if self.orderByBool:
             text += self.orderByText
+        # checks if select clauses
         if self.numClauses <= 0:
             text += f" {self.tableListText}"
         else:
             text += f" where {self.selectStatementText} {self.tableListText}"
-
+        # returns text
         return text
 
     
+    # Loasd the Query adn the text into corresponding data variables
     def loadQuestion(self, data):
         data['correct_answers']['RelaXEditor'] = self.getQuery()
         data['params']['questionText'] = self.getText()
 
 
 
-
+    # Returns projected columns
     def projection(self, neededColumns, usableColumns, rangeNum):
-        projectedColumns = []
-        index = 0 
+        # neededColumns is a list of 1 column from each table in JoinList
+        # UseableColumns is a list of all colunms from JoinList
+        # rangeNum is the number of projected columns desired
+        projectedColumns = [] # array that is filled and returned
+        index = 0  # index to ensure that loop does not loop forever
         for i in range(rangeNum):
+            # if neededColumn still has value, use it. else dont
             if len(neededColumns) == 0 or self.numJoins == 0:
-                randColumn = rand.choice(usableColumns)
+                randColumn = rand.choice(usableColumns) 
             else:
                 randColumn = neededColumns.pop(rand.choice(range(len(neededColumns))))
             # index ensures that while loop does not last forever
             while randColumn in projectedColumns and index < 15:
-                randColumn =  rand.choice(usableColumns)
+                randColumn =  rand.choice(usableColumns) # ensures that randomColumn is not already ised
                 index+=1
             index = 0
+            # add randColumn to projectedColumns 
             projectedColumns.append(randColumn)
 
         return projectedColumns
 
+# returns single statement for groupby
 def groupBy(randColumn, graph, dataset):
     for table in graph.keys():
         for column in dataset.tableSet[table].columns:
@@ -580,6 +606,7 @@ def groupBy(randColumn, graph, dataset):
                     case 'NUMBER': return f"{rand.choice(['avg','sum'])}"
                     case 'DATE': return "count"
 
+# returns single statement for selection clause
 def selection(usableColumns, randColumn, graph, dataset):
     for table in graph.keys():
         for column in dataset.tableSet[table].columns:
