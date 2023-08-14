@@ -15,6 +15,50 @@ Python libraries require an `__init__.py` file to be recognized as a library. Th
 
 The autogenerator is responsible for creating random questions and initializing the front-end and back-end databases accordingly.
 
+Parameters:
+
+- `projectedColumns` : Specifies the number of desired Projected Columns - random if not specified
+- `numClauses` : Specifies the number of desired selection clauses
+- `orderBy` : Specifies if an order by clauses is wanted
+- `groupBy` : Specifies if a groupby clauses is wanted instead of a projection clause
+- `numJoins` : Specifies number of natural Joins wanted
+- `antiJoin` : Specifies if antiJoin is desired [1 join only]
+- `semiJoin` : Specifies if semiJoin is desired [1 join only]
+- `outerJoin` : Specifies if outerJoin is desired [1 join only]
+
+Note on joins: due to the time cost to guarantee outputs, we have limited anti/semi/outer joins to only 1 join per query. We can guarantee output in the generation process, thus saving that time cost. The risk of a zero row output still exists, but is very low.
+
+Functions:
+- `autogenerate(data, outputGuaranteed=True)` : This function is the only function called in the `pl-relax-element.py`. It first generates the database, and then generates the question text and the corresponding answer querry. storing them in there respective data variables
+  - Database: `data['params']['db_initialize_create']`
+  - CorrectAnswer: `data['correct_answers']['RelaXEditor']`
+  - QuestionText: `data['params']['questionText']` 
+The `outputGuaranteed` parameter is used to trigger whether or not the question and database will be re-generated upon an zero row output.   
+  
+  - `createPreview(data)`: queries relaxAPI and returns the expected output of the question
+  
+  Join Functions:
+  - `outerJoinGeneration(self, graph, dataset)`: Generates outerJoin data
+  - `semiJoinGeneration(self, graph, dataset)`: Generates semiJoin data
+  - `antiJoinGeneration(self, graph, dataset)`: Generates antiJoin data
+  - `naturalJoinGeneration(self, graph)`: Generates naturalJoin data
+  
+  Getters:
+  - `getQuery(self)`: returns the Relational Algebra query string 
+  - `getText(self)`: returns question Text
+  - `loadQuestion(self, data)`: loads query and text into data variable
+
+  Operators:
+  - `Projection(self, neededColumns, usableColumns, rangeNum)`: Returns projected Columns
+  - `groupBy(randColumn, graph, dataset)`: returns single statement for groupby
+  - `selection(usableColumns, randColumn, graph, dataset)`: returns single statement for groupby
+
+  Misc Functions:
+  - `returnGreater(num1, num2)`: Returns the greater of two numbers
+  - `formatDate(capturedText)`: formats date to `yyyy-mm-dd`
+  - `dfs(graph, startNode, visited=set(), n=1)`: Performs a Depth first search to retreave a connected graph
+  - `randomSubgraph(graph, n)`: Returns a random subgraph of a desired size. Used to retrieve natural joins.
+ 
 ## RelaXCustomGrader
 
 Weights:

@@ -39,7 +39,7 @@ class AutogenerateQueryTest(unittest.TestCase):
     # functions of this class. Each tuple corresponds to 
     # a test case
     @parameterized.expand([
-            # data, numJoins, numClauses, orderBy, groupBy, antiJoin, outerJoin, semiJoin
+            # data, projectedColumns, numJoins, numClauses, orderBy, groupBy, antiJoin, outerJoin, semiJoin
             [data, 3, 0, 0, True, False, False, False, False, sampleSize],
             [data, 3, 1, 0, False, False, False, False, False, sampleSize],
             [data, 3, 2, 0, False, False, False, False, False, sampleSize],
@@ -109,11 +109,12 @@ class AutogenerateQueryTest(unittest.TestCase):
             self.assertGreater(len(data['correct_answers']['RelaXEditor']), 0)
 
             self.assertIn("π" if not groupBy else "γ", data['correct_answers']['RelaXEditor'])
-            
+            if antiJoin:
+                self.assertIn("▷", data['correct_answers']['RelaXEditor'])
             if numClauses:
                 self.assertIn("σ", data['correct_answers']['RelaXEditor'])
 
-
             print(data['correct_answers']['RelaXEditor'])
+
 
         print("\n\n")
