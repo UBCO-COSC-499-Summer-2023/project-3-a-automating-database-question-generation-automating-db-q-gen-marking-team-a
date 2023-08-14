@@ -2,10 +2,14 @@
     "python.testing.unittestArgs": [
         "-v",
         "-s",
-        "./databaseCourse/elements/pl-sql-element",
+        "./tests/ui/ddlQuestions",
         "-p",
         "*_test.py"
     ],
     "python.testing.pytestEnabled": false,
-    "python.testing.unittestEnabled": true
+    "python.testing.unittestEnabled": true,
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.autopep8"
+    },
+    "python.formatting.provider": "none"
 }

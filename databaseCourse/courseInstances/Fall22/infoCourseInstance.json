@@ -1,0 +1,10 @@
+{
+    "uuid": "c979310c-7972-4283-a9ca-ad17b86a38d3",
+    "shortName": "Fall 2022",
+    "longName": "Fall 2022",
+    "allowAccess": [{
+            "institution": "Any",
+            "startDate": "1800-01-19T00:00:01",
+            "endDate": "2400-05-13T23:59:59"
+        }]
+}

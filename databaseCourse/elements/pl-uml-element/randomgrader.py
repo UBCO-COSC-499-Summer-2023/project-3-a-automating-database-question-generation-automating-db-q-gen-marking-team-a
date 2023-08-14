@@ -13,7 +13,6 @@ correct_weak_entities = 0.5  # Default Weighting = 0.5
 correct_relationship_entities = 0.5  # Default Weighting = 0.5
 correct_cardinality = 0.25  # Default Weighting = 0.25
 extra_relationship = 0.25  # Default Weighting = 0.25
-#  new added
 #  correct_cardinality_text = 0.25  # Default Weighting = 0.25
 MAXIMUM_GRADE = 10
 
@@ -28,7 +27,6 @@ marking_criteria = {
     'correct_relationship_entity': correct_relationship_entities,
     'correct_cardinality': correct_cardinality,
     'extra_relationship': extra_relationship,
-#  new added
 # "correct_cardinality_text": correct_cardinality_text,
     }
 
@@ -214,6 +212,7 @@ def mark_answer(question, answers, stu_answer):
         if top_mark < result['mark']:
             top_mark = result['mark']
             top_result = result
+            
     return top_result
 
 
@@ -648,7 +647,7 @@ def mark(correct_answer, student_answer):
                                    2)) + '\n' + 'Total entity marks: ' \
         + str(round(student_entities_mark, 2)) + '/' \
         + str(round(entity_marks, 2)) + '\n' \
-        + 'Relationship entity marks: ' \
+        + 'Relationship marks: ' \
         + str(round(student_relationship_entities_mark, 2)) + '/' \
         + str(round(relationship_entity_marks, 2)) + '\n' \
         + 'Relationship cardinalities marks: ' \

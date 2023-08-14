@@ -1,0 +1,23 @@
+{
+    "uuid": "7d776c12-1c4a-43bf-b5a2-d3f1c7b93055",
+    "type": "Homework",
+    "title": "Lab 5 - Q2",
+    "set": "Homework",
+    "number": "5.2",
+    "allowAccess": [
+        {
+            "credit": 7
+        }
+    ],
+    "zones": [
+        {
+            "questions": [
+                {
+                    "id": "9_er_design/Project",
+                    "points": 21,
+                    "triesPerVariant": 10
+                }
+            ]
+        }
+    ]
+}

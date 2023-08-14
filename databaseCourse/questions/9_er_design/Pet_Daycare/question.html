@@ -1,0 +1,22 @@
+<pl-uml-element random="False" max-grade = "10">
+<uml-question>
+   A pet daycare stores information about [pets](Pet) that belong to [owners](Owner). An [owner](Owner) is identified by an [id](id), and their [first name](firstName), [last name](lastName), and [address](address) are also stored. [Pets](Pet) are identified by their [name](name) and their [owner](Owner). For each [pet](Pet), record their [age](age) and a [description](description).  Our pet daycare specializes in [cats](Cat) and [dogs](Dog) so specific information is stored for each of these types of pets. For [cats](Cat) note if they [have claws](hasClaws) and [are social](isSocial). For [dogs](Dog) we need to know their [size](size) and if they are [barkers](isBarker). Our company supports animals besides cats and dogs. For other types of animals, information about them and their type are stored in the [description](description) of the [pet](Pet). Our facility has several [buildings](Building) that have an identifying [id](buildingId) and also a [building name](buildingName) and [year built](yearBuilt). Each [building](Building) contains multiple [rooms](Room) with a [room number](roomNumber) that is unique within a [building](Building). Rooms also have a specific [size](roomSize).  When a pet [stays](PetStay) at the day care, the [start date](startDate) distinguishes between particular stays for that pet. Additional information is the [end date](endDate) and [cost](cost). The pet [stays](PetStay) in one particular [room](Room) for a given stay. Note: Since system does not support IS-A relationships, model as a relationship with 1..1 cardinality for superclass and 0..1 cardinality for subclass.
+</uml-question>
+<uml-answer>
+[Owner| id{PK}; firstName; lastName; address]
+[Pet| name{PPK}; age; description]
+[Cat| hasClaws; isSocial]
+[Dog| isBarker; size]
+[Building| buildingId{PK}; buildingName; yearBuilt]
+[Room| roomNumber{PPK}; roomSize]
+[PetStay| startDate{PPK}; endDate; cost]
+[Owner] 1..1 - 0..* [Pet]
+[Pet] 1..1 - 0..1 [Cat]
+[Pet] 1..1 - 0..1 [Dog]
+[Building] 1..1 - 1..* [Room]
+[PetStay] 0..* - 1..1 [Pet]
+[PetStay] 0..* - 1..1 [Room]
+</uml-answer>
+    <uml-marking entity-name="0.2" entity-attributes="0.1" entity-key="0.2" extra-entity-penalty="0.25" weak_entity="0.5" relationship="0.5" cardinality="0.25" extra-relationship-penalty="0.25"></uml-marking>
+</pl-uml-element>
+

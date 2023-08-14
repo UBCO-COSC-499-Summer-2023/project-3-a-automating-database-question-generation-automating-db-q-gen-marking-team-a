@@ -1,0 +1,14 @@
+/.editorconfig
+/.eslintignore
+/.eslintrc.js
+/.prettierignore
+/.prettierrc.json
+/.idea/databaseCourse.iml
+/.idea/jsLinters/eslint.xml
+/.idea/jsLibraryMappings.xml
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/inspectionProfiles/profiles_settings.xml
+/.idea/inspectionProfiles/Project_Default.xml
+/.idea/vcs.xml
+/.idea/workspace.xml

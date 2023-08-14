@@ -1,0 +1,32 @@
+<!-- Question introduction -->
+<pl-question-panel>
+    Write the SQL DDL to create the following table.
+    <br>
+</pl-question-panel>
+
+<!-- Start Part 1 -->
+
+<!-- Question text -->
+<pl-question-panel>
+    An <strong>airplane</strong> table where each airplane is identified by a field called <strong>id</strong> that is a string of up to 10 characters. Other attributes include <strong>model</strong> (string up to 20 characters), and a <strong>manufactureDate</strong>. (1 mark)
+</pl-question-panel>
+
+
+<!-- SQL editor -->
+<pl-sql-element questionType = 'create'>
+    <sql-question>
+    </sql-question>
+    
+    <sql-answer answer = "CREATE TABLE airplane (
+    id VARCHAR(10),
+    model VARCHAR(20),
+    manufactureDate DATE,
+    PRIMARY KEY (id)
+);"
+    </sql-answer>
+
+    <sql-marking>
+    </sql-marking>
+</pl-sql-element>
+
+<!-- End Part 1 -->

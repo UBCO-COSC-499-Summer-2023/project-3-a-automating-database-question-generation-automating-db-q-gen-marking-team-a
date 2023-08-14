@@ -1,0 +1,36 @@
+{
+    "uuid": "c001e054-4250-4a1b-a6f7-1a9b51cc0f24",
+    "type": "Homework",
+    "title": "Homework For Writing SQL Queries",
+    "set": "Homework",
+    "number": "3",
+    "allowAccess": [
+        { 
+            "credit": 100
+        }
+    ],
+    "zones": [
+        {
+            "title": "Lab Questions",
+            "questions": [
+                {"id": "6_sql/shipment/1",                "points": 2},
+                {"id": "6_sql/shipment/2",                "points": 2},
+                {"id": "6_sql/shipment/3",                "points": 2},
+                {"id": "6_sql/shipment/4",                "points": 2},
+                {"id": "6_sql/shipment/5",                "points": 2},
+                {"id": "6_sql/shipment/6",                "points": 2},
+                {"id": "6_sql/shipment/7",                "points": 2},
+                {"id": "6_sql/shipment/8",                "points": 2},
+                {"id": "6_sql/shipment/9",                "points": 2},
+                {"id": "6_sql/shipment/10",                "points": 2}
+            ]
+        },
+        {
+            "title": "Random Queries",
+            "questions": [
+                {"id": "6_sql/randomParameterized",          "points": 2},
+                {"id": "6_sql/randomParameterizedSubquery",          "points": 2}
+            ]
+        }
+    ]
+}

@@ -31,11 +31,41 @@
 
 
 
-.dropbtn{
+.dropbtn {
 	font-family: ubuntu, sans-serif;
 	border: none;
-    background-color: transparent;
+	background-color: transparent;
 	margin: 0.25em 0 0.25em 0;
+	transition: padding-left 0.3s ease-in-out, background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+	position: relative;
+	display: inline-block;
+	padding: 8px 16px;
+	border-radius: 4px;
+  }
+  
+   /* .dropbtn::before {
+	content: "add";
+	position: absolute;
+	left: -30px; 
+	opacity: 0;
+	transition: opacity 0.3s ease-in-out;
+  }  */
+
+  .dropbtn:hover {
+	padding-left: 10px; 
+	background-color: #f5f5f5; 
+	color: #007bff;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+  }
+  
+  .dropbtn:hover::before {
+	opacity: 1;
+  }
+
+
+
+.submenu span:hover{
+	color: #007bff;
 }
 
 .schemaTable:hover div{
@@ -94,7 +124,7 @@
 	align-items: flex-start;
 	justify-content: space-evenly;
 	border: 2px solid black;
-	margin: 1em 0 1em 0;
+	margin: 0 0 1em 0;
 	text-align: center;
 }
 
@@ -165,3 +195,84 @@
 	color: #fff;
 }
 
+.expectedOutputTable{
+	border-collapse: collapse;
+    font-size: 0.9em;
+    font-family: ubuntu, sans-serif;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+	border-radius: 5px;
+	width: -webkit-fill-available;
+	padding: 1em;
+}
+
+.expectedOutputTable thead tr{
+	background-color: #007bff;
+    color: #ffffff;
+    text-align: left;
+	font-weight: bold;
+	
+}
+
+.expectedOutputTable thead {
+	position: sticky;
+	top: 0;
+	z-index: 2;
+}
+
+.expectedOutputTable thead th{
+	cursor: pointer;
+}
+
+.expectedOutputTable thead th:first-child{
+	border-top-left-radius: 5px;
+}
+
+.expectedOutputTable thead th:last-child{
+	border-top-right-radius: 5px;
+}
+
+
+.expectedOutputTable th, .expectedOutputTable td{
+	padding: 10px 13px;
+}
+
+.expectedOutputTable tr{
+	border-bottom: 1px solid #dddddd;
+}
+
+.expectedOutputTable tr:nth-of-type(even){
+	background-color: #f3f3f3;
+}
+
+.expectedOutputTable tr:last-of-type{
+	border-bottom: 2px solid #007bff;
+}
+
+.expectedOutputTable tbody > tr:hover{
+	background: #000000b6;
+	color: #fff;
+}
+
+.expectedOutputButton{
+	background-color: transparent;
+	color: #007bff;
+	border: 2px solid #007bff;
+}
+
+.expectedOutputButton{
+	background-color: transparent;
+	color: #007bff;
+	border: 2px solid #007bff;
+	border-radius: 3px;
+	padding: 7px;
+	margin-right: 5px;
+	transition: .3s;
+	font-family: ubuntu, sans-serif;
+	font-size: 1em;
+}
+
+.expectedOutputButton:hover{
+	background-color: #007bff;
+	color: white;
+	cursor: pointer;
+}

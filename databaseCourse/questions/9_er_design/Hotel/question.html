@@ -1,0 +1,34 @@
+<pl-uml-element random="False" max-grade = "10">
+    <uml-question>There are many hotels in the chain. Each [hotel](hotel) has a [name](hotelName), a street address (which is made up of a [street number](streetNumber), [street name](streetName), [city](city), [state](state),  [country](country), and [postal code](postalCode), a [home page URL](webAddress) (webAddress), and a [primary phone number](phoneNumber).
+        Each [hotel](hotel) consists of a set of [rooms](room) arranged on various [floors](floor). Each [room](room) has an [identifier](roomId) which is unique within that [hotel](hotel). Most of the time, rooms are numbered (e.g. 690), but they may be given a name (e.g. Presidential Suite) instead, so long as the name or number is unique within the hotel. [Floors](floor) are [numbered](floorNum).
+        For simplicity, assume that each [room](room) is on only one [floor](floor). For each [room](room), it is also necessary to keep track of [how many beds](numBeds) it has, as well as whether [smoking is allowed](smokingRoom) in the room. This information is used to help match guests to rooms with desired characteristics.
+        When a [guest](customer) plans to stay at a [hotel](hotel), he or she makes a room [reservation](reservation) at the desired [hotel](hotel).
+        Each [reservation](reservation) indicates information about the [guest](customer), the desired [arrival](arrivalDate) and [departure dates](departureDate), as well as preferences that an id in selecting the right kind of room for that guest: whether the room should be [smoking or non-smoking](smokingRoomOrNot), the [number of beds](numBeds), and whether the room should be on a [high floor or a low floor](highOrLowFloor).
+        These room preferences are optional, and are not included with every reservation; some guests are willing to take any available room, while some only care about some preferences but not others.
+        Also required with each [reservation](reservation) is information about a [credit card](creditCardType) that is used to secure the reservation; credit cards are indicated by a [credit card number](creditCardNum) (which is a sequence of up to 16 digits) and an [expiration date](creditCardExpiry) (a month and a year, such as January 2020).
+        At any given time, a [guest](customer) may have multiple [reservations](reservation). A [reservation](reservation) is for a single [room](room).
+        For each [guest](customer), the database must store the guest [id](customerId), [first](firstName), [middle](middleName), and [last names](lastName), [street address](streetAddress), [city](city), [state](state), [country](country), [postal code](postalCode),[email address](email), and three phone numbers ([home](homePhone), [work](workPhone), [cell](cellPhone)). Email addresses and the phone numbers are optional, while the other information is required. Note that if multiple [people](customer) stay in a [room](room),
+        we are only storing information about the one [person](customer) who reserved the [room](room). A single [invoice](invoice) is [generated](openDate) for a [reservation](reservation) at the [hotel](hotel),
+        detailing the individual [charges](invoiceCharge) accrued by the [guest](customer). These [charges](invoiceCharge) include not only the regular room rate, but also applicable taxes, as well as charges at the hotels restaurants, bars, spas, shops, and so on. An [invoice](invoice) with a [id](invoiceId) is displayed either in printed or Web-based form as a sequence of line items,
+        with each line item consisting of a [description](description) and an [amount](amount), such as Hotel Cafe $29.75.
+        Note that the database does not keep track of, say, the costs of items on the restaurants menu or the cost of renting each room at various times throughout the year; it is assumed that another software system provides this information to
+        our database, since our system only handles reservations and billing.
+        When a [guest](customer) [pays](transactionId) his or her bill or a portion of his or her bill a line item is added to the invoice that indicates [how much was paid](amount), and in what [form](chargeType) the payment was made (e.g. Visa $-500.00, in the case of a $500 payment made using a Visa credit card).
+        At the bottom of each invoice is a [total balance](totalBalance), which is the sum of the amounts in each of the line items, including both [charges and payments](invoiceCharge). An invoice is considered [paid](closeDate) if the amount is $0.00.</uml-question>
+    <uml-answer>[Hotel| hotelName{PK}; streetNumber; streetName; city; state; country; postalCode; webAddress; phoneNumber]
+[Floor| floorNum{PPK}]
+[Room| roomId{PPK}; numBeds; smokingRoom]
+[Reservation| arrivalDate{PPK}; departureDate; smokingRoomOrNot; numBeds; highOrLowFloor; creditCardType; creditCardNum; creditCardExpiry]
+[Customer| customerId{PK}; firstName; middleName; lastName; streetAddress; city; state; country; postalCode; homePhone; workPhone; cellPhone; email]
+[Invoice| invoiceId{PK}; openDate; closeDate; totalBalance]
+[InvoiceCharge| transactionId{PPK}; chargeType; description; amount]
+[Hotel] 1..1 - 1..* [Floor]
+[Hotel] 1..1 - 1..* [Room]
+[Hotel] 1..1 - 0..* [Reservation]
+[Floor] 1..1 - 0..* [Room]
+[Reservation] 0..* - 1..1 [Room]
+[Reservation] 1..1 - 1..1 [Invoice]
+[Reservation] 0..* - 1..1 [Customer]
+[InvoiceCharge] 0..* - 1..1 [Invoice]</uml-answer>
+    <uml-marking entity-name="0.2" entity-attributes="0.1" entity-key="0.2" extra-entity-penalty="0.25" weak_entity="0.5" relationship="0.5" cardinality="0.25" extra-relationship-penalty="0.25"></uml-marking>
+</pl-uml-element>

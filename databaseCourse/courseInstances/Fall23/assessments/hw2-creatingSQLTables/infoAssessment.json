@@ -1,0 +1,71 @@
+{
+    "uuid": "def0bcd1-7855-45c7-9ec6-69ef9ab62765",
+    "type": "Homework",
+    "title": "Homework For Creating SQL Tables",
+    "set": "Homework",
+    "number": "2",
+    "allowAccess": [
+        { 
+            "credit": 100
+        }
+    ],
+    "zones": [
+        {
+            "title": "Create Tables",
+            "questions": [
+                {"id": "5_sql_ddl/create/flight/airplane",                "points": 1},
+                {"id": "5_sql_ddl/create/flight/airport",                "points": 1.5},
+                {"id": "5_sql_ddl/create/flight/flight",                "points": 3},
+                {"id": "5_sql_ddl/create/flight/passenger",                "points": 1.5},
+                {"id": "5_sql_ddl/create/flight/onflight",                "points": 3}
+            ]
+        },
+        {
+            "title": "Random Create Tables",
+            "questions": [
+                {"id": "5_sql_ddl/create/randomParameterized",          "points": 1}
+            ]
+        },
+        {
+            "title": "Modify Tables",
+            "questions": [
+                {"id": "5_sql_ddl/insert/flight/all",                "points": 5}
+            ]
+        },
+        {
+            "title": "Random Insert",
+            "questions": [
+                {"id": "5_sql_ddl/insert/randomParameterized",          "points": 1}
+            ]
+        },
+        {
+            "title": "Update",
+            "questions": [
+                {"id": "5_sql_ddl/update/flight/passenger",                "points": 1},
+                {"id": "5_sql_ddl/update/flight/delayflight",                "points": 1}
+            ]
+        },
+        {
+            "title": "Random Update",
+            "questions": [
+                {"id": "5_sql_ddl/update/randomParameterized",          "points": 1},
+                {"id": "5_sql_ddl/update/randomParameterizedSubquery",          "points": 1}
+            ]
+        },
+        {
+            "title": "Delete",
+            "questions": [
+                {"id": "5_sql_ddl/delete/flight/airport",                "points": 1},
+                {"id": "5_sql_ddl/delete/flight/removepassenger",                "points": 1},
+                {"id": "5_sql_ddl/delete/flight/flightrecs",                "points": 1}
+            ]
+        },
+        {
+            "title": "Random Delete",
+            "questions": [
+                {"id": "5_sql_ddl/delete/randomParameterized",          "points": 1},
+                {"id": "5_sql_ddl/delete/randomParameterizedSubquery",          "points": 1}
+            ]
+        }
+    ]
+}

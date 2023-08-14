@@ -1,0 +1,24 @@
+<pl-uml-element random="False" max-grade = "10">
+    <uml-question>The logistics manager at your company wants to design a database to store the following information about warehouses.
+        Each [warehouse](warehouse) has a unique [warehouse name](warehouseName). Also, store the [city](city) and [state](state) of the warehouse.
+        [Products](product) have a unique [product id](productId), [name](name), and [price](price).
+        Store the [volume](inventory)(inventory) of each [product](product) [at each](stores) [warehouse](warehouse).
+        Not all [products](product) are [stored at](stores) each [warehouse](warehouse) and a [warehouse](warehouse) may not [store](stores) all [products](product).
+        A [shipment](shipment) identified by a unique [shipment number](shipmentId) has a [shipper name](shipperName) and [contact](address). A [shipment](shipment) is filled from only one [warehouse](warehouse).
+        Each [shipment](shipment) [contains](contains) at least one [product](product). Each [product](product) [shipped](contains) has a [quantity](quantity).
+        A [shipment](shipment) goes to a single [customer](customer) where each [customer](customer) is identified by a [customer number](customerNum), [name](name), and [address](address).</uml-question>
+    <uml-answer>[Shipment| shipmentId{PK}; shipperName; address]
+[Warehouse| warehouseName{PK}; city; state]
+[Customer| customerNum{PK}; name; address]
+[Product| productId{PK}; name; price]
+[Contains| quantity]
+[Stores| inventory]
+[Shipment]0..* - 1..1[Customer]
+[Shipment]1..1 - 1..*[Contains]
+[Warehouse]1..1 - 0..*[Contains]
+[Shipment]0..* - 1..*[Product]
+[Warehouse]1..* - 0..*[Stores]
+[Product]1..1 - 0..*[Stores]</uml-answer>
+    <uml-marking entity-name="0.2" entity-attributes="0.1" entity-key="0.2" extra-entity-penalty="0.25" weak_entity="0.5" relationship="0.5" cardinality="0.25" extra-relationship-penalty="0.25"></uml-marking>
+</pl-uml-element>
+
